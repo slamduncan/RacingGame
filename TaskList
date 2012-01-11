@@ -8,7 +8,7 @@ AI
 - AI Driving
 	-Waypoints
 	-Calculate
--Camera?
+-Camera
 
 Steve
 
@@ -20,4 +20,7 @@ Jeff
 Renderer, Main game engine/container
 - Drawing
 	- ents
+- .obj loading
+- obj models
+- displaying text in opengl
 - Sound?
