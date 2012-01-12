@@ -1,0 +1,52 @@
+#ifndef INPUTCONTROLLER_H
+#define INPUTCONTROLLER_H
+
+#include <SDL.h>
+
+enum button { A, B, X, Y};
+
+/* Sample use of InputController:
+	
+	InputController c = InputController();
+	bool continueOn = c.initialize(ControllerIndex);  (NOTE: indexing of controllers start at 0)
+	if (!continueOn){ "CONTROLLER DID NOT INITIALIZE PROPERLY  }
+*/
+
+class InputController
+{
+private:
+	bool A, B, X, Y, rightBump, leftBump, start;
+	Sint16 leftAnaX, leftAnaY, rightAnaX, rightAnaY, triggers;
+	double normLeftAnaX, normLeftAnaY, normRightAnaX, normRightAnaY, normTriggers;
+	int InputControllerIdentifier;
+	SDL_Event cntrlEvent;
+	SDL_Joystick *stick;
+	void update();
+
+public:		
+	InputController();
+	~InputController();
+		
+	bool initialize(int controllerIndex);
+	//bool isButtonDown(button); Add later and remove the below ones
+	bool isADown();
+	bool isBDown();
+	bool isXDown();
+	bool isYDown();
+	bool rightBumperIsDown();
+	bool leftBumperIsDown();
+
+	Sint16 getLeftAnalogStickX();
+	Sint16 getLeftAnalogStickY();
+	Sint16 getRightAnalogStickX();
+	Sint16 getRightAnalogStickY();
+	Sint16 getTriggers();	
+
+	double getNormalizedLeftAnalogStickX();
+	double getNormalizedRightAnalogStickX();
+	double getNormalizedLeftAnalogStickY();
+	double getNormalizedRightAnalogStickY();
+	double getNormalizedTriggers();	
+};
+
+#endif

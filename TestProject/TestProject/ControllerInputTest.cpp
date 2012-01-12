@@ -6,7 +6,7 @@
 //#include "C:\Program Files\CPSC585\SDL\SDL-1.2.14\include\SDL_joystick.h"
 using namespace std;
 
-int main(int argc, char *argv[])
+int mainTest(int argc, char *argv[])
 {
 if (SDL_Init(SDL_INIT_JOYSTICK|SDL_INIT_VIDEO) < 0 )
 {
@@ -87,7 +87,8 @@ while(running){
 		if (cntrlEvent.type == SDL_JOYBUTTONDOWN){
 			//X-button was pressed
 			if (cntrlEvent.jbutton.button == 2){
-				running = false;
+				//running = false;
+				cout << "X Pressed";
 			}
 		}
 	}
