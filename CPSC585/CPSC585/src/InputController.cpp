@@ -193,6 +193,8 @@ void InputController::update(){
 
 }
 
+
+
 Sint16 InputController::getLeftAnalogStickX(){update(); return leftAnaX;}
 
 Sint16 InputController::getLeftAnalogStickY(){update(); return leftAnaY;}
@@ -220,4 +222,15 @@ bool InputController::isBDown(){update(); return B;}
 bool InputController::isXDown(){update(); return X;}
 
 bool InputController::isYDown(){update(); return Y;}
+
+bool InputController::isButtonDown(Button in){
+	update();
+	switch(in){
+		case A_button: {return A;}
+		case B_button: {return B;}
+		case X_button: {return X;}
+		case Y_button: {return Y;}
+	}
+	return false;
+}
 ;

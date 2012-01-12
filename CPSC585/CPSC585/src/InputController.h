@@ -3,7 +3,7 @@
 
 #include <SDL.h>
 
-enum button { A, B, X, Y};
+
 
 /* Sample use of InputController:
 	
@@ -24,15 +24,16 @@ private:
 	void update();
 
 public:		
+	enum Button {A_button, B_button, X_button, Y_button};
 	InputController();
 	~InputController();
 		
-	bool initialize(int controllerIndex);
-	//bool isButtonDown(button); Add later and remove the below ones
+	bool initialize(int controllerIndex);	
 	bool isADown();
 	bool isBDown();
 	bool isXDown();
 	bool isYDown();
+	bool isButtonDown(Button in); //returns true if the button is pressed down, false otherwise (including if input is not valid).
 	bool rightBumperIsDown();
 	bool leftBumperIsDown();
 
