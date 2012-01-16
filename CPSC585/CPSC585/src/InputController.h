@@ -3,8 +3,6 @@
 
 #include <SDL.h>
 
-
-
 /* Sample use of InputController:
 	
 	InputController c = InputController();

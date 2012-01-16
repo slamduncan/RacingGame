@@ -40,6 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="CPSC585\include;\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
@@ -58,6 +59,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib opengl32.lib glu32.lib lib\glew32.lib"
+				AdditionalLibraryDirectories="CPSC585\lib;\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -111,6 +113,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="CPSC585\include"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -128,6 +131,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib opengl32.lib glu32.lib lib\glew32.lib"
+				AdditionalLibraryDirectories="CPSC585\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -170,11 +174,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Event.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\EventSystemHandler.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\GameEngine.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\src\InputController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ObservingList.cpp"
 				>
 			</File>
 			<File
@@ -189,6 +205,10 @@
 				RelativePath=".\src\Shader.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\TypedObserver.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -200,7 +220,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Event.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EventSystemHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Global.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\InputController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Observer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ObservingList.h"
 				>
 			</File>
 			<File
