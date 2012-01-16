@@ -1,12 +1,21 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "Shader.h"
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+#include <vector>
 
-#include "../include/SDL.h"
+#include "Shader.h"
+#include "Entity.h"
+
+#include "../include/SDL/SDL.h"
 #define NO_SDL_GLEXT
-#include "../include/SDL_opengl.h"
-#include "../include/SDL_ttf.h"
+#include "../include/SDL/SDL_opengl.h"
+#include "../include/SDL/SDL_ttf.h"
+
+
+using namespace std;
 
 class Renderer
 {
@@ -16,10 +25,11 @@ private:
 	int bpp;
 	int vflags;
 
+	TTF_Font *debugFont;
+
 	const SDL_VideoInfo* info;	// pointer to video info for screen
 
 	Shader shader;	// shader for drawing
-
 
 public:
 	Renderer();
@@ -28,9 +38,18 @@ public:
 
 	void initSDL();
 	void initGL(int width, int height);
+	void initFont();
+
+	void outputText(string text, int r, int g, int b, int x, int y);
 
 	void draw();
-	void drawEntity();
+	void drawEntity(Entity &entity);
+
+	void drawPlane(float height);
+
+	void glEnable2D();
+	void glDisable2D();
+
 	void updateGL();
 	void clearGL();
 
