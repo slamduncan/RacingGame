@@ -7,7 +7,7 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "../include/glew.h"
+#include "../include/GL/glew.h"
 #include <iostream>
 
 class Shader {

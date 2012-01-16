@@ -58,7 +58,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib opengl32.lib glu32.lib lib\glew32.lib"
+				AdditionalOptions="/LTCG"
+				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib opengl32.lib glu32.lib lib\glew32.lib lib\objLoader.lib lib\LinearMath.lib"
 				AdditionalLibraryDirectories="CPSC585\lib;\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -130,7 +131,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib opengl32.lib glu32.lib lib\glew32.lib"
+				AdditionalOptions="/LTCG"
+				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib opengl32.lib glu32.lib lib\glew32.lib lib\objLoader.lib lib\LinearMath.lib"
 				AdditionalLibraryDirectories="CPSC585\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
