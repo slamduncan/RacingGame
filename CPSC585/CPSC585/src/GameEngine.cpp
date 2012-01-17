@@ -3,6 +3,10 @@
 #include "Entity.h"
 #include "InputController.h"
 
+//Test stuff
+#include "EventSystemHandler.h"
+#include "TestClass.h"
+
 #include "../include/bullet/btAlignedObjectArray.h"
 
 // Other init
@@ -11,6 +15,8 @@ Renderer ren;
 
 //Test Variables
 InputController controller1 = InputController();
+EventSystemHandler* evSys = EventSystemHandler::getInstance();
+
 
 btAlignedObjectArray<Entity> entityList;
 
@@ -78,6 +84,9 @@ int main(int argc, char** argv)
 	if (!controller1.initialize(0)){
 		/* Error on initalizing controller -KD */
 	}	
+
+	TestClass* o = new TestClass();
+	evSys->addObserver(o);
 
 	//
 	// DEBUG TESTING

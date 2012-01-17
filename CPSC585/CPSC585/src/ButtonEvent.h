@@ -9,6 +9,9 @@ class ButtonEvent : public Event{
 public:
 	int buttonPressed;
 	ButtonEvent(int buttonIn);
-	EventTypes::EventType getType();
+	EventTypes::EventType ButtonEvent::getType() const{
+		return EventTypes::BUTTON;
+	}
+	ButtonEvent(){}
 };
 #endif

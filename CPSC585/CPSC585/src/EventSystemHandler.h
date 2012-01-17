@@ -1,6 +1,8 @@
 #include "Event.h"
 #include "Observer.h"
 #include "ObservingList.h"
+#include "EventTypes.h"
+#include "TypedObserver.h"
 
 #ifndef EVENTSYSTEMHANDLER_H
 #define EVENTSYSTEMHANDLER_H
@@ -27,6 +29,11 @@ public:
 		return instance;
 	}
 	void emitEvent(Event *e);
-	void addObserver(Observer *o);
+	void addObserver(Observer *o, EventTypes::EventType type);
+
+	template <typename ET>
+	void addObserver(TypedObserver<ET> *o) {
+		list[ET().getType()].add(o);
+	}
 };
 #endif

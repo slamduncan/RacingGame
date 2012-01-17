@@ -12,6 +12,8 @@ public:
 	int size();
 	void updateAll(Event *e);
 
+	
+
 private:
 	std::vector<Observer*> list;
 };

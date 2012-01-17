@@ -7,6 +7,6 @@ class Observer
 {
 public:
 	virtual void Observe(Event *e) = 0;
-	EventTypes::EventType observerType;
+	virtual EventTypes::EventType getSupportedType() const = 0;	
 };
 #endif

@@ -4,6 +4,6 @@
 #include "EventTypes.h"
 class Event {
 public:	
-	virtual EventTypes::EventType getType() = 0;
+	virtual EventTypes::EventType getType() const = 0;
 };
 #endif

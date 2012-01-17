@@ -18,6 +18,6 @@ void EventSystemHandler::emitEvent(Event *e){
 	list[e->getType()].updateAll(e);
 }
 
-void EventSystemHandler::addObserver(Observer *o){
-	list[o->observerType].add(o);	
+void EventSystemHandler::addObserver(Observer *o, EventTypes::EventType type){
+	list[type].add(o);	
 }
