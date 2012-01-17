@@ -1,8 +1,8 @@
 #include "InputController.h"
 
 #include <iostream>
-#include "../EventSystemHandler.h"
-#include "../ButtonEvent.h"
+#include "EventSystemHandler.h"
+#include "ButtonEvent.h"
 #define MAX_AXIS_VAL 32767.0
 
 InputController::InputController()
@@ -34,6 +34,7 @@ bool InputController::initialize(int controllerIndex){
 		if(stick == NULL)
 			return false;
 	}
+	 e = EventSystemHandler::getInstance();
 	return true;
 }
 
@@ -120,10 +121,9 @@ void InputController::update(){
 
 					//X button is pressed down.
 				case 2:
-					{
-						EventSystemHandler e = EventSystemHandler::getInstance();
+					{						
 						Event* ev = new ButtonEvent(2);
-						e.emitEvent(ev);
+						e->emitEvent(ev);
 						X = true;
 						break;
 					}

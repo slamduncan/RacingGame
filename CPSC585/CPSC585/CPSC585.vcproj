@@ -62,7 +62,7 @@
 				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib opengl32.lib glu32.lib lib\glew32.lib lib\objLoader.lib lib\LinearMath.lib"
 				AdditionalLibraryDirectories="CPSC585\lib;\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\lib"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -135,7 +135,7 @@
 				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib opengl32.lib glu32.lib lib\glew32.lib lib\objLoader.lib lib\LinearMath.lib"
 				AdditionalLibraryDirectories="CPSC585\lib"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
@@ -172,7 +172,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\ButtonEvent.cpp"
+				RelativePath=".\src\ButtonEvent.cpp"
 				>
 			</File>
 			<File
@@ -180,11 +180,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Event.cpp"
+				RelativePath=".\src\Event.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\EventSystemHandler.cpp"
+				RelativePath=".\src\EventSystemHandler.cpp"
 				>
 			</File>
 			<File
@@ -196,7 +196,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ObservingList.cpp"
+				RelativePath=".\src\ObservingList.cpp"
 				>
 			</File>
 			<File
@@ -212,7 +212,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\TypedObserver.cpp"
+				RelativePath=".\src\TestClass.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\TypedObserver.cpp"
 				>
 			</File>
 		</Filter>
@@ -222,7 +226,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\ButtonEvent.h"
+				RelativePath=".\src\ButtonEvent.h"
 				>
 			</File>
 			<File
@@ -230,19 +234,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Event.h"
+				RelativePath=".\src\Event.h"
 				>
 			</File>
 			<File
-				RelativePath=".\EventSystemHandler.h"
+				RelativePath=".\src\EventSystemHandler.h"
 				>
 			</File>
 			<File
-				RelativePath=".\EventTypes.h"
+				RelativePath=".\src\EventTypes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Global.h"
+				RelativePath=".\src\Global.h"
 				>
 			</File>
 			<File
@@ -250,11 +254,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Observer.h"
+				RelativePath=".\src\Observer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ObservingList.h"
+				RelativePath=".\src\ObservingList.h"
 				>
 			</File>
 			<File
@@ -267,6 +271,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Shader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\TestClass.h"
 				>
 			</File>
 		</Filter>

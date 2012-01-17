@@ -2,6 +2,7 @@
 #define INPUTCONTROLLER_H
 
 #include "../include/SDL/SDL.h"
+#include "EventSystemHandler.h"
 
 /* Sample use of InputController:
 	
@@ -20,6 +21,7 @@ private:
 	SDL_Event cntrlEvent;
 	SDL_Joystick *stick;
 	void update();
+	EventSystemHandler* e;
 
 public:		
 	static void initSDLJoystick();

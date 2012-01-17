@@ -1,0 +1,51 @@
+To use the event system the following needs to be done:
+
+Assumptions: Below the variable e will be used to represent a pointer to the EventSystemHandler.
+		This can be easily gotten by doing the following:
+			EventSystemHandler* e = EventSystemHandler::getInstance();
+
+
+Case 1 - The event I want to observe or emit already exists:
+
+   Case 1.1 - I want to emit / tell others that this event occurred.
+
+		Event* ev = new MyEvent();
+		e->emitEvent(ev);
+
+   Case 1.2 - I want to observe an event:
+
+		Inheret from the TypedObserver<ET> class where ET is the event that you want to observe:
+
+		e.g. class TestClass : public TypedObserver<ButtonEvent>{}
+
+		Then implement the funciton Observe(ET *e){} in side of that class:
+
+		e.g. void TestClass::Observe(ButtonEvent *e){
+				fprintf(stderr, "Found Event \n");
+			}
+
+
+Case 2 - The event I want to Observe or Emit does not exitst:
+
+	1 - Create a new class named MyClassNameEvent.
+		e.g.
+			ButtonEvent.cpp, and ButtonEvent.h
+
+	2 - This new class must inherit from Event.
+		e.g. 
+			class ButtonEvent : public Event{}
+
+	3 - Add the event to the enum inside of the EventTypes.h file.
+		e.g. 	
+			enum EventType {
+				BUTTON,
+				EVENTS_NUM		
+			};
+
+	4 - This new class must implement:  EventTypes::EventType getType();
+		e.g. 
+			EventTypes::EventType ButtonEvent::getType(){
+				return EventTypes::BUTTON;
+			}
+		
+	5 - The event is now created, see Case 1 for further instructions.

@@ -2,12 +2,14 @@
 #include "Renderer.h"
 #include "Entity.h"
 #include "InputController.h"
+
 #include "../include/bullet/btAlignedObjectArray.h"
 
 // Other init
 // ie. Physics, AI, Renderer, Container for ents?
 Renderer ren;
 
+//Test Variables
 InputController controller1 = InputController();
 
 btAlignedObjectArray<Entity> entityList;
@@ -50,7 +52,7 @@ void process_events()
             // QUIT SDL
 			ren.quitSDL();
             break;
-		//else
+		/* Handle controller Events ?  Does this lose the event?*/
 		case SDL_JOYAXISMOTION:
 		case SDL_JOYBUTTONDOWN:
 		case SDL_JOYBUTTONUP:
@@ -71,17 +73,16 @@ int main(int argc, char** argv)
 	ren.initGL(1280, 720);	// initializing opengl stuff
 	ren.initFont();
 
+	/* Added by Kent */
 	controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
 	if (!controller1.initialize(0)){
 		/* Error on initalizing controller -KD */
-	}
+	}	
 
 	//
 	// DEBUG TESTING
 	//
 	Entity test("../CPSC585/model/frame.obj");
-	
-
 
 	// game loop
 	while(1)
