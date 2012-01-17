@@ -22,6 +22,7 @@ private:
 	void update();
 
 public:		
+	static void initSDLJoystick();
 	enum Button {A_button, B_button, X_button, Y_button};
 	InputController();
 	~InputController();

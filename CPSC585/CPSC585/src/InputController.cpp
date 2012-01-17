@@ -1,5 +1,8 @@
 #include "InputController.h"
+
 #include <iostream>
+#include "../EventSystemHandler.h"
+#include "../ButtonEvent.h"
 #define MAX_AXIS_VAL 32767.0
 
 InputController::InputController()
@@ -9,8 +12,19 @@ InputController::InputController()
 	normLeftAnaX = normLeftAnaY = normRightAnaX = normRightAnaY = normTriggers =  0.0;
 }
 
+void InputController::initSDLJoystick(){
+	if (SDL_Init(SDL_INIT_JOYSTICK) < 0 ){
+		fprintf(stderr, "Couldn't inititalize SDL Controller: %s\n", SDL_GetError());
+		SDL_Quit();
+		printf("Closing program...\n");
+		exit(0);
+	}
+}
+		
+
 bool InputController::initialize(int controllerIndex){
 	if (SDL_NumJoysticks() < controllerIndex+1){
+		int temp = SDL_NumJoysticks();
 		return false;
 	}
 	else{
@@ -24,7 +38,7 @@ bool InputController::initialize(int controllerIndex){
 }
 
 InputController::~InputController(){
-	SDL_JoystickClose(stick); //Causes issues when deleting...
+	//SDL_JoystickClose(stick); //Causes issues when deleting...
 }
 
 
@@ -64,7 +78,7 @@ void InputController::update(){
 				{
 					//X-axis of left joystick
 				case 0:
-					{
+					{						
 						leftAnaX = cntrlEvent.jaxis.value;
 						normLeftAnaX = leftAnaX/MAX_AXIS_VAL;
 						break;
@@ -107,6 +121,9 @@ void InputController::update(){
 					//X button is pressed down.
 				case 2:
 					{
+						EventSystemHandler e = EventSystemHandler::getInstance();
+						Event* ev = new ButtonEvent(2);
+						e.emitEvent(ev);
 						X = true;
 						break;
 					}

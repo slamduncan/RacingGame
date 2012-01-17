@@ -172,6 +172,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\ButtonEvent.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Entity.cpp"
 				>
 			</File>
@@ -218,6 +222,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\ButtonEvent.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Entity.h"
 				>
 			</File>
@@ -227,6 +235,10 @@
 			</File>
 			<File
 				RelativePath=".\EventSystemHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EventTypes.h"
 				>
 			</File>
 			<File
