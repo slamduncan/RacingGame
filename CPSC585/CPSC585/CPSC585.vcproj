@@ -196,10 +196,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\MethodObserver.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\ObservingList.cpp"
 				>
 			</File>
