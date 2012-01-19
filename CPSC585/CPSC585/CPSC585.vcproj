@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="CPSC585\include;\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include"
+				AdditionalIncludeDirectories="CPSC585\include"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
@@ -200,7 +200,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Physics.cpp"
+				RelativePath=".\src\Physics.cpp"
 				>
 			</File>
 			<File
@@ -266,7 +266,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Physics.h"
+				RelativePath=".\src\Physics.h"
 				>
 			</File>
 			<File

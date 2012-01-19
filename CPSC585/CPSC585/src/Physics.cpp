@@ -1,4 +1,5 @@
 #include "Physics.h"
+#include "btBulletDynamicsCommon.h"
 
 Physics* Physics::physInstance = 0;
 
