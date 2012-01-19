@@ -200,6 +200,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Physics.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Point.cpp"
 				>
 			</File>
@@ -259,6 +263,10 @@
 			</File>
 			<File
 				RelativePath=".\src\ObservingList.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Physics.h"
 				>
 			</File>
 			<File
