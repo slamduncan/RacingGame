@@ -176,6 +176,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Car.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Entity.cpp"
 				>
 			</File>
@@ -193,6 +197,10 @@
 			</File>
 			<File
 				RelativePath=".\src\InputController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MethodObserver.cpp"
 				>
 			</File>
 			<File
@@ -216,6 +224,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\TriggerEvent.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\TypedObserver.cpp"
 				>
 			</File>
@@ -227,6 +239,10 @@
 			>
 			<File
 				RelativePath=".\src\ButtonEvent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Car.h"
 				>
 			</File>
 			<File
@@ -254,6 +270,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MethodObserver.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Observer.h"
 				>
 			</File>
@@ -275,6 +295,10 @@
 			</File>
 			<File
 				RelativePath=".\src\TestClass.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\TriggerEvent.h"
 				>
 			</File>
 			<File

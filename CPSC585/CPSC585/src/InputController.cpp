@@ -3,6 +3,7 @@
 #include <iostream>
 #include "EventSystemHandler.h"
 #include "ButtonEvent.h"
+#include "TriggerEvent.h"
 #define MAX_AXIS_VAL 32767.0
 
 InputController::InputController()
@@ -67,9 +68,9 @@ InputController::~InputController(){
 //2 L Trigger - positive, R Trigger - minus
 //3 R Analogue - TOP : BOTTOM
 //4 R Analogue - LEFT : RIGHT
-void InputController::update(){
+void InputController::update(SDL_Event cntrlEvent){
 
-	while(SDL_PollEvent(&cntrlEvent)){
+	//while(SDL_PollEvent(&cntrlEvent)){
 		switch(cntrlEvent.type)
 		{
 			//occurs whenever a user moves an axis on the joystick. (incl. triggers)
@@ -96,6 +97,7 @@ void InputController::update(){
 					{
 						triggers = cntrlEvent.jaxis.value;
 						normTriggers = triggers/MAX_AXIS_VAL;
+						e->emitEvent(new TriggerEvent(triggers, normTriggers));
 						break;
 					}								
 				}
@@ -206,42 +208,42 @@ void InputController::update(){
 			break;
 			}
 		}
-	}
+	//}
 
 }
 
 
 
-Sint16 InputController::getLeftAnalogStickX(){update(); return leftAnaX;}
+Sint16 InputController::getLeftAnalogStickX(){/*update();*/ return leftAnaX;}
 
-Sint16 InputController::getLeftAnalogStickY(){update(); return leftAnaY;}
+Sint16 InputController::getLeftAnalogStickY(){/*update();*/ return leftAnaY;}
 
-Sint16 InputController::getRightAnalogStickX(){update(); return rightAnaX;}
+Sint16 InputController::getRightAnalogStickX(){/*update();*/ return rightAnaX;}
 
-Sint16 InputController::getRightAnalogStickY(){update(); return rightAnaY;}
+Sint16 InputController::getRightAnalogStickY(){/*update();*/ return rightAnaY;}
 
-double InputController::getNormalizedLeftAnalogStickX(){update(); return normLeftAnaX;}
+double InputController::getNormalizedLeftAnalogStickX(){/*update();*/ return normLeftAnaX;}
 
-double InputController::getNormalizedLeftAnalogStickY(){update(); return normLeftAnaY;}
+double InputController::getNormalizedLeftAnalogStickY(){/*update();*/ return normLeftAnaY;}
 
-double InputController::getNormalizedRightAnalogStickX(){update(); return normRightAnaX;}
+double InputController::getNormalizedRightAnalogStickX(){/*update();*/ return normRightAnaX;}
 
-double InputController::getNormalizedRightAnalogStickY(){update(); return normRightAnaY;}
+double InputController::getNormalizedRightAnalogStickY(){/*update();*/ return normRightAnaY;}
 
-Sint16 InputController::getTriggers(){update(); return triggers;}
+Sint16 InputController::getTriggers(){/*update();*/ return triggers;}
 
-double InputController::getNormalizedTriggers(){update(); return normTriggers;}
+double InputController::getNormalizedTriggers(){/*update();*/ return normTriggers;}
 
-bool InputController::isADown(){update(); return A;}
+bool InputController::isADown(){/*update();*/ return A;}
 
-bool InputController::isBDown(){update(); return B;}
+bool InputController::isBDown(){/*update();*/ return B;}
 
-bool InputController::isXDown(){update(); return X;}
+bool InputController::isXDown(){/*update();*/ return X;}
 
-bool InputController::isYDown(){update(); return Y;}
+bool InputController::isYDown(){/*update();*/ return Y;}
 
 bool InputController::isButtonDown(Button in){
-	update();
+	/*update();*/
 	switch(in){
 		case A_button: {return A;}
 		case B_button: {return B;}

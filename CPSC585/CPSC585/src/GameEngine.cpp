@@ -58,11 +58,12 @@ void process_events()
             // QUIT SDL
 			ren.quitSDL();
             break;
-		/* Handle controller Events ?  Does this lose the event?*/
+		/* Handle controller Events ?  Does this lose the event?
+		- updated to not lose the event, but now must pass in controller events*/
 		case SDL_JOYAXISMOTION:
 		case SDL_JOYBUTTONDOWN:
 		case SDL_JOYBUTTONUP:
-			controller1.isXDown();
+			controller1.update(event);
 			break;
         }
 
@@ -84,9 +85,6 @@ int main(int argc, char** argv)
 	if (!controller1.initialize(0)){
 		/* Error on initalizing controller -KD */
 	}	
-
-	TestClass* o = new TestClass();
-	evSys->addObserver(o);
 
 	//
 	// DEBUG TESTING

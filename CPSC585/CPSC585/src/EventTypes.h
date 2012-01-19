@@ -5,6 +5,7 @@ class EventTypes{
 public:
 	enum EventType {
 		BUTTON,
+		TRIGGER,
 		EVENTS_NUM		
 	};
 };

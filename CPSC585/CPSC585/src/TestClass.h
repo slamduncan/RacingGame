@@ -1,9 +1,10 @@
-#include "TypedObserver.h"
+#include "MethodObserver.h"
 #include "ButtonEvent.h"
 
-class TestClass : public TypedObserver<ButtonEvent>{
+class TestClass{ //: public MethodObserver<ButtonEvent, TestClass>{
 
 public:
-	void Observe(ButtonEvent *e);
+	//void Observe(ButtonEvent *e);
+
 
 };

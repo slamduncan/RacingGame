@@ -1,4 +1,7 @@
 #include "Renderer.h"
+#include "Car.h" //Remove
+
+Car c = Car();
 
 Renderer::Renderer()
 {
@@ -270,7 +273,7 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 	glTexCoord2f(0.0f, 0.0f); 
 	glVertex2i(position.x, position.y + ht);
 	glEnd();
-	
+
 	glFinish();
 
 	SDL_FreeSurface(toTexture);
@@ -300,7 +303,6 @@ void Renderer::draw()
 	glVertex3f(1, -1, 0);
 	glEnd();
 	glPopMatrix();
-
 
 	// go into HUD mode
 	glEnable2D();
@@ -411,6 +413,22 @@ void Renderer::drawPlane(float height)
 
 	glEnd();
 
+	glPopMatrix();
+
+	
+		/* Added by Kent */ //Remove
+	glPushMatrix();
+	glColor3f(0,1,1);
+	glBegin(GL_POLYGON);
+		glNormal3f(0, 1, 0);
+        glVertex3f(c.getPos().x_pos, c.getPos().y_pos, 50);
+		glNormal3f(0, 1, 0);
+        glVertex3f(c.getPos().x_pos, c.getPos().y_pos+100, 50);
+		glNormal3f(0, 1, 0);
+        glVertex3f(c.getPos().x_pos+50, c.getPos().y_pos+100, 75);
+		glNormal3f(0, 1, 0);
+        glVertex3f(c.getPos().x_pos+50, c.getPos().y_pos, 75);
+    glEnd();
 	glPopMatrix();
 
 }
