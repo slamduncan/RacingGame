@@ -230,7 +230,115 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\include\SDL\begin_code.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btAabbUtil2.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btAlignedAllocator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btAlignedObjectArray.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btConvexHull.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btConvexHullComputer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btDefaultMotionState.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btGeometryUtil.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btGrahamScan2dConvexHull.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btHashMap.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btIDebugDraw.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btList.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btMatrix3x3.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btMinMax.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btMotionState.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btPoolAllocator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btQuadWord.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btQuaternion.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btQuickprof.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btRandom.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btScalar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btSerializer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btStackAlloc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btTransform.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btTransformUtil.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\bullet\btVector3.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\ButtonEvent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\close_code.h"
 				>
 			</File>
 			<File
@@ -250,11 +358,39 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\GL\GL.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\GL\glew.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Global.h"
 				>
 			</File>
 			<File
+				RelativePath=".\include\GL\GLU.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\GL\glxew.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\InputController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\objLoader\obj_parser.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\objLoader\objlist.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\objLoader\objLoader.h"
 				>
 			</File>
 			<File
@@ -278,7 +414,175 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\SDL\SDL.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_active.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_audio.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_byteorder.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_cdrom.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_config.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_config_amiga.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_config_dreamcast.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_config_macos.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_config_macosx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_config_minimal.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_config_nds.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_config_os2.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_config_symbian.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_config_win32.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_copying.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_cpuinfo.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_endian.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_error.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_events.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_getenv.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_joystick.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_keyboard.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_keysym.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_loadso.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_main.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_mouse.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_mutex.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_name.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_opengl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_platform.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_quit.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_rwops.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_stdinc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_syswm.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_thread.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_timer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_ttf.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_types.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_version.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SDL\SDL_video.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Shader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\objLoader\string_extra.h"
 				>
 			</File>
 			<File
@@ -287,6 +591,10 @@
 			</File>
 			<File
 				RelativePath=".\src\TypedObserver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\GL\wglew.h"
 				>
 			</File>
 		</Filter>
