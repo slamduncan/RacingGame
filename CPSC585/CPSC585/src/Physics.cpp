@@ -1,6 +1,6 @@
 #include "Physics.h"
-#include "btBulletDynamicsCommon.h"
 
+//HIIIIII
 Physics* Physics::physInstance = 0;
 
 Physics* Physics::Inst(void){	
