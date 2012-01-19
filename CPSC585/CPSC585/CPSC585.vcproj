@@ -200,7 +200,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MethodObserver.cpp"
+				RelativePath=".\src\MethodObserver.cpp"
 				>
 			</File>
 			<File
@@ -270,7 +270,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MethodObserver.h"
+				RelativePath=".\src\MethodObserver.h"
 				>
 			</File>
 			<File
