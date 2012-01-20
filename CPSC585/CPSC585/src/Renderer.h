@@ -9,10 +9,10 @@
 #include "Shader.h"
 #include "Entity.h"
 
-#include "../include/SDL/SDL.h"
+#include "SDL.h"
 #define NO_SDL_GLEXT
-#include "../include/SDL/SDL_opengl.h"
-#include "../include/SDL/SDL_ttf.h"
+#include "SDL_opengl.h"
+#include "SDL_ttf.h"
 
 
 using namespace std;
@@ -20,6 +20,10 @@ using namespace std;
 class Renderer
 {
 private:
+	static Renderer *instance;
+	
+	Renderer();	
+	
 	int width;
 	int height;
 	int bpp;
@@ -31,16 +35,28 @@ private:
 
 	Shader shader;	// shader for drawing
 
+
+
 public:
-	Renderer();
-	Renderer(int w, int h);
+
 	~Renderer();
+
+	static Renderer* getInstance()
+	{
+		if (instance == 0)
+		{
+			instance = new Renderer();
+		}
+		return instance;
+	}
 
 	void initSDL();
 	void initGL(int width, int height);
 	void initFont();
 
 	void outputText(string text, int r, int g, int b, int x, int y);
+
+	void setCamera(const btVector3& pos, const btVector3& lookAt); 
 
 	void draw();
 	void drawEntity(Entity &entity);

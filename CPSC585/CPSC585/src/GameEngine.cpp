@@ -7,11 +7,11 @@
 #include "EventSystemHandler.h"
 #include "TestClass.h"
 
-#include "../include/bullet/btAlignedObjectArray.h"
+#include "LinearMath\btAlignedObjectArray.h"
 
 // Other init
 // ie. Physics, AI, Renderer, Container for ents?
-Renderer ren;
+Renderer* ren = Renderer::getInstance();
 
 //Test Variables
 InputController controller1 = InputController();
@@ -29,7 +29,7 @@ void handle_key_down( SDL_keysym* keysym )
     switch( keysym->sym ) 
 	{
 		case SDLK_ESCAPE:
-			ren.quitSDL();
+			ren->quitSDL();
 			break;
 		default:
 			break;
@@ -56,7 +56,7 @@ void process_events()
         case SDL_QUIT:
             /* Handle quit requests (like Ctrl-c). */
             // QUIT SDL
-			ren.quitSDL();
+			ren->quitSDL();
             break;
 		/* Handle controller Events ?  Does this lose the event?
 		- updated to not lose the event, but now must pass in controller events*/
@@ -76,9 +76,9 @@ void process_events()
 int main(int argc, char** argv)
 {
 	// INITIALIZATIONS
-	ren.initSDL();	// init SDL for drawing window
-	ren.initGL(1280, 720);	// initializing opengl stuff
-	ren.initFont();
+	ren->initSDL();	// init SDL for drawing window
+	ren->initGL(1280, 720);	// initializing opengl stuff
+	ren->initFont();
 
 	/* Added by Kent */
 	controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
@@ -103,15 +103,20 @@ int main(int argc, char** argv)
 		// AI
 
 
+	
 
 		
 		// Render
 		// draw code goes here
-		ren.clearGL();	// clear the screen
-		ren.drawPlane(-2);
-		ren.drawEntity(test);
+
+		btVector3 lookAtPoint = test.position + btVector3(0, 5, -5);
+
+		ren->clearGL();	// clear the screen
+		ren->drawPlane(-2);
+		//ren->setCamera(test.position, lookAtPoint);
+		ren->drawEntity(test);
 		//ren.draw();		// draw things to the buffer
-		ren.updateGL();	// update the screen
+		ren->updateGL();	// update the screen
 
 		// Misc?
 		// Compute FPS

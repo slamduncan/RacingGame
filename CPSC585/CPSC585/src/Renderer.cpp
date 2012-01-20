@@ -1,6 +1,8 @@
 #include "Renderer.h"
 #include "Car.h" //Remove
 
+Renderer* Renderer::instance = 0;
+
 Car c = Car();
 
 Renderer::Renderer()
@@ -11,18 +13,9 @@ Renderer::Renderer()
 	bpp = 0;
 }
 
-Renderer::Renderer(int w, int h)
-{
-	info = NULL;
-	width = w;
-	height = h;
-	bpp = 0;
-}
-
 // clean up
 Renderer::~Renderer()
 {
-
 	TTF_CloseFont(debugFont);
 	TTF_Quit();
 }
@@ -114,7 +107,7 @@ void Renderer::initGL(int w, int h)
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos);        // set the position of the light
 
 
-	glEnable( GL_COLOR_MATERIAL );
+	glEnable( GL_COLOR_MATERIAL );						// allow shading for colored material
 
 
 
@@ -122,13 +115,11 @@ void Renderer::initGL(int w, int h)
 	
 	glClearColor( 0, 0, 0, 0 );	// clear screen to black
 
-    glViewport( 0, 0, w, h );
+    glViewport( 0, 0, w, h );	// set the viewport to be the resolution of the screen
 
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity( );
-
-    gluPerspective( 60.0, ratio, 1.0, 1024.0 );
-
+    gluPerspective( 60.0, ratio, 1.0, 1024.0 );	// need to fix this to change fov on the fly
 	glMatrixMode(GL_MODELVIEW);	// switch back to model view
 }
 
@@ -282,6 +273,23 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 
 }
 
+void Renderer::setCamera(const btVector3& pos, const btVector3& lookAt)
+{
+	glPushMatrix();
+	glLoadIdentity();
+
+	btVector3 up(0, 1, 0);
+
+	btVector3 binormal = lookAt.cross(up);
+
+	btVector3 normal = binormal.cross(lookAt);
+
+	gluLookAt(pos.x(), pos.y(), pos.z(),	// camera position
+		      lookAt.x(), lookAt.y(), lookAt.z(),	// look at point
+			  normal.x(), normal.y(), normal.z());	// up vector
+	glPopMatrix();
+}
+
 
 /*
 *	draws a white box centered on the screen
@@ -338,9 +346,9 @@ void Renderer::drawEntity(Entity &entity)
 
 	glTranslatef(p.x(), p.y(), p.z());
 
-	float rMatrix[] = {b.x(), t.x(), -n.x(), 0,
-                       b.y(), t.y(), -n.y(), 0,
-                       b.z(), t.z(), -n.z(), 0,
+	float rMatrix[] = {t.x(), n.x(), b.x(), 0,
+                       t.y(), n.y(), b.y(), 0,
+                       t.z(), n.z(), b.z(), 0,
                        0, 0, 0, 1};
     glMultMatrixf(rMatrix);
 	

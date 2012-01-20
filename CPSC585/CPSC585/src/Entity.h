@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 
-#include "../include/bullet/btVector3.h"
-#include "../include/objLoader/objLoader.h"
+#include "LinearMath/btVector3.h"
+#include "objLoader.h"
 
 class Entity
 {
