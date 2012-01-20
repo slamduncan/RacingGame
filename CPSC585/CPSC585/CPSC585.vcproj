@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="CPSC585\include"
+				AdditionalIncludeDirectories="CPSC585\include;&quot;..\CPSC585\include\BulletSteves&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
