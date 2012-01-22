@@ -1,7 +1,7 @@
 #ifndef INPUTCONTROLLER_H
 #define INPUTCONTROLLER_H
 
-#include "../include/SDL/SDL.h"
+#include "SDL.h"
 #include "EventSystemHandler.h"
 
 /* Sample use of InputController:

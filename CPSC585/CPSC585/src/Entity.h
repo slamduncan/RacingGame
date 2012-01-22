@@ -33,7 +33,10 @@ public:
 	Entity(char* filename);
 	~Entity();
 
+	void move(float x, float y, float z);
+	void move(const btVector3 &newPos);
 	bool loadObj(char* filename);
+	void debug();
 };
 
 #endif
