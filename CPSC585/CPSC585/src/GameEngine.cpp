@@ -7,10 +7,14 @@
 #include "EventSystemHandler.h"
 #include "TestClass.h"
 
+// "vector" for entities
+// we might just make it so that each type of specialized entity
+// has their own container.
+// ie. carList, powerupList, etc
 #include "LinearMath\btAlignedObjectArray.h"
 
 // Other init
-// ie. Physics, AI, Renderer, Container for ents?
+// ie. Physics, AI, Renderer, Sound, Container for ents?
 Renderer* ren = Renderer::getInstance();
 
 //Test Variables
@@ -18,7 +22,7 @@ InputController controller1 = InputController();
 EventSystemHandler* evSys = EventSystemHandler::getInstance();
 
 
-btAlignedObjectArray<Entity> entityList;
+btAlignedObjectArray<Entity*>* entityList = new btAlignedObjectArray<Entity*>();
 
 /*
 *	Handles what to do when key has been pressed
@@ -61,9 +65,38 @@ void process_events()
 		/* Handle controller Events ?  Does this lose the event?
 		- updated to not lose the event, but now must pass in controller events*/
 		case SDL_JOYAXISMOTION:
+		{
+			// There seems to be a problem with the controller?, pressing anything besides
+			// the left analog sticks causes the entity to move in the negative? xz direction
+			// I also need to double check how i'm drawing things, I think i accidently made
+			// opengl draw in a left handed coordinate system.
+			//  Jeff
+			controller1.update(event);
+		
+			float lX = (float)controller1.getNormalizedLeftAnalogStickX();
+			float lY = (float)controller1.getNormalizedLeftAnalogStickY();
+
+			btVector3 offset(lX, 0, lY);
+
+			offset /= -5.0f;
+
+			if(entityList->size() > 0)
+			{
+				entityList->at(0)->move(offset);
+			}
+		}
+		break;
 		case SDL_JOYBUTTONDOWN:
+			fprintf(stderr, "BUTTONS HOW DO THEY WORK\n");
+			controller1.update(event);
+			if(controller1.isADown())
+			{
+				ren->quitSDL();
+			}
+			break;
 		case SDL_JOYBUTTONUP:
 			controller1.update(event);
+			
 			break;
         }
 
@@ -89,7 +122,19 @@ int main(int argc, char** argv)
 	//
 	// DEBUG TESTING
 	//
-	Entity test("../CPSC585/model/frame.obj");
+	Entity *test = new Entity("../CPSC585/model/frame.obj");
+	Entity *test2 = new Entity("../CPSC585/model/frame.obj");
+	Entity *test3 = new Entity("../CPSC585/model/frame.obj");
+
+	btVector3 offset2(0.5, 0.5, 0.5);
+	btVector3 offset3(-0.5, 0.5, 0.5);
+
+	test2->position += offset2;
+	test3->position += offset3;
+
+	entityList->push_back(test);
+	entityList->push_back(test2);
+	entityList->push_back(test3);
 
 	// game loop
 	while(1)
@@ -99,22 +144,30 @@ int main(int argc, char** argv)
 
 		// Inputs
 		process_events();
-
+		
 		// AI
-
-
-	
-
 		
 		// Render
 		// draw code goes here
 
-		btVector3 lookAtPoint = test.position + btVector3(0, 5, -5);
+		btVector3 camPos = test->position + btVector3(0, 0, -5);
+		btVector3 camLookAt = test->position + btVector3(0, 0, 0);
+
 
 		ren->clearGL();	// clear the screen
+		//ren->setCamera(camPos, camLookAt);
+		ren->setCamera(camPos, camLookAt);
+
 		ren->drawPlane(-2);
-		//ren->setCamera(test.position, lookAtPoint);
-		ren->drawEntity(test);
+
+		for(int i = 0; i < entityList->size(); i++)
+		{
+			ren->drawEntity(*(entityList->at(i)));
+		}
+
+		//ren->drawEntity(*test);
+		//ren->drawEntity(*test2);
+		//ren->drawEntity(*test3);
 		//ren.draw();		// draw things to the buffer
 		ren->updateGL();	// update the screen
 

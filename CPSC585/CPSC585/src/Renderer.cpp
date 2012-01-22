@@ -1,9 +1,9 @@
 #include "Renderer.h"
-#include "Car.h" //Remove
+//#include "Car.h" //Remove
 
 Renderer* Renderer::instance = 0;
 
-Car c = Car();
+//Car c = Car();
 
 Renderer::Renderer()
 {
@@ -110,7 +110,11 @@ void Renderer::initGL(int w, int h)
 	glEnable( GL_COLOR_MATERIAL );						// allow shading for colored material
 
 
-
+	GLenum err = glewInit();	// initialize GLEW
+    if (GLEW_OK == err)
+    {
+        std::cout << "GLEW initialized" << std::endl;
+    }
 
 	
 	glClearColor( 0, 0, 0, 0 );	// clear screen to black
@@ -273,21 +277,28 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 
 }
 
-void Renderer::setCamera(const btVector3& pos, const btVector3& lookAt)
+void Renderer::setCamera(const btVector3& pos, const btVector3& lookAtPoint)
 {
-	glPushMatrix();
+	//glPushMatrix();
 	glLoadIdentity();
 
 	btVector3 up(0, 1, 0);
+	btVector3 lookAtVector = (lookAtPoint - pos).normalize();
 
-	btVector3 binormal = lookAt.cross(up);
+	btVector3 binormal = lookAtVector.cross(up);
 
-	btVector3 normal = binormal.cross(lookAt);
+	btVector3 normal = (binormal.cross(lookAtVector)).normalize();
+/*	
+	printf("campos: (%f, %f, %f)\n", pos.x(), pos.y(), pos.z());
+	printf("camLookAt: (%f, %f, %f)\n", lookAtPoint.x(), lookAtPoint.y(), lookAtPoint.z()); 
+	printf("camnormal: (%f, %f, %f)\n", normal.x(), normal.y(), normal.z()); 
+*/
 
 	gluLookAt(pos.x(), pos.y(), pos.z(),	// camera position
-		      lookAt.x(), lookAt.y(), lookAt.z(),	// look at point
+		      lookAtPoint.x(), lookAtPoint.y(), lookAtPoint.z(),	// look at point
 			  normal.x(), normal.y(), normal.z());	// up vector
-	glPopMatrix();
+
+	//glPopMatrix();
 }
 
 
@@ -338,12 +349,12 @@ void Renderer::drawEntity(Entity &entity)
 	b = entity.binormal;
 
 	glPushMatrix();
-	glLoadIdentity();
-
+	//glLoadIdentity();
+/*
 	gluLookAt(p.x(), p.y()+5.0, p.z()-5.0,	// camera position
 		      p.x(), p.y(), p.z(),	// look at point
 			  0, 0.707107f, 0.707107f);	// up vector
-
+*/
 	glTranslatef(p.x(), p.y(), p.z());
 
 	float rMatrix[] = {t.x(), n.x(), b.x(), 0,
@@ -402,7 +413,7 @@ void Renderer::drawPlane(float height)
 {
 	
 	glPushMatrix();
-	glLoadIdentity();
+	//glLoadIdentity();
 	
 	glColor4f(0.75, 0.75, 0.75, 1);
 	glBegin(GL_QUADS);
@@ -425,6 +436,7 @@ void Renderer::drawPlane(float height)
 
 	
 		/* Added by Kent */ //Remove
+/*
 	glPushMatrix();
 	glColor3f(0,1,1);
 	glBegin(GL_POLYGON);
@@ -438,7 +450,7 @@ void Renderer::drawPlane(float height)
         glVertex3f(c.getPos().x_pos+50, c.getPos().y_pos, 75);
     glEnd();
 	glPopMatrix();
-
+*/
 }
 
 
