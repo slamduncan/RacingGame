@@ -6,6 +6,7 @@
 //Test stuff
 #include "EventSystemHandler.h"
 #include "TestClass.h"
+#include "Car.h"
 
 #include "LinearMath\btAlignedObjectArray.h"
 
@@ -90,6 +91,7 @@ int main(int argc, char** argv)
 	// DEBUG TESTING
 	//
 	Entity test("../CPSC585/model/frame.obj");
+	Car car1 = Car();
 
 	// game loop
 	while(1)
@@ -101,7 +103,7 @@ int main(int argc, char** argv)
 		process_events();
 
 		// AI
-
+		controller1.emitTriggers();
 
 	
 
@@ -115,6 +117,7 @@ int main(int argc, char** argv)
 		ren->drawPlane(-2);
 		//ren->setCamera(test.position, lookAtPoint);
 		ren->drawEntity(test);
+		ren->drawEntity(car1);
 		//ren.draw();		// draw things to the buffer
 		ren->updateGL();	// update the screen
 

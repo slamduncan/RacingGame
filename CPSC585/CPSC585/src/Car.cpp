@@ -1,20 +1,19 @@
 #include "Car.h"
 #include "EventSystemHandler.h"
 
-Car::Car(Position startingPos){
-	pos = startingPos;
+//Car::Car(btVector3 startingPos){
+//	position = startingPos;
+//	EventSystemHandler::getInstance()->addObserver(this, EventTypes::TRIGGER);
+//}
+
+Car::Car(){	
 	EventSystemHandler::getInstance()->addObserver(this, EventTypes::TRIGGER);
 }
 
-Car::Car(){
-	pos.y_pos = pos.x_pos = pos.z_pos = 0.0;
-	EventSystemHandler::getInstance()->addObserver(this, EventTypes::TRIGGER);
-}
-
-Car::Position Car::getPos(){
+btVector3 Car::getPos(){
 	return pos;
 }
 
 void Car::Observe(TriggerEvent *e){
-	pos.x_pos += e->getNormValue();
+	position += btVector3(e->getNormValue()*100, 0, 0);
 }

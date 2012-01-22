@@ -1,9 +1,7 @@
 #include "Renderer.h"
-#include "Car.h" //Remove
 
 Renderer* Renderer::instance = 0;
 
-Car c = Car();
 
 Renderer::Renderer()
 {
@@ -421,22 +419,6 @@ void Renderer::drawPlane(float height)
 
 	glEnd();
 
-	glPopMatrix();
-
-	
-		/* Added by Kent */ //Remove
-	glPushMatrix();
-	glColor3f(0,1,1);
-	glBegin(GL_POLYGON);
-		glNormal3f(0, 1, 0);
-        glVertex3f(c.getPos().x_pos, c.getPos().y_pos, 50);
-		glNormal3f(0, 1, 0);
-        glVertex3f(c.getPos().x_pos, c.getPos().y_pos+100, 50);
-		glNormal3f(0, 1, 0);
-        glVertex3f(c.getPos().x_pos+50, c.getPos().y_pos+100, 75);
-		glNormal3f(0, 1, 0);
-        glVertex3f(c.getPos().x_pos+50, c.getPos().y_pos, 75);
-    glEnd();
 	glPopMatrix();
 
 }

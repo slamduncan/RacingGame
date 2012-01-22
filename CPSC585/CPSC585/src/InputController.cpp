@@ -44,6 +44,11 @@ InputController::~InputController(){
 }
 
 
+void InputController::emitTriggers(){
+	e->emitEvent(new TriggerEvent(triggers, normTriggers));
+}
+	
+
 
 //
 //XBOX 360 Controler Maps
