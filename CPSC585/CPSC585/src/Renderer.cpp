@@ -431,10 +431,7 @@ void Renderer::drawPlane(float height)
 	glEnd();
 
 	glPopMatrix();
-
-/*
 }
-
 
 void Renderer::glEnable2D()
 {	

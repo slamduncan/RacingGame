@@ -15,5 +15,5 @@ btVector3 Car::getPos(){
 }
 
 void Car::Observe(TriggerEvent *e){
-	position += btVector3(e->getNormValue()*100, 0, 0);
+	position += btVector3(e->getNormValue()*10, 0, 0);
 }

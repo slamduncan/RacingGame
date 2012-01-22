@@ -124,7 +124,7 @@ int main(int argc, char** argv)
 	// DEBUG TESTING
 	//
 	Entity *test = new Entity("../CPSC585/model/frame.obj");
-	Car car1 = Car();
+	Car *car1 = new Car();
 	Entity *test2 = new Entity("../CPSC585/model/frame.obj");
 	Entity *test3 = new Entity("../CPSC585/model/frame.obj");
 
