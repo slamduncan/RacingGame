@@ -72,19 +72,7 @@ void process_events()
 			// I also need to double check how i'm drawing things, I think i accidently made
 			// opengl draw in a left handed coordinate system.
 			//  Jeff
-			controller1.update(event);
-		
-			float lX = (float)controller1.getNormalizedLeftAnalogStickX();
-			float lY = (float)controller1.getNormalizedLeftAnalogStickY();
-
-			btVector3 offset(lX, 0, lY);
-
-			offset /= -5.0f;
-
-			if(entityList->size() > 0)
-			{
-				entityList->at(0)->move(offset);
-			}
+			controller1.update(event);	
 		}
 		break;
 		case SDL_JOYBUTTONDOWN:
@@ -105,6 +93,18 @@ void process_events()
 
 }
 
+
+void updateEntityPosition(Entity &entIn, InputController &contrlIn){
+
+			float lX = (float)contrlIn.getNormalizedLeftAnalogStickX();
+			float lY = (float)contrlIn.getNormalizedLeftAnalogStickY();
+
+			btVector3 offset(lX, 0, lY);
+
+			offset /= -5.0f;
+
+			entIn.move(offset);
+}
 
 // Engine Main
 int main(int argc, char** argv)
@@ -150,6 +150,8 @@ int main(int argc, char** argv)
 		
 		// AI
 		controller1.emitTriggers();
+		updateEntityPosition(*(entityList->at(0)), controller1);
+
 		// Render
 		// draw code goes here
 
