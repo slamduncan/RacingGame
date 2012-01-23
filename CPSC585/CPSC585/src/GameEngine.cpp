@@ -136,10 +136,11 @@ int main(int argc, char** argv)
 	test2->position += offset2;
 	test3->position += offset3;
 
+	entityList->push_back(car1);
 	entityList->push_back(test);
 	entityList->push_back(test2);
 	entityList->push_back(test3);
-	entityList->push_back(car1);
+	
 
 	// game loop
 	while(1)
@@ -157,8 +158,8 @@ int main(int argc, char** argv)
 		// Render
 		// draw code goes here
 
-		btVector3 camPos = test->position + btVector3(0, 0, -5);
-		btVector3 camLookAt = test->position + btVector3(0, 0, 0);
+		btVector3 camPos = car1->position + btVector3(0, 2, -5);
+		btVector3 camLookAt = car1->position + btVector3(0, 0, 0);
 
 
 		ren->clearGL();	// clear the screen
@@ -172,9 +173,15 @@ int main(int argc, char** argv)
 			ren->drawEntity(*(entityList->at(i)));
 		}
 
-		//ren->drawEntity(*test);
-		//ren->drawEntity(*test2);
-		//ren->drawEntity(*test3);
+		ren->glEnable2D();
+
+		ren->outputText((*(entityList->at(0))).toString(), 0, 255, 0, 500, 200);
+
+		ren->outputText("This is a multi\nline test to see if \nnewlines are working correctly", 255, 255, 255, 0, 360);
+		ren->outputText("I am testing to see if obj models will load and draw correctly", 255, 255, 255, 0, 0);
+
+		ren->glDisable2D();
+
 		//ren.draw();		// draw things to the buffer
 		ren->updateGL();	// update the screen
 

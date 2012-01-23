@@ -2,6 +2,8 @@
 #define ENTITY_H
 
 #include <stdio.h>
+#include <string.h>
+#include <sstream>
 
 #include "LinearMath/btVector3.h"
 #include "objLoader.h"
@@ -37,6 +39,7 @@ public:
 	void move(const btVector3 &newPos);
 	bool loadObj(char* filename);
 	void debug();
+	std::string toString();
 };
 
 #endif
