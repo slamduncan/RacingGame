@@ -168,6 +168,7 @@ int main(int argc, char** argv)
 		btVector3 camLookAt = car1->position + btVector3(0, 0, 0);
 		ren->clearGL();	// clear the screen
 		ren->setCamera(camPos, camLookAt);
+		
 		ren->textureOn(ptex);
 		ren->drawPlane(-2);
 		ren->textureOff();
