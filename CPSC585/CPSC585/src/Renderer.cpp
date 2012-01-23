@@ -1,7 +1,7 @@
 #include "Renderer.h"
-#include "Car.h" //Remove
 
-Car c = Car();
+Renderer* Renderer::instance = 0;
+
 
 Renderer::Renderer()
 {
@@ -11,18 +11,9 @@ Renderer::Renderer()
 	bpp = 0;
 }
 
-Renderer::Renderer(int w, int h)
-{
-	info = NULL;
-	width = w;
-	height = h;
-	bpp = 0;
-}
-
 // clean up
 Renderer::~Renderer()
 {
-
 	TTF_CloseFont(debugFont);
 	TTF_Quit();
 }
@@ -114,21 +105,23 @@ void Renderer::initGL(int w, int h)
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos);        // set the position of the light
 
 
-	glEnable( GL_COLOR_MATERIAL );
+	glEnable( GL_COLOR_MATERIAL );						// allow shading for colored material
 
 
-
+	GLenum err = glewInit();	// initialize GLEW
+    if (GLEW_OK == err)
+    {
+        std::cout << "GLEW initialized" << std::endl;
+    }
 
 	
 	glClearColor( 0, 0, 0, 0 );	// clear screen to black
 
-    glViewport( 0, 0, w, h );
+    glViewport( 0, 0, w, h );	// set the viewport to be the resolution of the screen
 
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity( );
-
-    gluPerspective( 60.0, ratio, 1.0, 1024.0 );
-
+    gluPerspective( 60.0, ratio, 1.0, 1024.0 );	// need to fix this to change fov on the fly
 	glMatrixMode(GL_MODELVIEW);	// switch back to model view
 }
 
@@ -282,6 +275,30 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 
 }
 
+void Renderer::setCamera(const btVector3& pos, const btVector3& lookAtPoint)
+{
+	//glPushMatrix();
+	glLoadIdentity();
+
+	btVector3 up(0, 1, 0);
+	btVector3 lookAtVector = (lookAtPoint - pos).normalize();
+
+	btVector3 binormal = lookAtVector.cross(up);
+
+	btVector3 normal = (binormal.cross(lookAtVector)).normalize();
+/*	
+	printf("campos: (%f, %f, %f)\n", pos.x(), pos.y(), pos.z());
+	printf("camLookAt: (%f, %f, %f)\n", lookAtPoint.x(), lookAtPoint.y(), lookAtPoint.z()); 
+	printf("camnormal: (%f, %f, %f)\n", normal.x(), normal.y(), normal.z()); 
+*/
+
+	gluLookAt(pos.x(), pos.y(), pos.z(),	// camera position
+		      lookAtPoint.x(), lookAtPoint.y(), lookAtPoint.z(),	// look at point
+			  normal.x(), normal.y(), normal.z());	// up vector
+
+	//glPopMatrix();
+}
+
 
 /*
 *	draws a white box centered on the screen
@@ -330,17 +347,17 @@ void Renderer::drawEntity(Entity &entity)
 	b = entity.binormal;
 
 	glPushMatrix();
-	glLoadIdentity();
-
+	//glLoadIdentity();
+/*
 	gluLookAt(p.x(), p.y()+5.0, p.z()-5.0,	// camera position
 		      p.x(), p.y(), p.z(),	// look at point
 			  0, 0.707107f, 0.707107f);	// up vector
-
+*/
 	glTranslatef(p.x(), p.y(), p.z());
 
-	float rMatrix[] = {b.x(), t.x(), -n.x(), 0,
-                       b.y(), t.y(), -n.y(), 0,
-                       b.z(), t.z(), -n.z(), 0,
+	float rMatrix[] = {t.x(), n.x(), b.x(), 0,
+                       t.y(), n.y(), b.y(), 0,
+                       t.z(), n.z(), b.z(), 0,
                        0, 0, 0, 1};
     glMultMatrixf(rMatrix);
 	
@@ -394,7 +411,7 @@ void Renderer::drawPlane(float height)
 {
 	
 	glPushMatrix();
-	glLoadIdentity();
+	//glLoadIdentity();
 	
 	glColor4f(0.75, 0.75, 0.75, 1);
 	glBegin(GL_QUADS);
@@ -414,25 +431,7 @@ void Renderer::drawPlane(float height)
 	glEnd();
 
 	glPopMatrix();
-
-	
-		/* Added by Kent */ //Remove
-	glPushMatrix();
-	glColor3f(0,1,1);
-	glBegin(GL_POLYGON);
-		glNormal3f(0, 1, 0);
-        glVertex3f(c.getPos().x_pos, c.getPos().y_pos, 50);
-		glNormal3f(0, 1, 0);
-        glVertex3f(c.getPos().x_pos, c.getPos().y_pos+100, 50);
-		glNormal3f(0, 1, 0);
-        glVertex3f(c.getPos().x_pos+50, c.getPos().y_pos+100, 75);
-		glNormal3f(0, 1, 0);
-        glVertex3f(c.getPos().x_pos+50, c.getPos().y_pos, 75);
-    glEnd();
-	glPopMatrix();
-
 }
-
 
 void Renderer::glEnable2D()
 {	

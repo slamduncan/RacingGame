@@ -6,12 +6,13 @@
 template <class ET, class ObservingClassType>
 class MethodObserver : public TypedObserver<ET>{
 public:
-	MethodObserver(ObservingClassType * objectInstance) : objectInstance(objectInstance){ }
-	void (ObservingClassType::*Method)(ET *e);
+	typedef void (ObservingClassType::*Method)(ET *e);
+	MethodObserver(ObservingClassType * objectInstance, Method m)	: objectInstance(objectInstance) {funcPointer = m;}	
 	ObservingClassType *objectInstance;
-
+	Method funcPointer;
 	void Observe(ET *e){
-		(objectInstance->*Method)(e);
+		//(objectInstance->*Method)(e);
+		(objectInstance->*funcPointer)(e);
 	}
 };
 #endif

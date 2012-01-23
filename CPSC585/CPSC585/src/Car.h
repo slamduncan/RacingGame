@@ -3,22 +3,19 @@
 
 #include "TypedObserver.h"
 #include "TriggerEvent.h"
+#include "Entity.h"
+#include "LinearMath/btVector3.h"
 
-class Car : public TypedObserver<TriggerEvent>{
+class Car : public TypedObserver<TriggerEvent>, public Entity{
 
 public:
-	struct Position{
-		float y_pos;
-		float x_pos;
-		float z_pos;
-	};
-	Car(Position startingPos);
+	//Car(btVector3 startingPos);
 	Car();
-	Position getPos();
+	btVector3 getPos();
 	void Observe(TriggerEvent *e);
 
 private:
-	Position pos;
+	btVector3 pos;
 
 };
 #endif

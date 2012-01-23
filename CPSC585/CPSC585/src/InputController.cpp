@@ -5,6 +5,7 @@
 #include "ButtonEvent.h"
 #include "TriggerEvent.h"
 #define MAX_AXIS_VAL 32767.0
+#define TRIGGER_LIMIT 4000
 
 InputController::InputController()
 {
@@ -44,6 +45,11 @@ InputController::~InputController(){
 }
 
 
+void InputController::emitTriggers(){
+	e->emitEvent(new TriggerEvent(triggers, normTriggers));
+}
+	
+
 
 //
 //XBOX 360 Controler Maps
@@ -68,6 +74,11 @@ InputController::~InputController(){
 //2 L Trigger - positive, R Trigger - minus
 //3 R Analogue - TOP : BOTTOM
 //4 R Analogue - LEFT : RIGHT
+bool triggerInputLimit(int triggerVal){
+	return (triggerVal > TRIGGER_LIMIT || 
+		triggerVal < -TRIGGER_LIMIT);
+}
+
 void InputController::update(SDL_Event cntrlEvent){
 
 	//while(SDL_PollEvent(&cntrlEvent)){
@@ -81,23 +92,41 @@ void InputController::update(SDL_Event cntrlEvent){
 					//X-axis of left joystick
 				case 0:
 					{						
-						leftAnaX = cntrlEvent.jaxis.value;
-						normLeftAnaX = leftAnaX/MAX_AXIS_VAL;
+						if (triggerInputLimit(cntrlEvent.jaxis.value)){
+							leftAnaX = cntrlEvent.jaxis.value;						
+							normLeftAnaX = leftAnaX/MAX_AXIS_VAL;
+						}
+						else {
+							leftAnaX = 0;
+							normLeftAnaX = 0;
+						}
 						break;
 					}
 					//Y-Axis of left joystick
 				case 1:
 					{
+						if (triggerInputLimit(cntrlEvent.jaxis.value)){
 						leftAnaY = cntrlEvent.jaxis.value;
 						normLeftAnaY = leftAnaY/MAX_AXIS_VAL;
+						}
+						else {
+							leftAnaY = 0;
+							normLeftAnaY = 0;
+						}
 						break;
 					}
 					//Trigger Buttons
 				case 2:
 					{
-						triggers = cntrlEvent.jaxis.value;
-						normTriggers = triggers/MAX_AXIS_VAL;
-						e->emitEvent(new TriggerEvent(triggers, normTriggers));
+						if (triggerInputLimit(cntrlEvent.jaxis.value)){
+							triggers = cntrlEvent.jaxis.value;
+							normTriggers = triggers/MAX_AXIS_VAL;
+							e->emitEvent(new TriggerEvent(triggers, normTriggers));
+						}
+						else {
+							triggers = 0;
+							normTriggers = 0;
+						}
 						break;
 					}								
 				}

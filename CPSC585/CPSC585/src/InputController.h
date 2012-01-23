@@ -1,7 +1,7 @@
 #ifndef INPUTCONTROLLER_H
 #define INPUTCONTROLLER_H
 
-#include "../include/SDL/SDL.h"
+#include "SDL.h"
 #include "EventSystemHandler.h"
 
 /* Sample use of InputController:
@@ -26,6 +26,7 @@ private:
 
 public:		
 	void update(SDL_Event cntrlEvent);
+	void emitTriggers();
 	static void initSDLJoystick();
 	enum Button {A_button, B_button, X_button, Y_button};
 	InputController();
