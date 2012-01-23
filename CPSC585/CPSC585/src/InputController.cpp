@@ -96,6 +96,10 @@ void InputController::update(SDL_Event cntrlEvent){
 							leftAnaX = cntrlEvent.jaxis.value;						
 							normLeftAnaX = leftAnaX/MAX_AXIS_VAL;
 						}
+						else {
+							leftAnaX = 0;
+							normLeftAnaX = 0;
+						}
 						break;
 					}
 					//Y-Axis of left joystick
@@ -104,6 +108,10 @@ void InputController::update(SDL_Event cntrlEvent){
 						if (triggerInputLimit(cntrlEvent.jaxis.value)){
 						leftAnaY = cntrlEvent.jaxis.value;
 						normLeftAnaY = leftAnaY/MAX_AXIS_VAL;
+						}
+						else {
+							leftAnaY = 0;
+							normLeftAnaY = 0;
 						}
 						break;
 					}
@@ -114,6 +122,10 @@ void InputController::update(SDL_Event cntrlEvent){
 							triggers = cntrlEvent.jaxis.value;
 							normTriggers = triggers/MAX_AXIS_VAL;
 							e->emitEvent(new TriggerEvent(triggers, normTriggers));
+						}
+						else {
+							triggers = 0;
+							normTriggers = 0;
 						}
 						break;
 					}								
