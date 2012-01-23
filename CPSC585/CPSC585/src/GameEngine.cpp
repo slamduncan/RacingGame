@@ -86,6 +86,8 @@ int main(int argc, char** argv)
 		/* Error on initalizing controller -KD */
 	}	
 
+	evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
+
 	//
 	// DEBUG TESTING
 	//

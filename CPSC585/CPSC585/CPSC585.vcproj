@@ -350,6 +350,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Car.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\SDL\close_code.h"
 				>
 			</File>
@@ -391,6 +395,10 @@
 			</File>
 			<File
 				RelativePath=".\src\InputController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\MethodObserver.h"
 				>
 			</File>
 			<File
