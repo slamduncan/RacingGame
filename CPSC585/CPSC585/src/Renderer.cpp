@@ -397,14 +397,6 @@ void Renderer::drawEntity(Entity &entity)
 	}
 
 	glPopMatrix();
-
-	// go into HUD mode
-	glEnable2D();
-
-	outputText("This is a multi\nline test to see if \nnewlines are working correctly", 255, 255, 255, 0, height/2);
-	outputText("I am testing to see if obj models will load and draw correctly", 255, 255, 255, 0, 0);
-
-	glDisable2D();
 }
 
 void Renderer::drawPlane(float height)

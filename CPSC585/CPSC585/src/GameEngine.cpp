@@ -171,6 +171,15 @@ int main(int argc, char** argv)
 			ren->drawEntity(*(entityList->at(i)));
 		}
 
+		ren->glEnable2D();
+
+		ren->outputText((*(entityList->at(0))).toString(), 0, 255, 0, 500, 200);
+
+		ren->outputText("This is a multi\nline test to see if \nnewlines are working correctly", 255, 255, 255, 0, 360);
+		ren->outputText("I am testing to see if obj models will load and draw correctly", 255, 255, 255, 0, 0);
+
+		ren->glDisable2D();
+
 		//ren.draw();		// draw things to the buffer
 		ren->updateGL();	// update the screen
 
