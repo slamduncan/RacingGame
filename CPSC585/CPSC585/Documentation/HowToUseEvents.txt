@@ -13,16 +13,19 @@ Case 1 - The event I want to observe or emit already exists:
 		e->emitEvent(ev);
 
    Case 1.2 - I want to observe an event:
+		
+		Create a MethodObserver<EVENT, CURRENTCLASS> object; 
+		
+			e.g. MethodObserver<ButtonEvent, TestClass> mo(this, &TestClass::testMethod);
 
-		Inheret from the TypedObserver<ET> class where ET is the event that you want to observe:
+		Create a Method in your class that takes in a pointer to the EVENT and returns void
 
-		e.g. class TestClass : public TypedObserver<ButtonEvent>{}
+			e.g. void testMethod(ButtonEvent *e);
 
-		Then implement the funciton Observe(ET *e){} in side of that class:
+		Register with the eventSystem handler in the following way:
 
-		e.g. void TestClass::Observe(ButtonEvent *e){
-				fprintf(stderr, "Found Event \n");
-			}
+			TestClass* testVar = new TestClass();
+			EventSystemHandler::getInstance->addObserver(&((testVar)->methodObserverObject), EventTypes::BUTTON);
 
 
 Case 2 - The event I want to Observe or Emit does not exitst:

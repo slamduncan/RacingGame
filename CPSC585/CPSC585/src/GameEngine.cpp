@@ -119,6 +119,8 @@ int main(int argc, char** argv)
 	if (!controller1.initialize(0)){
 		/* Error on initalizing controller -KD */
 	}	
+		
+	evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
 
 	//
 	// DEBUG TESTING

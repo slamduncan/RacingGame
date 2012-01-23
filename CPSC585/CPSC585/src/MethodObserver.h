@@ -2,15 +2,17 @@
 #define METHODOBSERVER_H
 
 #include "TypedObserver.h"
-template<ET, ObservingClassType>
-class MethodObserver : public TypedObserver{
-	
 
-	virtual void (ObservingClassType::*method)(ET *e);
+template <class ET, class ObservingClassType>
+class MethodObserver : public TypedObserver<ET>{
+public:
+	typedef void (ObservingClassType::*Method)(ET *e);
+	MethodObserver(ObservingClassType * objectInstance, Method m)	: objectInstance(objectInstance) {funcPointer = m;}	
 	ObservingClassType *objectInstance;
-
+	Method funcPointer;
 	void Observe(ET *e){
-		(objectInstance->*method)(e);
+		//(objectInstance->*Method)(e);
+		(objectInstance->*funcPointer)(e);
 	}
 };
 #endif
