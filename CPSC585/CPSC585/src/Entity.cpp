@@ -58,7 +58,7 @@ void Entity::move(const btVector3 &newPos)
 
 bool Entity::loadObj(char* filename)
 {
-	printf("loading...\n");
+	//printf("loading...\n");
 	
 	if(isInit)
 	{
@@ -81,4 +81,13 @@ void Entity::debug()
 	printf("Tan: (%f, %f, %f)\n", tangent.x(), tangent.y(), tangent.z());
 	printf("Nor: (%f, %f, %f)\n", normal.x(), normal.y(), normal.z());
 	printf("Bin: (%f, %f, %f)\n", binormal.x(), binormal.y(), binormal.z());
+}
+
+std::string Entity::toString()
+{
+	std::stringstream ss;
+
+	ss << "Pos: (" << position.x() << ", " << position.y() << ", " << position.z() << ")\n";
+
+	return ss.str();
 }
