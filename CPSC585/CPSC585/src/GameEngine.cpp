@@ -139,6 +139,11 @@ int main(int argc, char** argv)
 	entityList->push_back(test2);
 	entityList->push_back(test3);
 	
+	SDL_Surface* planeTex = ren->loadIMG("../CPSC585/texture/plane.png");
+
+	GLuint ptex = 0;
+
+	ptex = ren->initTexture(planeTex);
 
 	// game loop
 	while(1)
@@ -150,21 +155,20 @@ int main(int argc, char** argv)
 		process_events();
 		
 		// AI
+		// I think this is memleaking atm.
+		// -Jeff
 		controller1.emitTriggers();
 		updateEntityPosition(*(entityList->at(0)), controller1);
 
 		// Render
 		// draw code goes here
-
 		btVector3 camPos = car1->position + btVector3(0, 2, -5);
 		btVector3 camLookAt = car1->position + btVector3(0, 0, 0);
-
-
 		ren->clearGL();	// clear the screen
-		//ren->setCamera(camPos, camLookAt);
 		ren->setCamera(camPos, camLookAt);
-
+		ren->textureOn(ptex);
 		ren->drawPlane(-2);
+		ren->textureOff();
 
 		for(int i = 0; i < entityList->size(); i++)
 		{
@@ -172,12 +176,9 @@ int main(int argc, char** argv)
 		}
 
 		ren->glEnable2D();
-
 		ren->outputText((*(entityList->at(0))).toString(), 0, 255, 0, 500, 200);
-
 		ren->outputText("This is a multi\nline test to see if \nnewlines are working correctly", 255, 255, 255, 0, 360);
 		ren->outputText("I am testing to see if obj models will load and draw correctly", 255, 255, 255, 0, 0);
-
 		ren->glDisable2D();
 
 		//ren.draw();		// draw things to the buffer

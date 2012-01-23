@@ -105,8 +105,8 @@ void Renderer::initGL(int w, int h)
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos);        // set the position of the light
 
 
-	glEnable( GL_COLOR_MATERIAL );						// allow shading for colored material
-
+	glEnable(GL_COLOR_MATERIAL);						// allow shading for colored material
+	glEnable(GL_TEXTURE_2D);
 
 	GLenum err = glewInit();	// initialize GLEW
     if (GLEW_OK == err)
@@ -157,6 +157,66 @@ void Renderer::quitSDL()
 
 	exit(0);
 }
+
+SDL_Surface* Renderer::loadIMG(string filename)
+{
+	SDL_Surface* image = IMG_Load(filename.c_str());
+
+	return image;
+}
+GLuint Renderer::initTexture(SDL_Surface* image)
+{
+	GLuint texID = 0;
+	GLenum texType;
+
+	GLint nChannel = image->format->BytesPerPixel;
+	
+	if (nChannel == 4)     // contains an alpha channel
+    {
+            if (image->format->Rmask == 0x000000ff)
+                    texType = GL_RGBA;
+            else
+                    texType = GL_BGRA;
+    } else if (nChannel == 3)     // no alpha channel
+    {
+            if (image->format->Rmask == 0x000000ff)
+                    texType = GL_RGB;
+            else
+                    texType = GL_BGR;
+    } else {
+            printf("warning: the image is not truecolor..  this will probably break\n");
+            // this error should not go unhandled
+    }
+
+	glGenTextures(1, &texID);	// generate texture id
+	glBindTexture(GL_TEXTURE_2D, texID);	// bind our texture to our texture id
+	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameterf(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+	glTexImage2D(GL_TEXTURE_2D, 0, nChannel, image->w, image->h, 0, texType, GL_UNSIGNED_BYTE, image->pixels);
+	glBindTexture(GL_TEXTURE_2D, 0);  // unbind our texture
+
+	return texID;
+}
+void Renderer::textureOn(GLuint texID)
+{
+	glBindTexture(GL_TEXTURE_2D, texID);
+}
+void Renderer::textureOff()
+{
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+void Renderer::framebufferOn(GLuint fbID)
+{
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbID);
+}
+void Renderer::framebufferOff()
+{
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+}
+
 
 /*
 *	Outputs text to the screen using textures
@@ -277,7 +337,6 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 
 void Renderer::setCamera(const btVector3& pos, const btVector3& lookAtPoint)
 {
-	//glPushMatrix();
 	glLoadIdentity();
 
 	btVector3 up(0, 1, 0);
@@ -295,8 +354,6 @@ void Renderer::setCamera(const btVector3& pos, const btVector3& lookAtPoint)
 	gluLookAt(pos.x(), pos.y(), pos.z(),	// camera position
 		      lookAtPoint.x(), lookAtPoint.y(), lookAtPoint.z(),	// look at point
 			  normal.x(), normal.y(), normal.z());	// up vector
-
-	//glPopMatrix();
 }
 
 
@@ -409,15 +466,19 @@ void Renderer::drawPlane(float height)
 	glBegin(GL_QUADS);
 	
 	glNormal3f(0, 1, 0);
+	glTexCoord2f(0.0f,0.0f);
 	glVertex3f(-100, height, -100);
 
 	glNormal3f(0, 1, 0);
+	glTexCoord2f(0.0f,1.0f);
 	glVertex3f(-100, height, 100);
 
 	glNormal3f(0, 1, 0);
+	glTexCoord2f(1.0f,1.0f);
 	glVertex3f(100, height, 100);
 
 	glNormal3f(0, 1, 0);
+	glTexCoord2f(1.0f,0.0f);
 	glVertex3f(100, height, -100);
 
 	glEnd();
