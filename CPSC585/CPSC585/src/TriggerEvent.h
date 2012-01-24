@@ -13,6 +13,8 @@ public:
 	TriggerEvent(){};
 	int getValue(){return triggerValue;}
 	double getNormValue(){return normTriggerVale;}
+	void setValue(int in){triggerValue = in;}
+	void setNormValue(double in){normTriggerVale = in;}
 
 private:
 	int triggerValue;

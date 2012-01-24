@@ -7,6 +7,7 @@
 #include "EventSystemHandler.h"
 #include "TestClass.h"
 #include "Car.h"
+#include <windows.h>
 
 // "vector" for entities
 // we might just make it so that each type of specialized entity
@@ -117,6 +118,10 @@ int main(int argc, char** argv)
 	/* Added by Kent */
 	controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
 	if (!controller1.initialize(0)){
+		/*ren->outputText("Connect Controller", 1, 0, 0, 1280/2, 720/2);
+		while(!controller1.initialize(0)){
+			Sleep(100);
+		}*/
 		/* Error on initalizing controller -KD */
 	}	
 		

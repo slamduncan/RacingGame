@@ -12,6 +12,7 @@ InputController::InputController()
 	A = B = X = Y = rightBump = leftBump = start = false;
 	leftAnaX = leftAnaY = rightAnaX = rightAnaY = triggers = 0;
 	normLeftAnaX = normLeftAnaY = normRightAnaX = normRightAnaY = normTriggers =  0.0;
+//	triggerEvent = new TriggerEvent(0, 0);
 }
 
 void InputController::initSDLJoystick(){
@@ -46,6 +47,8 @@ InputController::~InputController(){
 
 
 void InputController::emitTriggers(){
+//	triggerEvent->setValue(triggers);
+//	triggerEvent->setNormValue(normTriggers);
 	e->emitEvent(new TriggerEvent(triggers, normTriggers));
 }
 	

@@ -20,6 +20,7 @@ private:
 	int InputControllerIdentifier;
 	SDL_Event cntrlEvent;
 	SDL_Joystick *stick;
+	//TriggerEvent *triggerEvent;
 	//void update();
 	
 	EventSystemHandler* e;
