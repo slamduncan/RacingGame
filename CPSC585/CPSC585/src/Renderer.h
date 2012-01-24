@@ -13,6 +13,7 @@
 #define NO_SDL_GLEXT
 #include "SDL_opengl.h"
 #include "SDL_ttf.h"
+#include "SDL_image.h"
 
 
 using namespace std;
@@ -35,8 +36,6 @@ private:
 
 	Shader shader;	// shader for drawing
 
-
-
 public:
 
 	~Renderer();
@@ -49,6 +48,13 @@ public:
 		}
 		return instance;
 	}
+
+	SDL_Surface* loadIMG(string filename);
+	GLuint initTexture(SDL_Surface* image);
+	void textureOn(GLuint texID);
+	void textureOff();
+	void framebufferOn(GLuint fbID);
+	void framebufferOff();
 
 	void initSDL();
 	void initGL(int width, int height);
