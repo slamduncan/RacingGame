@@ -131,7 +131,26 @@ void InputController::update(SDL_Event cntrlEvent){
 							normTriggers = 0;
 						}
 						break;
-					}								
+					}
+					//Y Axis on the right hand joystick
+				case 3:
+					{
+						if (triggerInputLimit(cntrlEvent.jaxis.value)){
+							rightAnaY = cntrlEvent.jaxis.value;
+							normRightAnaY = rightAnaY/MAX_AXIS_VAL;
+						}
+						else{rightAnaY = 0; normRightAnaY = 0;}
+						break;
+					}
+					//X Axis on the right hand joystick
+				case 4:
+					{
+						if (triggerInputLimit(cntrlEvent.jaxis.value)){
+							rightAnaX = cntrlEvent.jaxis.value;
+							normRightAnaX = rightAnaX/MAX_AXIS_VAL;
+						}
+						else{rightAnaX = 0; normRightAnaX = 0;}
+					}
 				}
 			break;
 			}
@@ -141,47 +160,59 @@ void InputController::update(SDL_Event cntrlEvent){
 				switch(cntrlEvent.jbutton.button)
 				{
 					//A is pressed down
-				case 0:
+				case A_button:
 					{
+						Event* ev = new ButtonEvent(A_button);
+						e->emitEvent(ev);
 						A = true;
 						break;
 					}
 					//B is pressed down
-				case 1:
+				case B_button:
 					{
+						Event* ev = new ButtonEvent(B_button);
+						e->emitEvent(ev);
 						B = true;
 						break;
 					}
 
 					//X button is pressed down.
-				case 2:
+				case X_button:
 					{						
-						Event* ev = new ButtonEvent(2);
+						Event* ev = new ButtonEvent(X_button);
 						e->emitEvent(ev);
 						X = true;
 						break;
 					}
 					//Y was pressed down.
-				case 3:
+				case Y_button:
 					{
+						Event* ev = new ButtonEvent(Y_button);
+						e->emitEvent(ev);
 						Y = true;
 						break;
 					}
 					//Left bumper was pressed down
-				case 4:
+				case L_Bump:
 					{
+						Event* ev = new ButtonEvent(L_Bump);
+						e->emitEvent(ev);
 						leftBump = true;
 						break;
 					}
 					//Right bumper was pressed down
-				case 5:
+				case R_Bump:
 					{
+						Event* ev = new ButtonEvent(R_Bump);
+						e->emitEvent(ev);
 						rightBump = true;
 						break;
 					}
 					//Start button was pressed down
-				case 7:
+				case Start_button:
 					{
+						Event* ev = new ButtonEvent(Start_button);
+						e->emitEvent(ev);
 						start = true;
 						break;
 					}
@@ -194,44 +225,44 @@ void InputController::update(SDL_Event cntrlEvent){
 				switch(cntrlEvent.jbutton.button)
 				{
 					//A is pressed down
-				case 0:
+				case A_button:
 					{
 						A = false;
 						break;
 					}
 					//B is pressed down
-				case 1:
+				case B_button:
 					{
 						B = false;
 						break;
 					}
 
 					//X button is pressed down.
-				case 2:
+				case X_button:
 					{
 						X = false;
 						break;
 					}
 					//Y was pressed down.
-				case 3:
+				case Y_button:
 					{
 						Y = false;
 						break;
 					}
 					//Left bumper was pressed down
-				case 4:
+				case L_Bump:
 					{
 						leftBump = false;
 						break;
 					}
 					//Right bumper was pressed down
-				case 5:
+				case R_Bump:
 					{
 						rightBump = false;
 						break;
 					}
 					//Start button was pressed down
-				case 7:
+				case Start_button:
 					{
 						start = false;
 						break;

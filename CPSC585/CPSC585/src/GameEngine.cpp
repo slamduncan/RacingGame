@@ -118,6 +118,7 @@ int main(int argc, char** argv)
 	/* Added by Kent */
 	controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
 	if (!controller1.initialize(0)){
+		//SDL_Delay(100);
 		/*ren->outputText("Connect Controller", 1, 0, 0, 1280/2, 720/2);
 		while(!controller1.initialize(0)){
 			Sleep(100);
