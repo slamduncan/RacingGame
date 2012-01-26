@@ -20,6 +20,7 @@ private:
 	int InputControllerIdentifier;
 	SDL_Event cntrlEvent;
 	SDL_Joystick *stick;
+	//TriggerEvent *triggerEvent;
 	//void update();
 	
 	EventSystemHandler* e;
@@ -29,7 +30,7 @@ public:
 	void emitTriggers();
 	void emitButtons();
 	static void initSDLJoystick();
-	enum Button {A_button, B_button, X_button, Y_button};
+	enum Button {A_button, B_button, X_button, Y_button, L_Bump, R_Bump, Back_button, Start_button, L_Analog, R_Analog};
 	InputController();
 	~InputController();
 		
