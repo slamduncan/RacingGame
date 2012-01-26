@@ -67,21 +67,13 @@ void process_events()
 		- updated to not lose the event, but now must pass in controller events*/
 		case SDL_JOYAXISMOTION:
 		{
-			// There seems to be a problem with the controller?, pressing anything besides
-			// the left analog sticks causes the entity to move in the negative? xz direction
-			// I also need to double check how i'm drawing things, I think i accidently made
-			// opengl draw in a left handed coordinate system.
-			//  Jeff
 			controller1.update(event);	
 		}
 		break;
 		case SDL_JOYBUTTONDOWN:
 			fprintf(stderr, "BUTTONS HOW DO THEY WORK\n");
 			controller1.update(event);
-			if(controller1.isADown())
-			{
-				ren->quitSDL();
-			}
+
 			break;
 		case SDL_JOYBUTTONUP:
 			controller1.update(event);
@@ -101,18 +93,42 @@ void updateEntityPosition(Entity &entIn, InputController &contrlIn){
 
 			btVector3 offset(lX, 0, lY);
 
-			offset /= -5.0f;
+			offset /= 5.0f;
 
 			entIn.move(offset);
+}
+
+void updateRot(){
+
+			if(controller1.isADown())
+			{
+				ren->quitSDL();
+			}
+			if(controller1.isBDown())
+			{
+				if(entityList->size() > 0)
+				{
+					entityList->at(0)->rotate(entityList->at(0)->normal, -1);
+				}
+			}
+			if(controller1.isYDown())
+			{
+				if(entityList->size() > 0)
+				{
+					entityList->at(0)->rotate(entityList->at(0)->normal, 1);
+				}
+			}
 }
 
 // Engine Main
 int main(int argc, char** argv)
 {
 	// INITIALIZATIONS
-	ren->initSDL();	// init SDL for drawing window
-	ren->initGL(1280, 720);	// initializing opengl stuff
-	ren->initFont();
+	bool renInit = ren->init();
+	
+	//ren->initSDL();	// init SDL for drawing window
+	//ren->initGL();	// initializing opengl stuff
+	//ren->initFont();
 
 	/* Added by Kent */
 	controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
@@ -125,10 +141,15 @@ int main(int argc, char** argv)
 	//
 	// DEBUG TESTING
 	//
-	Entity *test = new Entity("../CPSC585/model/frame.obj");
 	Car *car1 = new Car();
-	Entity *test2 = new Entity("../CPSC585/model/frame.obj");
-	Entity *test3 = new Entity("../CPSC585/model/frame.obj");
+	car1->loadObj("../CPSC585/model/frame.obj");
+	Entity *test = new Entity("../CPSC585/model/box.obj");
+	Entity *test2 = new Entity("../CPSC585/model/box.obj");
+	Entity *test3 = new Entity("../CPSC585/model/box.obj");
+
+	//Entity *planeTest = new Entity("../CPSC585/model/aaup.obj");
+
+	//planeTest->position += btVector3(0,-1,0);
 
 	btVector3 offset2(0.5, 0.5, 0.5);
 	btVector3 offset3(-0.5, 0.5, 0.5);
@@ -140,7 +161,7 @@ int main(int argc, char** argv)
 	entityList->push_back(test);
 	entityList->push_back(test2);
 	entityList->push_back(test3);
-	
+
 	SDL_Surface* planeTex = ren->loadIMG("../CPSC585/texture/plane.png");
 
 	GLuint ptex = 0;
@@ -157,20 +178,22 @@ int main(int argc, char** argv)
 		process_events();
 		
 		// AI
-		// I think this is memleaking atm.
-		// -Jeff
 		controller1.emitTriggers();
+		controller1.emitButtons();
+		updateRot();
 		updateEntityPosition(*(entityList->at(0)), controller1);
 
 		// Render
 		// draw code goes here
-		btVector3 camPos = car1->position + btVector3(0, 2, -5);
+		btVector3 camPos = car1->position + car1->normal*2 + car1->tangent*5;
 		btVector3 camLookAt = car1->position + btVector3(0, 0, 0);
 		ren->clearGL();	// clear the screen
 		ren->setCamera(camPos, camLookAt);
 		
 		ren->textureOn(ptex);
 		ren->drawPlane(-2);
+		//ren->drawEntity(*planeTest);
+		
 		ren->textureOff();
 
 		for(int i = 0; i < entityList->size(); i++)

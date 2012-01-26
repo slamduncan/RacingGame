@@ -18,19 +18,33 @@ Renderer::~Renderer()
 	TTF_Quit();
 }
 
+bool Renderer::init()
+{
+	int a = initSDL();
+	int b = initGL();
+	int c =initFont();
+
+	if(a+b+c != 0)
+	{
+		fprintf(stderr, "Renderer failed to init\na = %d, b = %d, c = %d\n", a, b, c);
+		return false;
+	}
+	return true;
+}
 
 /*
 *	initializes SDL window
 */
-void Renderer::initSDL()
+int Renderer::initSDL()
 {
+	int counter = 0;
 	//SDL_Init( SDL_INIT_EVERYTHING );
 	
 	// if the video does not tempize
 	if( SDL_Init(SDL_INIT_VIDEO) < 0 ) 
 	{
         fprintf(stderr, "Video initialization failed: %s\n", SDL_GetError());
-        quitSDL();
+        counter--;//quitSDL();
     }
 
 	info = SDL_GetVideoInfo();
@@ -38,7 +52,7 @@ void Renderer::initSDL()
 	if(!info) {
         /* This should probably never happen. */
         fprintf(stderr, "Video query failed: %s\n", SDL_GetError());
-        quitSDL();
+        counter--;//quitSDL();
     }
 
 	// 8 bits for red, green blue, 32 bit depth
@@ -55,24 +69,27 @@ void Renderer::initSDL()
 	// Try to set the window up
 	if( SDL_SetVideoMode( width, height, bpp, vflags ) == 0 ) {
         fprintf( stderr, "Video mode set failed: %s\n", SDL_GetError() );
-        quitSDL();
+        counter--;//quitSDL();
     }
 	
 	// Window created, and nothing went wrong
+
+	return counter;
 }
 
 /*
 *	NEED TO FIX, PRIVATE MEMBER VARABLES FOR W AND H
 */
-void Renderer::initGL(int w, int h)
+int Renderer::initGL()
 {
-	if(w <= 0 || h <= 0)
+	int counter = 0;
+	if(width <= 0 || height <= 0)
 	{
 		fprintf( stderr, "Resolution not set properly, exiting...: %s\n", SDL_GetError() );
-        quitSDL();
+        counter--;//quitSDL();
 	}
 	
-	float ratio = (float) w / (float) h;	// compute FOV
+	float ratio = (float) width / (float) height;	// compute FOV
 
     
 	//
@@ -109,31 +126,37 @@ void Renderer::initGL(int w, int h)
 	glEnable(GL_TEXTURE_2D);
 
 	GLenum err = glewInit();	// initialize GLEW
-    if (GLEW_OK == err)
+    if (GLEW_OK != err)
     {
-        std::cout << "GLEW initialized" << std::endl;
+		std::cout << "GLEW failed to initialize" << std::endl;
+		counter--;
     }
-
+	std::cout << "GLEW initialized" << std::endl;
 	
 	glClearColor( 0, 0, 0, 0 );	// clear screen to black
 
-    glViewport( 0, 0, w, h );	// set the viewport to be the resolution of the screen
+    glViewport( 0, 0, width, height );	// set the viewport to be the resolution of the screen
 
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity( );
     gluPerspective( 60.0, ratio, 1.0, 1024.0 );	// need to fix this to change fov on the fly
 	glMatrixMode(GL_MODELVIEW);	// switch back to model view
+
+	return counter;
 }
 
 /*
 *	initializes the font used.
 */
-void Renderer::initFont()
+int Renderer::initFont()
 {
+	int counter = 0;
+
 	if(TTF_Init())
 	{
 		fprintf(stderr, "Font failed to initialize: %s\n", TTF_GetError());
-        quitSDL();
+        //quitSDL();
+		counter--;
 	}
 
 	debugFont = TTF_OpenFont("../CPSC585/font/ARIAL.TTF", 20);
@@ -141,8 +164,10 @@ void Renderer::initFont()
 	if(debugFont == NULL)
 	{
 		fprintf(stderr, "Font failed to load\n", 0);
-        quitSDL();
+        //quitSDL();
+		counter--;
 	}
+	return counter;
 }
 
 /*
@@ -235,20 +260,24 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 		return;
 	}
 	
-	vector<string> mlines;
-	SDL_Surface *temp;	
-	SDL_Surface *toTexture;
-	SDL_Color color;
-	SDL_Rect position;
+	vector<string> mlines;	// a vector to hold each line delimited by a '\n'
+	SDL_Surface *temp;		// temporary surface to blit each line to
+	SDL_Surface *toTexture;	// will contain all the text
+	SDL_Color color;	// color of the text
+	SDL_Rect position;	// position of the text
+	
+	// width and height of the texture
 	int wt = 0;
 	int ht = 0;
-	GLuint texture;
-	int n = 0;
+	GLuint texture;	// texture id used for binding the surface with lines
+	int n = 0;	// loop variable
 
+	// set colors
 	color.r = r;
 	color.g = g;
 	color.b = b;
 
+	// set the current position
 	position.x = x;
 	position.y = y;
 
@@ -398,26 +427,29 @@ void Renderer::drawEntity(Entity &entity)
 	
 	btVector3 p, t, n, b;
 
+
 	p = entity.position;
+
 	t = entity.tangent;
 	n = entity.normal;
 	b = entity.binormal;
 
-	glPushMatrix();
-	//glLoadIdentity();
 /*
-	gluLookAt(p.x(), p.y()+5.0, p.z()-5.0,	// camera position
-		      p.x(), p.y(), p.z(),	// look at point
-			  0, 0.707107f, 0.707107f);	// up vector
+	t = entity.cf.getColumn(0);
+	n = entity.cf.getColumn(1);
+	b = entity.cf.getColumn(2);
 */
+	glPushMatrix();
+
 	glTranslatef(p.x(), p.y(), p.z());
 
 	float rMatrix[] = {t.x(), n.x(), b.x(), 0,
                        t.y(), n.y(), b.y(), 0,
                        t.z(), n.z(), b.z(), 0,
                        0, 0, 0, 1};
-    glMultMatrixf(rMatrix);
-	
+
+	glMultMatrixf(rMatrix);
+
 	// for each face in the model
 	for(int i = 0; i < renderObject->faceCount; i++)
 	{

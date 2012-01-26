@@ -27,6 +27,7 @@ private:
 public:		
 	void update(SDL_Event cntrlEvent);
 	void emitTriggers();
+	void emitButtons();
 	static void initSDLJoystick();
 	enum Button {A_button, B_button, X_button, Y_button};
 	InputController();

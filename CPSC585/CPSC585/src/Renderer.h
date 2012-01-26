@@ -56,9 +56,11 @@ public:
 	void framebufferOn(GLuint fbID);
 	void framebufferOff();
 
-	void initSDL();
-	void initGL(int width, int height);
-	void initFont();
+
+	bool init();
+	int initSDL();
+	int initGL();
+	int initFont();
 
 	void outputText(string text, int r, int g, int b, int x, int y);
 

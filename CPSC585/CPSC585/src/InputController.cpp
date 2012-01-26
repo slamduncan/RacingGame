@@ -48,6 +48,13 @@ InputController::~InputController(){
 void InputController::emitTriggers(){
 	e->emitEvent(new TriggerEvent(triggers, normTriggers));
 }
+
+void InputController::emitButtons(){
+	if (A){e->emitEvent(new ButtonEvent(A_button));}
+	if (X){e->emitEvent(new ButtonEvent(X_button));}
+	if (Y){e->emitEvent(new ButtonEvent(Y_button));}
+	if (B){e->emitEvent(new ButtonEvent(B_button));}
+}
 	
 
 

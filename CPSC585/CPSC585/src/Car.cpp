@@ -15,5 +15,5 @@ btVector3 Car::getPos(){
 }
 
 void Car::Observe(TriggerEvent *e){
-	position += tangent * -e->getNormValue();//btVector3(e->getNormValue(), 0, 0);
+	position += tangent * e->getNormValue();//btVector3(e->getNormValue(), 0, 0);
 }
