@@ -29,6 +29,10 @@ Physics::Physics(void)
 
 Physics::~Physics(void)
 {
+
+	// Need to clean up the dynamic world since there are still entities in it
+	dynamicsWorld->getCollisionObjectArray().clear();
+	
 	delete dynamicsWorld;
     delete solver;
     delete dispatcher;
@@ -37,6 +41,33 @@ Physics::~Physics(void)
 }
 
 void Physics::step()
-{
+{	
+	dynamicsWorld->stepSimulation(1/60.f,10);
 
+
+
+	//btCollisionObjectArray temp = dynamicsWorld->getCollisionObjectArray();
+
+	//btCollisionObject* temp2 = temp.at(0);
+
+	//btTransform trans = temp2->getWorldTransform();
+
+	
+
+	//printf("car data: %f,%f,%f\n", trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()); 
+}
+
+void Physics::setGravity(const btVector3 &gravity)
+{
+	dynamicsWorld->setGravity(gravity);
+}
+
+void Physics::addEntity(const Entity &ent)
+{
+	dynamicsWorld->addRigidBody(ent.physicsObject);
+}
+
+void Physics::removeEntity(const Entity &ent)
+{
+	dynamicsWorld->removeRigidBody(ent.physicsObject);
 }

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "Physics.h"
 #include "Renderer.h"
 #include "Entity.h"
 #include "InputController.h"
@@ -18,6 +19,8 @@
 // Other init
 // ie. Physics, AI, Renderer, Sound, Container for ents?
 Renderer* ren = Renderer::getInstance();
+
+Physics* ph = Physics::Inst();
 
 //Test Variables
 InputController controller1 = InputController();
@@ -144,29 +147,46 @@ int main(int argc, char** argv)
 		
 	evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
 
+	ph->setGravity(btVector3(0, -10, 0));
+
+
 	//
-	// DEBUG TESTING
+	// RENDERER DEBUG TESTING
 	//
 	Car *car1 = new Car();
-	car1->loadObj("../CPSC585/model/frame.obj");
+	Entity* testGround = new Entity();
+
+	btScalar carMass = 1;
+	btTransform carT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 10, 0));
+
+	btScalar groundMass = 0;
+	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
+
+	btVector3 inertia = btVector3(0, 0, 0);
+	
+	//char* filename, btScalar &mass, btTransform &orientation, btVecto3 &pos, btVector3 inertia	
+	car1->loadObj("../CPSC585/model/box.obj", carMass, carT, inertia);
+	testGround->loadObj("../CPSC585/model/groundBox.obj", groundMass, groundT, inertia);
+/*
 	Entity *test = new Entity("../CPSC585/model/box.obj");
 	Entity *test2 = new Entity("../CPSC585/model/box.obj");
 	Entity *test3 = new Entity("../CPSC585/model/box.obj");
-
+*/
 	//Entity *planeTest = new Entity("../CPSC585/model/aaup.obj");
 
 	//planeTest->position += btVector3(0,-1,0);
-
+/*
 	btVector3 offset2(0.5, 0.5, 0.5);
 	btVector3 offset3(-0.5, 0.5, 0.5);
 
 	test2->position += offset2;
 	test3->position += offset3;
-
+*/
 	entityList->push_back(car1);
-	entityList->push_back(test);
-	entityList->push_back(test2);
-	entityList->push_back(test3);
+	entityList->push_back(testGround);
+//	entityList->push_back(test);
+//	entityList->push_back(test2);
+//	entityList->push_back(test3);
 
 	SDL_Surface* planeTex = ren->loadIMG("../CPSC585/texture/plane.png");
 
@@ -174,10 +194,16 @@ int main(int argc, char** argv)
 
 	ptex = ren->initTexture(planeTex);
 
+	// PHYSICS DEUBG
+	ph->addEntity(*car1);	// add the car to the physics world
+	ph->addEntity(*testGround);	// add the ground to the physics world
+
 	// game loop
 	while(1)
 	{
-		// Phyiscs
+		//printf("looping\n");
+		// Physics
+		ph->step();
 
 
 		// Inputs
@@ -196,11 +222,11 @@ int main(int argc, char** argv)
 		ren->clearGL();	// clear the screen
 		ren->setCamera(camPos, camLookAt);
 		
-		ren->textureOn(ptex);
-		ren->drawPlane(-2);
+		//ren->textureOn(ptex);
+		//ren->drawPlane(-2);
 		//ren->drawEntity(*planeTest);
 		
-		ren->textureOff();
+		//ren->textureOff();
 
 		for(int i = 0; i < entityList->size(); i++)
 		{

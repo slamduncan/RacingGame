@@ -6,26 +6,18 @@ Entity::Entity()
 	physicsObject = NULL;
 	isInit = init();
 	
-	loadObj("../CPSC585/model/box.obj");
+	//loadObj("../CPSC585/model/box.obj");
 }
 
-/*
-*	Creates an entity and tries to load the obj model passed as a parameter
-*
-*	Parameter:
-*	filename - location of the obj file
-*/
-Entity::Entity(char* filename)
+Entity::Entity(char* filename, btScalar &mass, btTransform &trans, btVector3 &inertia)
 {
 	if(filename != NULL)
 	{
-		isInit = init();
-
-		loadObj(filename);
-	}
-	else
-	{
 		renderObject = NULL;
+		physicsObject = NULL;
+
+		isInit = init();
+		loadObj(filename, mass, trans, inertia);
 	}
 }
 
@@ -58,10 +50,8 @@ Entity::~Entity()
 */
 bool Entity::init()
 {
+
 	position = btVector3(0,0,0);
-	
-	cf = btMatrix3x3();
-	cf.setIdentity();
 	
 	tangent = btVector3(0, 0, 1);
 	normal = btVector3(0, 1, 0);
@@ -129,16 +119,78 @@ void Entity::rotate(const btVector3 &axis, int deg)
 
 }
 
+btScalar* Entity::getGLMatrix()
+{
+	btScalar* glMat = new btScalar[16];
+	btTransform trans;// = new btTransform();
+	physicsObject->getMotionState()->getWorldTransform(trans);
+
+	trans.getOpenGLMatrix(glMat);
+
+	return glMat;
+}
+
+btVector3 Entity::getPosition()
+{
+	btTransform transM = physicsObject->getWorldTransform();
+
+	btVector3 pos = transM.getOrigin();
+
+	return pos;
+}
+
+btVector3 Entity::getTangent()
+{
+	btTransform transM = physicsObject->getWorldTransform();
+
+	btMatrix3x3 orientation = transM.getBasis();
+
+	btVector3 tan = orientation.getColumn(0);
+
+	return tan;
+
+}
+btVector3 Entity::getNormal()
+{
+	btTransform transM = physicsObject->getWorldTransform();
+
+	btMatrix3x3 orientation = transM.getBasis();
+
+	btVector3 nor = orientation.getColumn(1);
+
+	return nor;
+}
+btVector3 Entity::getBinormal()
+{
+
+	btTransform transM = physicsObject->getWorldTransform();
+
+	btMatrix3x3 orientation = transM.getBasis();
+
+	btVector3 bin = orientation.getColumn(2);
+
+	return bin;
+}
+
+
+
+
+
+
+
+
+
 /*
 *	Loads a given obj model to this entity.
+*	Generate the render and physics representation
 *
 *	Parameters:
 *	filename - location of the model
 *
 *	Return:
-*	whether or not the obj loaded sucessfully
+*	whether or not the render and physics rep loaded sucessfully
 */
-bool Entity::loadObj(char* filename)
+bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans, btVector3 &inertia)
 {
 	//printf("loading...\n");
 	
@@ -148,47 +200,109 @@ bool Entity::loadObj(char* filename)
 		{
 			delete renderObject;
 		}
+		if(physicsObject != NULL)
+		{
+			delete physicsObject;
+		}
 		
 		renderObject = new objLoader();
 
 		// returns 0 if fails to load
 		loaded = renderObject->load(filename);
 
+
+
+		// Generate the physics representation
 		if(loaded)
 		{
-			// generate triangle mesh for bullet
-			btTriangleMesh* bttm = new btTriangleMesh();
+			btCollisionShape* objShape;
 			
-			// generate the triangle mesh for bullet
-			for(int i = 0; i < renderObject->faceCount; i++)
+			// static rigid body
+			if(mass == 0.f)
 			{
-				obj_face* face = renderObject->faceList[i];	// get a triangle
-
-				obj_vector* vert0 = renderObject->vertexList[face->vertex_index[0]];
-				obj_vector* vert1 = renderObject->vertexList[face->vertex_index[1]];
-				obj_vector* vert2 = renderObject->vertexList[face->vertex_index[2]];
-
-				btVector3 btv0 = btVector3(vert0->e[0], vert0->e[1], vert0->e[2]);
-				btVector3 btv1 = btVector3(vert1->e[0], vert1->e[1], vert1->e[2]);
-				btVector3 btv2 = btVector3(vert2->e[0], vert2->e[1], vert2->e[2]);
+				// generate triangle mesh for bullet
+				btTriangleMesh* bttm = new btTriangleMesh();
 				
-				bttm->addTriangle(btv0, btv1, btv2, false);
+				// generate the triangle mesh for bullet
+				for(int i = 0; i < renderObject->faceCount; i++)
+				{
+					obj_face* face = renderObject->faceList[i];	// get a triangle
+
+					obj_vector* vert0 = renderObject->vertexList[face->vertex_index[0]];	//v0
+					obj_vector* vert1 = renderObject->vertexList[face->vertex_index[1]];	//v1
+					obj_vector* vert2 = renderObject->vertexList[face->vertex_index[2]];	//v2
+
+					btVector3 btv0 = btVector3(vert0->e[0], vert0->e[1], vert0->e[2]);
+					btVector3 btv1 = btVector3(vert1->e[0], vert1->e[1], vert1->e[2]);
+					btVector3 btv2 = btVector3(vert2->e[0], vert2->e[1], vert2->e[2]);
+					
+					bttm->addTriangle(btv0, btv1, btv2, false);	// addTriangle(v0, v1, v2, removeDupes)
+				}
+				
+				//printf("static body\n");
+				objShape = new btBvhTriangleMeshShape(bttm, true, true);
+			}
+			// dynamic rigid body
+			else
+			{
+				//printf("dynamic body\n");
+				//objShape = new btGImpactMeshShape(bttm);
+				//objShape = new btConvexHullShape();
+				btConvexHullShape* tempShape = new btConvexHullShape();
+
+				for(int i = 0; i < renderObject->faceCount; i++)
+				{
+					obj_face* face = renderObject->faceList[i];	// get a triangle
+
+					obj_vector* vert0 = renderObject->vertexList[face->vertex_index[0]];	//v0
+					obj_vector* vert1 = renderObject->vertexList[face->vertex_index[1]];	//v1
+					obj_vector* vert2 = renderObject->vertexList[face->vertex_index[2]];	//v2
+
+					btVector3 btv0 = btVector3(vert0->e[0], vert0->e[1], vert0->e[2]);
+					btVector3 btv1 = btVector3(vert1->e[0], vert1->e[1], vert1->e[2]);
+					btVector3 btv2 = btVector3(vert2->e[0], vert2->e[1], vert2->e[2]);
+
+				
+					tempShape->addPoint(btv0);
+					tempShape->addPoint(btv1);
+					tempShape->addPoint(btv2);
+				}
+
+
+				objShape = tempShape;
+
+				//objShape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
 			}
 
-			physicsObject = new btBvhTriangleMeshShape(bttm, true, true);
+
+			//btBvhTriangleMeshShape* objShape = new btBvhTriangleMeshShape(bttm, true, true);
+
+			//btVector3 fallInertia(0, 0, 0);
+			//objShape->calculateLocalInertia(1, fallInertia);
+
+			// btDefaultMotionState(orientiation matrix, position)
+			// need to pass orientation and position at the start
+			btDefaultMotionState* entMotionState = new btDefaultMotionState(trans);
+
+			// entRigidBodyCI(mass, motion state, collision shape, inertia);
+			// need to update the mass to make it as a variable?
+			btRigidBody::btRigidBodyConstructionInfo entRigidBodyCI(mass,entMotionState,objShape,inertia);
+
+			physicsObject = new btRigidBody(entRigidBodyCI);
+			//printf("collsion flags %d\n", physicsObject->getCollisionFlags());
 
 			return true;
 		}
 	}
 
-	return false;
+	return false;	// render and physics representations failed to init
 }
 
 /*
 *	debug console output
 */
 void Entity::debug()
-{
+{	
 	printf("-----------------------------------------------\n");
 	printf("Pos: (%f, %f, %f)\n", position.x(), position.y(), position.z());
 	printf("\n");
@@ -204,12 +318,17 @@ void Entity::debug()
 */
 std::string Entity::toString()
 {
-	std::stringstream ss;
+	btVector3 pos = getPosition();
+	btVector3 tan = getTangent();
+	btVector3 nor = getNormal();
+	btVector3 bin = getBinormal();
 
-	ss << "Pos: (" << position.x() << ", " << position.y() << ", " << position.z() << ")\n";
-	ss << "Tangent: (" << tangent.x() << ", " << tangent.y() << ", " << tangent.z() << ")\n";
-	ss << "Normal: (" << normal.x() << ", " << normal.y() << ", " << normal.z() << ")\n";
-	ss << "Binormal: (" << binormal.x() << ", " << binormal.y() << ", " << binormal.z() << ")";
+
+	std::stringstream ss;
+	ss << "Pos: (" << pos.x() << ", " << pos.y() << ", " << pos.z() << ")\n";
+	ss << "Tangent: (" << tan.x() << ", " << tan.y() << ", " << tan.z() << ")\n";
+	ss << "Normal: (" << nor.x() << ", " << nor.y() << ", " << nor.z() << ")\n";
+	ss << "Binormal: (" << bin.x() << ", " << bin.y() << ", " << bin.z() << ")";
 
 	return ss.str();
 }

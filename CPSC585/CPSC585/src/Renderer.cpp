@@ -434,22 +434,37 @@ void Renderer::drawEntity(Entity &entity)
 	n = entity.normal;
 	b = entity.binormal;
 
-/*
-	t = entity.cf.getColumn(0);
-	n = entity.cf.getColumn(1);
-	b = entity.cf.getColumn(2);
-*/
 	glPushMatrix();
 
-	glTranslatef(p.x(), p.y(), p.z());
+	//glTranslatef(p.x(), p.y(), p.z());
 
+
+	btScalar* matrix = entity.getGLMatrix();
+/*
+	printf("%f, %f, %f, %f\n", matrix[0], matrix[1], matrix[2], matrix[3]);
+	printf("%f, %f, %f, %f\n", matrix[4], matrix[5], matrix[6], matrix[7]);
+	printf("%f, %f, %f, %f\n", matrix[8], matrix[9], matrix[10], matrix[11]);
+	printf("%f, %f, %f, %f\n", matrix[12], matrix[13], matrix[14], matrix[15]);
+*/
+	glMultMatrixf(matrix);
+
+	delete[] matrix;
+
+/*
+
+	btScalar rMatrix[] = {matrix[0], matrix[1], matrix[2], matrix[3],
+						  matrix[4], matrix[5], matrix[6], matrix[7],
+						  matrix[8], matrix[9], matrix[10], matrix[11],
+						  matrix[12], matrix[13], matrix[14], 1};
+*/	
+/*
 	float rMatrix[] = {t.x(), n.x(), b.x(), 0,
                        t.y(), n.y(), b.y(), 0,
                        t.z(), n.z(), b.z(), 0,
                        0, 0, 0, 1};
 
 	glMultMatrixf(rMatrix);
-
+*/
 	// for each face in the model
 	for(int i = 0; i < renderObject->faceCount; i++)
 	{

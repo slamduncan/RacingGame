@@ -2,6 +2,7 @@
 #define PHYSICS_H
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
+#include "Entity.h"
 
 class Physics
 {
@@ -11,7 +12,8 @@ public:
 
 	void step();
 	void setGravity(const btVector3 &gravity);
-
+	void addEntity(const Entity &ent);
+	void removeEntity(const Entity &ent);
 
 	
 protected:
