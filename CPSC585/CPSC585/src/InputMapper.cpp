@@ -1,0 +1,15 @@
+#include "InputMapper.h"
+
+void InputMapper::updateRotation(double controllerInputX, double controllerInputY){
+	rotation = btQuaternion(controllerInputX, controllerInputY, 0, 0);
+
+}
+
+void InputMapper::updateRotation(AnalogEvent *e){
+	rotation = btQuaternion(e->getXVal(), e->getYVal(), 0, 0);
+	rotation.normalize();
+}
+
+btQuaternion InputMapper::getRotaion(){return rotation;}
+
+InputMapper::InputMapper() : analogObserver(this, &InputMapper::updateRotation){}

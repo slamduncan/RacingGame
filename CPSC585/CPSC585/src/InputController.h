@@ -23,12 +23,13 @@ private:
 	//TriggerEvent *triggerEvent;
 	//void update();
 	
-	EventSystemHandler* e;
+	EventSystemHandler* evSys;
 
 public:		
 	void update(SDL_Event cntrlEvent);
 	void emitTriggers();
 	void emitButtons();
+	void emitLeftAnalog();
 	static void initSDLJoystick();
 	enum Button {A_button, B_button, X_button, Y_button, L_Bump, R_Bump, Back_button, Start_button, L_Analog, R_Analog};
 	InputController();

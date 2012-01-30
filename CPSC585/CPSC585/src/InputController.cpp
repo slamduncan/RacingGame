@@ -4,6 +4,7 @@
 #include "EventSystemHandler.h"
 #include "ButtonEvent.h"
 #include "TriggerEvent.h"
+#include "AnalogEvent.h"
 #define MAX_AXIS_VAL 32767.0
 #define TRIGGER_LIMIT 4000
 
@@ -37,7 +38,7 @@ bool InputController::initialize(int controllerIndex){
 		if(stick == NULL)
 			return false;
 	}
-	 e = EventSystemHandler::getInstance();
+	 evSys = EventSystemHandler::getInstance();
 	return true;
 }
 
@@ -49,14 +50,18 @@ InputController::~InputController(){
 void InputController::emitTriggers(){
 //	triggerEvent->setValue(triggers);
 //	triggerEvent->setNormValue(normTriggers);
-	e->emitEvent(new TriggerEvent(triggers, normTriggers));
+	evSys->emitEvent(new TriggerEvent(triggers, normTriggers));
 }
 
 void InputController::emitButtons(){
-	if (A){e->emitEvent(new ButtonEvent(A_button));}
-	if (X){e->emitEvent(new ButtonEvent(X_button));}
-	if (Y){e->emitEvent(new ButtonEvent(Y_button));}
-	if (B){e->emitEvent(new ButtonEvent(B_button));}
+	if (A){evSys->emitEvent(new ButtonEvent(A_button));}
+	if (X){evSys->emitEvent(new ButtonEvent(X_button));}
+	if (Y){evSys->emitEvent(new ButtonEvent(Y_button));}
+	if (B){evSys->emitEvent(new ButtonEvent(B_button));}
+}
+
+void InputController::emitLeftAnalog(){
+	evSys->emitEvent(new AnalogEvent(leftAnaX, normLeftAnaX, leftAnaY, normLeftAnaY));
 }
 	
 
@@ -131,7 +136,7 @@ void InputController::update(SDL_Event cntrlEvent){
 						if (triggerInputLimit(cntrlEvent.jaxis.value)){
 							triggers = cntrlEvent.jaxis.value;
 							normTriggers = triggers/MAX_AXIS_VAL;
-							e->emitEvent(new TriggerEvent(triggers, normTriggers));
+							evSys->emitEvent(new TriggerEvent(triggers, normTriggers));
 						}
 						else {
 							triggers = 0;
@@ -170,7 +175,7 @@ void InputController::update(SDL_Event cntrlEvent){
 				case A_button:
 					{
 						Event* ev = new ButtonEvent(A_button);
-						e->emitEvent(ev);
+						evSys->emitEvent(ev);
 						A = true;
 						break;
 					}
@@ -178,7 +183,7 @@ void InputController::update(SDL_Event cntrlEvent){
 				case B_button:
 					{
 						Event* ev = new ButtonEvent(B_button);
-						e->emitEvent(ev);
+						evSys->emitEvent(ev);
 						B = true;
 						break;
 					}
@@ -187,7 +192,7 @@ void InputController::update(SDL_Event cntrlEvent){
 				case X_button:
 					{						
 						Event* ev = new ButtonEvent(X_button);
-						e->emitEvent(ev);
+						evSys->emitEvent(ev);
 						X = true;
 						break;
 					}
@@ -195,7 +200,7 @@ void InputController::update(SDL_Event cntrlEvent){
 				case Y_button:
 					{
 						Event* ev = new ButtonEvent(Y_button);
-						e->emitEvent(ev);
+						evSys->emitEvent(ev);
 						Y = true;
 						break;
 					}
@@ -203,7 +208,7 @@ void InputController::update(SDL_Event cntrlEvent){
 				case L_Bump:
 					{
 						Event* ev = new ButtonEvent(L_Bump);
-						e->emitEvent(ev);
+						evSys->emitEvent(ev);
 						leftBump = true;
 						break;
 					}
@@ -211,7 +216,7 @@ void InputController::update(SDL_Event cntrlEvent){
 				case R_Bump:
 					{
 						Event* ev = new ButtonEvent(R_Bump);
-						e->emitEvent(ev);
+						evSys->emitEvent(ev);
 						rightBump = true;
 						break;
 					}
@@ -219,7 +224,7 @@ void InputController::update(SDL_Event cntrlEvent){
 				case Start_button:
 					{
 						Event* ev = new ButtonEvent(Start_button);
-						e->emitEvent(ev);
+						evSys->emitEvent(ev);
 						start = true;
 						break;
 					}

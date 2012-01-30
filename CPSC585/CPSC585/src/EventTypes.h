@@ -6,6 +6,7 @@ public:
 	enum EventType {
 		BUTTON,
 		TRIGGER,
+		ANALOG,
 		EVENTS_NUM		
 	};
 };

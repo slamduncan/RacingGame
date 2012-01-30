@@ -9,6 +9,7 @@
 #include "TestClass.h"
 #include "Car.h"
 #include <windows.h>
+#include "InputMapper.h"
 
 // "vector" for entities
 // we might just make it so that each type of specialized entity
@@ -145,7 +146,8 @@ int main(int argc, char** argv)
 		/* Error on initalizing controller -KD */
 	}	
 		
-	evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
+	//evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
+	evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
 
 	ph->setGravity(btVector3(0, -10, 0));
 
@@ -212,6 +214,7 @@ int main(int argc, char** argv)
 		// AI
 		controller1.emitTriggers();
 		controller1.emitButtons();
+		controller1.emitLeftAnalog();
 		updateRot();
 		updateEntityPosition(*(entityList->at(0)), controller1);
 
