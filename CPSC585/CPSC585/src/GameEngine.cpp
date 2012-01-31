@@ -156,10 +156,12 @@ int main(int argc, char** argv)
 	// RENDERER DEBUG TESTING
 	//
 	Car *car1 = new Car();
+	Car *car2 = new Car();
 	Entity* testGround = new Entity();
 
 	btScalar carMass = 1;
-	btTransform carT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 10, 0));
+	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0));
+	btTransform carT2 = btTransform(btQuaternion(0, .5, .5, 1), btVector3(.5, 1.5, 0));
 
 	btScalar groundMass = 0;
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
@@ -167,7 +169,8 @@ int main(int argc, char** argv)
 	btVector3 inertia = btVector3(0, 0, 0);
 	
 	//char* filename, btScalar &mass, btTransform &orientation, btVecto3 &pos, btVector3 inertia	
-	car1->loadObj("../CPSC585/model/box.obj", carMass, carT, inertia);
+	car1->loadObj("../CPSC585/model/box.obj", carMass, carT1, inertia);
+	car2->loadObj("../CPSC585/model/box.obj", carMass, carT2, inertia);
 	testGround->loadObj("../CPSC585/model/groundBox.obj", groundMass, groundT, inertia);
 /*
 	Entity *test = new Entity("../CPSC585/model/box.obj");
@@ -185,6 +188,7 @@ int main(int argc, char** argv)
 	test3->position += offset3;
 */
 	entityList->push_back(car1);
+	entityList->push_back(car2);
 	entityList->push_back(testGround);
 //	entityList->push_back(test);
 //	entityList->push_back(test2);
@@ -198,6 +202,7 @@ int main(int argc, char** argv)
 
 	// PHYSICS DEUBG
 	ph->addEntity(*car1);	// add the car to the physics world
+	ph->addEntity(*car2);
 	ph->addEntity(*testGround);	// add the ground to the physics world
 
 	// game loop

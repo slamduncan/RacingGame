@@ -223,6 +223,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\RotationEvent.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Shader.cpp"
 				>
 			</File>
@@ -298,6 +302,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Renderer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\RotationEvent.h"
 				>
 			</File>
 			<File

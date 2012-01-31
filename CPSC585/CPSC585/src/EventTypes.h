@@ -7,6 +7,7 @@ public:
 		BUTTON,
 		TRIGGER,
 		ANALOG,
+		ROTATION,
 		EVENTS_NUM		
 	};
 };

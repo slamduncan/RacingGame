@@ -16,6 +16,8 @@
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
 #include "objLoader.h"
+#include "MethodObserver.h"
+#include "RotationEvent.h"
 
 class Entity
 {
@@ -26,6 +28,9 @@ private:
 	btScalar mass;
 
 	bool init();
+
+	//Observer for the rotations:
+	MethodObserver<RotationEvent, Entity> rotationObserver;
 
 public:
 	
@@ -52,6 +57,13 @@ public:
 
 	// physics model (bullet)
 	btRigidBody* physicsObject;
+
+	//Observer
+	void observeRotation(RotationEvent *e){		
+		physicsObject->setAngularFactor(1000);
+		physicsObject->applyTorqueImpulse(e->getQuaternion().getAxis());
+	};
+	
 
 
 	Entity();

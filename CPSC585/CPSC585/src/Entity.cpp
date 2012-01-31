@@ -1,6 +1,7 @@
 #include "Entity.h"
+#include "EventSystemHandler.h"
 
-Entity::Entity()
+Entity::Entity(): rotationObserver(this, &Entity::observeRotation)
 {
 	renderObject = NULL;
 	physicsObject = NULL;
@@ -9,7 +10,7 @@ Entity::Entity()
 	//loadObj("../CPSC585/model/box.obj");
 }
 
-Entity::Entity(char* filename, btScalar &mass, btTransform &trans, btVector3 &inertia)
+Entity::Entity(char* filename, btScalar &mass, btTransform &trans, btVector3 &inertia) : rotationObserver(this, &Entity::observeRotation)
 {
 	if(filename != NULL)
 	{
@@ -59,6 +60,9 @@ bool Entity::init()
 
 	loaded = 0;
 	//renderObject = new objLoader();
+	
+	//EventSystemHandler::getInstance()->addObserver(&rotationObserver, EventTypes::ROTATION);
+	rotationObserver.init(EventTypes::ROTATION);
 
 	return true;
 }
