@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 	// RENDERER DEBUG TESTING
 	//
 //	Car *car1 = new Car();
-//	Car *car2 = new Car();
+//	Car *car2 = new Car();	
 	Entity* testGround = new Entity();
 
 	btScalar carMass = 1;
@@ -220,6 +220,7 @@ int main(int argc, char** argv)
 */
 //	entityList->push_back(car1);
 //	entityList->push_back(car2);
+	//entityList->push_back(car2);
 	entityList->push_back(testGround);
 //	entityList->push_back(test);
 //	entityList->push_back(test2);
@@ -233,6 +234,7 @@ int main(int argc, char** argv)
 
 	// PHYSICS DEUBG
 	//ph->addEntity(*car1);	// add the car to the physics world
+	//ph->addEntity(*car2);
 	//ph->addEntity(*car2);
 	ph->addEntity(*testGround);	// add the ground to the physics world
 
