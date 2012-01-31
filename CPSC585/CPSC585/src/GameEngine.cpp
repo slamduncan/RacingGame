@@ -155,9 +155,9 @@ int main(int argc, char** argv)
 	//
 	// RENDERER DEBUG TESTING
 	//
-	Car *car1 = new Car();	
-	//Car *car2 = new Car();
-	Entity* testGround = new Entity();	
+//	Car *car1 = new Car();
+//	Car *car2 = new Car();	
+	Entity* testGround = new Entity();
 
 	btScalar carMass = 1;
 	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0));
@@ -166,15 +166,42 @@ int main(int argc, char** argv)
 	btScalar groundMass = 0;
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
-	btVector3 inertia = btVector3(0, 0, 0);
+	btVector3 carInteria1 = btVector3(0, 0, 0);
+	btVector3 carInteria2 = btVector3(0, 0, 0);
+
+	btVector3 groundI = btVector3(0, 0, 0);
 	
 	//char* filename, btScalar &mass, btTransform &orientation, btVecto3 &pos, btVector3 inertia	
-	car1->loadObj("../CPSC585/model/box.obj", carMass, carT1, inertia);	
-	//car2->loadObj("../CPSC585/model/box.obj", carMass, carT2, inertia);
-	testGround->loadObj("../CPSC585/model/groundBox.obj", groundMass, groundT, inertia);
+//	car1->loadObj("../CPSC585/model/box.obj", carMass, carT1);
+//	car2->loadObj("../CPSC585/model/box.obj", carMass, carT2);
+	testGround->loadObj("../CPSC585/model/groundBox.obj", groundMass, groundT);
+
+	btVector3 offset = btVector3(-5, 0, -5);
+
+	for(int i = 0; i < 100; i++)
+	{
+		for(int j = 0; j < 10; j++)
+		{
+			for(int k = 0; k < 10;k++)
+			{
+				btTransform trans = btTransform(btQuaternion(0, 0, 0, 1), offset);
+				Car* temp = new Car();
+				temp->loadObj("../CPSC585/model/box.obj", carMass, trans);
+				offset += btVector3(1.5,0,0); 
+
+				entityList->push_back(temp);
+				ph->addEntity(*temp);
+			}
+			offset.setX(-5);
+			offset += btVector3(0,0,1.5);
+		}
+		offset.setZ(-5);
+		offset += btVector3(0, 1.5, 0);
+	}
+	
 
 	/* Inialize Observers used in entities */
-	car1->initObservers();
+	//car1->initObservers();
 	
 	/*
 	Entity *test = new Entity("../CPSC585/model/box.obj");
@@ -191,7 +218,8 @@ int main(int argc, char** argv)
 	test2->position += offset2;
 	test3->position += offset3;
 */
-	entityList->push_back(car1);
+//	entityList->push_back(car1);
+//	entityList->push_back(car2);
 	//entityList->push_back(car2);
 	entityList->push_back(testGround);
 //	entityList->push_back(test);
@@ -205,7 +233,8 @@ int main(int argc, char** argv)
 	ptex = ren->initTexture(planeTex);
 
 	// PHYSICS DEUBG
-	ph->addEntity(*car1);	// add the car to the physics world
+	//ph->addEntity(*car1);	// add the car to the physics world
+	//ph->addEntity(*car2);
 	//ph->addEntity(*car2);
 	ph->addEntity(*testGround);	// add the ground to the physics world
 
@@ -221,16 +250,19 @@ int main(int argc, char** argv)
 		process_events();
 		
 		// AI
-		controller1.emitTriggers();
-		controller1.emitButtons();
-		controller1.emitLeftAnalog();
+		//controller1.emitTriggers();
+		//controller1.emitButtons();
+		//controller1.emitLeftAnalog();
 		updateRot();
 		updateEntityPosition(*(entityList->at(0)), controller1);
 
 		// Render
 		// draw code goes here
-		btVector3 camPos = car1->position + car1->normal*2 + car1->tangent*5;
-		btVector3 camLookAt = car1->position + btVector3(0, 0, 0);
+		//btVector3 camPos = car1->position + car1->normal*2 + car1->tangent*5;
+		btVector3 camPos = btVector3(100,100,100);
+		
+		//btVector3 camLookAt = car1->position + btVector3(0, 0, 0);
+		btVector3 camLookAt = btVector3(0, 0, 0);
 		ren->clearGL();	// clear the screen
 		ren->setCamera(camPos, camLookAt);
 		

@@ -73,7 +73,7 @@ public:
 
 	Entity();
 	//Entity(char* filename);
-	Entity(char* filename, btScalar &mass, btTransform &trans, btVector3 &inertia);
+	Entity(char* filename, btScalar &mass, btTransform &trans);
 	~Entity();
 
 	void move(float x, float y, float z);
@@ -86,7 +86,7 @@ public:
 	btVector3 getNormal();
 	btVector3 getBinormal();
 
-	bool loadObj(char* filename, btScalar &mass, btTransform &trans, btVector3 &inertia);
+	bool loadObj(char* filename, btScalar &mass, btTransform &trans);
 
 	void debug();
 	std::string toString();
