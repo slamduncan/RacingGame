@@ -172,7 +172,11 @@ int main(int argc, char** argv)
 	car1->loadObj("../CPSC585/model/box.obj", carMass, carT1, inertia);
 	car2->loadObj("../CPSC585/model/box.obj", carMass, carT2, inertia);
 	testGround->loadObj("../CPSC585/model/groundBox.obj", groundMass, groundT, inertia);
-/*
+
+	/* Inialize Observers used in entities */
+	car1->initObservers();
+	
+	/*
 	Entity *test = new Entity("../CPSC585/model/box.obj");
 	Entity *test2 = new Entity("../CPSC585/model/box.obj");
 	Entity *test3 = new Entity("../CPSC585/model/box.obj");

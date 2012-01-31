@@ -60,11 +60,13 @@ bool Entity::init()
 
 	loaded = 0;
 	//renderObject = new objLoader();
-	
+	return true;
+}
+
+void Entity::initObservers(){
 	//EventSystemHandler::getInstance()->addObserver(&rotationObserver, EventTypes::ROTATION);
 	rotationObserver.init(EventTypes::ROTATION);
 
-	return true;
 }
 
 //
