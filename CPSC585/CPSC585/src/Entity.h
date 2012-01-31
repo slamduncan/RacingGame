@@ -63,8 +63,10 @@ public:
 
 	void observeRotation(RotationEvent *e){		
 //		physicsObject->setAngularFactor(1000);
+		
 		btVector3 test = e->getQuaternion().getAxis();
-		physicsObject->applyCentralForce(test);
+		//physicsObject->setAngularVelocity(test);
+		physicsObject->applyTorque(test);
 	};
 	
 

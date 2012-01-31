@@ -276,10 +276,10 @@ bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans, btVecto
 
 
 				objShape = tempShape;
+				objShape->calculateLocalInertia(mass,inertia);
 
 				//objShape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
-			}
-
+			}			
 
 			//btBvhTriangleMeshShape* objShape = new btBvhTriangleMeshShape(bttm, true, true);
 
