@@ -1,6 +1,7 @@
 #include "Entity.h"
+#include "EventSystemHandler.h"
 
-Entity::Entity()
+Entity::Entity(): rotationObserver(this, &Entity::observeRotation)
 {
 	renderObject = NULL;
 	physicsObject = NULL;
@@ -9,7 +10,7 @@ Entity::Entity()
 	//loadObj("../CPSC585/model/box.obj");
 }
 
-Entity::Entity(char* filename, btScalar &mass, btTransform &trans, btVector3 &inertia)
+Entity::Entity(char* filename, btScalar &mass, btTransform &trans) : rotationObserver(this, &Entity::observeRotation)
 {
 	if(filename != NULL)
 	{
@@ -17,7 +18,7 @@ Entity::Entity(char* filename, btScalar &mass, btTransform &trans, btVector3 &in
 		physicsObject = NULL;
 
 		isInit = init();
-		loadObj(filename, mass, trans, inertia);
+		loadObj(filename, mass, trans);
 	}
 }
 
@@ -59,8 +60,13 @@ bool Entity::init()
 
 	loaded = 0;
 	//renderObject = new objLoader();
-
 	return true;
+}
+
+void Entity::initObservers(){
+	//EventSystemHandler::getInstance()->addObserver(&rotationObserver, EventTypes::ROTATION);
+	rotationObserver.init(EventTypes::ROTATION);
+
 }
 
 //
@@ -190,7 +196,7 @@ btVector3 Entity::getBinormal()
 *	Return:
 *	whether or not the render and physics rep loaded sucessfully
 */
-bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans, btVector3 &inertia)
+bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans)
 {
 	//printf("loading...\n");
 	
@@ -216,62 +222,46 @@ bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans, btVecto
 		if(loaded)
 		{
 			btCollisionShape* objShape;
+			btVector3 inertia(0,0,0);
+				
+			// generate triangle mesh for bullet
+			btTriangleMesh* bttm = new btTriangleMesh();
 			
+			// generate the triangle mesh for bullet
+			for(int i = 0; i < renderObject->faceCount; i++)
+			{
+				obj_face* face = renderObject->faceList[i];	// get a triangle
+
+				obj_vector* vert0 = renderObject->vertexList[face->vertex_index[0]];	//v0
+				obj_vector* vert1 = renderObject->vertexList[face->vertex_index[1]];	//v1
+				obj_vector* vert2 = renderObject->vertexList[face->vertex_index[2]];	//v2
+
+				btVector3 btv0 = btVector3((float)vert0->e[0], (float)vert0->e[1], (float)vert0->e[2]);
+				btVector3 btv1 = btVector3((float)vert1->e[0], (float)vert1->e[1], (float)vert1->e[2]);
+				btVector3 btv2 = btVector3((float)vert2->e[0], (float)vert2->e[1], (float)vert2->e[2]);
+				
+				bttm->addTriangle(btv0, btv1, btv2, false);	// addTriangle(v0, v1, v2, removeDupes)
+			}
+
+
 			// static rigid body
 			if(mass == 0.f)
 			{
-				// generate triangle mesh for bullet
-				btTriangleMesh* bttm = new btTriangleMesh();
-				
-				// generate the triangle mesh for bullet
-				for(int i = 0; i < renderObject->faceCount; i++)
-				{
-					obj_face* face = renderObject->faceList[i];	// get a triangle
-
-					obj_vector* vert0 = renderObject->vertexList[face->vertex_index[0]];	//v0
-					obj_vector* vert1 = renderObject->vertexList[face->vertex_index[1]];	//v1
-					obj_vector* vert2 = renderObject->vertexList[face->vertex_index[2]];	//v2
-
-					btVector3 btv0 = btVector3(vert0->e[0], vert0->e[1], vert0->e[2]);
-					btVector3 btv1 = btVector3(vert1->e[0], vert1->e[1], vert1->e[2]);
-					btVector3 btv2 = btVector3(vert2->e[0], vert2->e[1], vert2->e[2]);
-					
-					bttm->addTriangle(btv0, btv1, btv2, false);	// addTriangle(v0, v1, v2, removeDupes)
-				}
 				
 				//printf("static body\n");
 				objShape = new btBvhTriangleMeshShape(bttm, true, true);
+				//objShape = new btStaticPlaneShape(btVector3(0, -10, 0), trans.getOrigin().getY());
 			}
 			// dynamic rigid body
 			else
 			{
-				//printf("dynamic body\n");
-				//objShape = new btGImpactMeshShape(bttm);
-				//objShape = new btConvexHullShape();
-				btConvexHullShape* tempShape = new btConvexHullShape();
 
-				for(int i = 0; i < renderObject->faceCount; i++)
-				{
-					obj_face* face = renderObject->faceList[i];	// get a triangle
+				objShape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
+				//objShape = new btConvexTriangleMeshShape(bttm, true);
 
-					obj_vector* vert0 = renderObject->vertexList[face->vertex_index[0]];	//v0
-					obj_vector* vert1 = renderObject->vertexList[face->vertex_index[1]];	//v1
-					obj_vector* vert2 = renderObject->vertexList[face->vertex_index[2]];	//v2
-
-					btVector3 btv0 = btVector3(vert0->e[0], vert0->e[1], vert0->e[2]);
-					btVector3 btv1 = btVector3(vert1->e[0], vert1->e[1], vert1->e[2]);
-					btVector3 btv2 = btVector3(vert2->e[0], vert2->e[1], vert2->e[2]);
+				objShape->calculateLocalInertia(mass, inertia);
 
 				
-					tempShape->addPoint(btv0);
-					tempShape->addPoint(btv1);
-					tempShape->addPoint(btv2);
-				}
-
-
-				objShape = tempShape;
-
-				//objShape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
 			}
 
 
@@ -286,6 +276,9 @@ bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans, btVecto
 
 			// entRigidBodyCI(mass, motion state, collision shape, inertia);
 			// need to update the mass to make it as a variable?
+
+			//printf("inertia is (%f, %f, %f)\n", inertia.getX(), inertia.getY(), inertia.getZ());
+
 			btRigidBody::btRigidBodyConstructionInfo entRigidBodyCI(mass,entMotionState,objShape,inertia);
 
 			physicsObject = new btRigidBody(entRigidBodyCI);

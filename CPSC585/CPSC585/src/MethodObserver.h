@@ -2,6 +2,7 @@
 #define METHODOBSERVER_H
 
 #include "TypedObserver.h"
+#include "EventSystemHandler.h"
 
 template <class ET, class ObservingClassType>
 class MethodObserver : public TypedObserver<ET>{
@@ -13,6 +14,9 @@ public:
 	void Observe(ET *e){
 		//(objectInstance->*Method)(e);
 		(objectInstance->*funcPointer)(e);
+	}
+	void init(EventTypes::EventType evType){
+		EventSystemHandler::getInstance()->addObserver(this, evType);
 	}
 };
 #endif

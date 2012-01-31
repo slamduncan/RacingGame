@@ -16,6 +16,8 @@
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
 #include "objLoader.h"
+#include "MethodObserver.h"
+#include "RotationEvent.h"
 
 class Entity
 {
@@ -26,6 +28,9 @@ private:
 	btScalar mass;
 
 	bool init();
+
+	//Observer for the rotations:
+	MethodObserver<RotationEvent, Entity> rotationObserver;
 
 public:
 	
@@ -53,10 +58,20 @@ public:
 	// physics model (bullet)
 	btRigidBody* physicsObject;
 
+	//Observer
+	void initObservers();
+
+	void observeRotation(RotationEvent *e){		
+//		physicsObject->setAngularFactor(1000);
+		btVector3 test = e->getQuaternion().getAxis();
+		physicsObject->applyCentralForce(test);
+	};
+	
+
 
 	Entity();
 	//Entity(char* filename);
-	Entity(char* filename, btScalar &mass, btTransform &trans, btVector3 &inertia);
+	Entity(char* filename, btScalar &mass, btTransform &trans);
 	~Entity();
 
 	void move(float x, float y, float z);
@@ -69,7 +84,7 @@ public:
 	btVector3 getNormal();
 	btVector3 getBinormal();
 
-	bool loadObj(char* filename, btScalar &mass, btTransform &trans, btVector3 &inertia);
+	bool loadObj(char* filename, btScalar &mass, btTransform &trans);
 
 	void debug();
 	std::string toString();
