@@ -285,6 +285,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LeftAnalogEvent.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\MethodObserver.h"
 				>
 			</File>
