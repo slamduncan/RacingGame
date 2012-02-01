@@ -3,6 +3,9 @@
 #include "Renderer.h"
 #include "Entity.h"
 #include "InputController.h"
+#include <time.h>
+#include <sstream>
+#include <iostream>
 
 //Test stuff
 #include "EventSystemHandler.h"
@@ -127,9 +130,9 @@ void updateRot(){
 
 // Engine Main
 int main(int argc, char** argv)
-{
+{	
 	// INITIALIZATIONS
-	bool renInit = ren->init();
+	bool renInit = ren->init();	
 	
 	//ren->initSDL();	// init SDL for drawing window
 	//ren->initGL();	// initializing opengl stuff
@@ -178,7 +181,7 @@ int main(int argc, char** argv)
 
 	btVector3 offset = btVector3(-5, 0, -5);
 
-	for(int i = 0; i < 100; i++)
+	for(int i = 0; i < 10; i++)
 	{
 		for(int j = 0; j < 10; j++)
 		{
@@ -238,56 +241,73 @@ int main(int argc, char** argv)
 	//ph->addEntity(*car2);
 	ph->addEntity(*testGround);	// add the ground to the physics world
 
+
+	//Set inital game time
+	Uint32 currentTime = SDL_GetTicks();
+	Uint32 oldTime = SDL_GetTicks();
+	int frameCount = 0;
+	char frames[30];
+
 	// game loop
 	while(1)
 	{		
-		//printf("looping\n");
-		// Physics
+		////printf("looping\n");
+		//// Physics
 		ph->step();
 
 
-		// Inputs
+		//// Inputs
 		process_events();
-		
-		// AI
-		//controller1.emitTriggers();
-		//controller1.emitButtons();
-		//controller1.emitLeftAnalog();
+		//
+		//// AI
+		////controller1.emitTriggers();
+		////controller1.emitButtons();
+		////controller1.emitLeftAnalog();
 		updateRot();
 		updateEntityPosition(*(entityList->at(0)), controller1);
 
 		// Render
 		// draw code goes here
-		//btVector3 camPos = car1->position + car1->normal*2 + car1->tangent*5;
+		////btVector3 camPos = car1->position + car1->normal*2 + car1->tangent*5;
 		btVector3 camPos = btVector3(100,100,100);
-		
-		//btVector3 camLookAt = car1->position + btVector3(0, 0, 0);
+		//
+		////btVector3 camLookAt = car1->position + btVector3(0, 0, 0);
 		btVector3 camLookAt = btVector3(0, 0, 0);
 		ren->clearGL();	// clear the screen
 		ren->setCamera(camPos, camLookAt);
-		
-		//ren->textureOn(ptex);
-		//ren->drawPlane(-2);
-		//ren->drawEntity(*planeTest);
-		
-		//ren->textureOff();
+		//
+		////ren->textureOn(ptex);
+		////ren->drawPlane(-2);
+		////ren->drawEntity(*planeTest);
+		//
+		////ren->textureOff();
 
 		for(int i = 0; i < entityList->size(); i++)
 		{
 			ren->drawEntity(*(entityList->at(i)));
 		}
 
-		ren->glEnable2D();
-		ren->outputText((*(entityList->at(0))).toString(), 0, 255, 0, 500, 200);
-		ren->outputText("This is a multi\nline test to see if \nnewlines are working correctly", 255, 255, 255, 0, 360);
-		ren->outputText("I am testing to see if obj models will load and draw correctly", 255, 255, 255, 0, 0);
+		//ren->glEnable2D();
+		//ren->outputText((*(entityList->at(0))).toString(), 0, 255, 0, 500, 200);
+		//ren->outputText("This is a multi\nline test to see if \nnewlines are working correctly", 255, 255, 255, 0, 360);
+		//ren->outputText("I am testing to see if obj models will load and draw correctly", 255, 255, 255, 0, 0);
+		frameCount++;
+		if((currentTime - oldTime) > 1000){
+		//	sprintf_s(frames, "%d FPS", frameCount);		
+		//	ren->outputText(frames, 0, 255, 0, 10, 690);
+		std::cout << frameCount << "\n";
+			frameCount = 0;
+			oldTime = currentTime;
+		}		
+		//ren->outputText(frames, 0, 255, 0, 10, 700);
+		currentTime = SDL_GetTicks();
 		ren->glDisable2D();
 
-		//ren.draw();		// draw things to the buffer
+		////ren.draw();		// draw things to the buffer
 		ren->updateGL();	// update the screen
 
-		// Misc?
-		// Compute FPS
+		//// Misc?
+		//// Compute FPS
 	}
 
 	return 0;
