@@ -18,10 +18,11 @@
 #include "SDL_ttf.h"
 #include "SDL_image.h"
 
+#include "LinearMath/btIDebugDraw.h"
 
-using namespace std;
 
-class Renderer
+
+class Renderer : public btIDebugDraw
 {
 private:
 	static Renderer *instance;
@@ -52,7 +53,7 @@ public:
 		return instance;
 	}
 
-	SDL_Surface* loadIMG(string filename);
+	SDL_Surface* loadIMG(std::string filename);
 	GLuint initTexture(SDL_Surface* image);
 	void textureOn(GLuint texID);
 	void textureOff();
@@ -65,15 +66,23 @@ public:
 	int initGL();
 	int initFont();
 
-	void outputText(string text, int r, int g, int b, int x, int y);
+	void outputText(std::string text, int r, int g, int b, int x, int y);
 
 	void setCamera(const btVector3& pos, const btVector3& lookAt); 
 
 	void draw();
-	void drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width = 1.0);
+	//Following functions for bullet debug. API is here http://bulletphysics.com/Bullet/BulletFull/classbtIDebugDraw.html	
+	void drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &colour){};
+	void drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance, int lifeTime, const btVector3 &color){};
+	void reportErrorWarning(const char *warningString){};
+	void draw3dText(const btVector3 &location, const char *textString){};
+	void setDebugMode(int debugMode){};
+	int getDebugMode() const{return 0;};
+	
 	void drawEntity(Entity &entity);
 
 	void drawPlane(float height);
+	void drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width = 1.0);
 
 	void glEnable2D();
 	void glDisable2D();

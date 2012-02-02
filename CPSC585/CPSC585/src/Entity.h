@@ -18,6 +18,7 @@
 //#include "objLoader.h"
 #include "MethodObserver.h"
 #include "RotationEvent.h"
+#include "ForwardForceEvent.h"
 
 //TESTING ASSIMP for animated based models
 //#include "assimp.hpp"	//c++ interface
@@ -35,8 +36,9 @@ private:
 
 	bool init();
 
-	//Observer for the rotations:
+	//Observers
 	MethodObserver<RotationEvent, Entity> rotationObserver;
+	MethodObserver<ForwardForceEvent, Entity> forwardForceObserver;
 
 public:
 	// pointer to an array of 16 elements
@@ -62,14 +64,14 @@ public:
 		btVector3 temp = physicsObject->getAngularVelocity();
 		if (temp.length() < 5)
 		//physicsObject->setAngularVelocity(test);
-			physicsObject->applyTorque(test);
-		test.setX(test.getY());
-		test.setZ(test.getY());
-		test.setY(0);
-		test /= 3000;
-		
-		physicsObject->applyCentralImpulse(test);
+			physicsObject->applyTorque(test);		
 	};
+
+	void observeForwardForce(ForwardForceEvent *e){
+		btVector3 tan = getTangent() * (e->getNormForce());
+
+		physicsObject->applyCentralImpulse(tan);
+	}
 	
 
 

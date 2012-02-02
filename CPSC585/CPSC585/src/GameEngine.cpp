@@ -20,11 +20,15 @@
 // ie. carList, powerupList, etc
 #include "LinearMath\btAlignedObjectArray.h"
 
+using namespace std;
+
 // Other init
 // ie. Physics, AI, Renderer, Sound, Container for ents?
 Renderer* ren = Renderer::getInstance();
 
 Physics* ph = Physics::Inst();
+
+InputMapper* playerInput = new InputMapper();
 
 //Test Variables
 InputController controller1 = InputController();
@@ -152,9 +156,9 @@ int main(int argc, char** argv)
 	}	
 		
 	//evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
-	evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
+	//evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
 
-	ph->setGravity(btVector3(0, -10, 0));
+	ph->setGravity(btVector3(0, -50, 0));
 
 
 	//
@@ -246,11 +250,11 @@ int main(int argc, char** argv)
 
 		// Render
 		// draw code goes here
-		//btVector3 camPos = car1->position + car1->normal*2 + car1->tangent*5;
-		btVector3 camPos = btVector3(5,5,5);
+		btVector3 camPos = car1->getPosition() + car1->getNormal()*2 + car1->getTangent()*5;
+		//btVector3 camPos = btVector3(5,5,5);
 		//
-		//btVector3 camLookAt = car1->position + btVector3(0, 0, 0);
-		btVector3 camLookAt = btVector3(0, 0, 0);
+		btVector3 camLookAt = car1->getPosition() + btVector3(0, 0, 0);
+		//btVector3 camLookAt = btVector3(0, 0, 0);
 		ren->clearGL();	// clear the screen
 		ren->setCamera(camPos, camLookAt);
 		//
@@ -281,7 +285,7 @@ int main(int argc, char** argv)
 		}		
 		currentTime = SDL_GetTicks();
 		
-		stringstream ss;
+		std::stringstream ss;
 		ss << frameCount/counter;
 
 		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
