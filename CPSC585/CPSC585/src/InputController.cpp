@@ -63,7 +63,9 @@ void InputController::emitButtons(){
 void InputController::emitLeftAnalog(){
 	evSys->emitEvent(new AnalogEvent(leftAnaX, normLeftAnaX, leftAnaY, normLeftAnaY));
 }
-	
+void InputController::emitRightAnalog(){
+	evSys->emitEvent(new AnalogEvent(rightAnaX, normRightAnaX, rightAnaY, normRightAnaY));
+}	
 
 
 //

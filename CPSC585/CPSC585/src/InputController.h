@@ -30,6 +30,7 @@ public:
 	void emitTriggers();
 	void emitButtons();
 	void emitLeftAnalog();
+	void emitRightAnalog();
 	static void initSDLJoystick();
 	enum Button {A_button, B_button, X_button, Y_button, L_Bump, R_Bump, Back_button, Start_button, L_Analog, R_Analog};
 	InputController();
