@@ -235,6 +235,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\TextureManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\TriggerEvent.cpp"
 				>
 			</File>
@@ -318,6 +322,10 @@
 			</File>
 			<File
 				RelativePath=".\src\TestClass.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\TextureManager.h"
 				>
 			</File>
 			<File

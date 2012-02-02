@@ -9,6 +9,9 @@ Renderer::Renderer()
 	width = 1280;
 	height = 720;
 	bpp = 0;
+
+	tm = TextureManager::initialize();
+	//TextureManager::initialize();	// initialize our texture manager
 }
 
 // clean up
@@ -16,6 +19,15 @@ Renderer::~Renderer()
 {
 	TTF_CloseFont(debugFont);
 	TTF_Quit();
+
+	if(tm != NULL)
+	{
+		delete tm;
+	}
+	if(instance != NULL)
+	{
+		delete instance;
+	}
 }
 
 bool Renderer::init()
@@ -97,43 +109,59 @@ int Renderer::initGL()
 	//	GL options go here, ie glEnable, etc
 	//
 	
-	glShadeModel( GL_SMOOTH );	// smooth shading
-    //glCullFace( GL_BACK );	// remove back facing surfaces
-    //glFrontFace( GL_CCW );	// set front face objects to be in CCW direction
-    //glEnable( GL_CULL_FACE );	// allow removing culled surfaces
+	//glShadeModel(GL_FLAT);
+	glShadeModel(GL_SMOOTH);	// smooth shading
+    glCullFace(GL_BACK);	// remove back facing surfaces
+    //glFrontFace(GL_CCW);	// set front face objects to be in CCW direction
+    glEnable( GL_CULL_FACE );	// allow removing culled surfaces
 	glBlendFunc(GL_ONE, GL_ONE);	
 	//glEnable(GL_BLEND);
 
 
-	GLfloat whiteDir[4] = {1.0, 1.0, 1.0, 1.0};
-	GLfloat lightPos[4] = {5, 5, 0, 0};
-
+	GLfloat diff[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+	GLfloat spec[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	GLfloat amb[4] = {0.2f, 0.2f, 0.2f, 0.2f};
+	GLfloat lightPos[4] = {5.0f, 5.0f, 0.0f, 0.0f};
 
 	// enable lighting
 	glEnable(GL_LIGHTING);
 	// enable light 0
     glEnable(GL_LIGHT0);
     
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, whiteDir);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, whiteDir);
-    glMaterialf(GL_FRONT, GL_SHININESS, 30.0);
+	//glMaterialfv(GL_FRONT, GL_DIFFUSE, whiteDir);
+    //glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
+    //glMaterialf(GL_FRONT, GL_SHININESS, 1.0);
 	
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteDir);         // set the diffuse color for the light
-    glLightfv(GL_LIGHT0, GL_SPECULAR, whiteDir);        // set the specular color of the light
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPos);        // set the position of the light
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);         // set the diffuse color for the light
+    glLightfv(GL_LIGHT0, GL_SPECULAR, spec);			// set the specular color of the light
+    glLightfv(GL_LIGHT0, GL_AMBIENT, amb);			// set the specular color of the light
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);        // set the position of the light
 
 
 	glEnable(GL_COLOR_MATERIAL);						// allow shading for colored material
 	glEnable(GL_TEXTURE_2D);
 
-	GLenum err = glewInit();	// initialize GLEW
-    if (GLEW_OK != err)
+	GLenum glewCheck = glewInit();	// initialize GLEW
+    if (GLEW_OK != glewCheck)
     {
 		std::cout << "GLEW failed to initialize" << std::endl;
 		counter--;
     }
 	std::cout << "GLEW initialized" << std::endl;
 	
+	GLenum fboCheck = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+		
+	// error if it isn't
+	if (fboCheck != GL_FRAMEBUFFER_COMPLETE_EXT)
+	{
+		std::cout << "FBO failed to initialize" << std::endl;
+		//printf("Incomplete frame buffer object\n");
+		counter--;
+	}
+	std::cout << "FBO initialized" << std::endl;
+
+
+
 	glClearColor( 0, 0, 0, 0 );	// clear screen to black
 
     glViewport( 0, 0, width, height );	// set the viewport to be the resolution of the screen
@@ -428,8 +456,13 @@ void Renderer::drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, f
 	glBegin(GL_LINES);
 
 	glColor4f((float)r/255.0f, (float)g/255.0f, (float)b/255.0f, 1.0f);
-	glVertex3f(start.getX(), start.getY(), start.getZ());
-	glVertex3f(end.getX(), end.getY(), end.getZ());
+	
+	glVertex3fv(start.m_floats);
+	glVertex3fv(end.m_floats);
+	//glVertex3f(start.getX(), start.getY(), start.getZ());
+	//glVertex3f(end.getX(), end.getY(), end.getZ());
+
+	//end.m_floats
 
 	glEnd();
 
@@ -539,7 +572,6 @@ void Renderer::drawEntity(Entity &entity)
 
 void Renderer::drawPlane(float height)
 {
-	
 	glPushMatrix();
 	//glLoadIdentity();
 	

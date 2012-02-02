@@ -11,6 +11,7 @@
 
 #include "Shader.h"
 #include "Entity.h"
+#include "TextureManager.h"
 
 #include "SDL.h"
 #define NO_SDL_GLEXT
@@ -25,7 +26,8 @@ class Renderer
 {
 private:
 	static Renderer *instance;
-	
+	TextureManager* tm;
+
 	Renderer();	
 	
 	int width;

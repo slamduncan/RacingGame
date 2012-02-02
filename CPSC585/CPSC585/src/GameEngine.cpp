@@ -72,7 +72,7 @@ void process_events()
 			ren->quitSDL();
             break;
 		/* Handle controller Events ?  Does this lose the event?
-		- updated to not lose the event, but now must pass in controller events*/
+		- updated to not l ose the event, but now must pass in controller events*/
 		case SDL_JOYAXISMOTION:
 		{
 			controller1.update(event);	
@@ -135,11 +135,11 @@ int main(int argc, char** argv)
 {	
 	// INITIALIZATIONS
 	bool renInit = ren->init();	
-	
+/*	
 	ren->initSDL();	// init SDL for drawing window
 	ren->initGL();	// initializing opengl stuff
 	ren->initFont();
-
+*/
 	/* Added by Kent */
 	controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
 	if (!controller1.initialize(0)){
@@ -177,7 +177,7 @@ int main(int argc, char** argv)
 	btVector3 groundI = btVector3(0, 0, 0);
 	
 	//char* filename, btScalar &mass, btTransform &orientation, btVecto3 &pos, btVector3 inertia	
-	car1->loadObj("../CPSC585/model/box.obj", carMass, carT1);
+	car1->loadObj("../CPSC585/model/car.obj", carMass, carT1);
 //	car2->loadObj("../CPSC585/model/box.obj", carMass, carT2);
 	testGround->loadObj("../CPSC585/model/groundBox.obj", groundMass, groundT);
 	entityList->push_back(testGround);
