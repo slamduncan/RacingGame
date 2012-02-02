@@ -251,11 +251,11 @@ int main(int argc, char** argv)
 
 		// Render
 		// draw code goes here
-		//btVector3 camPos = car1->getPosition() + car1->getNormal()*2 + car1->getTangent()*5;
-		btVector3 camPos = btVector3(5,5,5);
+		btVector3 camPos = car1->getPosition() + car1->getNormal()*10 + car1->getTangent()*20;
+		//btVector3 camPos = btVector3(10,10,10);
 		//
-		//btVector3 camLookAt = car1->getPosition() + btVector3(0, 0, 0);
-		btVector3 camLookAt = btVector3(0, 0, 0);
+		btVector3 camLookAt = car1->getPosition() + btVector3(0, 0, 0);
+		//btVector3 camLookAt = btVector3(0, 0, 0);
 		ren->clearGL();	// clear the screen
 		ren->setCamera(camPos, camLookAt);
 		//
