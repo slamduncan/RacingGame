@@ -195,6 +195,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ForwardForceEvent.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\GameEngine.cpp"
 				>
 			</File>

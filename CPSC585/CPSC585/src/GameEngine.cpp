@@ -8,11 +8,11 @@
 #include <iostream>
 
 //Test stuff
-#include "EventSystemHandler.h"
+//#include "EventSystemHandler.h"
 #include "TestClass.h"
 #include "Car.h"
 #include <windows.h>
-#include "InputMapper.h"
+//#include "InputMapper.h"
 
 // "vector" for entities
 // we might just make it so that each type of specialized entity
@@ -28,11 +28,11 @@ Renderer* ren = Renderer::getInstance();
 
 Physics* ph = Physics::Inst();
 
-InputMapper* playerInput = new InputMapper();
+//InputMapper* playerInput = new InputMapper();
 
 //Test Variables
-InputController controller1 = InputController();
-EventSystemHandler* evSys = EventSystemHandler::getInstance();
+//InputController controller1 = InputController();
+//EventSystemHandler* evSys = EventSystemHandler::getInstance();
 
 
 btAlignedObjectArray<Entity*>* entityList = new btAlignedObjectArray<Entity*>();
@@ -79,16 +79,16 @@ void process_events()
 		- updated to not l ose the event, but now must pass in controller events*/
 		case SDL_JOYAXISMOTION:
 		{
-			controller1.update(event);	
+			//controller1.update(event);	
 		}
 		break;
 		case SDL_JOYBUTTONDOWN:
 			fprintf(stderr, "BUTTONS HOW DO THEY WORK\n");
-			controller1.update(event);
+			//controller1.update(event);
 
 			break;
 		case SDL_JOYBUTTONUP:
-			controller1.update(event);
+			//controller1.update(event);
 			
 			break;
         }
@@ -145,15 +145,16 @@ int main(int argc, char** argv)
 	ren->initFont();
 */
 	/* Added by Kent */
-	controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
-	if (!controller1.initialize(0)){
+	//controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
+	
+	//if (!controller1.initialize(0)){
 		//SDL_Delay(100);
 		/*ren->outputText("Connect Controller", 1, 0, 0, 1280/2, 720/2);
 		while(!controller1.initialize(0)){
 			Sleep(100);
 		}*/
 		/* Error on initalizing controller -KD */
-	}	
+	//}	
 		
 	//evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
 	//evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
@@ -242,19 +243,19 @@ int main(int argc, char** argv)
 		process_events();
 		//
 		//// AI
-		controller1.emitTriggers();
-		controller1.emitButtons();
-		controller1.emitLeftAnalog();
+		//controller1.emitTriggers();
+		//controller1.emitButtons();
+		//controller1.emitLeftAnalog();
 		//updateRot();
 		//updateEntityPosition(*(entityList->at(0)), controller1);
 
 		// Render
 		// draw code goes here
-		btVector3 camPos = car1->getPosition() + car1->getNormal()*2 + car1->getTangent()*5;
-		//btVector3 camPos = btVector3(5,5,5);
+		//btVector3 camPos = car1->getPosition() + car1->getNormal()*2 + car1->getTangent()*5;
+		btVector3 camPos = btVector3(5,5,5);
 		//
-		btVector3 camLookAt = car1->getPosition() + btVector3(0, 0, 0);
-		//btVector3 camLookAt = btVector3(0, 0, 0);
+		//btVector3 camLookAt = car1->getPosition() + btVector3(0, 0, 0);
+		btVector3 camLookAt = btVector3(0, 0, 0);
 		ren->clearGL();	// clear the screen
 		ren->setCamera(camPos, camLookAt);
 		//
