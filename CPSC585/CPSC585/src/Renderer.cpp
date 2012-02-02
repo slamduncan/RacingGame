@@ -143,6 +143,8 @@ int Renderer::initGL()
     gluPerspective( 60.0, ratio, 1.0, 1024.0 );	// need to fix this to change fov on the fly
 	glMatrixMode(GL_MODELVIEW);	// switch back to model view
 
+	glDisable2D();
+
 	return counter;
 }
 
@@ -416,6 +418,26 @@ void Renderer::draw()
 	glDisable2D();
 }
 
+void Renderer::drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width)
+{
+	assert(width >= 1);
+	
+	glPushMatrix();
+	glLineWidth(width);
+
+	glBegin(GL_LINES);
+
+	glColor4f((float)r/255.0f, (float)g/255.0f, (float)b/255.0f, 1.0f);
+	glVertex3f(start.getX(), start.getY(), start.getZ());
+	glVertex3f(end.getX(), end.getY(), end.getZ());
+
+	glEnd();
+
+	glLineWidth(1);	// we need to reset the line width back to default as to not effect other things
+	glPopMatrix();
+}
+
+
 /*
 *	Draws a given entity to the screen
 *
@@ -424,81 +446,92 @@ void Renderer::draw()
 */
 void Renderer::drawEntity(Entity &entity)
 {
-	objLoader* renderObject = entity.renderObject;
-	
-	btVector3 p, t, n, b;
-
-
-	p = entity.position;
-
-	t = entity.tangent;
-	n = entity.normal;
-	b = entity.binormal;
-
 	glPushMatrix();
 
-	//glTranslatef(p.x(), p.y(), p.z());
-
-
 	btScalar* matrix = entity.getGLMatrix();
-/*
-	printf("%f, %f, %f, %f\n", matrix[0], matrix[1], matrix[2], matrix[3]);
-	printf("%f, %f, %f, %f\n", matrix[4], matrix[5], matrix[6], matrix[7]);
-	printf("%f, %f, %f, %f\n", matrix[8], matrix[9], matrix[10], matrix[11]);
-	printf("%f, %f, %f, %f\n", matrix[12], matrix[13], matrix[14], matrix[15]);
-*/
+
 	glMultMatrixf(matrix);
 
-	delete[] matrix;
-
-/*
-
-	btScalar rMatrix[] = {matrix[0], matrix[1], matrix[2], matrix[3],
-						  matrix[4], matrix[5], matrix[6], matrix[7],
-						  matrix[8], matrix[9], matrix[10], matrix[11],
-						  matrix[12], matrix[13], matrix[14], 1};
-*/	
-/*
-	float rMatrix[] = {t.x(), n.x(), b.x(), 0,
-                       t.y(), n.y(), b.y(), 0,
-                       t.z(), n.z(), b.z(), 0,
-                       0, 0, 0, 1};
-
-	glMultMatrixf(rMatrix);
-*/
-	// for each face in the model
-	for(int i = 0; i < renderObject->faceCount; i++)
+	for(int i = 0; i < (int)entity.scene->mNumMeshes; i++)
 	{
-		// i'm assuming that all obj models will ONLY contain triangles
-		// get a face
+		const aiMesh* mesh = entity.scene->mMeshes[i];
 
-		obj_face* face = renderObject->faceList[i];
-
-		double* Kd;
-		if(renderObject->materialCount > 0)
+		/*
+		if(mesh->mColors[0] != NULL) 
 		{
-			Kd = renderObject->materialList[face->material_index]->diff;
+			glEnable(GL_COLOR_MATERIAL);
+		} else 
+		{
+			glDisable(GL_COLOR_MATERIAL);
+		}*/
 
-			glColor4f((GLfloat)Kd[0], (GLfloat)Kd[1], (GLfloat)Kd[2], 1.0);
+		if(entity.scene->HasMaterials())
+		{
+
+			//printf("i has found material\n");
+			const aiMaterial* mat = entity.scene->mMaterials[mesh->mMaterialIndex];
+			
+			float Kd[4];
+			aiColor4D diffuse;
+
+			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
+			{
+				Kd[0] = diffuse.r;
+				Kd[1] = diffuse.g;
+				Kd[2] = diffuse.b;
+				Kd[3] = diffuse.a;
+
+				//printf("%f, %f, %f, %f\n", Kd[0], Kd[1], Kd[2], Kd[3]);
+
+				//glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Kd);
+				glColor4fv(Kd);
+			}
 		}
 
-
-		glBegin(GL_TRIANGLES);
-
-		for(int j = 0; j < 3; j++)
+		for(int j = 0; j < (int)mesh->mNumFaces; j++)
 		{
-			obj_vector* vert = renderObject->vertexList[face->vertex_index[j]];	// get our vertex vector
-			
-			if(renderObject->normalCount > 0)
+			const aiFace* face = &mesh->mFaces[j];	// get a face
+
+			GLenum face_mode;
+
+			switch(face->mNumIndices) 
 			{
-				obj_vector* norm = renderObject->normalList[face->normal_index[j]];	// get our normal vector
-                glNormal3f((GLfloat)norm->e[0], (GLfloat)norm->e[1], (GLfloat)norm->e[2]);	// set the normal
+				case 1: face_mode = GL_POINTS; break;
+				case 2: face_mode = GL_LINES; break;
+				case 3: face_mode = GL_TRIANGLES; break;
+				default: face_mode = GL_POLYGON; break;
 			}
 
-			glVertex3f((GLfloat)vert->e[0], (GLfloat)vert->e[1], (GLfloat)vert->e[2]);	// draw the vertex
+			glBegin(face_mode);
+
+			for(unsigned int k = 0; k < face->mNumIndices; k++)
+			{
+				int index = face->mIndices[k];
+				
+				/*
+				// the model has a color
+				// need to check this as i don't think we ever get into this if statement
+				if(mesh->mColors[0] != NULL)
+				{
+					const aiColor4D *color = &mesh->mColors[0][index];
+					
+					glColor4f(color->r, color->g, color->b, color->a);
+				}
+
+				*/
+				//Color4f(&mesh->mColors[0][index]);
+				// the model has normal
+				if(mesh->mNormals != NULL)
+				{
+					glNormal3fv(&mesh->mNormals[index].x);
+				}
+				glVertex3fv(&mesh->mVertices[index].x);
+			}
+
+			glEnd();
 		}
 
-		glEnd();
+
 	}
 
 	glPopMatrix();
@@ -580,5 +613,5 @@ void Renderer::clearGL()
 */
 void Renderer::updateGL()
 {
-	SDL_GL_SwapBuffers();	
+	SDL_GL_SwapBuffers();
 }
