@@ -8,6 +8,7 @@ public:
 		TRIGGER,
 		ANALOG,
 		ROTATION,
+		FORWARD_FORCE,
 		EVENTS_NUM		
 	};
 };

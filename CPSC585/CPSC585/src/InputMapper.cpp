@@ -1,6 +1,7 @@
 #include "InputMapper.h"
 #include "EventSystemHandler.h"
 #include "RotationEvent.h"
+#include "ForwardForceEvent.h"
 
 void InputMapper::updateRotation(double controllerInputX, double controllerInputY){
 	rotation = btQuaternion(controllerInputX, controllerInputY, 0, 0);
@@ -15,6 +16,14 @@ void InputMapper::updateRotation(AnalogEvent *e){
 	EventSystemHandler::getInstance()->emitEvent(new RotationEvent(rotation));
 }
 
+void InputMapper::updateForwardForce(TriggerEvent *e){
+	EventSystemHandler::getInstance()->emitEvent(new ForwardForceEvent(btScalar(e->getValue()), btScalar(e->getNormValue())));
+}
+
 btQuaternion InputMapper::getRotaion(){return rotation;}
 
-InputMapper::InputMapper() : analogObserver(this, &InputMapper::updateRotation){}
+InputMapper::InputMapper() : analogObserver(this, &InputMapper::updateRotation), triggerObserver(this, &InputMapper::updateForwardForce)
+{	
+	analogObserver.init(EventTypes::ANALOG);
+	triggerObserver.init(EventTypes::TRIGGER);
+}

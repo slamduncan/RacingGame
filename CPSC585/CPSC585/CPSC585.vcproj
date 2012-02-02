@@ -281,6 +281,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ForwardForceEvent.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\InputController.h"
 				>
 			</File>
@@ -289,7 +293,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\LeftAnalogEvent.h"
+				RelativePath=".\src\LeftAnalogEvent.h"
 				>
 			</File>
 			<File
