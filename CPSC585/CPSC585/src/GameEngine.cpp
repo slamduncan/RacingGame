@@ -108,7 +108,8 @@ void updateEntityPosition(Entity &entIn, InputController &contrlIn){
 
 void updateRot(){
 
-			if(controller1.isADown())
+	/*		
+	if(controller1.isADown())
 			{
 				ren->quitSDL();
 			}
@@ -126,6 +127,7 @@ void updateRot(){
 					entityList->at(0)->rotate(entityList->at(0)->normal, 1);
 				}
 			}
+	*/
 }
 
 // Engine Main
@@ -158,8 +160,6 @@ int main(int argc, char** argv)
 	//
 	// RENDERER DEBUG TESTING
 	//
-//	Car *car1 = new Car();
-//	Car *car2 = new Car();	
 	Entity* testGround = new Entity();
 
 	btScalar carMass = 1;
@@ -174,18 +174,17 @@ int main(int argc, char** argv)
 
 	btVector3 groundI = btVector3(0, 0, 0);
 	
-	//char* filename, btScalar &mass, btTransform &orientation, btVecto3 &pos, btVector3 inertia	
-//	car1->loadObj("../CPSC585/model/box.obj", carMass, carT1);
-//	car2->loadObj("../CPSC585/model/box.obj", carMass, carT2);
 	testGround->loadObj("../CPSC585/model/groundBox.obj", groundMass, groundT);
+	entityList->push_back(testGround);
 
 	btVector3 offset = btVector3(-5, 0, -5);
 
-	for(int i = 0; i < 10; i++)
+	
+	for(int i = 0; i < 4; i++)
 	{
-		for(int j = 0; j < 10; j++)
+		for(int j = 0; j < 4; j++)
 		{
-			for(int k = 0; k < 10;k++)
+			for(int k = 0; k < 4;k++)
 			{
 				btTransform trans = btTransform(btQuaternion(0, 0, 0, 1), offset);
 				Car* temp = new Car();
@@ -202,51 +201,23 @@ int main(int argc, char** argv)
 		offset += btVector3(0, 1.5, 0);
 	}
 	
+	
 
 	/* Inialize Observers used in entities */
 	//car1->initObservers();
-	
-	/*
-	Entity *test = new Entity("../CPSC585/model/box.obj");
-	Entity *test2 = new Entity("../CPSC585/model/box.obj");
-	Entity *test3 = new Entity("../CPSC585/model/box.obj");
-*/
-	//Entity *planeTest = new Entity("../CPSC585/model/aaup.obj");
-
-	//planeTest->position += btVector3(0,-1,0);
-/*
-	btVector3 offset2(0.5, 0.5, 0.5);
-	btVector3 offset3(-0.5, 0.5, 0.5);
-
-	test2->position += offset2;
-	test3->position += offset3;
-*/
-//	entityList->push_back(car1);
-//	entityList->push_back(car2);
-	//entityList->push_back(car2);
-	entityList->push_back(testGround);
-//	entityList->push_back(test);
-//	entityList->push_back(test2);
-//	entityList->push_back(test3);
 
 	SDL_Surface* planeTex = ren->loadIMG("../CPSC585/texture/plane.png");
-
 	GLuint ptex = 0;
-
 	ptex = ren->initTexture(planeTex);
 
 	// PHYSICS DEUBG
-	//ph->addEntity(*car1);	// add the car to the physics world
-	//ph->addEntity(*car2);
-	//ph->addEntity(*car2);
 	ph->addEntity(*testGround);	// add the ground to the physics world
-
 
 	//Set inital game time
 	Uint32 currentTime = SDL_GetTicks();
 	Uint32 oldTime = SDL_GetTicks();
 	int frameCount = 0;
-	char frames[30];
+	int counter = 1;
 
 	// game loop
 	while(1)
@@ -255,7 +226,6 @@ int main(int argc, char** argv)
 		//// Physics
 		ph->step();
 
-
 		//// Inputs
 		process_events();
 		//
@@ -263,13 +233,13 @@ int main(int argc, char** argv)
 		////controller1.emitTriggers();
 		////controller1.emitButtons();
 		////controller1.emitLeftAnalog();
-		updateRot();
-		updateEntityPosition(*(entityList->at(0)), controller1);
+		//updateRot();
+		//updateEntityPosition(*(entityList->at(0)), controller1);
 
 		// Render
 		// draw code goes here
 		////btVector3 camPos = car1->position + car1->normal*2 + car1->tangent*5;
-		btVector3 camPos = btVector3(100,100,100);
+		btVector3 camPos = btVector3(20,20,20);
 		//
 		////btVector3 camLookAt = car1->position + btVector3(0, 0, 0);
 		btVector3 camLookAt = btVector3(0, 0, 0);
@@ -287,22 +257,31 @@ int main(int argc, char** argv)
 			ren->drawEntity(*(entityList->at(i)));
 		}
 
-		//ren->glEnable2D();
-		//ren->outputText((*(entityList->at(0))).toString(), 0, 255, 0, 500, 200);
-		//ren->outputText("This is a multi\nline test to see if \nnewlines are working correctly", 255, 255, 255, 0, 360);
-		//ren->outputText("I am testing to see if obj models will load and draw correctly", 255, 255, 255, 0, 0);
+
+		ren->drawLine(btVector3(0, 0, 0), btVector3(0, 10, 0),0, 0, 0,  2);
+
+		ren->glEnable2D();
 		frameCount++;
+
 		if((currentTime - oldTime) > 1000){
-		//	sprintf_s(frames, "%d FPS", frameCount);		
-		//	ren->outputText(frames, 0, 255, 0, 10, 690);
-		std::cout << frameCount << "\n";
-			frameCount = 0;
+			//sprintf_s(frames, "%d FPS", frameCount);	
+			//std::cout << frameCount << "\n";
+			//frameCount = 0;
+			counter++;
 			oldTime = currentTime;
 		}		
 		//ren->outputText(frames, 0, 255, 0, 10, 700);
 		currentTime = SDL_GetTicks();
+		
+		stringstream ss;
+		ss << frameCount/counter;
+
+		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
+		
 		ren->glDisable2D();
 
+
+		
 		////ren.draw();		// draw things to the buffer
 		ren->updateGL();	// update the screen
 

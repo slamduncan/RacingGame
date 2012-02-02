@@ -4,7 +4,6 @@
 #include "TypedObserver.h"
 #include "TriggerEvent.h"
 #include "Entity.h"
-#include "LinearMath/btVector3.h"
 
 class Car : public TypedObserver<TriggerEvent>, public Entity{
 
@@ -15,6 +14,9 @@ public:
 	void Observe(TriggerEvent *e);
 
 private:
+	// 3 power up slots, circular array of powerups?
+
+
 	btVector3 pos;
 
 };

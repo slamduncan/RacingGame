@@ -1,6 +1,9 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+//#define NDEBUG
+#include <assert.h>
+
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -67,6 +70,7 @@ public:
 	void setCamera(const btVector3& pos, const btVector3& lookAt); 
 
 	void draw();
+	void drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width = 1.0);
 	void drawEntity(Entity &entity);
 
 	void drawPlane(float height);
