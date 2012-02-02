@@ -265,16 +265,18 @@ int main(int argc, char** argv)
 		controller1.emitTriggers();
 		controller1.emitButtons();
 		controller1.emitLeftAnalog();
-		updateRot();
+		//updateRot();
 		updateEntityPosition(*(entityList->at(0)), controller1);
 
 		// Render
 		// draw code goes here
-		btVector3 camPos = car1->position + car1->normal*2 + car1->tangent*5;
-		//btVector3 camPos = btVector3(100,100,100);
+		//btVector3 camPos = car1->position + car1->normal*2 + car1->tangent*5;
+		//btVector3 camPos = car1->position + car1->normal*2 + car1->tangent*5;
+		//camPos += btVector3(0,5,0);
+		btVector3 camPos = btVector3(10,10,10);
 		//
-		btVector3 camLookAt = car1->position + btVector3(0, 0, 0);
-		//btVector3 camLookAt = btVector3(0, 0, 0);
+		//btVector3 camLookAt = car1->position + btVector3(0, 0, 0);
+		btVector3 camLookAt = btVector3(0, 0, 0);
 		ren->clearGL();	// clear the screen
 		ren->setCamera(camPos, camLookAt);
 		//

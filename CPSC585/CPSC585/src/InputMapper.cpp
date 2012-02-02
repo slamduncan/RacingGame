@@ -11,7 +11,7 @@ void InputMapper::updateRotation(AnalogEvent *e){
 //	rotation = btQuaternion(e->getXVal(), e->getYVal(), 0, 0);	
 	rotation = btQuaternion(0, -(e->getXVal()), 0, 0);	
 	//rotation.normalize();
-	rotation /= 1000;
+	rotation /= 6000;
 	EventSystemHandler::getInstance()->emitEvent(new RotationEvent(rotation));
 }
 

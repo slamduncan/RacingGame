@@ -65,8 +65,16 @@ public:
 //		physicsObject->setAngularFactor(1000);
 		
 		btVector3 test = e->getQuaternion().getAxis();
+		btVector3 temp = physicsObject->getAngularVelocity();
+		if (temp.length() < 5)
 		//physicsObject->setAngularVelocity(test);
-		physicsObject->applyTorque(test);
+			physicsObject->applyTorque(test);
+		test.setX(test.getY());
+		test.setZ(test.getY());
+		test.setY(0);
+		test /= 3000;
+		
+		physicsObject->applyCentralImpulse(test);
 	};
 	
 
