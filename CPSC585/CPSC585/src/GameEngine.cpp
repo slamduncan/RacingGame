@@ -7,6 +7,10 @@
 #include <sstream>
 #include <iostream>
 
+//For XML Parser
+#include "XMLParser/tinyxml.h"
+//#include "\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinystr.h"
+
 //Test stuff
 //#include "EventSystemHandler.h"
 #include "TestClass.h"
@@ -95,6 +99,11 @@ void process_events()
 
     }
 
+}
+
+bool readVariables(){
+	TiXmlDocument doc("test.xml");
+	return doc.LoadFile();
 }
 
 

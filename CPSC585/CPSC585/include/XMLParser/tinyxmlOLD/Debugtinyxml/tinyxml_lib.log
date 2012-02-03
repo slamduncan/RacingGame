@@ -1,0 +1,25 @@
+﻿Build started 2/3/2012 9:50:33 AM.
+     1>Project "\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\tinyxml_lib.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\tinyxml.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W4 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _LIB /D _VC80_UPGRADE=0x0600 /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\\" /Fd"\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\vc100.pdb" /FR"\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\\" /Gd /TP /analyze- /errorReport:prompt tinystr.cpp tinyxml.cpp tinyxmlerror.cpp tinyxmlparser.cpp
+         tinyxmlparser.cpp
+         tinyxmlerror.cpp
+         tinyxml.cpp
+         tinystr.cpp
+         Generating Code...
+       Lib:
+         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\Lib.exe /OUT:"\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\tinyxml.lib" /NOLOGO \\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\tinystr.obj
+         \\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\tinyxml.obj
+         \\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\tinyxmlerror.obj
+         \\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\tinyxmlparser.obj
+         tinyxml_lib.vcxproj -> \\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\tinyxml.lib
+       BscMake:
+         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\bscmake.exe /nologo /o"\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\tinyxml.bsc" \\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\tinystr.sbr \\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\tinyxml.sbr \\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\tinyxmlerror.sbr \\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\tinyxmlparser.sbr
+     1>BSCMAKE : error BK1506: cannot open file '\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\Debugtinyxml\tinystr.sbr': No such file or directory
+     1>Done Building Project "\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinyxml\tinyxml_lib.vcxproj" (build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:02.83

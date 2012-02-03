@@ -1,6 +1,6 @@
 #include "ForwardForceEvent.h"
 
-ForwardForceEvent::ForwardForceEvent(btScalar force, btScalar forceNorm)
+ForwardForceEvent::ForwardForceEvent(btScalar forceIn, btScalar forceNormIn)
 {
 	force = forceIn; 
 	forceNorm = forceNormIn;

@@ -7,7 +7,7 @@ class ForwardForceEvent : public Event{
 
 private:
 	btScalar force;
-	btScalar forceNormIn;
+	btScalar forceNorm;
 
 public:	
 	ForwardForceEvent(btScalar force, btScalar forceNorm);
