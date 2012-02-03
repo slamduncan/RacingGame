@@ -195,6 +195,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ForwardForceEvent.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\GameEngine.cpp"
 				>
 			</File>
@@ -232,6 +236,10 @@
 			</File>
 			<File
 				RelativePath=".\src\TestClass.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\TextureManager.cpp"
 				>
 			</File>
 			<File
@@ -322,6 +330,10 @@
 			</File>
 			<File
 				RelativePath=".\src\TestClass.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\TextureManager.h"
 				>
 			</File>
 			<File

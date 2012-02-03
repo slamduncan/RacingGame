@@ -204,7 +204,6 @@ bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans)
 		//scene = aiImportFile(filename, aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
 
 		scene = aiImportFile(filename, aiProcessPreset_TargetRealtime_Quality);
-
 		
 		// Generate the physics representation
 		if(scene->HasMeshes())
@@ -249,7 +248,7 @@ bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans)
 			else
 			{
 
-				objShape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
+				objShape = new btBoxShape(btVector3(2.5, 2.5, 5));
 				//objShape = new btConvexTriangleMeshShape(bttm, true);
 
 				objShape->calculateLocalInertia(mass, inertia);
@@ -291,7 +290,9 @@ void Entity::debug()
 /*
 *	Returns a string presentation of the entity
 *
-*	
+*	Return:
+*		string representation of this entity
+*		ie. position, tangent, normal, binormal.
 */
 std::string Entity::toString()
 {
@@ -299,7 +300,6 @@ std::string Entity::toString()
 	btVector3 tan = getTangent();
 	btVector3 nor = getNormal();
 	btVector3 bin = getBinormal();
-
 
 	std::stringstream ss;
 	ss << "Pos: (" << pos.x() << ", " << pos.y() << ", " << pos.z() << ")\n";
