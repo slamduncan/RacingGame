@@ -8,15 +8,16 @@
 #include <iostream>
 
 //For XML Parser
-#include "XMLParser/tinyxml.h"
-//#include "\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\include\XMLParser\tinystr.h"
+#include "tinyxml.h"
+#include "tinystr.h"
+#include "ProjectNumbers.h"
 
 //Test stuff
 //#include "EventSystemHandler.h"
 #include "TestClass.h"
 #include "Car.h"
 #include <windows.h>
-//#include "InputMapper.h"
+#include "InputMapper.h"
 
 // "vector" for entities
 // we might just make it so that each type of specialized entity
@@ -32,11 +33,11 @@ Renderer* ren = Renderer::getInstance();
 
 Physics* ph = Physics::Inst();
 
-//InputMapper* playerInput = new InputMapper();
+InputMapper* playerInput = new InputMapper();
 
 //Test Variables
-//InputController controller1 = InputController();
-//EventSystemHandler* evSys = EventSystemHandler::getInstance();
+InputController controller1 = InputController();
+EventSystemHandler* evSys = EventSystemHandler::getInstance();
 
 
 btAlignedObjectArray<Entity*>* entityList = new btAlignedObjectArray<Entity*>();
@@ -83,16 +84,16 @@ void process_events()
 		- updated to not l ose the event, but now must pass in controller events*/
 		case SDL_JOYAXISMOTION:
 		{
-			//controller1.update(event);	
+			controller1.update(event);	
 		}
 		break;
 		case SDL_JOYBUTTONDOWN:
 			fprintf(stderr, "BUTTONS HOW DO THEY WORK\n");
-			//controller1.update(event);
+			controller1.update(event);
 
 			break;
 		case SDL_JOYBUTTONUP:
-			//controller1.update(event);
+			controller1.update(event);
 			
 			break;
         }
@@ -102,7 +103,7 @@ void process_events()
 }
 
 bool readVariables(){
-	TiXmlDocument doc("test.xml");
+	TiXmlDocument doc("./magicNumbers/Controller.xml");
 	return doc.LoadFile();
 }
 
@@ -146,6 +147,11 @@ void updateRot(){
 // Engine Main
 int main(int argc, char** argv)
 {	
+
+	ProjectNumbers p;
+	p.readVariablesIn();
+	int* i = p.CONTROLLER_Turning;
+	int k = p.test;
 	// INITIALIZATIONS
 	bool renInit = ren->init();	
 /*	
@@ -154,16 +160,16 @@ int main(int argc, char** argv)
 	ren->initFont();
 */
 	/* Added by Kent */
-	//controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
+	controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
 	
-	//if (!controller1.initialize(0)){
+	if (!controller1.initialize(0)){
 		//SDL_Delay(100);
 		/*ren->outputText("Connect Controller", 1, 0, 0, 1280/2, 720/2);
 		while(!controller1.initialize(0)){
 			Sleep(100);
 		}*/
 		/* Error on initalizing controller -KD */
-	//}	
+	}	
 		
 	//evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
 	//evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
@@ -191,8 +197,8 @@ int main(int argc, char** argv)
 	btVector3 groundI = btVector3(0, 0, 0);
 	
 	//char* filename, btScalar &mass, btTransform &orientation, btVecto3 &pos, btVector3 inertia	
-	car1->loadObj("../CPSC585/model/car.obj", carMass, carT1);
-//	car2->loadObj("../CPSC585/model/box.obj", carMass, carT2);
+	//car1->loadObj("../CPSC585/model/car.obj", carMass, carT1);
+	car1->loadObj("../CPSC585/model/box.obj", carMass, carT1);
 	testGround->loadObj("../CPSC585/model/groundBox.obj", groundMass, groundT);
 	entityList->push_back(testGround);
 
@@ -252,9 +258,9 @@ int main(int argc, char** argv)
 		process_events();
 		//
 		//// AI
-		//controller1.emitTriggers();
-		//controller1.emitButtons();
-		//controller1.emitLeftAnalog();
+		controller1.emitTriggers();
+		controller1.emitButtons();
+		controller1.emitLeftAnalog();
 		//updateRot();
 		//updateEntityPosition(*(entityList->at(0)), controller1);
 

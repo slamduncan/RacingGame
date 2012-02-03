@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\CPSC585\include\BulletSteves;..\CPSC585\include\SDL;..\CPSC585\include\assimp;..\CPSC585\include\GL"
+				AdditionalIncludeDirectories="./include/XMLParser;./include/assimp;./include/SDL;./include/BulletSteves;./magicNumbers"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
@@ -58,8 +58,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				IgnoreImportLibrary="false"
 				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath_debug.lib lib\BulletDynamics_debug.lib lib\BulletCollision_debug.lib lib\assimp_debug.lib"
 				AdditionalLibraryDirectories="CPSC585\lib"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -113,7 +115,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\CPSC585\include\BulletSteves;..\CPSC585\include\SDL;..\CPSC585\include\assimp;..\CPSC585\include\GL"
+				AdditionalIncludeDirectories="./include/XMLParser;./include/assimp;./include/SDL;./include/BulletSteves/;./magicNumbers/"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -243,6 +245,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\XMLParser\tinystr.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\XMLParser\tinyxml.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\XMLParser\tinyxmlerror.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\XMLParser\tinyxmlparser.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\TriggerEvent.cpp"
 				>
 			</File>
@@ -317,7 +335,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ProjectNumbers.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Renderer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
@@ -337,6 +363,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\XMLParser\tinystr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\XMLParser\tinyxml.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\TriggerEvent.h"
 				>
 			</File>
@@ -350,6 +384,10 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\magicNumbers\Controller.xml"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

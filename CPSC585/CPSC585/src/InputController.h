@@ -55,7 +55,8 @@ public:
 	double getNormalizedRightAnalogStickX();
 	double getNormalizedLeftAnalogStickY();
 	double getNormalizedRightAnalogStickY();
-	double getNormalizedTriggers();	
+	double getNormalizedTriggers();
+	
 };
 
 #endif
