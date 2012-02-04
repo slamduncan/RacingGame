@@ -15,7 +15,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BulletCollision", "CPSC585\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BulletDynamics", "CPSC585\BulletDynamics.vcproj", "{0A910B43-7E06-CB47-BC8F-EB1834836B67}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyXMLSTL", "CPSC585\tinyXMLSTL.vcproj", "{121359E0-AA61-4270-9EA7-F027618C3071}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyXMLSTL", "CPSC585\tinyXML.vcproj", "{121359E0-AA61-4270-9EA7-F027618C3071}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
