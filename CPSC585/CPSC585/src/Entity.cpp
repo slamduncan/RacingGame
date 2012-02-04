@@ -214,11 +214,11 @@ bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans)
 			// generate triangle mesh for bullet
 			btTriangleMesh* bttm = new btTriangleMesh();
 			
-			for(int i = 0; i < scene->mNumMeshes; i++)
+			for(unsigned int i = 0; i < scene->mNumMeshes; i++)
 			{
 				aiMesh* mesh = scene->mMeshes[i];
 			
-				for(int j = 0; j < mesh->mNumFaces; j++)
+				for(unsigned int j = 0; j < mesh->mNumFaces; j++)
 				{
 					
 					aiFace* face = &mesh->mFaces[j];	// get a face

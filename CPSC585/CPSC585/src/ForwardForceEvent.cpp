@@ -1,11 +1,11 @@
 #include "ForwardForceEvent.h"
 
-ForwardForceEvent::ForwardForceEvent(btScalar force, btScalar forceNorm)
+ForwardForceEvent::ForwardForceEvent(btScalar forceIn, btScalar forceNormIn)
 {
 	force = forceIn; 
 	forceNorm = forceNormIn;
 }
 
-btScalar ForwardForceEvent::getForce(){return forceIn;}
+btScalar ForwardForceEvent::getForce(){return force;}
 
-btScalar ForwardForceEvent::getNormForce(){return forceNormIn;}
+btScalar ForwardForceEvent::getNormForce(){return forceNorm;}
