@@ -554,6 +554,15 @@ void Renderer::drawEntity(Entity &entity)
 
 				*/
 				//Color4f(&mesh->mColors[0][index]);
+
+				if(mesh->HasTextureCoords(0))
+				{
+					//glTexCoord2f(&mesh->mTextureCoords[index]->x, &mesh->mTextureCoords[index]->y);
+
+
+
+				}
+
 				// the model has normal
 				if(mesh->mNormals != NULL)
 				{

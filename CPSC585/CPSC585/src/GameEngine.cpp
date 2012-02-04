@@ -182,10 +182,9 @@ int main(int argc, char** argv)
 	btVector3 groundI = btVector3(0, 0, 0);
 	
 	//char* filename, btScalar &mass, btTransform &orientation, btVecto3 &pos, btVector3 inertia	
-	car1->loadObj("../CPSC585/model/car.obj", carMass, carT1);
+	car1->loadObj("../CPSC585/model/box.obj", carMass, carT1);
 //	car2->loadObj("../CPSC585/model/box.obj", carMass, carT2);
 	testGround->loadObj("../CPSC585/model/groundBox.obj", groundMass, groundT);
-	entityList->push_back(testGround);
 
 	//btVector3 offset = btVector3(-5, 0, -5);
 
@@ -216,9 +215,16 @@ int main(int argc, char** argv)
 	car1->initObservers();
 
 	entityList->push_back(car1);
+	entityList->push_back(testGround);
+
 	SDL_Surface* planeTex = ren->loadIMG("../CPSC585/texture/plane.png");
 	GLuint ptex = 0;
 	ptex = ren->initTexture(planeTex);
+
+	SDL_Surface* car1Tex = ren->loadIMG("../CPSC585/texture/Car.png");
+	GLuint c1tex = 0;
+	c1tex = ren->initTexture(car1Tex);
+
 
 	// PHYSICS DEUBG
 	ph->addEntity(*car1);	// add the car to the physics world
@@ -267,7 +273,22 @@ int main(int argc, char** argv)
 
 		for(int i = 0; i < entityList->size(); i++)
 		{
+			/*
+			// HUGE HACK
+			if(i == 0)
+			{
+				ren->textureOn(c1tex);
+			}
+			*/
 			ren->drawEntity(*(entityList->at(i)));
+
+			/*
+			// HUGE HACK
+			if(i == 0)
+			{
+				ren->textureOff();
+			}
+			*/
 		}
 
 
