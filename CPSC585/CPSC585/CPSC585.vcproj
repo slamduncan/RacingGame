@@ -191,6 +191,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\EntityManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Event.cpp"
 				>
 			</File>
@@ -278,6 +282,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Entity.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\EntityManager.h"
 				>
 			</File>
 			<File

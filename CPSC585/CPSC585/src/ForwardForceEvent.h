@@ -1,4 +1,5 @@
 #ifndef FORWARDFORCEEVENT_H
+#define FORWARDFORCEEVENT_H
 #include "Event.h"
 #include "EventTypes.h"
 #include "LinearMath/btVector3.h"

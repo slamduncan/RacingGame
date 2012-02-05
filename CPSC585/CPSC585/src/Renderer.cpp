@@ -6,6 +6,8 @@ Renderer* Renderer::instance = 0;
 
 Renderer::Renderer()
 {
+	m_debugMode = 0;
+	
 	info = NULL;
 	width = 1280;
 	height = 720;
@@ -371,7 +373,7 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glColor3f(1.0f, 1.0f, 1.0f);
 	
@@ -411,7 +413,6 @@ void Renderer::setCamera(const btVector3& pos, const btVector3& lookAtPoint)
 	printf("camLookAt: (%f, %f, %f)\n", lookAtPoint.x(), lookAtPoint.y(), lookAtPoint.z()); 
 	printf("camnormal: (%f, %f, %f)\n", normal.x(), normal.y(), normal.z()); 
 */
-
 	gluLookAt(pos.x(), pos.y(), pos.z(),	// camera position
 		      lookAtPoint.x(), lookAtPoint.y(), lookAtPoint.z(),	// look at point
 			  normal.x(), normal.y(), normal.z());	// up vector
@@ -458,8 +459,8 @@ void Renderer::drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, f
 
 	glColor4f((float)r/255.0f, (float)g/255.0f, (float)b/255.0f, 1.0f);
 	
-	glVertex3fv(start.m_floats);
-	glVertex3fv(end.m_floats);
+	glVertex3fv(start);
+	glVertex3fv(end);
 	//glVertex3f(start.getX(), start.getY(), start.getZ());
 	//glVertex3f(end.getX(), end.getY(), end.getZ());
 
@@ -486,9 +487,9 @@ void Renderer::drawEntity(Entity &entity)
 
 	glMultMatrixf(matrix);
 
-	for(int i = 0; i < (int)entity.scene->mNumMeshes; i++)
+	for(int i = 0; i < (int)entity.renderObject->mNumMeshes; i++)
 	{
-		const aiMesh* mesh = entity.scene->mMeshes[i];
+		const aiMesh* mesh = entity.renderObject->mMeshes[i];
 
 		/*
 		if(mesh->mColors[0] != NULL) 
@@ -499,11 +500,11 @@ void Renderer::drawEntity(Entity &entity)
 			glDisable(GL_COLOR_MATERIAL);
 		}*/
 
-		if(entity.scene->HasMaterials())
+		if(entity.renderObject->HasMaterials())
 		{
 
 			//printf("i has found material\n");
-			const aiMaterial* mat = entity.scene->mMaterials[mesh->mMaterialIndex];
+			const aiMaterial* mat = entity.renderObject->mMaterials[mesh->mMaterialIndex];
 			
 			float Kd[4];
 			aiColor4D diffuse;
@@ -656,4 +657,65 @@ void Renderer::clearGL()
 void Renderer::updateGL()
 {
 	SDL_GL_SwapBuffers();
+}
+
+
+
+/*
+*	The following functions are part of btIDebugDrawer from bullet
+*/
+
+void Renderer::drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor)
+{
+	glBegin(GL_LINES);
+	glColor3fv(fromColor);
+	glVertex3fv(from);
+	glColor3fv(toColor);
+	glVertex3fv(to);
+	glEnd();
+}
+
+void Renderer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color)
+{
+	glColor3fv(color);
+	glBegin(GL_LINES);
+
+	glVertex3fv(from);
+	glVertex3fv(to);
+
+	glEnd();
+}
+void Renderer::drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance, int lifeTime, const btVector3 &color)
+{
+		//btVector3 to = pointOnB + normalOnB*1;	//distance;
+
+		//const btVector3 &from = pointOnB;
+		
+		//glColor4fv(color);
+		
+		drawLine(PointOnB, PointOnB + normalOnB, color);
+		
+		/*
+		glBegin(GL_LINES);
+		glVertex3d(from.getX(), from.getY(), from.getZ());
+		glVertex3d(to.getX(), to.getY(), to.getZ());
+		glEnd();
+		*/
+}
+void Renderer::reportErrorWarning(const char *warningString)
+{
+	printf("%s\n",warningString);
+}
+void Renderer::draw3dText(const btVector3 &location, const char *textString)
+{
+	
+}
+void Renderer::setDebugMode(int debugMode)
+{
+	m_debugMode = debugMode;
+}
+
+int Renderer::getDebugMode() const
+{
+	return m_debugMode;
 }

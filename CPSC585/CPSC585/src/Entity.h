@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <fstream>
 #include <sstream>
 
 #include "LinearMath/btScalar.h"
@@ -15,7 +16,6 @@
 #include "BulletCollision/Gimpact/btGImpactShape.h"
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
-//#include "objLoader.h"
 #include "MethodObserver.h"
 #include "RotationEvent.h"
 #include "ForwardForceEvent.h"
@@ -29,12 +29,10 @@
 class Entity
 {
 private:
-	bool isInit;
-	int loaded;
+//	bool isInit;
+//	int loaded;
 
-	btScalar mass;
-
-	bool init();
+//	bool init();
 
 	//Observers
 	MethodObserver<RotationEvent, Entity> rotationObserver;
@@ -45,14 +43,14 @@ public:
 	// might as well store the matrix per frame? since that way we only have to
 	// generate the array once per object instead of once per object per frame.
 	btScalar* glMatrix;
+	//btScalar mass;
+
 
 	// render model (objloader)
-	const aiScene* scene;
+	const aiScene* renderObject;
 
 	// physics model (bullet)
 	btRigidBody* physicsObject;
-
-
 
 	//Observer
 	void initObservers();
@@ -77,7 +75,7 @@ public:
 
 	Entity();
 	//Entity(char* filename);
-	Entity(char* filename, btScalar &mass, btTransform &trans);
+	//Entity(char* filename, btScalar &mass, btTransform &trans);
 	~Entity();
 
 	void move(float x, float y, float z);
@@ -90,7 +88,10 @@ public:
 	btVector3 getNormal();
 	btVector3 getBinormal();
 
-	bool loadObj(char* filename, btScalar &mass, btTransform &trans);
+	//bool loadObj(char* filename, btScalar &mass, btTransform &trans);
+	
+	bool initRenderObject(char* filename);
+	virtual bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans) = 0;
 
 	void debug();
 	std::string toString();

@@ -1,19 +1,19 @@
 #include "Entity.h"
 #include "EventSystemHandler.h"
 
-Entity::Entity(): rotationObserver(this, &Entity::observeRotation), forwardForceObserver(this, &Entity::observeForwardForce)
+Entity::Entity() : rotationObserver(this, &Entity::observeRotation), forwardForceObserver(this, &Entity::observeForwardForce)
 {
-	//renderObject = NULL;
 	physicsObject = NULL;
-	scene = NULL;
+	renderObject = NULL;
 
 	glMatrix = new btScalar[16];
-
-	isInit = init();
 	
+
+
 	//loadObj("../CPSC585/model/box.obj");
 }
 
+/*
 Entity::Entity(char* filename, btScalar &mass, btTransform &trans) : rotationObserver(this, &Entity::observeRotation), forwardForceObserver(this, &Entity::observeForwardForce)
 {
 	if(filename != NULL)
@@ -22,18 +22,19 @@ Entity::Entity(char* filename, btScalar &mass, btTransform &trans) : rotationObs
 		physicsObject = NULL;
 
 		isInit = init();
-		loadObj(filename, mass, trans);
+		//loadObj(filename, mass, trans);
 	}
 }
+*/
 
 /*
 *	Clean up
 */
 Entity::~Entity()
 {
-	if(scene != NULL)
+	if(renderObject != NULL)
 	{
-		aiReleaseImport(scene);
+		aiReleaseImport(renderObject);
 	}
 
 	// if there is a physics object, clean up
@@ -49,13 +50,16 @@ Entity::~Entity()
 *	Return:
 *	indicates that the entity has been initialized
 */
+/*
 bool Entity::init()
 {
 
 	return true;
 }
+*/
 
-void Entity::initObservers(){
+void Entity::initObservers()
+{
 	//EventSystemHandler::getInstance()->addObserver(&rotationObserver, EventTypes::ROTATION);
 	rotationObserver.init(EventTypes::ROTATION);
 	forwardForceObserver.init(EventTypes::FORWARD_FORCE);
@@ -175,6 +179,9 @@ btVector3 Entity::getBinormal()
 	return bin;
 }
 
+
+
+// CODE WILL PROBBALY BE PHASED OUT OVER A COUPLE OF COMMITS
 /*
 *	Loads a given obj model to this entity.
 *	Generate the render and physics representation
@@ -185,15 +192,16 @@ btVector3 Entity::getBinormal()
 *	Return:
 *	whether or not the render and physics rep loaded sucessfully
 */
+/*
 bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans)
 {
 	//printf("loading...\n");
 	
 	if(isInit)
 	{
-		if(scene != NULL)
+		if(renderObject != NULL)
 		{
-			aiReleaseImport(scene);
+			aiReleaseImport(renderObject);
 		}
 
 		if(physicsObject != NULL)
@@ -201,12 +209,12 @@ bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans)
 			delete physicsObject;
 		}
 
-		//scene = aiImportFile(filename, aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
+		//renderObject = aiImportFile(filename, aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
 
-		scene = aiImportFile(filename, aiProcessPreset_TargetRealtime_Quality);
+		renderObject = aiImportFile(filename, aiProcessPreset_TargetRealtime_Quality);
 		
 		// Generate the physics representation
-		if(scene->HasMeshes())
+		if(renderObject->HasMeshes())
 		{
 			btCollisionShape* objShape;
 			btVector3 inertia(0,0,0);
@@ -214,9 +222,9 @@ bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans)
 			// generate triangle mesh for bullet
 			btTriangleMesh* bttm = new btTriangleMesh();
 			
-			for(unsigned int i = 0; i < scene->mNumMeshes; i++)
+			for(unsigned int i = 0; i < renderObject->mNumMeshes; i++)
 			{
-				aiMesh* mesh = scene->mMeshes[i];
+				aiMesh* mesh = renderObject->mMeshes[i];
 			
 				for(unsigned int j = 0; j < mesh->mNumFaces; j++)
 				{
@@ -270,6 +278,31 @@ bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans)
 
 	return false;	// render and physics representations failed to init
 }
+*/
+
+bool Entity::initRenderObject(char* filename)
+{
+	std::ifstream fileCheck(filename);
+
+	// if the file exists
+	if(fileCheck)
+	{
+		// if a previous model was loaded
+		if(renderObject != NULL)
+		{
+			aiReleaseImport(renderObject);
+		}
+		
+		// load the file
+		renderObject = aiImportFile(filename, aiProcessPreset_TargetRealtime_Quality);
+
+		return true;
+	}
+			
+	return false;
+}
+
+
 
 /*
 *	debug console output
