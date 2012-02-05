@@ -657,3 +657,23 @@ void Renderer::updateGL()
 {
 	SDL_GL_SwapBuffers();
 }
+
+
+/* Following functions are for the DebugDraw in bullet. */
+
+void Renderer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &colour){
+	//drawLine(from, to, colour.x(), colour.y(), colour.z());
+}
+
+
+void Renderer::drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance, int lifeTime, const btVector3 &color){
+	
+}
+
+void Renderer::reportErrorWarning(const char *warningString){};
+
+void Renderer::draw3dText(const btVector3 &location, const char *textString){};
+
+void Renderer::setDebugMode(int debugMode){};
+
+int Renderer::getDebugMode() const{return 0;};
