@@ -20,7 +20,6 @@
 #include "RotationEvent.h"
 #include "ForwardForceEvent.h"
 
-//TESTING ASSIMP for animated based models
 //#include "assimp.hpp"	//c++ interface
 #include "assimp.h"	//c interface
 #include "aiPostProcess.h"

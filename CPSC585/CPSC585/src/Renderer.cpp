@@ -642,6 +642,16 @@ void Renderer::glDisable2D()
 	glPopMatrix();	
 }
 
+void Renderer::glEnableLighting()
+{
+	glEnable(GL_LIGHTING);
+}
+void Renderer::glDisableLighting()
+{
+	glDisable(GL_LIGHTING);
+}
+
+
 
 /*
 *	Clears the frame buffer

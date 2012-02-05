@@ -88,6 +88,25 @@ void process_events()
 			fprintf(stderr, "BUTTONS HOW DO THEY WORK\n");
 			controller1.update(event);
 
+			if(controller1.isADown())
+			{
+				ren->quitSDL();
+			}
+			if(controller1.isXDown())
+			{
+				if(entManager->numCars() > 0)
+				{
+					entManager->resetCarPosition(0, btVector3(0, 0, 0));
+				}
+			}
+			if(controller1.isYDown())
+			{
+				if(entManager->numCars() > 0)
+				{
+					entManager->resetCarOrientation(0);
+				}
+			}
+
 			break;
 		case SDL_JOYBUTTONUP:
 			controller1.update(event);
@@ -205,7 +224,16 @@ int main(int argc, char** argv)
 	int* i = p.CONTROLLER_Turning;
 	int k = p.test;
 	// INITIALIZATIONS
-	bool renInit = ren->init();	
+	
+	bool renInit = ren->init();
+
+	// DEBUG DRAW SETUP
+	ph->setDebugDrawer(ren);
+	ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
+
+
+
+
 /*	
 	ren->initSDL();	// init SDL for drawing window
 	ren->initGL();	// initializing opengl stuff
@@ -331,8 +359,15 @@ int main(int argc, char** argv)
 		//
 		btVector3 camLookAt = car1->getPosition() + btVector3(0, 0, 0);
 		//btVector3 camLookAt = btVector3(0, 0, 0);
+		
+		
+		
 		ren->clearGL();	// clear the screen
+		
+		
 		ren->setCamera(camPos, camLookAt);
+		
+		
 		//
 		////ren->textureOn(ptex);
 		//ren->drawPlane(-2);
@@ -340,6 +375,11 @@ int main(int argc, char** argv)
 		//
 		////ren->textureOff();
 
+		ren->glDisableLighting();
+
+		ph->debugDraw();
+
+		ren->glEnableLighting();
 
 		////////////////////////////////////////////////////////
 		// HACKED DRAWING need to fix this
@@ -354,13 +394,12 @@ int main(int argc, char** argv)
 
 			ren->drawEntity(*(entManager->getTrack()));
 		}
-
 		
 		//
 		////////////////////////////////////////////////////////
 
 
-		ren->drawLine(btVector3(0, 0, 0), btVector3(0, 10, 0), btVector3(1.f, 1.f, 1.f));
+		//ren->drawLine(btVector3(0, 0, 0), btVector3(0, 10, 0), btVector3(1.f, 1.f, 1.f));
 
 		ren->glEnable2D();
 		frameCount++;

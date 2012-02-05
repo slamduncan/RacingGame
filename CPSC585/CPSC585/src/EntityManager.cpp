@@ -87,6 +87,35 @@ int EntityManager::numObstacles()
 	return 0;
 }
 
+void EntityManager::resetCarPosition(int index, btVector3 &position)
+{
+	btTransform transform = carList[index]->physicsObject->getWorldTransform();
+
+	transform.setOrigin(position);
+
+	carList[index]->physicsObject->setWorldTransform(transform);
+
+}
+
+void EntityManager::resetCarOrientation(int index)
+{
+	btTransform transform = carList[index]->physicsObject->getWorldTransform();
+
+	btVector3 position = transform.getOrigin();
+
+	transform.setIdentity();
+
+	transform.setOrigin(position);
+
+	carList[index]->physicsObject->setWorldTransform(transform);
+}
+
+
+
+
+
+
+
 btAlignedObjectArray<Car*>* EntityManager::getCarList()
 {
 	return &carList;

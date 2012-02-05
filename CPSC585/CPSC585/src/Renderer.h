@@ -19,9 +19,10 @@
 #include "SDL_ttf.h"
 #include "SDL_image.h"
 
+
+#include "LinearMath/btVector3.h"
+#include "LinearMath/btTransform.h"
 #include "LinearMath/btIDebugDraw.h"
-
-
 
 class Renderer : public btIDebugDraw
 {
@@ -82,6 +83,9 @@ public:
 
 	void glEnable2D();
 	void glDisable2D();
+	
+	void glEnableLighting();
+	void glDisableLighting();
 
 	void updateGL();
 	void clearGL();

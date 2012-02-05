@@ -55,8 +55,13 @@ public:
 	int numPowerUps();
 	int numObstacles();
 
+	void resetCarPosition(int index, btVector3 &position);
+	void resetCarOrientation(int index);
+
 	btAlignedObjectArray<Car*>* getCarList();
 	Track* getTrack();
+	// btAlignedObjectArray<PowerUp*>* getPowerUpList();
+	// btAlignedObjectArray<Obstacle*>* getObstacleList();
 
 };
 
