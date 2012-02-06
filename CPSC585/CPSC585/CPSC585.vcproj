@@ -59,9 +59,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="false"
-				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath_debug.lib lib\BulletDynamics_debug.lib lib\BulletCollision_debug.lib lib\assimp_debug.lib"
+				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath_debug.lib lib\BulletDynamics_debug.lib lib\BulletCollision_debug.lib lib\assimp_debug.lib lib\tinyXML_debug.lib"
 				AdditionalLibraryDirectories="CPSC585\lib"
-				IgnoreDefaultLibraryNames=""
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames="LIBCMTD;MSVCRTD"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -115,7 +116,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="./include/XMLParser;./include/assimp;./include/SDL;./include/BulletSteves/;./magicNumbers/"
+				AdditionalIncludeDirectories="./include/XMLParser;./include/assimp;./include/SDL;./include/BulletSteves;./magicNumbers"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -133,8 +134,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/LTCG"
-				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath.lib lib\BulletDynamics.lib lib\BulletCollision.lib lib\assimp.lib"
+				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath.lib lib\BulletDynamics.lib lib\BulletCollision.lib lib\assimp.lib lib\tinyXML.lib"
 				AdditionalLibraryDirectories="CPSC585\lib"
+				IgnoreDefaultLibraryNames="LIBCMT"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -186,6 +188,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Entity.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\EntityManager.cpp"
 				>
 			</File>
 			<File
@@ -245,19 +251,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\XMLParser\tinystr.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\XMLParser\tinyxml.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\XMLParser\tinyxmlerror.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\XMLParser\tinyxmlparser.cpp"
+				RelativePath=".\src\Track.cpp"
 				>
 			</File>
 			<File
@@ -288,6 +282,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Entity.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\EntityManager.h"
 				>
 			</File>
 			<File
@@ -363,11 +361,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\XMLParser\tinystr.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\XMLParser\tinyxml.h"
+				RelativePath=".\src\Track.h"
 				>
 			</File>
 			<File

@@ -2,6 +2,7 @@
 #define PHYSICS_H
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
+#include "LinearMath/btIDebugDraw.h"
 #include "Entity.h"
 
 class Physics
@@ -14,6 +15,9 @@ public:
 	void setGravity(const btVector3 &gravity);
 	void addEntity(const Entity &ent);
 	void removeEntity(const Entity &ent);
+	void setDebugDrawer(btIDebugDraw *debugDrawer);
+	void debugDraw();
+	void setDebugLevel(int level);
 
 	
 protected:

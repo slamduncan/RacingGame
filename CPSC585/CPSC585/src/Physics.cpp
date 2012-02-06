@@ -71,3 +71,18 @@ void Physics::removeEntity(const Entity &ent)
 {
 	dynamicsWorld->removeRigidBody(ent.physicsObject);
 }
+
+void Physics::setDebugDrawer(btIDebugDraw *debugDrawer)
+{
+	dynamicsWorld->setDebugDrawer(debugDrawer);	
+}
+
+void Physics::debugDraw()
+{
+	dynamicsWorld->debugDrawWorld();
+}
+
+void Physics::setDebugLevel(int level)
+{
+	dynamicsWorld->getDebugDrawer()->setDebugMode(level);
+}
