@@ -19,6 +19,7 @@
 //#include "EventSystemHandler.h"
 #include "TestClass.h"
 #include "Car.h"
+#include "Waypoint.h"
 #include <windows.h>
 #include "InputMapper.h"
 
@@ -264,6 +265,7 @@ int main(int argc, char** argv)
 	//
 	Car *car1 = new Car();
 	Track* ground = new Track();
+	Waypoint* waypoint = new Waypoint();
 
 	btScalar carMass = 1;
 	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 1.5, 0));
@@ -290,6 +292,16 @@ int main(int argc, char** argv)
 	entManager->addTrack(ground);
 	ph->addEntity(*car1);
 	ph->addEntity(*ground);
+
+	//WAYPOINT
+	waypoint->initRenderObject("../CPSC585/model/waypoint.obj");
+	btCollisionShape* waypointShape = createTrack(waypoint);
+	btTransform wayPointT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(5, -.55, 5));
+	btScalar temp = btScalar(0);
+	waypoint->initPhysicsObject(waypointShape, temp, wayPointT); 
+	entManager->addWaypoint(waypoint);
+
+
 
 	//
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -388,6 +400,11 @@ int main(int argc, char** argv)
 		{
 			ren->drawEntity(*(entManager->getCarList()->at(i)));
 		}
+		for(int i = 0; i < entManager->numWaypoints(); i++)
+		{
+			ren->drawEntity(*(entManager->getWaypointList()->at(i)));
+		}
+
 
 		if(entManager->getTrack())
 		{

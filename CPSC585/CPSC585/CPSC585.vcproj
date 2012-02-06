@@ -262,6 +262,10 @@
 				RelativePath=".\src\TypedObserver.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\Waypoint.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -370,6 +374,10 @@
 			</File>
 			<File
 				RelativePath=".\src\TypedObserver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Waypoint.h"
 				>
 			</File>
 		</Filter>
