@@ -183,6 +183,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Camera.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Car.cpp"
 				>
 			</File>
@@ -289,6 +293,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Camera.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Car.h"
 				>
 			</File>
@@ -354,6 +362,10 @@
 			</File>
 			<File
 				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\RightAnalogEvent.h"
 				>
 			</File>
 			<File

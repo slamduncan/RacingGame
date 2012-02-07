@@ -3,8 +3,8 @@
 
 Spring::Spring(btRigidBody* physics){
 	physicsObject = physics;
-	MAGICEQUILIBRIUMLENGTH = 15;
-	MAGICSPRINGCONSTANT = 2;
+	MAGICEQUILIBRIUMLENGTH = 4;
+	MAGICSPRINGCONSTANT = 20;
 	dynamicsWorld = Physics::Inst()->getDiscreteDynamicsWorld();
 
 }

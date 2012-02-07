@@ -260,7 +260,7 @@ int main(int argc, char** argv)
 	evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
 	evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
 
-	ph->setGravity(btVector3(0, -50, 0));
+	ph->setGravity(btVector3(0, -30, 0));
 
 	
 	// //RENDERER DEBUG TESTING
