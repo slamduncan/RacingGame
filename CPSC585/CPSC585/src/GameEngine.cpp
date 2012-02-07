@@ -266,7 +266,11 @@ int main(int argc, char** argv)
 	Track* ground = new Track();
 
 	btScalar carMass = 1;
+
 	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 1.5, 0));
+	
+	
+
 	//btTransform carT2 = btTransform(btQuaternion(0, .5, .5, 1), btVector3(.5, 1.5, 0));
 
 	btScalar groundMass = 0;

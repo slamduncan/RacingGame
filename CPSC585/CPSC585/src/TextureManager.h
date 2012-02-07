@@ -2,10 +2,14 @@
 #define TEXTUREMANAGER_H
 
 #include <iostream>
+#include <fstream>
 #include <stdlib.h>
 #include <string.h>
+#include <map>
+#include "glew.h"
+#define NO_SDL_GLEXT
+#include "SDL_opengl.h"
 #include "SDL_image.h"
-
 
 class TextureManager
 {
@@ -14,6 +18,7 @@ private:
 
 	TextureManager();
 
+	std::map<std::string, GLuint> textureMap;
 	int numTextures;
 
 public:
@@ -28,7 +33,7 @@ public:
 	}
 	
 
-	int loadTexture(std::string filename, int texID = -1);
+	int loadTexture(std::string filename, std::string name);
 	int loadTextureFromImage();
 
 	void freeTexture();
