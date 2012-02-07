@@ -18,6 +18,7 @@ public:
 	void setDebugDrawer(btIDebugDraw *debugDrawer);
 	void debugDraw();
 	void setDebugLevel(int level);
+	btDiscreteDynamicsWorld* getDiscreteDynamicsWorld();
 
 	
 protected:

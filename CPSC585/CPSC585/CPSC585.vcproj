@@ -247,6 +247,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Spring.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\TestClass.cpp"
 				>
 			</File>
@@ -362,6 +366,10 @@
 			</File>
 			<File
 				RelativePath=".\src\ShapeFactory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Spring.h"
 				>
 			</File>
 			<File

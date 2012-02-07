@@ -4,6 +4,7 @@
 #include "TypedObserver.h"
 #include "TriggerEvent.h"
 #include "Entity.h"
+#include "Spring.h"
 
 class Car : public TypedObserver<TriggerEvent>, public Entity
 {
@@ -16,7 +17,12 @@ public:
 	//bool initRenderObject(char* filename);
 	bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans);
 
+	Spring wheels[4];
+	btVector3 wheelOffsets[4];
+	void updateWheels();
+
 private:
+	float width, length, height;
 	// 3 power up slots, circular array of powerups?
 
 

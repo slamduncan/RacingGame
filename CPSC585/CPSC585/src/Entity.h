@@ -67,6 +67,7 @@ public:
 	void observeForwardForce(ForwardForceEvent *e){
 		btVector3 tan = getTangent() * (e->getNormForce());		
 
+		//physicsObject->applyForce(tan, getPosition() - getTangent().normalized() * 2.5f);
 		physicsObject->applyCentralImpulse(tan);
 	}
 	

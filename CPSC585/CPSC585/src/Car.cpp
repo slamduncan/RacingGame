@@ -2,7 +2,10 @@
 #include "EventSystemHandler.h"
 
 Car::Car(){	
-	EventSystemHandler::getInstance()->addObserver(this, EventTypes::TRIGGER);
+	EventSystemHandler::getInstance()->addObserver(this, EventTypes::TRIGGER);	
+	width = 5;
+	height = 5;
+	length = 10;
 }
 
 void Car::Observe(TriggerEvent *e){
@@ -29,8 +32,23 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 
 		physicsObject = new btRigidBody(entRigidBodyCI);
 
+		wheels[0] = Spring(physicsObject);
+		wheelOffsets[0] = btVector3(-1.25,-1.25,-4.0);
+		wheels[1] = Spring(physicsObject);
+		wheelOffsets[1] = btVector3(1.25,-1.25,-4.0);
+		wheels[2] = Spring(physicsObject);
+		wheelOffsets[2] = btVector3(-1.25,-1.25,4.0);
+		wheels[3] = Spring(physicsObject);		
+		wheelOffsets[3] = btVector3(1.25,-1.25,4.0);
+
 		return true;
 	}
 
 	return false;
+}
+
+void Car::updateWheels(){
+	for (int i = 0; i < 4; i++){
+		wheels[i].update(getPosition() + wheelOffsets[i], getNormal());
+	}
 }
