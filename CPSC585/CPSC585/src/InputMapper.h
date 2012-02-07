@@ -9,6 +9,7 @@
 class InputMapper{
 
 	btQuaternion rotation;	
+	TriggerEvent* lastTriggerEvent;
 
 public:
 	InputMapper();

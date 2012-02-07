@@ -11,6 +11,7 @@ public:
 		return EventTypes::TRIGGER;
 	}
 	TriggerEvent(){};
+	TriggerEvent(const TriggerEvent& inTrigger);
 	int getValue(){return triggerValue;}
 	double getNormValue(){return normTriggerVale;}
 	void setValue(int in){triggerValue = in;}
