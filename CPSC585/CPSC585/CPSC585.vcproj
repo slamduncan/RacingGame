@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\CPSC585\include\BulletSteves;..\CPSC585\include\SDL;..\CPSC585\include\objLoader;..\CPSC585\include\GL"
+				AdditionalIncludeDirectories="./include/XMLParser;./include/assimp;./include/SDL;./include/BulletSteves;./magicNumbers"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
@@ -58,8 +58,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\objLoader_debug.lib lib\LinearMath_debug.lib lib\BulletDynamics_debug.lib lib\BulletCollision_debug.lib"
-				AdditionalLibraryDirectories="CPSC585\lib;\\pc.cpsc.ucalgary.ca\Users\ug\kduncan\Desktop\RacingGame\CPSC585\CPSC585\lib"
+				IgnoreImportLibrary="false"
+				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath_debug.lib lib\BulletDynamics_debug.lib lib\BulletCollision_debug.lib lib\assimp_debug.lib lib\tinyXML_debug.lib"
+				AdditionalLibraryDirectories="CPSC585\lib"
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames="LIBCMTD;MSVCRTD"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -113,7 +116,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\CPSC585\include\BulletSteves;..\CPSC585\include\SDL;..\CPSC585\include\objLoader;..\CPSC585\include\GL"
+				AdditionalIncludeDirectories="./include/XMLParser;./include/assimp;./include/SDL;./include/BulletSteves;./magicNumbers"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -131,8 +134,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/LTCG"
-				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\objLoader.lib lib\LinearMath.lib lib\BulletDynamics.lib lib\BulletCollision.lib"
+				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath.lib lib\BulletDynamics.lib lib\BulletCollision.lib lib\assimp.lib lib\tinyXML.lib"
 				AdditionalLibraryDirectories="CPSC585\lib"
+				IgnoreDefaultLibraryNames="LIBCMT"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -187,11 +191,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\EntityManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Event.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\src\EventSystemHandler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\ForwardForceEvent.cpp"
 				>
 			</File>
 			<File
@@ -235,11 +247,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\TextureManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Track.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\TriggerEvent.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\src\TypedObserver.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Waypoint.cpp"
 				>
 			</File>
 		</Filter>
@@ -265,6 +289,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\EntityManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Event.h"
 				>
 			</File>
@@ -277,6 +305,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ForwardForceEvent.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\InputController.h"
 				>
 			</File>
@@ -285,7 +317,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\LeftAnalogEvent.h"
+				RelativePath=".\src\LeftAnalogEvent.h"
 				>
 			</File>
 			<File
@@ -305,7 +337,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ProjectNumbers.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Renderer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
@@ -321,11 +361,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\TextureManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Track.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\TriggerEvent.h"
 				>
 			</File>
 			<File
 				RelativePath=".\src\TypedObserver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Waypoint.h"
 				>
 			</File>
 		</Filter>
@@ -334,6 +386,10 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\magicNumbers\Controller.xml"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

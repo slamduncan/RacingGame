@@ -1,14 +1,20 @@
 #include "Renderer.h"
+using namespace std;
 
 Renderer* Renderer::instance = 0;
 
 
 Renderer::Renderer()
 {
+	m_debugMode = 0;
+	
 	info = NULL;
 	width = 1280;
 	height = 720;
 	bpp = 0;
+
+	tm = TextureManager::initialize();
+	//TextureManager::initialize();	// initialize our texture manager
 }
 
 // clean up
@@ -16,6 +22,15 @@ Renderer::~Renderer()
 {
 	TTF_CloseFont(debugFont);
 	TTF_Quit();
+
+	if(tm != NULL)
+	{
+		delete tm;
+	}
+	if(instance != NULL)
+	{
+		delete instance;
+	}
 }
 
 bool Renderer::init()
@@ -97,43 +112,59 @@ int Renderer::initGL()
 	//	GL options go here, ie glEnable, etc
 	//
 	
-	glShadeModel( GL_SMOOTH );	// smooth shading
-    //glCullFace( GL_BACK );	// remove back facing surfaces
-    //glFrontFace( GL_CCW );	// set front face objects to be in CCW direction
-    //glEnable( GL_CULL_FACE );	// allow removing culled surfaces
+	//glShadeModel(GL_FLAT);
+	glShadeModel(GL_SMOOTH);	// smooth shading
+    glCullFace(GL_BACK);	// remove back facing surfaces
+    //glFrontFace(GL_CCW);	// set front face objects to be in CCW direction
+    glEnable( GL_CULL_FACE );	// allow removing culled surfaces
 	glBlendFunc(GL_ONE, GL_ONE);	
 	//glEnable(GL_BLEND);
 
 
-	GLfloat whiteDir[4] = {1.0, 1.0, 1.0, 1.0};
-	GLfloat lightPos[4] = {5, 5, 0, 0};
-
+	GLfloat diff[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+	GLfloat spec[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	GLfloat amb[4] = {0.2f, 0.2f, 0.2f, 0.2f};
+	GLfloat lightPos[4] = {5.0f, 5.0f, 0.0f, 0.0f};
 
 	// enable lighting
 	glEnable(GL_LIGHTING);
 	// enable light 0
     glEnable(GL_LIGHT0);
     
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, whiteDir);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, whiteDir);
-    glMaterialf(GL_FRONT, GL_SHININESS, 30.0);
+	//glMaterialfv(GL_FRONT, GL_DIFFUSE, whiteDir);
+    //glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
+    //glMaterialf(GL_FRONT, GL_SHININESS, 1.0);
 	
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteDir);         // set the diffuse color for the light
-    glLightfv(GL_LIGHT0, GL_SPECULAR, whiteDir);        // set the specular color of the light
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPos);        // set the position of the light
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);         // set the diffuse color for the light
+    glLightfv(GL_LIGHT0, GL_SPECULAR, spec);			// set the specular color of the light
+    glLightfv(GL_LIGHT0, GL_AMBIENT, amb);			// set the specular color of the light
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);        // set the position of the light
 
 
 	glEnable(GL_COLOR_MATERIAL);						// allow shading for colored material
 	glEnable(GL_TEXTURE_2D);
 
-	GLenum err = glewInit();	// initialize GLEW
-    if (GLEW_OK != err)
+	GLenum glewCheck = glewInit();	// initialize GLEW
+    if (GLEW_OK != glewCheck)
     {
 		std::cout << "GLEW failed to initialize" << std::endl;
 		counter--;
     }
 	std::cout << "GLEW initialized" << std::endl;
 	
+	GLenum fboCheck = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+		
+	// error if it isn't
+	if (fboCheck != GL_FRAMEBUFFER_COMPLETE_EXT)
+	{
+		std::cout << "FBO failed to initialize" << std::endl;
+		//printf("Incomplete frame buffer object\n");
+		counter--;
+	}
+	std::cout << "FBO initialized" << std::endl;
+
+
+
 	glClearColor( 0, 0, 0, 0 );	// clear screen to black
 
     glViewport( 0, 0, width, height );	// set the viewport to be the resolution of the screen
@@ -142,6 +173,8 @@ int Renderer::initGL()
     glLoadIdentity( );
     gluPerspective( 60.0, ratio, 1.0, 1024.0 );	// need to fix this to change fov on the fly
 	glMatrixMode(GL_MODELVIEW);	// switch back to model view
+
+	glDisable2D();
 
 	return counter;
 }
@@ -340,7 +373,7 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glColor3f(1.0f, 1.0f, 1.0f);
 	
@@ -380,7 +413,6 @@ void Renderer::setCamera(const btVector3& pos, const btVector3& lookAtPoint)
 	printf("camLookAt: (%f, %f, %f)\n", lookAtPoint.x(), lookAtPoint.y(), lookAtPoint.z()); 
 	printf("camnormal: (%f, %f, %f)\n", normal.x(), normal.y(), normal.z()); 
 */
-
 	gluLookAt(pos.x(), pos.y(), pos.z(),	// camera position
 		      lookAtPoint.x(), lookAtPoint.y(), lookAtPoint.z(),	// look at point
 			  normal.x(), normal.y(), normal.z());	// up vector
@@ -416,6 +448,31 @@ void Renderer::draw()
 	glDisable2D();
 }
 
+void Renderer::drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width)
+{
+	assert(width >= 1);
+	
+	glPushMatrix();
+	glLineWidth(width);
+
+	glBegin(GL_LINES);
+
+	glColor4f((float)r/255.0f, (float)g/255.0f, (float)b/255.0f, 1.0f);
+	
+	glVertex3fv(start);
+	glVertex3fv(end);
+	//glVertex3f(start.getX(), start.getY(), start.getZ());
+	//glVertex3f(end.getX(), end.getY(), end.getZ());
+
+	//end.m_floats
+
+	glEnd();
+
+	glLineWidth(1);	// we need to reset the line width back to default as to not effect other things
+	glPopMatrix();
+}
+
+
 /*
 *	Draws a given entity to the screen
 *
@@ -424,81 +481,101 @@ void Renderer::draw()
 */
 void Renderer::drawEntity(Entity &entity)
 {
-	objLoader* renderObject = entity.renderObject;
-	
-	btVector3 p, t, n, b;
-
-
-	p = entity.position;
-
-	t = entity.tangent;
-	n = entity.normal;
-	b = entity.binormal;
-
 	glPushMatrix();
 
-	//glTranslatef(p.x(), p.y(), p.z());
-
-
 	btScalar* matrix = entity.getGLMatrix();
-/*
-	printf("%f, %f, %f, %f\n", matrix[0], matrix[1], matrix[2], matrix[3]);
-	printf("%f, %f, %f, %f\n", matrix[4], matrix[5], matrix[6], matrix[7]);
-	printf("%f, %f, %f, %f\n", matrix[8], matrix[9], matrix[10], matrix[11]);
-	printf("%f, %f, %f, %f\n", matrix[12], matrix[13], matrix[14], matrix[15]);
-*/
+
 	glMultMatrixf(matrix);
 
-	delete[] matrix;
-
-/*
-
-	btScalar rMatrix[] = {matrix[0], matrix[1], matrix[2], matrix[3],
-						  matrix[4], matrix[5], matrix[6], matrix[7],
-						  matrix[8], matrix[9], matrix[10], matrix[11],
-						  matrix[12], matrix[13], matrix[14], 1};
-*/	
-/*
-	float rMatrix[] = {t.x(), n.x(), b.x(), 0,
-                       t.y(), n.y(), b.y(), 0,
-                       t.z(), n.z(), b.z(), 0,
-                       0, 0, 0, 1};
-
-	glMultMatrixf(rMatrix);
-*/
-	// for each face in the model
-	for(int i = 0; i < renderObject->faceCount; i++)
+	for(int i = 0; i < (int)entity.renderObject->mNumMeshes; i++)
 	{
-		// i'm assuming that all obj models will ONLY contain triangles
-		// get a face
+		const aiMesh* mesh = entity.renderObject->mMeshes[i];
 
-		obj_face* face = renderObject->faceList[i];
-
-		double* Kd;
-		if(renderObject->materialCount > 0)
+		/*
+		if(mesh->mColors[0] != NULL) 
 		{
-			Kd = renderObject->materialList[face->material_index]->diff;
+			glEnable(GL_COLOR_MATERIAL);
+		} else 
+		{
+			glDisable(GL_COLOR_MATERIAL);
+		}*/
 
-			glColor4f((GLfloat)Kd[0], (GLfloat)Kd[1], (GLfloat)Kd[2], 1.0);
+		if(entity.renderObject->HasMaterials())
+		{
+
+			//printf("i has found material\n");
+			const aiMaterial* mat = entity.renderObject->mMaterials[mesh->mMaterialIndex];
+			
+			float Kd[4];
+			aiColor4D diffuse;
+
+			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
+			{
+				Kd[0] = diffuse.r;
+				Kd[1] = diffuse.g;
+				Kd[2] = diffuse.b;
+				Kd[3] = diffuse.a;
+
+				//printf("%f, %f, %f, %f\n", Kd[0], Kd[1], Kd[2], Kd[3]);
+
+				//glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Kd);
+				glColor4fv(Kd);
+			}
 		}
 
-
-		glBegin(GL_TRIANGLES);
-
-		for(int j = 0; j < 3; j++)
+		for(int j = 0; j < (int)mesh->mNumFaces; j++)
 		{
-			obj_vector* vert = renderObject->vertexList[face->vertex_index[j]];	// get our vertex vector
-			
-			if(renderObject->normalCount > 0)
+			const aiFace* face = &mesh->mFaces[j];	// get a face
+
+			GLenum face_mode;
+
+			switch(face->mNumIndices) 
 			{
-				obj_vector* norm = renderObject->normalList[face->normal_index[j]];	// get our normal vector
-                glNormal3f((GLfloat)norm->e[0], (GLfloat)norm->e[1], (GLfloat)norm->e[2]);	// set the normal
+				case 1: face_mode = GL_POINTS; break;
+				case 2: face_mode = GL_LINES; break;
+				case 3: face_mode = GL_TRIANGLES; break;
+				default: face_mode = GL_POLYGON; break;
 			}
 
-			glVertex3f((GLfloat)vert->e[0], (GLfloat)vert->e[1], (GLfloat)vert->e[2]);	// draw the vertex
+			glBegin(face_mode);
+
+			for(unsigned int k = 0; k < face->mNumIndices; k++)
+			{
+				int index = face->mIndices[k];
+				
+				/*
+				// the model has a color
+				// need to check this as i don't think we ever get into this if statement
+				if(mesh->mColors[0] != NULL)
+				{
+					const aiColor4D *color = &mesh->mColors[0][index];
+					
+					glColor4f(color->r, color->g, color->b, color->a);
+				}
+
+				*/
+				//Color4f(&mesh->mColors[0][index]);
+
+				if(mesh->HasTextureCoords(0))
+				{
+					//glTexCoord2f(&mesh->mTextureCoords[index]->x, &mesh->mTextureCoords[index]->y);
+
+
+
+				}
+
+				// the model has normal
+				if(mesh->mNormals != NULL)
+				{
+					glNormal3fv(&mesh->mNormals[index].x);
+				}
+				glVertex3fv(&mesh->mVertices[index].x);
+			}
+
+			glEnd();
 		}
 
-		glEnd();
+
 	}
 
 	glPopMatrix();
@@ -506,7 +583,6 @@ void Renderer::drawEntity(Entity &entity)
 
 void Renderer::drawPlane(float height)
 {
-	
 	glPushMatrix();
 	//glLoadIdentity();
 	
@@ -566,6 +642,16 @@ void Renderer::glDisable2D()
 	glPopMatrix();	
 }
 
+void Renderer::glEnableLighting()
+{
+	glEnable(GL_LIGHTING);
+}
+void Renderer::glDisableLighting()
+{
+	glDisable(GL_LIGHTING);
+}
+
+
 
 /*
 *	Clears the frame buffer
@@ -580,5 +666,66 @@ void Renderer::clearGL()
 */
 void Renderer::updateGL()
 {
-	SDL_GL_SwapBuffers();	
+	SDL_GL_SwapBuffers();
+}
+
+
+
+/*
+*	The following functions are part of btIDebugDrawer from bullet
+*/
+
+void Renderer::drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor)
+{
+	glBegin(GL_LINES);
+	glColor3fv(fromColor);
+	glVertex3fv(from);
+	glColor3fv(toColor);
+	glVertex3fv(to);
+	glEnd();
+}
+
+void Renderer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color)
+{
+	glColor3fv(color);
+	glBegin(GL_LINES);
+
+	glVertex3fv(from);
+	glVertex3fv(to);
+
+	glEnd();
+}
+void Renderer::drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance, int lifeTime, const btVector3 &color)
+{
+		//btVector3 to = pointOnB + normalOnB*1;	//distance;
+
+		//const btVector3 &from = pointOnB;
+		
+		//glColor4fv(color);
+		
+		drawLine(PointOnB, PointOnB + normalOnB, color);
+		
+		/*
+		glBegin(GL_LINES);
+		glVertex3d(from.getX(), from.getY(), from.getZ());
+		glVertex3d(to.getX(), to.getY(), to.getZ());
+		glEnd();
+		*/
+}
+void Renderer::reportErrorWarning(const char *warningString)
+{
+	printf("%s\n",warningString);
+}
+void Renderer::draw3dText(const btVector3 &location, const char *textString)
+{
+	
+}
+void Renderer::setDebugMode(int debugMode)
+{
+	m_debugMode = debugMode;
+}
+
+int Renderer::getDebugMode() const
+{
+	return m_debugMode;
 }

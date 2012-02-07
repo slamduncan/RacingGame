@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <fstream>
 #include <sstream>
 
 #include "LinearMath/btScalar.h"
@@ -15,45 +16,37 @@
 #include "BulletCollision/Gimpact/btGImpactShape.h"
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
-#include "objLoader.h"
 #include "MethodObserver.h"
 #include "RotationEvent.h"
+#include "ForwardForceEvent.h"
+
+//#include "assimp.hpp"	//c++ interface
+#include "assimp.h"	//c interface
+#include "aiPostProcess.h"
+#include "aiScene.h"
 
 class Entity
 {
 private:
-	bool isInit;
-	int loaded;
+//	bool isInit;
+//	int loaded;
 
-	btScalar mass;
+//	bool init();
 
-	bool init();
-
-	//Observer for the rotations:
+	//Observers
 	MethodObserver<RotationEvent, Entity> rotationObserver;
+	MethodObserver<ForwardForceEvent, Entity> forwardForceObserver;
 
 public:
-	
-	/*
-	*	DEPRECIATED
-	*	will use functions:
-	*	getPosition();
-	*	getTangent();
-	*	getNormal();
-	*	getBinormal();
-	*
-	*	These gets us all the data we need for a given entity
-	*	since bullet will manage our entity position and orientation for us
-	*/
-	btVector3 position;
-	btVector3 tangent;
-	btVector3 normal;
-	btVector3 binormal;
+	// pointer to an array of 16 elements
+	// might as well store the matrix per frame? since that way we only have to
+	// generate the array once per object instead of once per object per frame.
+	btScalar* glMatrix;
+	//btScalar mass;
+
 
 	// render model (objloader)
-	// i believe there is a bug in the obj loader since texture coordinates are not being handled properly
-	// NEED TO ASK PROF AND GROUP ABOUT THIS.
-	objLoader* renderObject;
+	const aiScene* renderObject;
 
 	// physics model (bullet)
 	btRigidBody* physicsObject;
@@ -65,15 +58,23 @@ public:
 //		physicsObject->setAngularFactor(1000);
 		
 		btVector3 test = e->getQuaternion().getAxis();
+		btVector3 temp = physicsObject->getAngularVelocity();
+		if (temp.length() < 5)
 		//physicsObject->setAngularVelocity(test);
-		physicsObject->applyTorque(test);
+			physicsObject->applyTorque(test);		
 	};
+
+	void observeForwardForce(ForwardForceEvent *e){
+		btVector3 tan = getTangent() * (e->getNormForce());		
+
+		physicsObject->applyCentralImpulse(tan);
+	}
 	
 
 
 	Entity();
 	//Entity(char* filename);
-	Entity(char* filename, btScalar &mass, btTransform &trans);
+	//Entity(char* filename, btScalar &mass, btTransform &trans);
 	~Entity();
 
 	void move(float x, float y, float z);
@@ -86,7 +87,10 @@ public:
 	btVector3 getNormal();
 	btVector3 getBinormal();
 
-	bool loadObj(char* filename, btScalar &mass, btTransform &trans);
+	//bool loadObj(char* filename, btScalar &mass, btTransform &trans);
+	
+	bool initRenderObject(char* filename);
+	virtual bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans) = 0;
 
 	void debug();
 	std::string toString();

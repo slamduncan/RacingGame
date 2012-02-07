@@ -1,71 +1,68 @@
 #include "Entity.h"
 #include "EventSystemHandler.h"
 
-Entity::Entity(): rotationObserver(this, &Entity::observeRotation)
+Entity::Entity() : rotationObserver(this, &Entity::observeRotation), forwardForceObserver(this, &Entity::observeForwardForce)
 {
-	renderObject = NULL;
 	physicsObject = NULL;
-	isInit = init();
+	renderObject = NULL;
+
+	glMatrix = new btScalar[16];
 	
+
+
 	//loadObj("../CPSC585/model/box.obj");
 }
 
-Entity::Entity(char* filename, btScalar &mass, btTransform &trans) : rotationObserver(this, &Entity::observeRotation)
+/*
+Entity::Entity(char* filename, btScalar &mass, btTransform &trans) : rotationObserver(this, &Entity::observeRotation), forwardForceObserver(this, &Entity::observeForwardForce)
 {
 	if(filename != NULL)
 	{
-		renderObject = NULL;
+		//renderObject = NULL;
 		physicsObject = NULL;
 
 		isInit = init();
-		loadObj(filename, mass, trans);
+		//loadObj(filename, mass, trans);
 	}
 }
+*/
 
 /*
 *	Clean up
 */
 Entity::~Entity()
 {
-	// if there is a render object, clean up
 	if(renderObject != NULL)
 	{
-		delete renderObject;
+		aiReleaseImport(renderObject);
 	}
+
 	// if there is a physics object, clean up
 	if(physicsObject != NULL)
 	{
 		delete physicsObject;
 	}
+
+	delete[] glMatrix;
 }
 
 /*
-*	initializes the entity at (0, 0, 0)
-*	with a standard frenet frame of:
-*	tangent = (0, 0, 1);
-*	normal = (0, 1, 0);
-*	binormal = (1, 0, 0);
-*
 *	Return:
 *	indicates that the entity has been initialized
 */
+/*
 bool Entity::init()
 {
 
-	position = btVector3(0,0,0);
-	
-	tangent = btVector3(0, 0, 1);
-	normal = btVector3(0, 1, 0);
-	binormal = normal.cross(tangent);
-
-	loaded = 0;
-	//renderObject = new objLoader();
 	return true;
 }
+*/
 
-void Entity::initObservers(){
+void Entity::initObservers()
+{
 	//EventSystemHandler::getInstance()->addObserver(&rotationObserver, EventTypes::ROTATION);
 	rotationObserver.init(EventTypes::ROTATION);
+	forwardForceObserver.init(EventTypes::FORWARD_FORCE);
 
 }
 
@@ -75,13 +72,13 @@ void Entity::initObservers(){
 //
 void Entity::move(float x, float y, float z)
 {
-	btVector3 temp(x, y, z);
+	//btVector3 temp(x, y, z);
 
-	position += temp;
+	//position += temp;
 }
 void Entity::move(const btVector3 &newPos)
 {
-	position += newPos;
+	//position += newPos;
 }
 
 /*
@@ -97,7 +94,7 @@ void Entity::rotate(const btVector3 &axis, int deg)
 
 	// quaternion q
 	btQuaternion q = btQuaternion(axis, radian);
-
+/*
 	// quaternion p
 	btQuaternion tan = btQuaternion(tangent.x(), tangent.y(), tangent.z(), tangent.w());
 	btQuaternion nor = btQuaternion(normal.x(), normal.y(), normal.z(), normal.w());
@@ -122,18 +119,22 @@ void Entity::rotate(const btVector3 &axis, int deg)
 	//printf("rtan (%f, %f, %f)\n", rtan.getX(), rtan.getY(), rtan.getZ());
 
 	//tangent = btVector3(rtan);
-
+*/
 }
 
 btScalar* Entity::getGLMatrix()
 {
-	btScalar* glMat = new btScalar[16];
-	btTransform trans;// = new btTransform();
-	physicsObject->getMotionState()->getWorldTransform(trans);
+	//btScalar* glMat = new btScalar[16];
+	//btTransform trans;// = new btTransform();
+	//physicsObject->getMotionState()->getWorldTransform(trans);
 
-	trans.getOpenGLMatrix(glMat);
+	btTransform transM = physicsObject->getWorldTransform();
 
-	return glMat;
+	transM.getOpenGLMatrix(glMatrix);
+
+	//trans.getOpenGLMatrix(glMat);
+
+	return glMatrix;
 }
 
 btVector3 Entity::getPosition()
@@ -180,12 +181,7 @@ btVector3 Entity::getBinormal()
 
 
 
-
-
-
-
-
-
+// CODE WILL PROBBALY BE PHASED OUT OVER A COUPLE OF COMMITS
 /*
 *	Loads a given obj model to this entity.
 *	Generate the render and physics representation
@@ -196,30 +192,29 @@ btVector3 Entity::getBinormal()
 *	Return:
 *	whether or not the render and physics rep loaded sucessfully
 */
+/*
 bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans)
 {
 	//printf("loading...\n");
 	
 	if(isInit)
 	{
-		if(loaded)
+		if(renderObject != NULL)
 		{
-			delete renderObject;
+			aiReleaseImport(renderObject);
 		}
+
 		if(physicsObject != NULL)
 		{
 			delete physicsObject;
 		}
+
+		//renderObject = aiImportFile(filename, aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
+
+		renderObject = aiImportFile(filename, aiProcessPreset_TargetRealtime_Quality);
 		
-		renderObject = new objLoader();
-
-		// returns 0 if fails to load
-		loaded = renderObject->load(filename);
-
-
-
 		// Generate the physics representation
-		if(loaded)
+		if(renderObject->HasMeshes())
 		{
 			btCollisionShape* objShape;
 			btVector3 inertia(0,0,0);
@@ -227,47 +222,45 @@ bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans)
 			// generate triangle mesh for bullet
 			btTriangleMesh* bttm = new btTriangleMesh();
 			
-			// generate the triangle mesh for bullet
-			for(int i = 0; i < renderObject->faceCount; i++)
+			for(unsigned int i = 0; i < renderObject->mNumMeshes; i++)
 			{
-				obj_face* face = renderObject->faceList[i];	// get a triangle
+				aiMesh* mesh = renderObject->mMeshes[i];
+			
+				for(unsigned int j = 0; j < mesh->mNumFaces; j++)
+				{
+					
+					aiFace* face = &mesh->mFaces[j];	// get a face
+			
+					int index0 = face->mIndices[0];
+					int index1 = face->mIndices[1];
+					int index2 = face->mIndices[2];
 
-				obj_vector* vert0 = renderObject->vertexList[face->vertex_index[0]];	//v0
-				obj_vector* vert1 = renderObject->vertexList[face->vertex_index[1]];	//v1
-				obj_vector* vert2 = renderObject->vertexList[face->vertex_index[2]];	//v2
+					aiVector3D* v0 = &mesh->mVertices[index0];
+					aiVector3D* v1 = &mesh->mVertices[index1];
+					aiVector3D* v2 = &mesh->mVertices[index2];
 
-				btVector3 btv0 = btVector3((float)vert0->e[0], (float)vert0->e[1], (float)vert0->e[2]);
-				btVector3 btv1 = btVector3((float)vert1->e[0], (float)vert1->e[1], (float)vert1->e[2]);
-				btVector3 btv2 = btVector3((float)vert2->e[0], (float)vert2->e[1], (float)vert2->e[2]);
-				
-				bttm->addTriangle(btv0, btv1, btv2, false);	// addTriangle(v0, v1, v2, removeDupes)
+					btVector3 btv0 = btVector3(v0->x, v0->y, v0->z);
+					btVector3 btv1 = btVector3(v1->x, v1->y, v1->z);
+					btVector3 btv2 = btVector3(v2->x, v2->y, v2->z);
+
+					bttm->addTriangle(btv0, btv1, btv2, false);	// addTriangle(v0, v1, v2, removeDupes)
+				}
 			}
-
 
 			// static rigid body
 			if(mass == 0.f)
 			{
-				
-				//printf("static body\n");
 				objShape = new btBvhTriangleMeshShape(bttm, true, true);
-				//objShape = new btStaticPlaneShape(btVector3(0, -10, 0), trans.getOrigin().getY());
 			}
 			// dynamic rigid body
 			else
 			{
 
-				objShape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
+				objShape = new btBoxShape(btVector3(2.5, 2.5, 5));
 				//objShape = new btConvexTriangleMeshShape(bttm, true);
 
 				objShape->calculateLocalInertia(mass, inertia);
-
-				
 			}			
-
-			//btBvhTriangleMeshShape* objShape = new btBvhTriangleMeshShape(bttm, true, true);
-
-			//btVector3 fallInertia(0, 0, 0);
-			//objShape->calculateLocalInertia(1, fallInertia);
 
 			// btDefaultMotionState(orientiation matrix, position)
 			// need to pass orientation and position at the start
@@ -275,13 +268,9 @@ bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans)
 
 			// entRigidBodyCI(mass, motion state, collision shape, inertia);
 			// need to update the mass to make it as a variable?
-
-			//printf("inertia is (%f, %f, %f)\n", inertia.getX(), inertia.getY(), inertia.getZ());
-
 			btRigidBody::btRigidBodyConstructionInfo entRigidBodyCI(mass,entMotionState,objShape,inertia);
 
 			physicsObject = new btRigidBody(entRigidBodyCI);
-			//printf("collsion flags %d\n", physicsObject->getCollisionFlags());
 
 			return true;
 		}
@@ -289,24 +278,54 @@ bool Entity::loadObj(char* filename, btScalar &mass, btTransform &trans)
 
 	return false;	// render and physics representations failed to init
 }
+*/
+
+bool Entity::initRenderObject(char* filename)
+{
+	std::ifstream fileCheck(filename);
+
+	// if the file exists
+	if(fileCheck)
+	{
+		// if a previous model was loaded
+		if(renderObject != NULL)
+		{
+			aiReleaseImport(renderObject);
+		}
+		
+		// load the file
+		renderObject = aiImportFile(filename, aiProcessPreset_TargetRealtime_Quality);
+
+		return true;
+	}
+			
+	return false;
+}
+
+
 
 /*
 *	debug console output
 */
 void Entity::debug()
 {	
+/*
 	printf("-----------------------------------------------\n");
 	printf("Pos: (%f, %f, %f)\n", position.x(), position.y(), position.z());
 	printf("\n");
 	printf("Tan: (%f, %f, %f)\n", tangent.x(), tangent.y(), tangent.z());
 	printf("Nor: (%f, %f, %f)\n", normal.x(), normal.y(), normal.z());
 	printf("Bin: (%f, %f, %f)\n", binormal.x(), binormal.y(), binormal.z());
+*/
 }
+
 
 /*
 *	Returns a string presentation of the entity
 *
-*	
+*	Return:
+*		string representation of this entity
+*		ie. position, tangent, normal, binormal.
 */
 std::string Entity::toString()
 {
@@ -314,7 +333,6 @@ std::string Entity::toString()
 	btVector3 tan = getTangent();
 	btVector3 nor = getNormal();
 	btVector3 bin = getBinormal();
-
 
 	std::stringstream ss;
 	ss << "Pos: (" << pos.x() << ", " << pos.y() << ", " << pos.z() << ")\n";

@@ -1,24 +1,29 @@
 #include <stdio.h>
 #include "Physics.h"
 #include "Renderer.h"
-#include "Entity.h"
+
+#include "EntityManager.h"
+
+//#include "Entity.h"
 #include "InputController.h"
 #include <time.h>
 #include <sstream>
 #include <iostream>
 
+//For XML Parser
+//#include "tinyxml.h"
+//#include "tinystr.h"
+#include "ProjectNumbers.h"
+
 //Test stuff
-#include "EventSystemHandler.h"
+//#include "EventSystemHandler.h"
 #include "TestClass.h"
 #include "Car.h"
+#include "Waypoint.h"
 #include <windows.h>
 #include "InputMapper.h"
 
-// "vector" for entities
-// we might just make it so that each type of specialized entity
-// has their own container.
-// ie. carList, powerupList, etc
-#include "LinearMath\btAlignedObjectArray.h"
+using namespace std;
 
 // Other init
 // ie. Physics, AI, Renderer, Sound, Container for ents?
@@ -26,12 +31,14 @@ Renderer* ren = Renderer::getInstance();
 
 Physics* ph = Physics::Inst();
 
+InputMapper* playerInput = new InputMapper();
+
 //Test Variables
 InputController controller1 = InputController();
 EventSystemHandler* evSys = EventSystemHandler::getInstance();
 
 
-btAlignedObjectArray<Entity*>* entityList = new btAlignedObjectArray<Entity*>();
+EntityManager* entManager = EntityManager::getInstance();
 
 /*
 *	Handles what to do when key has been pressed
@@ -72,7 +79,7 @@ void process_events()
 			ren->quitSDL();
             break;
 		/* Handle controller Events ?  Does this lose the event?
-		- updated to not lose the event, but now must pass in controller events*/
+		- updated to not l ose the event, but now must pass in controller events*/
 		case SDL_JOYAXISMOTION:
 		{
 			controller1.update(event);	
@@ -81,6 +88,25 @@ void process_events()
 		case SDL_JOYBUTTONDOWN:
 			fprintf(stderr, "BUTTONS HOW DO THEY WORK\n");
 			controller1.update(event);
+
+			if(controller1.isADown())
+			{
+				ren->quitSDL();
+			}
+			if(controller1.isXDown())
+			{
+				if(entManager->numCars() > 0)
+				{
+					entManager->resetCarPosition(0, btVector3(0, 0, 0));
+				}
+			}
+			if(controller1.isYDown())
+			{
+				if(entManager->numCars() > 0)
+				{
+					entManager->resetCarOrientation(0);
+				}
+			}
 
 			break;
 		case SDL_JOYBUTTONUP:
@@ -92,6 +118,12 @@ void process_events()
     }
 
 }
+/*
+bool readVariables(){
+	TiXmlDocument doc("../CPSC585/magicNumbers/Controller.xml");
+	return doc.LoadFile();
+}
+*/
 
 
 void updateEntityPosition(Entity &entIn, InputController &contrlIn){
@@ -108,7 +140,8 @@ void updateEntityPosition(Entity &entIn, InputController &contrlIn){
 
 void updateRot(){
 
-			if(controller1.isADown())
+	/*		
+	if(controller1.isADown())
 			{
 				ren->quitSDL();
 			}
@@ -126,58 +159,154 @@ void updateRot(){
 					entityList->at(0)->rotate(entityList->at(0)->normal, 1);
 				}
 			}
+	*/
 }
+
+
+
+////////////////////////////////////////////////////////////////////////
+// HACKED
+
+btCollisionShape* createCarPhysicsObject()
+{
+	return new btBoxShape(btVector3(2.5, 2.5, 5));
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// HACKED
+btCollisionShape* createTrack(const Entity* ent)
+{
+	btCollisionShape* objShape;
+
+	// Generate the physics representation
+	if(ent->renderObject->HasMeshes())
+	{
+		// generate triangle mesh for bullet
+		btTriangleMesh* bttm = new btTriangleMesh();
+		
+		for(unsigned int i = 0; i < ent->renderObject->mNumMeshes; i++)
+		{
+			aiMesh* mesh = ent->renderObject->mMeshes[i];
+		
+			for(unsigned int j = 0; j < mesh->mNumFaces; j++)
+			{
+				
+				aiFace* face = &mesh->mFaces[j];	// get a face
+		
+				int index0 = face->mIndices[0];
+				int index1 = face->mIndices[1];
+				int index2 = face->mIndices[2];
+
+				aiVector3D* v0 = &mesh->mVertices[index0];
+				aiVector3D* v1 = &mesh->mVertices[index1];
+				aiVector3D* v2 = &mesh->mVertices[index2];
+
+				btVector3 btv0 = btVector3(v0->x, v0->y, v0->z);
+				btVector3 btv1 = btVector3(v1->x, v1->y, v1->z);
+				btVector3 btv2 = btVector3(v2->x, v2->y, v2->z);
+
+				bttm->addTriangle(btv0, btv1, btv2, false);	// addTriangle(v0, v1, v2, removeDupes)
+			}
+		}
+
+		objShape = new btBvhTriangleMeshShape(bttm, true, true);
+	}
+
+	return objShape;
+}
+
 
 // Engine Main
 int main(int argc, char** argv)
 {	
+
+	ProjectNumbers p;
+	p.readVariablesIn();
+	int* i = p.CONTROLLER_Turning;
+	int k = p.test;
 	// INITIALIZATIONS
-	bool renInit = ren->init();	
 	
+	bool renInit = ren->init();
+
+	// DEBUG DRAW SETUP
+	ph->setDebugDrawer(ren);
+	ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
+
+
+
+
+/*	
 	ren->initSDL();	// init SDL for drawing window
 	ren->initGL();	// initializing opengl stuff
 	ren->initFont();
-
+*/
 	/* Added by Kent */
-	controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
-	if (!controller1.initialize(0)){
+	
+	//controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
+	
+	//if (!controller1.initialize(0)){
 		//SDL_Delay(100);
 		/*ren->outputText("Connect Controller", 1, 0, 0, 1280/2, 720/2);
 		while(!controller1.initialize(0)){
 			Sleep(100);
 		}*/
 		/* Error on initalizing controller -KD */
-	}	
+
+	//	ren->quitSDL();
+
+	//}	
 		
 	//evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
-	evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
+	//evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
 
-	ph->setGravity(btVector3(0, -10, 0));
+	ph->setGravity(btVector3(0, -50, 0));
 
-
-	//
-	// RENDERER DEBUG TESTING
+	
+	// //RENDERER DEBUG TESTING
 	//
 	Car *car1 = new Car();
-//	Car *car2 = new Car();	
-	Entity* testGround = new Entity();
+	Track* ground = new Track();
+	Waypoint* waypoint = new Waypoint();
 
 	btScalar carMass = 1;
 	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 1.5, 0));
-	btTransform carT2 = btTransform(btQuaternion(0, .5, .5, 1), btVector3(.5, 1.5, 0));
+	//btTransform carT2 = btTransform(btQuaternion(0, .5, .5, 1), btVector3(.5, 1.5, 0));
 
 	btScalar groundMass = 0;
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
-	btVector3 carInteria1 = btVector3(0, 0, 0);
-	btVector3 carInteria2 = btVector3(0, 0, 0);
+	///////////////////////////////////////////////////////////////////////////////////////
+	// EXTREME HACK HERE
+	// I'll need to create a factory for the physics objects later so we can build almost any shape we need
 
-	btVector3 groundI = btVector3(0, 0, 0);
+	// CAR1
+	car1->initRenderObject("../CPSC585/model/box.obj");
+	btCollisionShape* carShape1 = createCarPhysicsObject();
+	car1->initPhysicsObject(carShape1, carMass, carT1);
 	
-	//char* filename, btScalar &mass, btTransform &orientation, btVecto3 &pos, btVector3 inertia	
-	car1->loadObj("../CPSC585/model/box.obj", carMass, carT1);
-//	car2->loadObj("../CPSC585/model/box.obj", carMass, carT2);
-	testGround->loadObj("../CPSC585/model/groundBox.obj", groundMass, groundT);
+	// GROUND
+	ground->initRenderObject("../CPSC585/model/groundBox.obj");
+	btCollisionShape* groundShape = createTrack(ground);
+	ground->initPhysicsObject(groundShape, groundMass, groundT);
+
+	entManager->addCar(car1);
+	entManager->addTrack(ground);
+	ph->addEntity(*car1);
+	ph->addEntity(*ground);
+
+	//WAYPOINT
+	waypoint->initRenderObject("../CPSC585/model/waypoint.obj");
+	btCollisionShape* waypointShape = createTrack(waypoint);
+	btTransform wayPointT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(5, -.55, 5));
+	btScalar temp = btScalar(0);
+	waypoint->initPhysicsObject(waypointShape, temp, wayPointT); 
+	entManager->addWaypoint(waypoint);
+
+
+
+	//
+	///////////////////////////////////////////////////////////////////////////////////////
+
 
 	//btVector3 offset = btVector3(-5, 0, -5);
 
@@ -201,53 +330,22 @@ int main(int argc, char** argv)
 	//	offset.setZ(-5);
 	//	offset += btVector3(0, 1.5, 0);
 	//}
-	
+	//
+	//
 
-	/* Inialize Observers used in entities */
+	///* Inialize Observers used in entities */
 	car1->initObservers();
-	
-	/*
-	Entity *test = new Entity("../CPSC585/model/box.obj");
-	Entity *test2 = new Entity("../CPSC585/model/box.obj");
-	Entity *test3 = new Entity("../CPSC585/model/box.obj");
-*/
-	//Entity *planeTest = new Entity("../CPSC585/model/aaup.obj");
 
-	//planeTest->position += btVector3(0,-1,0);
-/*
-	btVector3 offset2(0.5, 0.5, 0.5);
-	btVector3 offset3(-0.5, 0.5, 0.5);
-
-	test2->position += offset2;
-	test3->position += offset3;
-*/
-	entityList->push_back(car1);
-//	entityList->push_back(car2);
-	//entityList->push_back(car2);
-	entityList->push_back(testGround);
-//	entityList->push_back(test);
-//	entityList->push_back(test2);
-//	entityList->push_back(test3);
-
-	SDL_Surface* planeTex = ren->loadIMG("../CPSC585/texture/plane.png");
-
-	GLuint ptex = 0;
-
-	ptex = ren->initTexture(planeTex);
-
-	// PHYSICS DEUBG
-	ph->addEntity(*car1);	// add the car to the physics world
-	
-	//ph->addEntity(*car2);
-	//ph->addEntity(*car2);
-	ph->addEntity(*testGround);	// add the ground to the physics world
+	//SDL_Surface* planeTex = ren->loadIMG("../CPSC585/texture/plane.png");
+	//GLuint ptex = 0;
+	//ptex = ren->initTexture(planeTex);
 
 
 	//Set inital game time
 	Uint32 currentTime = SDL_GetTicks();
 	Uint32 oldTime = SDL_GetTicks();
 	int frameCount = 0;
-	char frames[30];
+	int counter = 1;
 
 	// game loop
 	while(1)
@@ -257,54 +355,93 @@ int main(int argc, char** argv)
 		//// Physics
 		ph->step();
 
-
 		//// Inputs
-		process_events();
+		//process_events();
 		//
 		//// AI
 		//controller1.emitTriggers();
 		//controller1.emitButtons();
 		//controller1.emitLeftAnalog();
-		updateRot();
-		updateEntityPosition(*(entityList->at(0)), controller1);
+		//updateRot();
+		//updateEntityPosition(*(entityList->at(0)), controller1);
 
 		// Render
 		// draw code goes here
-		btVector3 camPos = car1->position + car1->normal*2 + car1->tangent*5;
-		//btVector3 camPos = btVector3(100,100,100);
+		btVector3 camPos = car1->getPosition() + car1->getNormal()*10 + car1->getTangent()*20;
+		//btVector3 camPos = btVector3(10,10,10);
 		//
-		btVector3 camLookAt = car1->position + btVector3(0, 0, 0);
+		btVector3 camLookAt = car1->getPosition() + btVector3(0, 0, 0);
 		//btVector3 camLookAt = btVector3(0, 0, 0);
+		
+		
+		
 		ren->clearGL();	// clear the screen
+		
+		
 		ren->setCamera(camPos, camLookAt);
+		
+		
 		//
 		////ren->textureOn(ptex);
-		////ren->drawPlane(-2);
+		//ren->drawPlane(-2);
 		////ren->drawEntity(*planeTest);
 		//
 		////ren->textureOff();
 
-		for(int i = 0; i < entityList->size(); i++)
+		ren->glDisableLighting();
+
+		ph->debugDraw();
+
+		ren->glEnableLighting();
+
+		////////////////////////////////////////////////////////
+		// HACKED DRAWING need to fix this
+
+		for(int i = 0; i < entManager->numCars(); i++)
 		{
-			ren->drawEntity(*(entityList->at(i)));
+			ren->drawEntity(*(entManager->getCarList()->at(i)));
+		}
+		for(int i = 0; i < entManager->numWaypoints(); i++)
+		{
+			ren->drawEntity(*(entManager->getWaypointList()->at(i)));
 		}
 
-		//ren->glEnable2D();
-		//ren->outputText((*(entityList->at(0))).toString(), 0, 255, 0, 500, 200);
-		//ren->outputText("This is a multi\nline test to see if \nnewlines are working correctly", 255, 255, 255, 0, 360);
-		//ren->outputText("I am testing to see if obj models will load and draw correctly", 255, 255, 255, 0, 0);
+
+		if(entManager->getTrack())
+		{
+
+			ren->drawEntity(*(entManager->getTrack()));
+		}
+		
+		//
+		////////////////////////////////////////////////////////
+
+
+		//ren->drawLine(btVector3(0, 0, 0), btVector3(0, 10, 0), btVector3(1.f, 1.f, 1.f));
+
+		ren->glEnable2D();
 		frameCount++;
+
 		if((currentTime - oldTime) > 1000){
-		//	sprintf_s(frames, "%d FPS", frameCount);		
-			ren->outputText(frames, 0, 255, 0, 10, 700);
-		std::cout << frameCount << "\n";
-			frameCount = 0;
+			//sprintf_s(frames, "%d FPS", frameCount);	
+			//ren->outputText(frames, 0, 255, 0, 10, 700);
+			//std::cout << frameCount << "\n";
+			//frameCount = 0;
+			counter++;
 			oldTime = currentTime;
 		}		
-		ren->outputText(frames, 0, 255, 0, 10, 700);
 		currentTime = SDL_GetTicks();
+		
+		std::stringstream ss;
+		ss << frameCount/counter;
+
+		ren->outputText("THIS IS A TEST", 255, 0, 0, 200, 200);
+		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
+		
 		ren->glDisable2D();
 
+
+		
 		////ren.draw();		// draw things to the buffer
 		ren->updateGL();	// update the screen
 

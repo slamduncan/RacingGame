@@ -4,18 +4,21 @@
 #include "TypedObserver.h"
 #include "TriggerEvent.h"
 #include "Entity.h"
-#include "LinearMath/btVector3.h"
 
-class Car : public TypedObserver<TriggerEvent>, public Entity{
+class Car : public TypedObserver<TriggerEvent>, public Entity
+{
 
 public:
 	//Car(btVector3 startingPos);
 	Car();
-	btVector3 getPos();
 	void Observe(TriggerEvent *e);
 
+	//bool initRenderObject(char* filename);
+	bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans);
+
 private:
-	btVector3 pos;
+	// 3 power up slots, circular array of powerups?
+
 
 };
 #endif
