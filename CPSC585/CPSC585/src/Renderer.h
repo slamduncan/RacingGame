@@ -9,11 +9,8 @@
 #include <string.h>
 #include <vector>
 
-#include "Shader.h"
-#include "Entity.h"
-#include "TextureManager.h"
-
 #include "SDL.h"
+#include "glew.h"
 #define NO_SDL_GLEXT
 #include "SDL_opengl.h"
 #include "SDL_ttf.h"
@@ -23,6 +20,11 @@
 #include "LinearMath/btVector3.h"
 #include "LinearMath/btTransform.h"
 #include "LinearMath/btIDebugDraw.h"
+
+#include "Shader.h"
+#include "Entity.h"
+#include "TextureManager.h"
+
 
 class Renderer : public btIDebugDraw
 {

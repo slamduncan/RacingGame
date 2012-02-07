@@ -16,7 +16,7 @@
 #include "ProjectNumbers.h"
 
 //Test stuff
-//#include "EventSystemHandler.h"
+#include "EventSystemHandler.h"
 #include "TestClass.h"
 #include "Car.h"
 #include "Waypoint.h"
@@ -128,14 +128,14 @@ bool readVariables(){
 
 void updateEntityPosition(Entity &entIn, InputController &contrlIn){
 
-			float lX = (float)contrlIn.getNormalizedLeftAnalogStickX();
-			float lY = (float)contrlIn.getNormalizedLeftAnalogStickY();
+		float lX = (float)contrlIn.getNormalizedLeftAnalogStickX();
+		float lY = (float)contrlIn.getNormalizedLeftAnalogStickY();
 
-			btVector3 offset(lX, 0, lY);
+		btVector3 offset(lX, 0, lY);
 
-			offset /= 5.0f;
+		offset /= 5.0f;
 
-			entIn.move(offset);
+		entIn.move(offset);
 }
 
 void updateRot(){
@@ -165,7 +165,7 @@ void updateRot(){
 
 
 ////////////////////////////////////////////////////////////////////////
-// HACKED
+// HACKED SHAPE FACTORY IN WORKS
 
 btCollisionShape* createCarPhysicsObject()
 {
@@ -240,7 +240,9 @@ int main(int argc, char** argv)
 	ren->initGL();	// initializing opengl stuff
 	ren->initFont();
 */
+	
 	/* Added by Kent */
+	
 	controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
 	
 	if (!controller1.initialize(0)){
@@ -255,8 +257,8 @@ int main(int argc, char** argv)
 
 	}	
 		
-	//evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
-	//evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
+	evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
+	evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
 
 	ph->setGravity(btVector3(0, -50, 0));
 
@@ -268,7 +270,11 @@ int main(int argc, char** argv)
 	Waypoint* waypoint = new Waypoint();
 
 	btScalar carMass = 1;
+
 	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 1.5, 0));
+	
+	
+
 	//btTransform carT2 = btTransform(btQuaternion(0, .5, .5, 1), btVector3(.5, 1.5, 0));
 
 	btScalar groundMass = 0;
