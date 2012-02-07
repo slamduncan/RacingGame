@@ -9,4 +9,4 @@ public:
 	bool initPhysicsObject(btCollisionShape *shape, btScalar &mass, btTransform &location);	
 };
 
-e#ndif
+#endif

@@ -302,10 +302,11 @@ int main(int argc, char** argv)
 	//WAYPOINT
 	waypoint->initRenderObject("../CPSC585/model/waypoint.obj");
 	btCollisionShape* waypointShape = createTrack(waypoint);
-	btTransform wayPointT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(5, -.55f, 5));
+	btTransform wayPointT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 0));
 	btScalar temp = btScalar(0);
 	waypoint->initPhysicsObject(waypointShape, temp, wayPointT); 
-	entManager->addWaypoint(waypoint);
+	entManager->addWaypoint(waypoint);	
+	car1->rotate(car1->getNormal(), 90);
 
 
 
