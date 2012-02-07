@@ -262,9 +262,9 @@ int main(int argc, char** argv)
 		process_events();
 		//
 		//// AI
-		controller1.emitTriggers();
-		controller1.emitButtons();
-		controller1.emitLeftAnalog();
+		//controller1.emitTriggers();
+		//controller1.emitButtons();
+		//controller1.emitLeftAnalog();
 		updateRot();
 		updateEntityPosition(*(entityList->at(0)), controller1);
 
