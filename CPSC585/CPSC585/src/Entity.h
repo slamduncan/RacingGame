@@ -65,7 +65,7 @@ public:
 	};
 
 	void observeForwardForce(ForwardForceEvent *e){
-		btVector3 tan = getTangent() * (e->getNormForce());
+		btVector3 tan = getTangent() * (e->getNormForce());		
 
 		physicsObject->applyCentralImpulse(tan);
 	}

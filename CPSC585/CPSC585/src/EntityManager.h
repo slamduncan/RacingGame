@@ -3,6 +3,7 @@
 #include "Entity.h"
 #include "Car.h"
 #include "Track.h"
+#include "Waypoint.h"
 //#include "PowerUp.h"
 #include "LinearMath\btAlignedObjectArray.h"
 
@@ -12,6 +13,7 @@ private:
 	btAlignedObjectArray<Car*> carList;
 	//btAlignedObjectArray<PowerUp*> powerUpList;
 	//btAlignedObjectArray<Obstacle*> obstacleList;
+	btAlignedObjectArray<Waypoint*> waypointList;
 
 	Track* track;
 
@@ -38,27 +40,32 @@ public:
 		CAR = 0,
 		TRACK,
 		POWERUP,
-		OBSTACLE
+		OBSTACLE,
+		WAYPOINT
 	};
 
 	void addCar(Car* car);
 	void addTrack(Track* track);
 	void addPowerUp();
 	void addObstacle();
+	void addWaypoint(Waypoint* waypoint);
 	
 	void removeCar();
 	void removeTrack();
 	void removePowerUp();
 	void removeObstacle();
+	void removeWaypoint();
 
 	int numCars();
 	int numPowerUps();
 	int numObstacles();
+	int numWaypoints();
 
 	void resetCarPosition(int index, btVector3 &position);
 	void resetCarOrientation(int index);
 
 	btAlignedObjectArray<Car*>* getCarList();
+	btAlignedObjectArray<Waypoint*>* getWaypointList();
 	Track* getTrack();
 	// btAlignedObjectArray<PowerUp*>* getPowerUpList();
 	// btAlignedObjectArray<Obstacle*>* getObstacleList();

@@ -56,6 +56,10 @@ void EntityManager::addObstacle()
 {
 
 }
+void EntityManager::addWaypoint(Waypoint* waypoint)
+{
+	waypointList.push_back(waypoint);
+}
 void EntityManager::removeCar()
 {
 
@@ -72,6 +76,10 @@ void EntityManager::removeObstacle()
 {
 
 }
+void EntityManager::removeWaypoint()
+{
+	
+}
 
 
 int EntityManager::numCars()
@@ -85,6 +93,10 @@ int EntityManager::numPowerUps()
 int EntityManager::numObstacles()
 {
 	return 0;
+}
+int EntityManager::numWaypoints()
+{
+	return waypointList.size();
 }
 
 void EntityManager::resetCarPosition(int index, btVector3 &position)
@@ -119,6 +131,10 @@ void EntityManager::resetCarOrientation(int index)
 btAlignedObjectArray<Car*>* EntityManager::getCarList()
 {
 	return &carList;
+}
+btAlignedObjectArray<Waypoint*>* EntityManager::getWaypointList()
+{
+	return &waypointList;
 }
 
 Track* EntityManager::getTrack()
