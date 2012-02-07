@@ -16,7 +16,7 @@
 #include "ProjectNumbers.h"
 
 //Test stuff
-//#include "EventSystemHandler.h"
+#include "EventSystemHandler.h"
 #include "TestClass.h"
 #include "Car.h"
 #include "Waypoint.h"
@@ -128,14 +128,14 @@ bool readVariables(){
 
 void updateEntityPosition(Entity &entIn, InputController &contrlIn){
 
-			float lX = (float)contrlIn.getNormalizedLeftAnalogStickX();
-			float lY = (float)contrlIn.getNormalizedLeftAnalogStickY();
+		float lX = (float)contrlIn.getNormalizedLeftAnalogStickX();
+		float lY = (float)contrlIn.getNormalizedLeftAnalogStickY();
 
-			btVector3 offset(lX, 0, lY);
+		btVector3 offset(lX, 0, lY);
 
-			offset /= 5.0f;
+		offset /= 5.0f;
 
-			entIn.move(offset);
+		entIn.move(offset);
 }
 
 void updateRot(){
@@ -165,7 +165,7 @@ void updateRot(){
 
 
 ////////////////////////////////////////////////////////////////////////
-// HACKED
+// HACKED SHAPE FACTORY IN WORKS
 
 btCollisionShape* createCarPhysicsObject()
 {
@@ -240,11 +240,12 @@ int main(int argc, char** argv)
 	ren->initGL();	// initializing opengl stuff
 	ren->initFont();
 */
+	
 	/* Added by Kent */
 	
-	//controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
+	controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
 	
-	//if (!controller1.initialize(0)){
+	if (!controller1.initialize(0)){
 		//SDL_Delay(100);
 		/*ren->outputText("Connect Controller", 1, 0, 0, 1280/2, 720/2);
 		while(!controller1.initialize(0)){
@@ -252,12 +253,12 @@ int main(int argc, char** argv)
 		}*/
 		/* Error on initalizing controller -KD */
 
-	//	ren->quitSDL();
+		ren->quitSDL();
 
-	//}	
+	}	
 		
-	//evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
-	//evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
+	evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
+	evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
 
 	ph->setGravity(btVector3(0, -50, 0));
 
@@ -360,12 +361,12 @@ int main(int argc, char** argv)
 		ph->step();
 
 		//// Inputs
-		//process_events();
+		process_events();
 		//
 		//// AI
-		//controller1.emitTriggers();
-		//controller1.emitButtons();
-		//controller1.emitLeftAnalog();
+		controller1.emitTriggers();
+		controller1.emitButtons();
+		controller1.emitLeftAnalog();
 		//updateRot();
 		//updateEntityPosition(*(entityList->at(0)), controller1);
 

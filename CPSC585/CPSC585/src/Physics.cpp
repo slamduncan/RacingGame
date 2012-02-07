@@ -82,7 +82,7 @@ void Physics::step()
 			btVector3 hit = RayCallback1.m_hitPointWorld;
 			btVector3 hitNormal = RayCallback1.m_hitNormalWorld;
 
-			physRender->drawLine(wheel1,hit,255,0,0,1.0);
+			//physRender->drawLine(wheel1,hit,255,0,0,1.0);
 
 			//Equilibrium length settable above
 			if((hit-wheel1).length()<MAGICEQUILIBRIUMLENGTH){
@@ -98,7 +98,7 @@ void Physics::step()
 			btVector3 hit = RayCallback2.m_hitPointWorld;
 			btVector3 hitNormal = RayCallback2.m_hitNormalWorld;
 
-			physRender->drawLine(wheel2,hit,255,0,0,1.0);
+			//physRender->drawLine(wheel2,hit,255,0,0,1.0);
 
 			//Equilibrium length settable above
 			if((hit-wheel2).length()<MAGICEQUILIBRIUMLENGTH){
@@ -114,7 +114,7 @@ void Physics::step()
 			btVector3 hit = RayCallback3.m_hitPointWorld;
 			btVector3 hitNormal = RayCallback3.m_hitNormalWorld;
 
-			physRender->drawLine(wheel3,hit,255,0,0,1.0);
+			//physRender->drawLine(wheel3,hit,255,0,0,1.0);
 
 			//Equilibrium length settable above
 			if((hit-wheel3).length()<MAGICEQUILIBRIUMLENGTH){
@@ -130,7 +130,7 @@ void Physics::step()
 			btVector3 hit = RayCallback4.m_hitPointWorld;
 			btVector3 hitNormal = RayCallback4.m_hitNormalWorld;
 
-			physRender->drawLine(wheel4,hit,255,0,0,1.0);
+			//physRender->drawLine(wheel4,hit,255,0,0,1.0);
 
 			//Equilibrium length settable above
 			if((hit-wheel4).length()<MAGICEQUILIBRIUMLENGTH){
@@ -143,7 +143,7 @@ void Physics::step()
 			
 		}
 	}
-	physRender->updateGL();
+	//physRender->updateGL();
  
 	dynamicsWorld->stepSimulation(1/60.f,10);
 
