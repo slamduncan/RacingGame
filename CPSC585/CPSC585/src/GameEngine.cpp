@@ -4,6 +4,9 @@
 
 #include "EntityManager.h"
 
+#include "al.h"
+
+
 //#include "Entity.h"
 #include "InputController.h"
 #include <time.h>
@@ -39,6 +42,8 @@ EventSystemHandler* evSys = EventSystemHandler::getInstance();
 
 
 EntityManager* entManager = EntityManager::getInstance();
+
+
 
 /*
 *	Handles what to do when key has been pressed

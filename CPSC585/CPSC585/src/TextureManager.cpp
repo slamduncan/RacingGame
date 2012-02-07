@@ -77,6 +77,9 @@ int TextureManager::loadTexture(std::string filename, std::string name)
 
 int TextureManager::loadTextureFromImage()
 {
+	
+	
+	
 	return 0;
 }
 
