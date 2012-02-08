@@ -1,5 +1,7 @@
 #include "TextureManager.h"
 
+//using namespace std;
+
 TextureManager* TextureManager::instance = 0;
 
 TextureManager::TextureManager()
@@ -63,6 +65,9 @@ int TextureManager::loadTexture(std::string filename, std::string name)
 
 		//textureMap.insert(name, texID);
 
+		//textureMap.insert(pair<string,GLuint>(string("test"),200) );
+
+		//textureMap.insert(std::pair<std::string, GLuint>("test", 32432));
 
 		// free up the image since we already have it in GPU memory
 		if(image)

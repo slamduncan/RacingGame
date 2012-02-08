@@ -410,7 +410,21 @@ int main(int argc, char** argv)
 
 		for(int i = 0; i < entManager->numCars(); i++)
 		{
-			ren->drawEntity(*(entManager->getCarList()->at(i)));
+			Car* temp = entManager->getCarList()->at(i);
+			
+			ren->drawEntity(*temp);
+			
+			for(int j = 0; j < 4; j++)
+			{
+				Spring aWheel = temp->wheels[j];
+
+				btVector3 springPos = temp->getPosition() + temp->wheelOffsets[j];
+
+				btVector3 springLength = aWheel.springVector;
+
+				ren->drawLine(springPos, springPos + springLength, 0, 0, 255, 3.0f);
+
+			}
 		}
 		for(int i = 0; i < entManager->numWaypoints(); i++)
 		{

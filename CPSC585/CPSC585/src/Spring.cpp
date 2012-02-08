@@ -3,8 +3,8 @@
 
 Spring::Spring(btRigidBody* physics){
 	physicsObject = physics;
-	MAGICEQUILIBRIUMLENGTH = 15;
-	MAGICSPRINGCONSTANT = 2;
+	MAGICEQUILIBRIUMLENGTH = 4;
+	MAGICSPRINGCONSTANT = 3;
 	dynamicsWorld = Physics::Inst()->getDiscreteDynamicsWorld();
 
 }
@@ -30,6 +30,8 @@ void Spring::update(btVector3 &springLocation, btVector3 &carNormal)
 		btVector3 hitNormal = RayCallback.m_hitNormalWorld;
 
 		//physRender->drawLine(wheel1,hit,255,0,0,1.0);
+
+		springVector = hit - springLocation;
 
 		//Equilibrium length settable above
 		if((hit - springLocation).length()<MAGICEQUILIBRIUMLENGTH){

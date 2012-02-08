@@ -8,14 +8,18 @@
 class Spring
 {
 public:
+	btVector3 springVector;
+	
 	Spring(void);
 	Spring(btRigidBody* phys);
 	~Spring(void);
-	void update(btVector3 &springLocation, btVector3 &carNormal);	
+	void update(btVector3 &springLocation, btVector3 &carNormal);
+
 
 private:
-	float MAGICEQUILIBRIUMLENGTH;
-	float MAGICSPRINGCONSTANT;		
+	btScalar MAGICEQUILIBRIUMLENGTH;
+	btScalar MAGICSPRINGCONSTANT;
+
 	btRigidBody* physicsObject;
 	btDiscreteDynamicsWorld* dynamicsWorld;
 
