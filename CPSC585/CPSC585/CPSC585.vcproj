@@ -59,7 +59,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="false"
-				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath_debug.lib lib\BulletDynamics_debug.lib lib\BulletCollision_debug.lib lib\assimp_debug.lib lib\tinyXML_debug.lib lib\OpenAL32.lib"
+				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath_debug.lib lib\BulletDynamics_debug.lib lib\BulletCollision_debug.lib lib\assimp_debug.lib lib\tinyXML_debug.lib lib\OpenAL32.lib lib\alut.lib"
 				AdditionalLibraryDirectories="CPSC585\lib"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="LIBCMTD;MSVCRTD"
@@ -378,6 +378,10 @@
 			</File>
 			<File
 				RelativePath=".\src\ShapeFactory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Sound.h"
 				>
 			</File>
 			<File
