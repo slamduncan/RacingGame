@@ -34,3 +34,8 @@ bool Track::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransf
 	}
 	return false;
 }
+
+void Track::initObservers()
+{
+
+}

@@ -20,6 +20,8 @@ private:
 	btScalar MAGICEQUILIBRIUMLENGTH;
 	btScalar MAGICSPRINGCONSTANT;
 
+	btVector3 force;
+
 	btRigidBody* physicsObject;
 	btDiscreteDynamicsWorld* dynamicsWorld;
 

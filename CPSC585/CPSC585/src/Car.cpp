@@ -22,18 +22,51 @@
 //            |                        |
 //     wheel1 |                        | wheel 0
 //            |------------------------|
-Car::Car()
+Car::Car() : rotationObserver(this, &Car::observeRotation), forwardForceObserver(this, &Car::observeForwardForce)
 {	
-	EventSystemHandler::getInstance()->addObserver(this, EventTypes::TRIGGER);	
+	//EventSystemHandler::getInstance()->addObserver(this, EventTypes::TRIGGER);	
 	width = 5;
 	height = 5;
 	length = 10;
 }
 
+/*
 void Car::Observe(TriggerEvent *e){
 	//position += tangent * e->getNormValue();//btVector3(e->getNormValue(), 0, 0);
 }
+*/
+
+void Car::initObservers()
+{
+	//EventSystemHandler::getInstance()->addObserver(&rotationObserver, EventTypes::ROTATION);
+	rotationObserver.init(EventTypes::ROTATION);
+	forwardForceObserver.init(EventTypes::FORWARD_FORCE);
+
+}
+
+void Car::observeRotation(RotationEvent *e){		
+//		physicsObject->setAngularFactor(1000);
 	
+	btVector3 test = e->getQuaternion().getAxis();
+	btVector3 temp = physicsObject->getAngularVelocity();
+	if (temp.length() < 5)
+	//physicsObject->setAngularVelocity(test);
+		physicsObject->applyTorque(test);		
+}
+
+void Car::observeForwardForce(ForwardForceEvent *e){
+	btVector3 tan = getTangent() * (e->getNormForce());
+
+	btVector3 UP = btVector3(0, 1, 0);
+	btScalar projVec = tan.dot(UP);
+	btVector3 offset = UP * -projVec;
+
+	physicsObject->applyCentralImpulse(tan + offset);
+}
+
+
+
+
 /*
 *	Initializes the Physics representation of the object based on a collision shape, mass, and transform
 *
@@ -97,8 +130,8 @@ void Car::updateSpringLocations()
 	btVector3 normal = getNormal();
 	btVector3 binormal = getBinormal();
 
-	wheelOffsets[0] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((-width/2.0f) + 0.5f)) + (tangent * (-length/2.0f + 1.0f));
-	wheelOffsets[1] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((+width/2.0f) - 0.5f)) + (tangent * (-length/2.0f + 1.0f));
-	wheelOffsets[2] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((-width/2.0f) + 0.5f)) + (tangent * (+length/2.0f - 1.0f));
-	wheelOffsets[3] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((+width/2.0f) - 0.5f)) + (tangent * (+length/2.0f - 1.0f));
+	wheelOffsets[0] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((-width/2.0f) - 0.25f/* + 0.5f*/)) + (tangent * (-length/2.0f + 1.0f));
+	wheelOffsets[1] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((+width/2.0f) + 0.25f/* - 0.5f*/)) + (tangent * (-length/2.0f + 1.0f));
+	wheelOffsets[2] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((-width/2.0f) - 0.25f/* + 0.5f*/)) + (tangent * (+length/2.0f - 1.0f));
+	wheelOffsets[3] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((+width/2.0f) + 0.25f/* - 0.5f*/)) + (tangent * (+length/2.0f - 1.0f));
 }

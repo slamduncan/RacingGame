@@ -6,7 +6,8 @@
 class Waypoint : public Entity {
 
 public:
-	bool initPhysicsObject(btCollisionShape *shape, btScalar &mass, btTransform &location);	
+	bool initPhysicsObject(btCollisionShape *shape, btScalar &mass, btTransform &location);
+	void initObservers();
 };
 
 #endif

@@ -1,7 +1,7 @@
 #include "Entity.h"
 #include "EventSystemHandler.h"
 
-Entity::Entity() : rotationObserver(this, &Entity::observeRotation), forwardForceObserver(this, &Entity::observeForwardForce)
+Entity::Entity()
 {
 	physicsObject = NULL;
 	renderObject = NULL;
@@ -57,15 +57,16 @@ bool Entity::init()
 	return true;
 }
 */
-
+/*
 void Entity::initObservers()
 {
+	
 	//EventSystemHandler::getInstance()->addObserver(&rotationObserver, EventTypes::ROTATION);
 	rotationObserver.init(EventTypes::ROTATION);
 	forwardForceObserver.init(EventTypes::FORWARD_FORCE);
 
 }
-
+*/
 //
 //	Need to fix this, as it can be misinterrupted as moving the entity to
 //  a specific location in world space

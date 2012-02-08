@@ -13,3 +13,7 @@ bool Waypoint::initPhysicsObject(btCollisionShape *shape, btScalar &mass, btTran
 
 		return true;
 }
+void Waypoint::initObservers()
+{
+
+}

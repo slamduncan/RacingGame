@@ -10,6 +10,7 @@ public:
 
 	//bool initRenderObject(char* filename);
 	bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans);
+	void initObservers();
 };
 
 #endif

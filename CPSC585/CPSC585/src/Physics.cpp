@@ -48,14 +48,13 @@ Physics::~Physics(void)
 
 void Physics::step()
 {	
-	for (int i = 0; i < entityManager->getCarList()->size(); i++){
-		entityManager->getCarList()->at(i)->updateWheels();
-	}
 	//physRender->updateGL();
  
 	dynamicsWorld->stepSimulation(1/60.f,10);
 
-
+	for (int i = 0; i < entityManager->getCarList()->size(); i++){
+		entityManager->getCarList()->at(i)->updateWheels();
+	}
 
 	//btCollisionObjectArray temp = dynamicsWorld->getCollisionObjectArray();
 

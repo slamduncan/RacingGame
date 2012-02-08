@@ -17,8 +17,7 @@
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
 #include "MethodObserver.h"
-#include "RotationEvent.h"
-#include "ForwardForceEvent.h"
+
 
 //#include "assimp.hpp"	//c++ interface
 #include "assimp.h"	//c interface
@@ -32,10 +31,6 @@ private:
 //	int loaded;
 
 //	bool init();
-
-	//Observers
-	MethodObserver<RotationEvent, Entity> rotationObserver;
-	MethodObserver<ForwardForceEvent, Entity> forwardForceObserver;
 
 public:
 	// pointer to an array of 16 elements
@@ -52,24 +47,7 @@ public:
 	btRigidBody* physicsObject;
 
 	//Observer
-	void initObservers();
-
-	void observeRotation(RotationEvent *e){		
-//		physicsObject->setAngularFactor(1000);
-		
-		btVector3 test = e->getQuaternion().getAxis();
-		btVector3 temp = physicsObject->getAngularVelocity();
-		if (temp.length() < 5)
-		//physicsObject->setAngularVelocity(test);
-			physicsObject->applyTorque(test);		
-	};
-
-	void observeForwardForce(ForwardForceEvent *e){
-		btVector3 tan = getTangent() * (e->getNormForce());		
-
-		//physicsObject->applyForce(tan, getPosition() - getTangent().normalized() * 2.5f);
-		physicsObject->applyCentralImpulse(tan);
-	}
+	virtual void initObservers() = 0;
 	
 
 
