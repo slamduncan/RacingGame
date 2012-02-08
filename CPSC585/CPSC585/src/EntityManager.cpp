@@ -122,6 +122,13 @@ void EntityManager::resetCarOrientation(int index)
 	carList[index]->physicsObject->setWorldTransform(transform);
 }
 
+void EntityManager::resetCar(int index, btVector3 &position)
+{
+	resetCarPosition(index, position);
+	resetCarOrientation(index);
+
+	carList[index]->physicsObject->clearForces();
+}
 
 
 

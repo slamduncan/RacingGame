@@ -102,7 +102,8 @@ void process_events()
 			{
 				if(entManager->numCars() > 0)
 				{
-					entManager->resetCarPosition(0, btVector3(0, 0, 0));
+					//entManager->resetCarPosition(0, btVector3(0, 1.5, 0));
+					entManager->resetCar(0, btVector3(0, 1.5, 0));
 				}
 			}
 			if(controller1.isYDown())
@@ -265,7 +266,7 @@ int main(int argc, char** argv)
 	evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
 	evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
 
-	ph->setGravity(btVector3(0, -50, 0));
+	ph->setGravity(btVector3(0, -30, 0));
 
 	
 	// //RENDERER DEBUG TESTING
@@ -460,7 +461,7 @@ int main(int argc, char** argv)
 		std::stringstream ss;
 		ss << frameCount/counter;
 
-		ren->outputText("THIS IS A TEST", 255, 0, 0, 200, 200);
+		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 0, 0, 200, 200);
 		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
 		
 		ren->glDisable2D();

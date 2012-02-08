@@ -22,7 +22,7 @@ public:
 	void updateWheels();
 
 private:
-	float width, length, height;
+	btScalar width, length, height;
 	// 3 power up slots, circular array of powerups?
 
 

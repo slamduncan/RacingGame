@@ -63,6 +63,7 @@ public:
 
 	void resetCarPosition(int index, btVector3 &position);
 	void resetCarOrientation(int index);
+	void resetCar(int index, btVector3 &position);
 
 	btAlignedObjectArray<Car*>* getCarList();
 	btAlignedObjectArray<Waypoint*>* getWaypointList();

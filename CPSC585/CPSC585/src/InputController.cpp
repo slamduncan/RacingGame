@@ -4,7 +4,8 @@
 #include "EventSystemHandler.h"
 #include "ButtonEvent.h"
 #include "TriggerEvent.h"
-#include "AnalogEvent.h"
+#include "RightAnalogEvent.h"
+#include "LeftAnalogEvent.h"
 #define MAX_AXIS_VAL 32767.0
 #define TRIGGER_LIMIT 4000
 
@@ -61,10 +62,10 @@ void InputController::emitButtons(){
 }
 
 void InputController::emitLeftAnalog(){
-	evSys->emitEvent(new AnalogEvent(leftAnaX, normLeftAnaX, leftAnaY, normLeftAnaY));
+	evSys->emitEvent(new LeftAnalogEvent(leftAnaX, normLeftAnaX, leftAnaY, normLeftAnaY));
 }
 void InputController::emitRightAnalog(){
-	evSys->emitEvent(new AnalogEvent(rightAnaX, normRightAnaX, rightAnaY, normRightAnaY));
+	evSys->emitEvent(new RightAnalogEvent(rightAnaX, normRightAnaX, rightAnaY, normRightAnaY));
 }	
 
 
