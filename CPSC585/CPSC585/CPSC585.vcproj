@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./include/GL;./include/XMLParser;./include/assimp;./include/SDL;./include/BulletSteves;./magicNumbers"
+				AdditionalIncludeDirectories="./include/GL;./include/OpenAL;./include/XMLParser;./include/assimp;./include/SDL;./include/BulletSteves;./magicNumbers"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
@@ -59,7 +59,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="false"
-				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath_debug.lib lib\BulletDynamics_debug.lib lib\BulletCollision_debug.lib lib\assimp_debug.lib lib\tinyXML_debug.lib"
+				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath_debug.lib lib\BulletDynamics_debug.lib lib\BulletCollision_debug.lib lib\assimp_debug.lib lib\tinyXML_debug.lib lib\OpenAL32.lib"
 				AdditionalLibraryDirectories="CPSC585\lib"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="LIBCMTD;MSVCRTD"
@@ -116,7 +116,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="./include/XMLParser;./include/GL;./include/assimp;./include/SDL;./include/BulletSteves;./magicNumbers"
+				AdditionalIncludeDirectories="./include/GL;./include/OpenAL;./include/XMLParser;./include/assimp;./include/SDL;./include/BulletSteves;./magicNumbers"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -134,7 +134,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/LTCG"
-				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath.lib lib\BulletDynamics.lib lib\BulletCollision.lib lib\assimp.lib lib\tinyXML.lib"
+				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath.lib lib\BulletDynamics.lib lib\BulletCollision.lib lib\assimp.lib lib\tinyXML.lib lib\OpenAL32.lib"
 				AdditionalLibraryDirectories="CPSC585\lib"
 				IgnoreDefaultLibraryNames="LIBCMT"
 				GenerateDebugInformation="true"
@@ -180,6 +180,10 @@
 			</File>
 			<File
 				RelativePath=".\src\ButtonEvent.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Camera.cpp"
 				>
 			</File>
 			<File
@@ -289,6 +293,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Camera.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Car.h"
 				>
 			</File>
@@ -354,6 +362,10 @@
 			</File>
 			<File
 				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\RightAnalogEvent.h"
 				>
 			</File>
 			<File

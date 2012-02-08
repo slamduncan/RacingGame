@@ -2,7 +2,7 @@
 #define INPUTMAPPER_H
 
 #include "LinearMath/btQuaternion.h"
-#include "AnalogEvent.h"
+#include "LeftAnalogEvent.h"
 #include "TriggerEvent.h"
 #include "MethodObserver.h"
 
@@ -16,8 +16,8 @@ public:
 	void updateRotation(double controllerInputX, double controllerInputY);
 	void updateForwardForce(TriggerEvent *e);
 	btQuaternion getRotaion();
-	void updateRotation(AnalogEvent *e);
-	MethodObserver<AnalogEvent, InputMapper> analogObserver;
+	void updateRotation(LeftAnalogEvent *e);
+	MethodObserver<LeftAnalogEvent, InputMapper> analogObserver;
 	MethodObserver<TriggerEvent, InputMapper> triggerObserver;
 };
 #endif

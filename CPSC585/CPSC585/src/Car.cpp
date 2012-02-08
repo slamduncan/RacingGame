@@ -19,7 +19,6 @@ void Car::Observe(TriggerEvent *e){
 */
 bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans)
 {
-	
 	if(cShape != NULL)
 	{
 		btVector3 inertia;

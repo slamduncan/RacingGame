@@ -4,6 +4,9 @@
 
 #include "EntityManager.h"
 
+#include "al.h"
+
+
 //#include "Entity.h"
 #include "InputController.h"
 #include <time.h>
@@ -39,6 +42,8 @@ EventSystemHandler* evSys = EventSystemHandler::getInstance();
 
 
 EntityManager* entManager = EntityManager::getInstance();
+
+
 
 /*
 *	Handles what to do when key has been pressed
@@ -260,7 +265,7 @@ int main(int argc, char** argv)
 	evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
 	evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
 
-	ph->setGravity(btVector3(0, -50, 0));
+	ph->setGravity(btVector3(0, -30, 0));
 
 	
 	// //RENDERER DEBUG TESTING

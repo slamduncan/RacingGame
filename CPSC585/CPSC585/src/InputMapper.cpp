@@ -8,7 +8,7 @@ void InputMapper::updateRotation(double controllerInputX, double controllerInput
 
 }
 
-void InputMapper::updateRotation(AnalogEvent *e){
+void InputMapper::updateRotation(LeftAnalogEvent *e){
 //	rotation = btQuaternion(e->getXVal(), e->getYVal(), 0, 0);	
 	if (lastTriggerEvent){
 		if (lastTriggerEvent->getValue() < 0)
@@ -32,6 +32,6 @@ btQuaternion InputMapper::getRotaion(){return rotation;}
 InputMapper::InputMapper() : analogObserver(this, &InputMapper::updateRotation), triggerObserver(this, &InputMapper::updateForwardForce)
 {	
 	lastTriggerEvent = NULL;
-	analogObserver.init(EventTypes::ANALOG);
+	analogObserver.init(EventTypes::LEFT_ANALOG);
 	triggerObserver.init(EventTypes::TRIGGER);
 }
