@@ -23,22 +23,14 @@
 //     wheel1 |                        | wheel 0
 //            |------------------------|
 Car::Car() : rotationObserver(this, &Car::observeRotation), forwardForceObserver(this, &Car::observeForwardForce)
-{	
-	//EventSystemHandler::getInstance()->addObserver(this, EventTypes::TRIGGER);	
+{		
 	width = 5;
 	height = 5;
 	length = 10;
 }
 
-/*
-void Car::Observe(TriggerEvent *e){
-	//position += tangent * e->getNormValue();//btVector3(e->getNormValue(), 0, 0);
-}
-*/
-
 void Car::initObservers()
-{
-	//EventSystemHandler::getInstance()->addObserver(&rotationObserver, EventTypes::ROTATION);
+{	
 	rotationObserver.init(EventTypes::ROTATION);
 	forwardForceObserver.init(EventTypes::FORWARD_FORCE);
 
@@ -56,12 +48,19 @@ void Car::observeRotation(RotationEvent *e){
 
 void Car::observeForwardForce(ForwardForceEvent *e){
 	btVector3 tan = getTangent() * (e->getNormForce());
+	tan /= 10.0f;
 
 	btVector3 UP = btVector3(0, 1, 0);
 	btScalar projVec = tan.dot(UP);
 	btVector3 offset = UP * -projVec;
 
 	physicsObject->applyCentralImpulse(tan + offset);
+	btVector3 temp = physicsObject->getAngularFactor();
+	
+	//physicsObject->applyImpulse(tan + offset, getPosition() + getNormal() * -2.5f - getTangent() * 5.0f);
+	//for (int i = 0; i < 4; i++)
+	//	physicsObject->applyImpulse((tan + offset), wheelOffsets[i]);//getPosition()); 
+	
 }
 
 
@@ -105,6 +104,7 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 			printf("(%f, %f, %f)\n", temp.x(), temp.y(), temp.z());
 		}
 		*/
+		physicsObject->setAngularFactor(btScalar(0.01f));
 
 
 		return true;
