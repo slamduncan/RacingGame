@@ -8,7 +8,7 @@
 class Spring
 {
 public:
-	btVector3 springVector;
+	btScalar springLength;
 	
 	Spring(void);
 	Spring(btRigidBody* phys);

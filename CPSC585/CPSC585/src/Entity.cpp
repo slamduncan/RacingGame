@@ -311,9 +311,8 @@ void Entity::debug()
 {	
 /*
 	printf("-----------------------------------------------\n");
-	printf("Pos: (%f, %f, %f)\n", position.x(), position.y(), position.z());
-	printf("\n");
-	printf("Tan: (%f, %f, %f)\n", tangent.x(), tangent.y(), tangent.z());
+	printf("Pos: (%f, %f, %f)\n", pos.x(), position.y(), position.z());
+	printf("Tan: (%f, %f, %f)\n", tan.x(), tangent.y(), tangent.z());
 	printf("Nor: (%f, %f, %f)\n", normal.x(), normal.y(), normal.z());
 	printf("Bin: (%f, %f, %f)\n", binormal.x(), binormal.y(), binormal.z());
 */

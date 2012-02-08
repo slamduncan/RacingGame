@@ -103,7 +103,7 @@ void process_events()
 				if(entManager->numCars() > 0)
 				{
 					//entManager->resetCarPosition(0, btVector3(0, 1.5, 0));
-					entManager->resetCar(0, btVector3(0, 1.5, 0));
+					entManager->resetCar(0, btVector3(0, 3, 0));
 				}
 			}
 			if(controller1.isYDown())
@@ -175,7 +175,7 @@ void updateRot(){
 
 btCollisionShape* createCarPhysicsObject()
 {
-	return new btBoxShape(btVector3(2.5, 2.5, 5));
+	return new btBoxShape(btVector3(5, 2.5, 2.5));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -277,8 +277,19 @@ int main(int argc, char** argv)
 
 	btScalar carMass = 1;
 
-	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 1.5, 0));
-	
+	btMatrix3x3 carMT1 = btMatrix3x3(0,0,1,0,1,0,1,0,0);
+
+	btVector3 row0 = carMT1.getRow(0);
+	btVector3 row1 = carMT1.getRow(1);
+	btVector3 row2 = carMT1.getRow(2);
+
+	printf("(%f, %f, %f)\n", row0.x(), row0.y(), row0.z());
+	printf("(%f, %f, %f)\n", row1.x(), row1.y(), row1.z());
+	printf("(%f, %f, %f)\n", row2.x(), row2.y(), row2.z());
+	printf("-----------------------------------------------------\n");
+
+	btTransform carT1 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 1.5, 0));
+	carT1.setBasis(carMT1);
 	
 
 	//btTransform carT2 = btTransform(btQuaternion(0, .5, .5, 1), btVector3(.5, 1.5, 0));
@@ -291,7 +302,7 @@ int main(int argc, char** argv)
 	// I'll need to create a factory for the physics objects later so we can build almost any shape we need
 
 	// CAR1
-	car1->initRenderObject("../CPSC585/model/box.obj");
+	car1->initRenderObject("../CPSC585/model/box.3ds");
 	btCollisionShape* carShape1 = createCarPhysicsObject();
 	car1->initPhysicsObject(carShape1, carMass, carT1);
 	
@@ -304,6 +315,10 @@ int main(int argc, char** argv)
 	entManager->addTrack(ground);
 	ph->addEntity(*car1);
 	ph->addEntity(*ground);
+
+
+	car1->debug();
+
 
 	//WAYPOINT
 	waypoint->initRenderObject("../CPSC585/model/waypoint.obj");
@@ -348,9 +363,10 @@ int main(int argc, char** argv)
 	///* Inialize Observers used in entities */
 	car1->initObservers();
 
-	//SDL_Surface* planeTex = ren->loadIMG("../CPSC585/texture/plane.png");
-	//GLuint ptex = 0;
-	//ptex = ren->initTexture(planeTex);
+	SDL_Surface* carTex1 = ren->loadIMG("../CPSC585/model/box.png");
+	GLuint ctex1 = 0;
+	ctex1 = ren->initTexture(carTex1);
+	SDL_FreeSurface(carTex1);
 
 
 	//Set inital game time
@@ -413,7 +429,9 @@ int main(int argc, char** argv)
 		{
 			Car* temp = entManager->getCarList()->at(i);
 			
+			ren->textureOn(ctex1);
 			ren->drawEntity(*temp);
+			ren->textureOff();
 			
 			for(int j = 0; j < 4; j++)
 			{
@@ -421,7 +439,7 @@ int main(int argc, char** argv)
 
 				btVector3 springPos = temp->getPosition() + temp->wheelOffsets[j];
 
-				btVector3 springLength = aWheel.springVector;
+				btVector3 springLength = -aWheel.springLength * temp->getNormal();
 
 				ren->drawLine(springPos, springPos + springLength, 0, 0, 255, 3.0f);
 
@@ -461,7 +479,7 @@ int main(int argc, char** argv)
 		std::stringstream ss;
 		ss << frameCount/counter;
 
-		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 0, 0, 200, 200);
+		ren->outputText(entManager->getCarList()->at(0)->toString(), 0, 255, 0, 200, 200);
 		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
 		
 		ren->glDisable2D();

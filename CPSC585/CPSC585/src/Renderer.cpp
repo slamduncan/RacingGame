@@ -560,8 +560,14 @@ void Renderer::drawEntity(Entity &entity)
 				{
 					//glTexCoord2f(&mesh->mTextureCoords[index]->x, &mesh->mTextureCoords[index]->y);
 
+					//mesh->mTextureCoords[0][index].x;
 
 
+					//printf("(%f, %f)\n", mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
+
+					glTexCoord2f(mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
+
+					//printf("I HAS TEXTURES\n");
 				}
 
 				// the model has normal
