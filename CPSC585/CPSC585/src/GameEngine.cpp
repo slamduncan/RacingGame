@@ -441,7 +441,7 @@ int main(int argc, char** argv)
 		std::stringstream ss;
 		ss << frameCount/counter;
 
-		ren->outputText("THIS IS A TEST", 255, 0, 0, 200, 200);
+		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 0, 0, 200, 200);
 		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
 		
 		ren->glDisable2D();

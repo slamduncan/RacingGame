@@ -33,13 +33,13 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 		physicsObject = new btRigidBody(entRigidBodyCI);
 
 		wheels[0] = Spring(physicsObject);
-		wheelOffsets[0] = btVector3(-1.25,-1.25,-4.0);
+		wheelOffsets[0] = btVector3(-2.5,-2.5,-4.0);
 		wheels[1] = Spring(physicsObject);
-		wheelOffsets[1] = btVector3(1.25,-1.25,-4.0);
+		wheelOffsets[1] = btVector3(2.5,-2.5,-4.0);
 		wheels[2] = Spring(physicsObject);
-		wheelOffsets[2] = btVector3(-1.25,-1.25,4.0);
+		wheelOffsets[2] = btVector3(-2.5,-2.5,4.0);
 		wheels[3] = Spring(physicsObject);		
-		wheelOffsets[3] = btVector3(1.25,-1.25,4.0);
+		wheelOffsets[3] = btVector3(2.5,-2.5,4.0);
 
 		return true;
 	}
@@ -48,6 +48,13 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 }
 
 void Car::updateWheels(){
+	wheelOffsets[0] = getNormal()*-2.5f+getBinormal()*-2.5f+getTangent()*-4.0f;
+	wheelOffsets[1] = getNormal()*-2.5f+getBinormal()*+2.5f+getTangent()*-4.0f;
+	wheelOffsets[2] = getNormal()*-2.5f+getBinormal()*-2.5f+getTangent()*+4.0f;
+	wheelOffsets[3] = getNormal()*-2.5f+getBinormal()*+2.5f+getTangent()*+4.0f;
+
+
+
 	for (int i = 0; i < 4; i++){
 		wheels[i].update(getPosition() + wheelOffsets[i], getNormal());
 	}
