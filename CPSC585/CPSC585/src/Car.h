@@ -20,6 +20,7 @@ public:
 	Spring wheels[4];
 	btVector3 wheelOffsets[4];
 	void updateWheels();
+	void updateSpringLocations();
 
 private:
 	btScalar width, length, height;

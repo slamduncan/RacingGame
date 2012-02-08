@@ -128,6 +128,7 @@ void EntityManager::resetCar(int index, btVector3 &position)
 	resetCarOrientation(index);
 
 	carList[index]->physicsObject->clearForces();
+	carList[index]->updateSpringLocations();
 }
 
 

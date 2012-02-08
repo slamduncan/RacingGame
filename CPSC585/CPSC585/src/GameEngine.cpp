@@ -288,8 +288,9 @@ int main(int argc, char** argv)
 	printf("(%f, %f, %f)\n", row2.x(), row2.y(), row2.z());
 	printf("-----------------------------------------------------\n");
 
-	btTransform carT1 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 1.5, 0));
-	carT1.setBasis(carMT1);
+	//btTransform carT1 = btTransform(carMT1, btVector3(0, 1.5, 0));
+	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 1.5, 0));
+	//carT1.setBasis(carMT1);
 	
 
 	//btTransform carT2 = btTransform(btQuaternion(0, .5, .5, 1), btVector3(.5, 1.5, 0));
@@ -333,10 +334,7 @@ int main(int argc, char** argv)
 
 	//
 	///////////////////////////////////////////////////////////////////////////////////////
-
-
 	//btVector3 offset = btVector3(-5, 0, -5);
-
 	//for(int i = 0; i < 10; i++)
 	//{
 	//	for(int j = 0; j < 10; j++)
