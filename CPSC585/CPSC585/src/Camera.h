@@ -9,12 +9,17 @@ public:
 	Camera();
 	//UPvector, Look at vector/point, cam pos
 	Camera(btVector3 &upIn, btVector3 &lookAtPointIn, btVector3 &cameraPositionIn);
+	void setUpCamera();
+	void setUpCamera(btVector3 &lookAtPointIn);
+	void setUpCamera(btVector3 &lookAtPointIn,btVector3 &cameraPositionIn);
+	void setUpCamera(btVector3 &lookAtPointIn, btVector3 &cameraPosition, btVector3 &upIn);
 
+	btVector3 up, lookAtPoint, cameraPosition, normal, lookAtVector;
 
 private:
 	MethodObserver<RightAnalogEvent, Camera> analogObserver;
 	void rotateCamera(RightAnalogEvent *e);
-	btVector3 up, lookAtPoint, cameraPosition;
+
 
 
 };

@@ -418,6 +418,15 @@ void Renderer::setCamera(const btVector3& pos, const btVector3& lookAtPoint)
 			  normal.x(), normal.y(), normal.z());	// up vector
 }
 
+void Renderer::setCamera(const Camera& cam){
+
+	glLoadIdentity();
+
+	gluLookAt(cam.cameraPosition.getX(), cam.cameraPosition.getY(), cam.cameraPosition.getZ(),
+		cam.lookAtPoint.getX(), cam.lookAtPoint.getY(), cam.lookAtPoint.getZ(),
+		cam.normal.getX(), cam.normal.getY(), cam.normal.getZ());
+}
+
 
 /*
 *	draws a white box centered on the screen

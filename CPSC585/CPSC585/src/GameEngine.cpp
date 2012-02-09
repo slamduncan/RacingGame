@@ -25,6 +25,7 @@
 #include "Waypoint.h"
 #include <windows.h>
 #include "InputMapper.h"
+#include "Camera.h"
 
 using namespace std;
 
@@ -38,6 +39,7 @@ InputMapper* playerInput = new InputMapper();
 
 //Test Variables
 InputController controller1 = InputController();
+Camera camera1 = Camera();
 EventSystemHandler* evSys = EventSystemHandler::getInstance();
 
 
@@ -373,6 +375,12 @@ int main(int argc, char** argv)
 	int frameCount = 0;
 	int counter = 1;
 
+
+	//Initialize camera settings.
+	btVector3 camPos = car1->getPosition() + car1->getNormal()*10 + car1->getTangent()*20;
+	btVector3 camLookAt = car1->getPosition() + btVector3(0, 0, 0);
+	camera1.setUpCamera(camLookAt, camPos, btVector3(0, 1, 0));
+
 	// game loop
 	while(1)
 	{		
@@ -388,6 +396,7 @@ int main(int argc, char** argv)
 		controller1.emitTriggers();
 		controller1.emitButtons();
 		controller1.emitLeftAnalog();
+		controller1.emitRightAnalog();
 		//updateRot();
 		//updateEntityPosition(*(entityList->at(0)), controller1);
 
@@ -404,7 +413,8 @@ int main(int argc, char** argv)
 		ren->clearGL();	// clear the screen
 		
 		
-		ren->setCamera(camPos, camLookAt);
+		//ren->setCamera(camPos, camLookAt);
+		ren->setCamera(camera1);
 		
 		
 		//

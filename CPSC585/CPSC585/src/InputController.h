@@ -14,7 +14,7 @@
 class InputController
 {
 private:
-	bool A, B, X, Y, rightBump, leftBump, start;
+	bool A, B, X, Y, rightBump, leftBump, start, rightAnaButton, leftAnaButton;
 	Sint16 leftAnaX, leftAnaY, rightAnaX, rightAnaY, triggers;
 	double normLeftAnaX, normLeftAnaY, normRightAnaX, normRightAnaY, normTriggers;
 	int InputControllerIdentifier;

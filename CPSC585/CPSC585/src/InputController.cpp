@@ -11,7 +11,7 @@
 
 InputController::InputController()
 {
-	A = B = X = Y = rightBump = leftBump = start = false;
+	A = B = X = Y = rightBump = leftBump = start = rightAnaButton = leftAnaButton = false;
 	leftAnaX = leftAnaY = rightAnaX = rightAnaY = triggers = 0;
 	normLeftAnaX = normLeftAnaY = normRightAnaX = normRightAnaY = normTriggers =  0.0;
 //	triggerEvent = new TriggerEvent(0, 0);
@@ -62,10 +62,10 @@ void InputController::emitButtons(){
 }
 
 void InputController::emitLeftAnalog(){
-	evSys->emitEvent(new LeftAnalogEvent(leftAnaX, normLeftAnaX, leftAnaY, normLeftAnaY));
+	evSys->emitEvent(new LeftAnalogEvent(leftAnaX, normLeftAnaX, leftAnaY, normLeftAnaY, leftAnaButton));
 }
 void InputController::emitRightAnalog(){
-	evSys->emitEvent(new RightAnalogEvent(rightAnaX, normRightAnaX, rightAnaY, normRightAnaY));
+	evSys->emitEvent(new RightAnalogEvent(rightAnaX, normRightAnaX, rightAnaY, normRightAnaY, rightAnaButton));
 }	
 
 
@@ -231,6 +231,17 @@ void InputController::update(SDL_Event cntrlEvent){
 						start = true;
 						break;
 					}
+				case R_Analog:
+					{
+						rightAnaButton = true;
+						break;
+					}
+				case L_Analog:
+					{
+						leftAnaButton = true;
+						break;
+					}
+
 				}
 			break;
 			}
@@ -280,6 +291,16 @@ void InputController::update(SDL_Event cntrlEvent){
 				case Start_button:
 					{
 						start = false;
+						break;
+					}
+				case R_Analog:
+					{
+						rightAnaButton = false;
+						break;
+					}
+				case L_Analog:
+					{
+						leftAnaButton = false;
 						break;
 					}
 				}

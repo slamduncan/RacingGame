@@ -25,6 +25,8 @@
 #include "Entity.h"
 #include "TextureManager.h"
 
+#include "Camera.h"
+
 
 class Renderer : public btIDebugDraw
 {
@@ -76,6 +78,7 @@ public:
 	void outputText(std::string text, int r, int g, int b, int x, int y);
 
 	void setCamera(const btVector3& pos, const btVector3& lookAt); 
+	void setCamera(const Camera& cam);
 
 	void draw();
 	void drawEntity(Entity &entity);
