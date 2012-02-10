@@ -1,7 +1,7 @@
 
 #include "Spring.h"
 
-Spring::Spring(btRigidBody* physics){
+
 Spring::Spring(btRigidBody* physics, btScalar kVal){
 	physicsObject = physics;
 	MAGICEQUILIBRIUMLENGTH = kVal;
