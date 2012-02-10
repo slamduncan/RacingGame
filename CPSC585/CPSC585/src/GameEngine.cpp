@@ -277,7 +277,7 @@ int main(int argc, char** argv)
 	Track* ground = new Track();
 	Waypoint* waypoint = new Waypoint();
 
-	btScalar carMass = 1;
+	btScalar carMass = 2;
 
 	btMatrix3x3 carMT1 = btMatrix3x3(0,0,1,0,1,0,1,0,0);
 
@@ -291,7 +291,7 @@ int main(int argc, char** argv)
 	printf("-----------------------------------------------------\n");
 
 	//btTransform carT1 = btTransform(carMT1, btVector3(0, 1.5, 0));
-	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 1.5, 0));
+	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 10, 0));
 	//carT1.setBasis(carMT1);
 	
 
@@ -330,7 +330,7 @@ int main(int argc, char** argv)
 	btScalar temp = btScalar(0);
 	waypoint->initPhysicsObject(waypointShape, temp, wayPointT); 
 	entManager->addWaypoint(waypoint);	
-	car1->rotate(car1->getNormal(), 90);
+	//car1->rotate(car1->getNormal(), 90);
 
 
 
@@ -409,10 +409,10 @@ int main(int argc, char** argv)
 		//btVector3 camLookAt = btVector3(0, 0, 0);
 		
 		
-		
+		//camera1.setUpCamera(camLookAt, camPos, btVector3(0, 1, 0));
 		ren->clearGL();	// clear the screen
 		
-		
+		camera1.lookAtPoint = car1->getPosition();
 		//ren->setCamera(camPos, camLookAt);
 		ren->setCamera(camera1);
 		
