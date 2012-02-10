@@ -8,21 +8,23 @@
 
 class Wheel {
 public:
-	Wheel(btScalar &radius, btScalar &lengthOfSpring, btScalar &lengthOfSpringWithCar,
-		btScalar &kVal, btVector3 &gravityIn, btVector3 &springAttachmentPoint,
+	Wheel(){}
+	Wheel(btScalar radius, btScalar lengthOfSpring, btScalar lengthOfSpringWithCar,
+		btScalar kVal, btScalar cVal, btVector3 &gravityIn, btVector3 &springAttachmentPoint,
 		btVector3 &endOfSpringPoint, btRigidBody* physicsRigid);
 
-	void calcForce();
+	void calcForce(btVector3 &springLocation, btVector3 &carNormal);
 
 private:
 	btScalar radiusOfWheel;
-	btScalar totalLengthOfSpring;
+	btScalar restLengthOfSpring;
 	btScalar lengthOfSpringWithCar;
-	btScalar kValue;
+	btScalar kValue, cValue;
 	btVector3 gravity;
 	btVector3 attachedToCarPosition;
 	btVector3 bottomSpringPosition;
 	btRigidBody* physicsObject;
 	btDiscreteDynamicsWorld* dynamicsWorld;
+	btScalar dampingModifier, kModifier, hoverValue;
 };
 #endif

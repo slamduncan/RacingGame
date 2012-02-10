@@ -19,6 +19,7 @@ public:
 	void debugDraw();
 	void setDebugLevel(int level);
 	btDiscreteDynamicsWorld* getDiscreteDynamicsWorld();
+	btVector3 getGravity();
 
 	
 protected:
@@ -27,6 +28,7 @@ protected:
 private:
 	static Physics* physInstance;
 
+	btVector3 gravity;
 	btBroadphaseInterface* broadphase;
 	btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;

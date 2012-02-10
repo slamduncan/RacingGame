@@ -67,9 +67,10 @@ void Physics::step()
 	//printf("car data: %f,%f,%f\n", trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()); 
 }
 
-void Physics::setGravity(const btVector3 &gravity)
+void Physics::setGravity(const btVector3 &gravityIn)
 {
-	dynamicsWorld->setGravity(gravity);
+	gravity = gravityIn;
+	dynamicsWorld->setGravity(gravityIn);
 }
 
 void Physics::addEntity(const Entity &ent)
@@ -100,3 +101,5 @@ void Physics::setDebugLevel(int level)
 btDiscreteDynamicsWorld* Physics::getDiscreteDynamicsWorld(){
 	return dynamicsWorld;
 }
+
+btVector3 Physics::getGravity(){return gravity;}
