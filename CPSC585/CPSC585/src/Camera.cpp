@@ -23,7 +23,7 @@ void Camera::rotateCamera(RightAnalogEvent *e){
 	
 	angle = (float)e->getNormX() * SIMD_RADS_PER_DEG * 3.0f;
 
-	printf("angle = %f", angle);
+	//printf("angle = %f", angle);
 
 	btScalar xRot = cosf(angle); 
 	btScalar zRot = sinf(angle);
