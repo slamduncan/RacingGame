@@ -1,6 +1,7 @@
 
 #include "Spring.h"
 
+Spring::Spring(btRigidBody* physics){
 Spring::Spring(btRigidBody* physics, btScalar kVal){
 	physicsObject = physics;
 	MAGICEQUILIBRIUMLENGTH = kVal;
@@ -23,14 +24,17 @@ Spring::~Spring(void)
 
 void Spring::update(btVector3 &springLocation, btVector3 &carNormal)	
 {
-	btVector3 equalibriumPos = springLocation - carNormal*MAGICEQUILIBRIUMLENGTH;
-	btCollisionWorld::ClosestRayResultCallback RayCallback(springLocation,equalibriumPos);
 
-	dynamicsWorld->rayTest(springLocation, equalibriumPos, RayCallback);
+	btVector3 endOfSpring = springLocation - 2*carNormal*MAGICEQUILIBRIUMLENGTH;
+	//float equalibriumPos = springLocation - carNormal*MAGICEQUILIBRIUMLENGTH;
+	
+	btCollisionWorld::ClosestRayResultCallback RayCallback(springLocation,endOfSpring);
+
+	dynamicsWorld->rayTest(springLocation, endOfSpring, RayCallback);
 
 	btScalar MAGICDAMPERCONSTANT = 10;
 
-	springLength = MAGICEQUILIBRIUMLENGTH;
+	springLength = (endOfSpring - springLocation).length();
 
 	if(RayCallback.hasHit()) {
 		btVector3 hit = RayCallback.m_hitPointWorld;
@@ -44,7 +48,7 @@ void Spring::update(btVector3 &springLocation, btVector3 &carNormal)
 		if(springLength <MAGICEQUILIBRIUMLENGTH){
 			//btVector3 force = hitNormal*MAGICSPRINGCONSTANT*(MAGICEQUILIBRIUMLENGTH-3) - hitNormal.dot(carAngularVelocity)*MAGICDAMPERCONSTANT*hitNormal;
 
-			btScalar forceCoefficient = (MAGICEQUILIBRIUMLENGTH - (springLength)) * MAGICSPRINGCONSTANT;
+			btScalar forceCoefficient = (MAGICEQUILIBRIUMLENGTH - ((hit-springLocation).length())) * MAGICSPRINGCONSTANT -60;
 			
 			//forceCoefficient -= 3;
 			/*
@@ -56,8 +60,10 @@ void Spring::update(btVector3 &springLocation, btVector3 &carNormal)
 			
 			btVector3 linV = physicsObject->getLinearVelocity();
 
+			force = carNormal/*btVector3(0,1,0)*/*forceCoefficient - 20*fabs(linV.getY())*carNormal;
+			
+			float forceScalar = force.length();
 
-			force = carNormal*forceCoefficient - 2*linV;
 
 			//printf("(%f %f %f)", force.getX(),force.getY(),force.getZ());
 			//force = force - physicsObject->getAngularVelocity();
@@ -65,7 +71,9 @@ void Spring::update(btVector3 &springLocation, btVector3 &carNormal)
 
 			//physicsObject->applyForce(force,springLocation);
 
-			physicsObject->applyForce(force, springLocation);
+			
+
+			physicsObject->applyForce(force/4.f, springLocation);
 
 		}
 

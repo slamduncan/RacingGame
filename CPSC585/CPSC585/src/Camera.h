@@ -16,6 +16,8 @@ public:
 
 	btVector3 up, lookAtPoint, cameraPosition, normal, lookAtVector;
 
+	btScalar angle;
+
 private:
 	MethodObserver<RightAnalogEvent, Camera> analogObserver;
 	void rotateCamera(RightAnalogEvent *e);

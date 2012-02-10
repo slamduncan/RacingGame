@@ -48,14 +48,22 @@ void Car::observeRotation(RotationEvent *e){
 
 void Car::observeForwardForce(ForwardForceEvent *e){
 	btVector3 tan = getTangent() * (e->getNormForce());
-	tan /= 10.0f;
+	//tan /= 10.0f;
 
-	btVector3 UP = btVector3(0, 1, 0);
-	btScalar projVec = tan.dot(UP);
-	btVector3 offset = UP * -projVec;
+	
+	//btVector3 UP = btVector3(0, 1, 0);
+	//btScalar projVec = tan.dot(UP);
+	//btVector3 offset = UP * -projVec;
 
-	physicsObject->applyCentralImpulse(tan + offset);
-	btVector3 temp = physicsObject->getAngularFactor();
+	tan.setY(0);
+
+	physicsObject->applyCentralImpulse(tan);
+	
+
+	
+	//physicsObject->applyCentralImpulse(e->getNormForce()*btVector3(1,0,0));
+	
+	//btVector3 temp = physicsObject->getAngularFactor();
 	
 	//physicsObject->applyImpulse(tan + offset, getPosition() + getNormal() * -2.5f - getTangent() * 5.0f);
 	//for (int i = 0; i < 4; i++)
@@ -106,7 +114,6 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 		}
 		*/
 		//physicsObject->setAngularFactor(btScalar(0.01f));
-
 
 		return true;
 	}
