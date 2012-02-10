@@ -278,6 +278,10 @@
 				RelativePath=".\src\Waypoint.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\Wheel.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -410,6 +414,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Waypoint.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Wheel.h"
 				>
 			</File>
 		</Filter>
