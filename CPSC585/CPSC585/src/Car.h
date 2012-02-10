@@ -12,6 +12,7 @@ class Car : public Entity
 {
 
 public:
+	btScalar kVal;	
 	//Car(btVector3 startingPos);
 	Car();
 	//void Observe(TriggerEvent *e);

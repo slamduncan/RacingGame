@@ -11,7 +11,7 @@ public:
 	btScalar springLength;
 	
 	Spring(void);
-	Spring(btRigidBody* phys);
+	Spring(btRigidBody* phys, btScalar kVal);
 	~Spring(void);
 	void update(btVector3 &springLocation, btVector3 &carNormal);
 

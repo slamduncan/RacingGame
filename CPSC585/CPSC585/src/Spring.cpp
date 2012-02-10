@@ -1,9 +1,9 @@
 
 #include "Spring.h"
 
-Spring::Spring(btRigidBody* physics){
+Spring::Spring(btRigidBody* physics, btScalar kVal){
 	physicsObject = physics;
-	MAGICEQUILIBRIUMLENGTH = 3;
+	MAGICEQUILIBRIUMLENGTH = kVal;
 	MAGICSPRINGCONSTANT = 50;
 	dynamicsWorld = Physics::Inst()->getDiscreteDynamicsWorld();
 
@@ -41,10 +41,10 @@ void Spring::update(btVector3 &springLocation, btVector3 &carNormal)
 		springLength = (hit - springLocation).length();
 
 		//Equilibrium length settable above
-		if((hit - springLocation).length()<MAGICEQUILIBRIUMLENGTH){
+		if(springLength <MAGICEQUILIBRIUMLENGTH){
 			//btVector3 force = hitNormal*MAGICSPRINGCONSTANT*(MAGICEQUILIBRIUMLENGTH-3) - hitNormal.dot(carAngularVelocity)*MAGICDAMPERCONSTANT*hitNormal;
 
-			btScalar forceCoefficient = (MAGICEQUILIBRIUMLENGTH - ((hit-springLocation).length())) * MAGICSPRINGCONSTANT;
+			btScalar forceCoefficient = (MAGICEQUILIBRIUMLENGTH - (springLength)) * MAGICSPRINGCONSTANT;
 			
 			//forceCoefficient -= 3;
 			/*
@@ -58,6 +58,7 @@ void Spring::update(btVector3 &springLocation, btVector3 &carNormal)
 
 
 			force = carNormal*forceCoefficient - 2*linV;
+
 			//printf("(%f %f %f)", force.getX(),force.getY(),force.getZ());
 			//force = force - physicsObject->getAngularVelocity();
 			//printf(" (%f %f %f)\n", force.getX(),force.getY(),force.getZ());

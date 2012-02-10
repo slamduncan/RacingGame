@@ -73,6 +73,7 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 */
 bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans)
 {
+	kVal = (mass * 30.0)/(3.0 * 4.0);
 	if(cShape != NULL)
 	{
 		btVector3 inertia;
@@ -85,13 +86,13 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 
 		physicsObject = new btRigidBody(entRigidBodyCI);
 		
-		wheels[0] = Spring(physicsObject);
+		wheels[0] = Spring(physicsObject, kVal);
 		//wheelOffsets[0] = btVector3(-width/2.f, -height/2.f, -(length/2.f) + 1.f);
-		wheels[1] = Spring(physicsObject);
+		wheels[1] = Spring(physicsObject, kVal);
 		//wheelOffsets[1] = btVector3(width/2.f,-height/2.f, -(length/2.f) + 1.f);
-		wheels[2] = Spring(physicsObject);
+		wheels[2] = Spring(physicsObject, kVal);
 		//wheelOffsets[2] = btVector3(-width/2.f,-height/2.f, (length/2.f) - 1.f);
-		wheels[3] = Spring(physicsObject);	
+		wheels[3] = Spring(physicsObject, kVal);	
 		//wheelOffsets[3] = btVector3(width/2.f,-height/2.f, (length/2.f) - 1.f);
 
 		updateSpringLocations();
@@ -104,7 +105,7 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 			printf("(%f, %f, %f)\n", temp.x(), temp.y(), temp.z());
 		}
 		*/
-		physicsObject->setAngularFactor(btScalar(0.01f));
+		//physicsObject->setAngularFactor(btScalar(0.01f));
 
 
 		return true;
