@@ -18,7 +18,13 @@ Wheel::Wheel(btScalar radius, btScalar lengthOfSpring, btScalar lengthOfSpringWi
 			dynamicsWorld = Physics::Inst()->getDiscreteDynamicsWorld();
 }
 
+btVector3 Wheel::getAttachedToCarPosition(){
+	return attachedToCarPosition;
+}
 
+btVector3 Wheel::getBottomSpringPosition(){
+	return bottomSpringPosition;
+}
 
 void Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 {
@@ -40,22 +46,24 @@ void Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 	dynamicsWorld->rayTest(attachedToCarPosition, rayEnd, RayCallback);
 
 	bool inGround = false;
+	bottomSpringPosition = attachedToCarPosition - restLengthOfSpring * carNormal;
 	/*If we have hit something */
 	if (RayCallback.hasHit())
 	{
 		//Distance into the ground the ray went. (Currently assuming the ground is normal)
 		//CHANGE THIS CODE WHEN WE START ADDING BUMPS.
-		btVector3 disInGrd = btVector3(0,1,0).cross(RayCallback.m_hitPointWorld - rayEnd);
+		btScalar disInGrd = btVector3(0,1,0).dot(RayCallback.m_hitPointWorld - rayEnd);
 		
 		
 		//Inside of ground
-		if (disInGrd.getY() >= 0.0f)
+		if (disInGrd >= 0.0f)
 		{
 			inGround = true;
 			//Move the spring up so that the "wheel" or hover value is between it and the gound still
 			bottomSpringPosition = RayCallback.m_hitPointWorld + hoverValue * carNormal;
 		}
-		//Else we are off the ground so no force???		
+		//Else we are off the ground so no force???	
+
 	}
 	if (!inGround)
 	{
@@ -76,13 +84,17 @@ void Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 	//Use this speed times crossed onto the wheel axis (carNormal) to find how much of that
 	//Velocity is being applied along the wheel axis. This will affect the wheel
 	// dampening.
-	btVector3 suspensionVelocity = carNormal.cross(speedOfDisplacement);
+	btVector3 suspensionVelocity = carNormal.normalized().dot(speedOfDisplacement) * carNormal.normalized();
 	//Use that speed and the critical damping value to find the damping force.
-	btVector3 dampingForce = -cValue * suspensionVelocity * dampingModifier;
+	btVector3 dampingForce = 0 * -cValue * suspensionVelocity * dampingModifier;
 
 
 	//Combine the forces to get the total force that should be applied.
 	btVector3 totalForce = initialForce + dampingForce;
 
+	printf("(%.3f, %.3f, %.3f),(%.3f, %.3f, %.3f), (%.3f, %.3f, %.3f), \n", totalForce.x(), totalForce.y(), totalForce.z(), initialForce.getX(), initialForce.getY(), initialForce.getZ(), dampingForce.getX(), dampingForce.getY(), dampingForce.getX());
+
+	if (totalForce.length() > 30)
+		 totalForce *= 30 / totalForce.length();
 	physicsObject->applyForce(totalForce, attachedToCarPosition);
 }

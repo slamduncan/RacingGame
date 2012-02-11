@@ -15,6 +15,9 @@ public:
 
 	void calcForce(btVector3 &springLocation, btVector3 &carNormal);
 
+	btVector3 getAttachedToCarPosition();
+	btVector3 getBottomSpringPosition();
+
 private:
 	btScalar radiusOfWheel;
 	btScalar restLengthOfSpring;

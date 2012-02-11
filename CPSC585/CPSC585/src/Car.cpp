@@ -24,9 +24,9 @@
 //            |------------------------|
 Car::Car() : rotationObserver(this, &Car::observeRotation), forwardForceObserver(this, &Car::observeForwardForce)
 {		
-	width = 5;
-	height = 5;
-	length = 10;
+	Car::width = btScalar(5.0f);
+	Car::height = btScalar(5.0f);
+	Car::length = btScalar(10.0f);
 	gravity = Physics::Inst()->getGravity();
 	restDisplacement = btScalar(2.0f);
 }
@@ -59,7 +59,7 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 
 	tan.setY(0);
 
-	physicsObject->applyCentralImpulse(tan);
+	physicsObject->applyCentralForce(tan);
 	
 
 	
@@ -109,23 +109,27 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 
 		updateSpringLocations();
 		setUpWheelStuff();
+		btScalar wheelLength(8.0f);
 
-		newWheels[0] = Wheel(hoverValue, btScalar(5.0), btScalar(3),
+		newWheels[0] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue, (gravity),(getPosition() + wheelOffsets[0]),
 			(getPosition() + wheelOffsets[0] - getNormal()*3.0f), physicsObject);
 		//wheelOffsets[0] = btVector3(-width/2.f, -height/2.f, -(length/2.f) + 1.f);
-		newWheels[1] = Wheel(hoverValue, btScalar(5.0), btScalar(3),
+		newWheels[1] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue, gravity, getPosition() + wheelOffsets[3],
 			getPosition() + wheelOffsets[3] - getNormal()*3.0f, physicsObject);
 		//wheelOffsets[1] = btVector3(width/2.f,-height/2.f, -(length/2.f) + 1.f);
-		newWheels[2] = Wheel(hoverValue, btScalar(5.0), btScalar(3),
+		newWheels[2] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue,critDampingValue, gravity, getPosition() + wheelOffsets[3],
 			getPosition() + wheelOffsets[3] - getNormal()*3.0f, physicsObject);
 		//wheelOffsets[2] = btVector3(-width/2.f,-height/2.f, (length/2.f) - 1.f);
-		newWheels[3] = Wheel(hoverValue, btScalar(5.0), btScalar(3),
+		newWheels[3] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue,gravity, getPosition() + wheelOffsets[3],
-			getPosition() + wheelOffsets[3] - getNormal()*3.0f, physicsObject);
-	
+			getPosition() + wheelOffsets[3] - getNormal()*3.0f, physicsObject);			
+
+
+//		physicsObject->setDamping(0, 0.75);
+
 		/*
 		for(int i = 0; i < 4; i++)
 		{
@@ -154,7 +158,8 @@ void Car::updateWheels()
 	for (int i = 0; i < 4; i++){
 		newWheels[i].calcForce(getPosition() + wheelOffsets[i], getNormal());
 	}
-	
+	printf("\n--------------------------------------------------\n");
+
 }
 
 void Car::updateSpringLocations()
@@ -164,15 +169,15 @@ void Car::updateSpringLocations()
 	btVector3 normal = getNormal();
 	btVector3 binormal = getBinormal();
 
-	wheelOffsets[0] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((-width/2.0f) - 0.25f/* + 0.5f*/)) + (tangent * (-length/2.0f + 1.0f));
-	wheelOffsets[1] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((+width/2.0f) + 0.25f/* - 0.5f*/)) + (tangent * (-length/2.0f + 1.0f));
-	wheelOffsets[2] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((-width/2.0f) - 0.25f/* + 0.5f*/)) + (tangent * (+length/2.0f - 1.0f));
-	wheelOffsets[3] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((+width/2.0f) + 0.25f/* - 0.5f*/)) + (tangent * (+length/2.0f - 1.0f));
+	wheelOffsets[0] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((-width/2.0f) + 0.5f/* + 0.5f*/)) + (tangent * (-length/2.0f + 1.0f));
+	wheelOffsets[1] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((+width/2.0f) - 0.5f/* - 0.5f*/)) + (tangent * (-length/2.0f + 1.0f));
+	wheelOffsets[2] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((-width/2.0f) + 0.5f/* + 0.5f*/)) + (tangent * (+length/2.0f - 1.0f));
+	wheelOffsets[3] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((+width/2.0f) - 0.5f/* - 0.5f*/)) + (tangent * (+length/2.0f - 1.0f));
 }
 
 void Car::setUpWheelStuff(){
 
 	kValue = abs((gravity.getY() * carMass ) / (restDisplacement * 4));
 	critDampingValue = 2 * sqrt(kValue * carMass);
-	hoverValue = btScalar(0.0f);
+	hoverValue = btScalar(1.0f);
 }

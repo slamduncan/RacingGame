@@ -96,6 +96,11 @@ void process_events()
 			fprintf(stderr, "BUTTONS HOW DO THEY WORK\n");
 			controller1.update(event);
 
+			if (controller1.isBDown()){
+				
+				int i;
+				cin >> i;
+			}
 			if(controller1.isADown())
 			{
 				ren->quitSDL();
@@ -443,13 +448,14 @@ int main(int argc, char** argv)
 			
 			for(int j = 0; j < 4; j++)
 			{
-				Spring aWheel = temp->wheels[j];
+				//Spring aWheel = temp->wheels[j];
+				Wheel aWheel = temp->newWheels[j];
 
-				btVector3 springPos = temp->getPosition() + temp->wheelOffsets[j];
+				btVector3 springPos = aWheel.getAttachedToCarPosition();
 
-				btVector3 springLength = -aWheel.springLength * temp->getNormal();
+				btVector3 springLength = aWheel.getBottomSpringPosition();
 
-				ren->drawLine(springPos, springPos + springLength, 0, 0, 255, 3.0f);
+				ren->drawLine(springPos, springLength, 0, 0, 255, 3.0f);
 
 			}
 		}

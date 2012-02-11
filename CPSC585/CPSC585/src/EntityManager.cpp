@@ -129,6 +129,9 @@ void EntityManager::resetCar(int index, btVector3 &position)
 
 	carList[index]->physicsObject->clearForces();
 	carList[index]->updateSpringLocations();
+
+	carList[index]->physicsObject->setLinearVelocity(btVector3(0, 0, 0));
+	carList[index]->physicsObject->setAngularVelocity(btVector3(0, 0, 0));
 }
 
 
