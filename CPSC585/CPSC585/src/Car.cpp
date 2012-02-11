@@ -146,15 +146,15 @@ void Car::updateWheels()
 {
 	updateSpringLocations();
 
-
+/*
 	for (int i = 0; i < 4; i++){
 		wheels[i].update(getPosition() + wheelOffsets[i], getNormal());
 	}
-/*
+*/
 	for (int i = 0; i < 4; i++){
 		newWheels[i].calcForce(getPosition() + wheelOffsets[i], getNormal());
 	}
-	*/
+	
 }
 
 void Car::updateSpringLocations()
