@@ -1,8 +1,28 @@
 Hey, This is the README for our project. Please don't neglect me!
 
-Things For First Iterations:
+Controls for the car:
+	Triggers - Apply force forward or backwards.
 
+	Buttons:
+		A - Exits the program.
+		B - Nothing.
+		X - Resets the car and forces on the car to inital values.
+		Y - Resets the orientation but not the position of the car.
 
+	Left Analog - Turns the car.
+
+	Right Analog - Rotates the camera around the car.
+	
+	r - reload the variables.
+	
+	esc - quit the program.
+
+Current Features:
+	Able to drive around the map.
+	There are also some jumps (a 10, 15, 30, 45, and 60 degree jumps).
+	Rough spring implementation.
+	Textures are loading.
+	Dynamic loading of variables. (Using XML)
 
 Tool being used on this project:
 GLEW - shaders and frame buffer effects

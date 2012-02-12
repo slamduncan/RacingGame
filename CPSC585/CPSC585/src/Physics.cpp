@@ -50,24 +50,12 @@ Physics::~Physics(void)
 
 void Physics::step()
 {	
-	//physRender->updateGL();
- 	
 	dynamicsWorld->stepSimulation(1/60.f,10);
 
 	for (int i = 0; i < entityManager->getCarList()->size(); i++){
 		entityManager->getCarList()->at(i)->updateWheels();
 		//entityManager->getCarList()->at(i)->cheatAndFixRotation();
 	}
-
-	//btCollisionObjectArray temp = dynamicsWorld->getCollisionObjectArray();
-
-	//btCollisionObject* temp2 = temp.at(0);
-
-	//btTransform trans = temp2->getWorldTransform();
-
-	
-
-	//printf("car data: %f,%f,%f\n", trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()); 
 }
 
 void Physics::setGravity(const btVector3 &gravityIn)
