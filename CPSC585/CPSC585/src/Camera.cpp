@@ -4,6 +4,8 @@ Camera::Camera(): analogObserver(this, &Camera::rotateCamera){
 	analogObserver.init(EventTypes::RIGHT_ANALOG);
 
 	angle = 0;
+
+	UPVECTOR = btVector3(0, 1, 0);
 }
 
 Camera::Camera(btVector3 &upIn, btVector3 &lookAtPointIn, btVector3 &cameraPositionIn) : analogObserver(this, & Camera::rotateCamera){
@@ -17,31 +19,20 @@ Camera::Camera(btVector3 &upIn, btVector3 &lookAtPointIn, btVector3 &cameraPosit
 
 	angle = 0;
 
+	UPVECTOR = btVector3(0, 1, 0);
+}
+
+Camera::Camera(btVector3 &lookAtPointIn, btVector3& offset) : analogObserver(this, & Camera::rotateCamera)
+{
+	this->offset = offset;
+	lookAtPoint = lookAtPointIn;
 }
 
 void Camera::rotateCamera(RightAnalogEvent *e){
 	
 	angle = (float)e->getNormX() * SIMD_RADS_PER_DEG * 3.0f;
 
-	//printf("angle = %f", angle);
-
-	btScalar xRot = cosf(angle); 
-	btScalar zRot = sinf(angle);
-
-	btVector3 viewVec = btVector3(xRot, 0, zRot);
-
-	//btScalar yOffset = ((lookAtPoint - cameraPosition).length()).getY();
-
-	btVector3 temp = (lookAtPoint - cameraPosition);
-
-	temp.rotate(btVector3(0, 1, 0), angle);
-/*
-	(viewVec.setY(-yOffset));
-
-	cameraPosition = viewVec + lookAtPoint;
-*/
-	cameraPosition = lookAtPoint - temp;
-
+	computeCameraPosition();
 
 	//printf("X is%f\n", e->getNormX());
 	/*
@@ -52,11 +43,29 @@ void Camera::rotateCamera(RightAnalogEvent *e){
 	*/
 }
 
+Camera::Camera(btVector3 &cameraPositionIn, btVector3 &lookAtPointIn, btScalar distance, btScalar height) : analogObserver(this, & Camera::rotateCamera)
+{
+	cameraPosition = cameraPositionIn;
+	lookAtPoint = lookAtPointIn;
+
+}
+
+void Camera::computeCameraPosition()
+{
+	//offset = cameraPosition - lookAtPoint;
+
+	offset = offset.rotate(UPVECTOR, angle);
+
+	cameraPosition = lookAtPoint + offset;
+}
+
 void Camera::setUpCamera(){	
 
-	lookAtVector = (lookAtPoint - cameraPosition).normalize();
-	normal = ((lookAtVector.cross(up)).cross(lookAtVector)).normalize();
+	computeCameraPosition();
 	
+	lookAtVector = (lookAtPoint - cameraPosition).normalize();
+	normal = ((lookAtVector.cross(UPVECTOR)).cross(lookAtVector)).normalize();
+
 	//btVector3 up(0, 1, 0);
 	//btVector3 lookAtVector = (lookAtPoint - pos).normalize();
 
@@ -70,15 +79,28 @@ void Camera::setUpCamera(btVector3 &lookAtPointIn){
 	setUpCamera();
 }
 
+void Camera::setUpCamera(btVector3 &lookAtPointIn, btVector3 &offset){
+	this->offset = offset;
+	lookAtPoint = lookAtPointIn;
+	setUpCamera();
+}
+
+/*
 void Camera::setUpCamera(btVector3 &lookAtPointIn, btVector3 &cameraPositionIn){
 	cameraPosition = cameraPositionIn;
 	lookAtPoint = lookAtPointIn;
 	setUpCamera();
-}
+}*/
 
 void Camera::setUpCamera(btVector3 &lookAtPointIn, btVector3 &cameraPositionIn, btVector3 &upIn){
 	cameraPosition = cameraPositionIn;
 	lookAtPoint = lookAtPointIn;
 	up = upIn;
 	setUpCamera();
+}
+
+void Camera::debug()
+{
+	printf("pos: (%f, %f, %f)\n", cameraPosition.x(), cameraPosition.y(), cameraPosition.z());
+	printf("lookAT: (%f, %f, %f)\n", lookAtPoint.x(), lookAtPoint.y(), lookAtPoint.z());
 }

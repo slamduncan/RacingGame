@@ -186,23 +186,11 @@ void Car::updateWheels()
 			
 			resolveSingleBilateral(*physicsObject, contact, *groundObject, contact, btScalar(0.),getBinormal(), sideFriction[i], 1/60.0f);
 		}
-		printf("sideFriction: (%f)\n", sideFriction[i]);
 	}
 
 	
 
 	for (int i = 0; i < 4; i++){
-		printf("force: (%f, %f, %f)", forces[i].x(), forces[i].y(), forces[i].z());
-		
-		if(newWheels[i].onGround)
-		{
-			printf("true\n");
-		}
-		else
-		{
-			printf("false\n");
-		}
-		
 		btVector3 contact = newWheels[i].getBottomSpringPosition();
 		physicsObject->applyImpulse(forces[i],contact - physicsObject->getCenterOfMassPosition()/*wheelOffsets[i]*/);
 		
@@ -218,9 +206,6 @@ void Car::updateWheels()
 		}
 		//cheatAndFixRotation();
 	}
-
-	printf("\n--------------------------------------------------\n");
-
 }
 
 void Car::updateSpringLocations()
@@ -253,7 +238,7 @@ void Car::cheatAndFixRotation(){
 	btVector3 B = btVector3(0,1,0);
 
 	float angle = acos(A.dot(B))*180.0/M_PI;
-	printf("%f\n",angle);
+	//printf("%f\n",angle);
 
 	if(angle > 30){
 		physicsObject->setAngularVelocity(btVector3(0,0,0));

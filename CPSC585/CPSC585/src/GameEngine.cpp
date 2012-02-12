@@ -289,17 +289,6 @@ int main(int argc, char** argv)
 
 	btScalar carMass = 2.0;
 
-	btMatrix3x3 carMT1 = btMatrix3x3(0,0,1,0,1,0,1,0,0);
-
-	btVector3 row0 = carMT1.getRow(0);
-	btVector3 row1 = carMT1.getRow(1);
-	btVector3 row2 = carMT1.getRow(2);
-
-	printf("(%f, %f, %f)\n", row0.x(), row0.y(), row0.z());
-	printf("(%f, %f, %f)\n", row1.x(), row1.y(), row1.z());
-	printf("(%f, %f, %f)\n", row2.x(), row2.y(), row2.z());
-	printf("-----------------------------------------------------\n");
-
 	//btTransform carT1 = btTransform(carMT1, btVector3(0, 1.5, 0));
 	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 10, 0));
 	//carT1.setBasis(carMT1);
@@ -330,9 +319,6 @@ int main(int argc, char** argv)
 	ph->addEntity(*ground);
 
 
-	car1->debug();
-
-
 	//WAYPOINT
 	waypoint->initRenderObject("model/waypoint.obj");
 	btCollisionShape* waypointShape = createTrack(waypoint);
@@ -340,35 +326,6 @@ int main(int argc, char** argv)
 	btScalar temp = btScalar(0);
 	waypoint->initPhysicsObject(waypointShape, temp, wayPointT); 
 	entManager->addWaypoint(waypoint);	
-	//car1->rotate(car1->getNormal(), 90);
-
-
-
-	//
-	///////////////////////////////////////////////////////////////////////////////////////
-	//btVector3 offset = btVector3(-5, 0, -5);
-	//for(int i = 0; i < 10; i++)
-	//{
-	//	for(int j = 0; j < 10; j++)
-	//	{
-	//		for(int k = 0; k < 10;k++)
-	//		{
-	//			btTransform trans = btTransform(btQuaternion(0, 0, 0, 1), offset);
-	//			Car* temp = new Car();
-	//			temp->loadObj("../CPSC585/model/box.obj", carMass, trans);
-	//			offset += btVector3(1.5,0,0); 
-
-	//			entityList->push_back(temp);
-	//			ph->addEntity(*temp);
-	//		}
-	//		offset.setX(-5);
-	//		offset += btVector3(0,0,1.5);
-	//	}
-	//	offset.setZ(-5);
-	//	offset += btVector3(0, 1.5, 0);
-	//}
-	//
-	//
 
 	///* Inialize Observers used in entities */
 	car1->initObservers();
@@ -385,17 +342,18 @@ int main(int argc, char** argv)
 	int frameCount = 0;
 	int counter = 1;
 
-
 	//Initialize camera settings.
-	btVector3 camPos = car1->getPosition() + car1->getNormal()*10 + car1->getTangent()*20;
+	btVector3 camOffset = car1->getNormal()*10 + car1->getTangent()*15;
 	btVector3 camLookAt = car1->getPosition() + btVector3(0, 0, 0);
-	camera1.setUpCamera(camLookAt, camPos, btVector3(0, 1, 0));
+	camera1.setUpCamera(camLookAt, camOffset);
 
 	// game loop
 	while(1)
 	{		
-		car1->physicsObject->setActivationState(1);
-		////printf("looping\n");
+		btVector3 camLookAt = car1->getPosition() + btVector3(0, 0, 0);
+	
+		camera1.setUpCamera(camLookAt);
+		
 		//// Physics
 		ph->step();
 
@@ -407,32 +365,11 @@ int main(int argc, char** argv)
 		controller1.emitButtons();
 		controller1.emitLeftAnalog();
 		controller1.emitRightAnalog();
-		//updateRot();
-		//updateEntityPosition(*(entityList->at(0)), controller1);
-
-		// Render
-		// draw code goes here
-		btVector3 camPos = car1->getPosition() + car1->getNormal()*10 + car1->getTangent()*20;
-		//btVector3 camPos = btVector3(10,10,10);
-		//
-		btVector3 camLookAt = car1->getPosition() + btVector3(0, 0, 0);
-		//btVector3 camLookAt = btVector3(0, 0, 0);
-		
-		
-		//camera1.setUpCamera(camLookAt, camPos, btVector3(0, 1, 0));
+	
 		ren->clearGL();	// clear the screen
 		
-		camera1.lookAtPoint = car1->getPosition();
 		//ren->setCamera(camPos, camLookAt);
 		ren->setCamera(camera1);
-		
-		
-		//
-		////ren->textureOn(ptex);
-		//ren->drawPlane(-2);
-		////ren->drawEntity(*planeTest);
-		//
-		////ren->textureOff();
 
 		ren->glDisableLighting();
 
