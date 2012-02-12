@@ -52,9 +52,9 @@ void Physics::step()
  	
 	dynamicsWorld->stepSimulation(1/60.f,10);
 
-
 	for (int i = 0; i < entityManager->getCarList()->size(); i++){
 		entityManager->getCarList()->at(i)->updateWheels();
+		//entityManager->getCarList()->at(i)->cheatAndFixRotation();
 	}
 
 	//btCollisionObjectArray temp = dynamicsWorld->getCollisionObjectArray();

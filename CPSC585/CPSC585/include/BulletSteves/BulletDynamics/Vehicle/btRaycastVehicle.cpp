@@ -168,15 +168,18 @@ btScalar btRaycastVehicle::rayCast(btWheelInfo& wheel)
 {
 	updateWheelTransformsWS( wheel,false);
 
-	
 	btScalar depth = -1;
-	
+
+	//Ray length
 	btScalar raylen = wheel.getSuspensionRestLength()+wheel.m_wheelsRadius;
 
+	//Setting the source of the ray cast as the contact point on the vehicle
+	//Setting the target as source + max ray length vector
 	btVector3 rayvector = wheel.m_raycastInfo.m_wheelDirectionWS * (raylen);
 	const btVector3& source = wheel.m_raycastInfo.m_hardPointWS;
 	wheel.m_raycastInfo.m_contactPointWS = source + rayvector;
 	const btVector3& target = wheel.m_raycastInfo.m_contactPointWS;
+
 
 	btScalar param = btScalar(0.);
 	
@@ -188,6 +191,7 @@ btScalar btRaycastVehicle::rayCast(btWheelInfo& wheel)
 
 	wheel.m_raycastInfo.m_groundObject = 0;
 
+	//If we've hit anything...
 	if (object)
 	{
 		param = rayResults.m_distFraction;

@@ -282,7 +282,7 @@ int main(int argc, char** argv)
 	Track* ground = new Track();
 	Waypoint* waypoint = new Waypoint();
 
-	btScalar carMass = 2;
+	btScalar carMass = 2.0;
 
 	btMatrix3x3 carMT1 = btMatrix3x3(0,0,1,0,1,0,1,0,0);
 
@@ -302,7 +302,7 @@ int main(int argc, char** argv)
 
 	//btTransform carT2 = btTransform(btQuaternion(0, .5, .5, 1), btVector3(.5, 1.5, 0));
 
-	btScalar groundMass = 0;
+	btScalar groundMass = 1000000.0;
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
 	///////////////////////////////////////////////////////////////////////////////////////
