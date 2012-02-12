@@ -127,3 +127,12 @@ btVector3 Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 		return btVector3(0, 0, 0);
 	}
 }
+
+
+void Wheel::setKModifier(btScalar &inK){
+	kModifier = inK;
+}
+
+void Wheel::setCModifier(btScalar &inC){
+	dampingModifier = inC;
+}

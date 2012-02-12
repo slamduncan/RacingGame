@@ -26,7 +26,9 @@
 //            |                        |
 //     wheel1 |                        | wheel 0
 //            |------------------------|
-Car::Car() : rotationObserver(this, &Car::observeRotation), forwardForceObserver(this, &Car::observeForwardForce)
+Car::Car() : rotationObserver(this, &Car::observeRotation), 
+			forwardForceObserver(this, &Car::observeForwardForce),
+			updateVariableObserver(this, &Car::observeVariables)
 {		
 	Car::width = btScalar(5.0f);
 	Car::height = btScalar(5.0f);
@@ -255,5 +257,12 @@ void Car::cheatAndFixRotation(){
 
 	if(angle > 30){
 		physicsObject->setAngularVelocity(btVector3(0,0,0));
+	}
+}
+
+void Car::observeVariables(ReloadEvent *e){
+	for (int i = 0; i < 4; i++){
+		newWheels[i].setCModifier(btScalar(e->numberHolder.cModifier));
+		newWheels[i].setKModifier(btScalar(e->numberHolder.kModifier));
 	}
 }

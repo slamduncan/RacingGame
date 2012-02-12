@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<Physics>
+  <kModifer value ="1.0" />
+  <cModifier value ="1.0" />
+  <gravity xComponent = "0.0" yComponent ="-30.0" zComponent ="0.0"/>
+</Physics>

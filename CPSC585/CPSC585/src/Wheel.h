@@ -33,6 +33,9 @@ public:
 
 	Wheel(WheelInfo &wi, btVector3 &gravity, btRigidBody* physicsObject);
 
+	void setKModifier(btScalar &inK);
+	void setCModifier(btScalar &inC);
+
 
 	btVector3 calcForce(btVector3 &springLocation, btVector3 &carNormal);
 

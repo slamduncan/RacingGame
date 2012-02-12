@@ -40,6 +40,7 @@ public:
 
 	void observeRotation(RotationEvent *e);
 	void observeForwardForce(ForwardForceEvent *e);
+	void observeVariables(ReloadEvent *e);
 
 	void setUpWheelStuff();
 	void cheatAndFixRotation();
@@ -52,6 +53,7 @@ private:
 	//Observers
 	MethodObserver<RotationEvent, Car> rotationObserver;
 	MethodObserver<ForwardForceEvent, Car> forwardForceObserver;
+	MethodObserver<ReloadEvent, Car> updateVariableObserver;
 
 
 };
