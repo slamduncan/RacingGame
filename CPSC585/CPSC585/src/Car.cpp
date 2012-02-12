@@ -45,8 +45,6 @@ void Car::initObservers()
 }
 
 void Car::observeRotation(RotationEvent *e){		
-//		physicsObject->setAngularFactor(1000);
-	
 	btVector3 test = e->getQuaternion().getAxis();
 	btVector3 temp = physicsObject->getAngularVelocity();
 	if (temp.length() < 5)
@@ -91,7 +89,6 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 */
 bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans)
 {
-	//carMass = mass;
 	kVal = (mass * 10.0f)/(3.0f * 4.0f);
 	if(cShape != NULL)
 	{
@@ -100,23 +97,12 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 		cShape->calculateLocalInertia(mass, inertia);
 		
 		btDefaultMotionState* entMotionState = new btDefaultMotionState(trans);
-		//entMotionState->setWorldTransform(trans);
+
 		btRigidBody::btRigidBodyConstructionInfo entRigidBodyCI(mass,entMotionState,cShape,inertia);
 
 		physicsObject = new btRigidBody(entRigidBodyCI);
 
 		physicsObject->setActivationState(DISABLE_DEACTIVATION);
-
-		//physicsObject->setLinearVelocity(btVector3(0,0,0));
-		
-		//wheels[0] = Spring(physicsObject, kVal);
-		//wheelOffsets[0] = btVector3(-width/2.f, -height/2.f, -(length/2.f) + 1.f);
-		//wheels[1] = Spring(physicsObject, kVal);
-		//wheelOffsets[1] = btVector3(width/2.f,-height/2.f, -(length/2.f) + 1.f);
-		//wheels[2] = Spring(physicsObject, kVal);
-		//wheelOffsets[2] = btVector3(-width/2.f,-height/2.f, (length/2.f) - 1.f);
-		//wheels[3] = Spring(physicsObject, kVal);	
-		//wheelOffsets[3] = btVector3(width/2.f,-height/2.f, (length/2.f) - 1.f);
 
 		updateSpringLocations();
 		setUpWheelStuff();
@@ -133,31 +119,15 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 		newWheels[0] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue, (gravity),(getPosition() + wheelOffsets[0]),
 			(getPosition() + wheelOffsets[0] - getNormal()*3.0f), physicsObject);
-		//wheelOffsets[0] = btVector3(-width/2.f, -height/2.f, -(length/2.f) + 1.f);
 		newWheels[1] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue, gravity, getPosition() + wheelOffsets[1],
 			getPosition() + wheelOffsets[1] - getNormal()*3.0f, physicsObject);
-		//wheelOffsets[1] = btVector3(width/2.f,-height/2.f, -(length/2.f) + 1.f);
 		newWheels[2] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue,critDampingValue, gravity, getPosition() + wheelOffsets[2],
 			getPosition() + wheelOffsets[2] - getNormal()*3.0f, physicsObject);
-		//wheelOffsets[2] = btVector3(-width/2.f,-height/2.f, (length/2.f) - 1.f);
 		newWheels[3] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue,gravity, getPosition() + wheelOffsets[3],
 			getPosition() + wheelOffsets[3] - getNormal()*3.0f, physicsObject);			
-
-		
-//		physicsObject->setDamping(0, 0.75);
-
-		/*
-		for(int i = 0; i < 4; i++)
-		{
-			btVector3 temp = wheelOffsets[i];
-
-			printf("(%f, %f, %f)\n", temp.x(), temp.y(), temp.z());
-		}
-		*/
-		//physicsObject->setAngularFactor(btScalar(0.01f));
 
 		return true;
 	}
