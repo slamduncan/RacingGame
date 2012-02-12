@@ -301,7 +301,7 @@ int main(int argc, char** argv)
 	printf("-----------------------------------------------------\n");
 
 	//btTransform carT1 = btTransform(carMT1, btVector3(0, 1.5, 0));
-	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 10, 0));
+	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3, 0));
 	//carT1.setBasis(carMT1);
 	
 
