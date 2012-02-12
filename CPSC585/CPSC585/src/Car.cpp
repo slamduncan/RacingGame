@@ -184,7 +184,7 @@ void Car::updateWheels()
 
 			relpos -= carNormal * (carNormal.dot(relpos));
 
-			physicsObject->applyImpulse(getBinormal() * sideFriction[i]*0.5f,relpos);
+			physicsObject->applyImpulse(getBinormal() * sideFriction[i]*0.1f,relpos);
 		}
 		//cheatAndFixRotation();
 	}

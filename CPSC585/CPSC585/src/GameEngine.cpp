@@ -4,6 +4,9 @@
 
 #include "EntityManager.h"
 
+#include "al.h"
+
+
 //#include "Entity.h"
 #include "InputController.h"
 #include <time.h>
