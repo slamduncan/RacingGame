@@ -14,7 +14,7 @@ Physics* Physics::Inst(void){
 	return physInstance;
 }
 
-Physics::Physics(void)
+Physics::Physics(void) : variableObserver(this, &Physics::updateVariables)
 {
 	/*
 	btBroadphaseInterface* broadphase;
@@ -31,6 +31,8 @@ Physics::Physics(void)
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	solver = new btSequentialImpulseConstraintSolver;
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,broadphase,solver,collisionConfiguration);
+
+	variableObserver.init(EventTypes::RELOAD_VARIABLES);
 }
 
 Physics::~Physics(void)
@@ -104,3 +106,7 @@ btDiscreteDynamicsWorld* Physics::getDiscreteDynamicsWorld(){
 }
 
 btVector3 Physics::getGravity(){return gravity;}
+
+void Physics::updateVariables(ReloadEvent *e){
+	setGravity(e->numberHolder.gravity);
+}

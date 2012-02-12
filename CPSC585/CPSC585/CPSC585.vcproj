@@ -235,6 +235,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ProjectNumbers.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Renderer.cpp"
 				>
 			</File>
@@ -361,6 +365,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ReloadEvent.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Renderer.h"
 				>
 			</File>
@@ -428,6 +436,10 @@
 			>
 			<File
 				RelativePath=".\magicNumbers\Controller.xml"
+				>
+			</File>
+			<File
+				RelativePath=".\magicNumbers\Physics.xml"
 				>
 			</File>
 		</Filter>
