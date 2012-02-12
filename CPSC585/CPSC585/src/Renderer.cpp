@@ -193,7 +193,7 @@ int Renderer::initFont()
 		counter--;
 	}
 
-	debugFont = TTF_OpenFont("../CPSC585/font/ARIAL.TTF", 20);
+	debugFont = TTF_OpenFont("font/ARIAL.TTF", 20);
 
 	if(debugFont == NULL)
 	{
