@@ -58,6 +58,8 @@ void handle_key_down( SDL_keysym* keysym )
 		case SDLK_ESCAPE:
 			ren->quitSDL();
 			break;
+		case SDLK_r:
+			evSys->emitEvent(new ReloadEvent());
 		default:
 			break;
     }
@@ -237,6 +239,9 @@ int main(int argc, char** argv)
 	p.readVariablesIn();
 	int* i = p.CONTROLLER_Turning;
 	int k = p.test;
+	float kjp = p.kModifier;
+	float lksd = p.cModifier;
+	btVector3 g = p.gravity;
 	// INITIALIZATIONS
 	
 	bool renInit = ren->init();

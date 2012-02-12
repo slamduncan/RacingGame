@@ -74,6 +74,7 @@ btVector3 Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 		//btScalar disInGrd = btVector3(0,1,0).dot(RayCallback.m_hitPointWorld - rayEnd);
 		btScalar disInGrd = (RayCallback.m_hitPointWorld - rayEnd).length();
 
+
 		//Move the spring up so that the "wheel" or hover value is between it and the gound still
 		//bottomSpringPosition = RayCallback.m_hitPointWorld + hoverValue * carNormal;
 
