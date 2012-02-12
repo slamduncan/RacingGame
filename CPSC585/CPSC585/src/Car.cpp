@@ -1,6 +1,10 @@
 #include "Car.h"
 #include "EventSystemHandler.h"
 
+#ifndef M_PI
+#define M_PI           3.14159265358979323846
+#endif
+
 //
 //	Current Car representation
 //
@@ -45,7 +49,7 @@ void Car::observeRotation(RotationEvent *e){
 	btVector3 temp = physicsObject->getAngularVelocity();
 	if (temp.length() < 5)
 	//physicsObject->setAngularVelocity(test);
-		physicsObject->applyTorque(test);		
+		physicsObject->applyTorque(-test);		
 }
 
 void Car::observeForwardForce(ForwardForceEvent *e){
@@ -59,7 +63,8 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 
 	tan.setY(0);
 
-	physicsObject->applyCentralForce(tan);
+	physicsObject->applyImpulse(tan,getPosition()-btVector3(0,1,0));
+	//physicsObject->applyCentralImpulse(tan);
 	
 
 	
@@ -73,9 +78,6 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 	
 }
 
-
-
-
 /*
 *	Initializes the Physics representation of the object based on a collision shape, mass, and transform
 *
@@ -84,7 +86,7 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans)
 {
 	carMass = mass;
-	kVal = (mass * 30.0f)/(3.0f * 4.0f);
+	kVal = (mass * 10.0f)/(3.0f * 4.0f);
 	if(cShape != NULL)
 	{
 		btVector3 inertia;
@@ -109,25 +111,33 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 
 		updateSpringLocations();
 		setUpWheelStuff();
-		btScalar wheelLength(8.0f);
+		btScalar wheelLength(5.0f);
+		
+		/*
+		printf("Wheel Offset 1: (%f, %f, %f)\n", wheelOffsets[0].getX(),wheelOffsets[0].getY(),wheelOffsets[0].getZ());
+		printf("Wheel Offset 2: (%f, %f, %f)\n", wheelOffsets[1].getX(),wheelOffsets[1].getY(),wheelOffsets[1].getZ());
+		printf("Wheel Offset 3: (%f, %f, %f)\n", wheelOffsets[2].getX(),wheelOffsets[2].getY(),wheelOffsets[2].getZ());
+		printf("Wheel Offset 4: (%f, %f, %f)\n", wheelOffsets[3].getX(),wheelOffsets[3].getY(),wheelOffsets[3].getZ());
+		*/
 
+		//Bug found here; was using wheelOffsets[3] for newWheels 1,2 and 3.
 		newWheels[0] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue, (gravity),(getPosition() + wheelOffsets[0]),
 			(getPosition() + wheelOffsets[0] - getNormal()*3.0f), physicsObject);
 		//wheelOffsets[0] = btVector3(-width/2.f, -height/2.f, -(length/2.f) + 1.f);
 		newWheels[1] = Wheel(hoverValue, wheelLength, btScalar(3),
-			kValue, critDampingValue, gravity, getPosition() + wheelOffsets[3],
-			getPosition() + wheelOffsets[3] - getNormal()*3.0f, physicsObject);
+			kValue, critDampingValue, gravity, getPosition() + wheelOffsets[1],
+			getPosition() + wheelOffsets[1] - getNormal()*3.0f, physicsObject);
 		//wheelOffsets[1] = btVector3(width/2.f,-height/2.f, -(length/2.f) + 1.f);
 		newWheels[2] = Wheel(hoverValue, wheelLength, btScalar(3),
-			kValue,critDampingValue, gravity, getPosition() + wheelOffsets[3],
-			getPosition() + wheelOffsets[3] - getNormal()*3.0f, physicsObject);
+			kValue,critDampingValue, gravity, getPosition() + wheelOffsets[2],
+			getPosition() + wheelOffsets[2] - getNormal()*3.0f, physicsObject);
 		//wheelOffsets[2] = btVector3(-width/2.f,-height/2.f, (length/2.f) - 1.f);
 		newWheels[3] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue,gravity, getPosition() + wheelOffsets[3],
 			getPosition() + wheelOffsets[3] - getNormal()*3.0f, physicsObject);			
 
-
+		
 //		physicsObject->setDamping(0, 0.75);
 
 		/*
@@ -150,15 +160,17 @@ void Car::updateWheels()
 {
 	updateSpringLocations();
 
-/*
+	btVector3 forces [4];
 	for (int i = 0; i < 4; i++){
-		wheels[i].update(getPosition() + wheelOffsets[i], getNormal());
+		forces[i] = newWheels[i].calcForce(getPosition() + wheelOffsets[i], getNormal());
 	}
-*/
+
 	for (int i = 0; i < 4; i++){
-		newWheels[i].calcForce(getPosition() + wheelOffsets[i], getNormal());
+		btVector3 contact = newWheels[i].getBottomSpringPosition();
+		physicsObject->applyImpulse(forces[i],contact-getPosition());
 	}
-	printf("\n--------------------------------------------------\n");
+
+	//printf("\n--------------------------------------------------\n");
 
 }
 
@@ -177,7 +189,24 @@ void Car::updateSpringLocations()
 
 void Car::setUpWheelStuff(){
 
+	/*
 	kValue = abs((gravity.getY() * carMass ) / (restDisplacement * 4));
 	critDampingValue = 2 * sqrt(kValue * carMass);
 	hoverValue = btScalar(1.0f);
+	*/
+	kValue = 100.0/8.0;
+	critDampingValue = 2 * sqrt(kValue * 2.0);
+	hoverValue = btScalar(1.0f);
+}
+
+void Car::cheatAndFixRotation(){
+	btVector3 A = this->getNormal();
+	btVector3 B = btVector3(0,1,0);
+
+	float angle = acos(A.dot(B))*180.0/M_PI;
+	printf("%f\n",angle);
+
+	if(angle > 30){
+		physicsObject->setAngularVelocity(btVector3(0,0,0));
+	}
 }

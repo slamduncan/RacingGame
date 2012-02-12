@@ -13,7 +13,7 @@ public:
 		btScalar kVal, btScalar cVal, btVector3 &gravityIn, btVector3 &springAttachmentPoint,
 		btVector3 &endOfSpringPoint, btRigidBody* physicsRigid);
 
-	void calcForce(btVector3 &springLocation, btVector3 &carNormal);
+	btVector3 calcForce(btVector3 &springLocation, btVector3 &carNormal);
 
 	btVector3 getAttachedToCarPosition();
 	btVector3 getBottomSpringPosition();

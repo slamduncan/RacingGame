@@ -42,7 +42,7 @@ public:
 	void observeForwardForce(ForwardForceEvent *e);
 
 	void setUpWheelStuff();
-
+	void cheatAndFixRotation();
 
 private:
 	btScalar width, length, height;
