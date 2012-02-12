@@ -302,7 +302,7 @@ int main(int argc, char** argv)
 
 	//btTransform carT2 = btTransform(btQuaternion(0, .5, .5, 1), btVector3(.5, 1.5, 0));
 
-	btScalar groundMass = 1000000.0;
+	btScalar groundMass = 0.0;
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -310,12 +310,12 @@ int main(int argc, char** argv)
 	// I'll need to create a factory for the physics objects later so we can build almost any shape we need
 
 	// CAR1
-	car1->initRenderObject("../CPSC585/model/box.3ds");
+	car1->initRenderObject("model/box.3ds");
 	btCollisionShape* carShape1 = createCarPhysicsObject();
 	car1->initPhysicsObject(carShape1, carMass, carT1);
 	
 	// GROUND
-	ground->initRenderObject("../CPSC585/model/groundBox.obj");
+	ground->initRenderObject("model/groundBox.lwo");
 	btCollisionShape* groundShape = createTrack(ground);
 	ground->initPhysicsObject(groundShape, groundMass, groundT);
 
@@ -329,7 +329,7 @@ int main(int argc, char** argv)
 
 
 	//WAYPOINT
-	waypoint->initRenderObject("../CPSC585/model/waypoint.obj");
+	waypoint->initRenderObject("model/waypoint.obj");
 	btCollisionShape* waypointShape = createTrack(waypoint);
 	btTransform wayPointT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 0));
 	btScalar temp = btScalar(0);
@@ -368,7 +368,7 @@ int main(int argc, char** argv)
 	///* Inialize Observers used in entities */
 	car1->initObservers();
 
-	SDL_Surface* carTex1 = ren->loadIMG("../CPSC585/model/box.png");
+	SDL_Surface* carTex1 = ren->loadIMG("model/box.png");
 	GLuint ctex1 = 0;
 	ctex1 = ren->initTexture(carTex1);
 	SDL_FreeSurface(carTex1);

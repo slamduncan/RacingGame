@@ -46,6 +46,7 @@ public:
 
 private:
 	btScalar width, length, height;
+
 	// 3 power up slots, circular array of powerups?
 
 	//Observers

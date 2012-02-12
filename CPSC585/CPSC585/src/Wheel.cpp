@@ -17,7 +17,18 @@ Wheel::Wheel(btScalar radius, btScalar lengthOfSpring, btScalar lengthOfSpringWi
 			kModifier = .01f;
 			//kModifier = 0.5f;
 			//
+
+			onGround = false;
+
 			dynamicsWorld = Physics::Inst()->getDiscreteDynamicsWorld();
+
+			hitObject = NULL;
+
+}
+
+Wheel::Wheel(WheelInfo &wi, btVector3 &gravity, btRigidBody* physicsObject)
+{
+
 }
 
 btVector3 Wheel::getAttachedToCarPosition(){
@@ -53,6 +64,10 @@ btVector3 Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 	//If we have hit something 
 	if (RayCallback.hasHit())
 	{
+		onGround = true;
+
+		hitObject = RayCallback.m_collisionObject;
+		
 		//Distance into the ground the ray went. (Currently assuming the ground is normal)
 		//CHANGE THIS CODE WHEN WE START ADDING BUMPS.
 
@@ -69,14 +84,14 @@ btVector3 Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 			bottomSpringPosition = RayCallback.m_hitPointWorld;
 		}
 		//Else we are off the ground so no force???	
-
+		
 	}
 	if (!inGround)
 	{
 		return btVector3(0,0,0);
 	}
 
-	btVector3 FORCEDIRECTION = carNormal.normalized();
+	btVector3 FORCEDIRECTION = carNormal;
 	//btVector3 FORCEDIRECTION = btVector3(0,1,0);
 
 	//Assuming here that bottomSpringPosition is calculated correctly.
@@ -95,12 +110,12 @@ btVector3 Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 	//Use this speed times crossed onto the wheel axis (carNormal) to find how much of that
 	//Velocity is being applied along the wheel axis. This will affect the wheel
 	// dampening.
-	float suspensionVelocity = FORCEDIRECTION.dot(speedOfDisplacement);
+	btScalar suspensionVelocity = FORCEDIRECTION.dot(speedOfDisplacement);
 
 	//printf("Suspension Velocity: %.3f\n",suspensionVelocity);
 
 	//Use that speed and the critical damping value to find the damping force.
-	float dampingForce = cValue * suspensionVelocity * dampingModifier;
+	btScalar dampingForce = cValue * suspensionVelocity * dampingModifier;
 
 
 	//Combine the forces to get the total force that should be applied.
@@ -108,8 +123,11 @@ btVector3 Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 
 	//printf("(%.3f, %.3f, %.3f),(%.3f, %.3f, %.3f), %.3f \n", totalForce.x(), totalForce.y(), totalForce.z(), initialForce.getX(), initialForce.getY(), initialForce.getZ(), dampingForce);
 
-	if (totalForce.length() > 10.0)
-		totalForce *= 10.0 / totalForce.length();
+	btScalar maxForce = 30.0f / physicsObject->getInvMass();
+
+	if (totalForce.length() > maxForce)
+		totalForce = totalForce.normalize() * maxForce;
 	//physicsObject->applyImpulse(totalForce, attachedToCarPosition);
+
 	return totalForce;
 }

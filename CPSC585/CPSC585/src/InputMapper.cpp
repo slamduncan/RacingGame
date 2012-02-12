@@ -12,9 +12,9 @@ void InputMapper::updateRotation(LeftAnalogEvent *e){
 //	rotation = btQuaternion(e->getXVal(), e->getYVal(), 0, 0);	
 	if (lastTriggerEvent){
 		if (lastTriggerEvent->getValue() < 0)
-			rotation = btQuaternion(0, -(float)(e->getXVal()), 0, 0);	
-		else
 			rotation = btQuaternion(0, (float)(e->getXVal()), 0, 0);	
+		else
+			rotation = btQuaternion(0, -(float)(e->getXVal()), 0, 0);	
 	}
 	//rotation.normalize();
 	rotation /= 2000;
