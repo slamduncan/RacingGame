@@ -82,12 +82,11 @@ btVector3 Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 			//bottomSpringPosition = RayCallback.m_hitPointWorld + hoverValue * carNormal;
 
 			bottomSpringPosition = RayCallback.m_hitPointWorld;
-		}
-		//Else we are off the ground so no force???	
-		
+		}				
 	}
+	//Else we are off the ground so no force???	
 	if (!inGround)
-	{
+	{		
 		return btVector3(0,0,0);
 	}
 
