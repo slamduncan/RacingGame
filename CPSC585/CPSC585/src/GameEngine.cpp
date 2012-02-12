@@ -233,15 +233,8 @@ btCollisionShape* createTrack(const Entity* ent)
 
 // Engine Main
 int main(int argc, char** argv)
-{	
-
-	ProjectNumbers p;
-	p.readVariablesIn();
-	int* i = p.CONTROLLER_Turning;
-	int k = p.test;
-	float kjp = p.kModifier;
-	float lksd = p.cModifier;
-	btVector3 g = p.gravity;
+{		
+	evSys->emitEvent(new ReloadEvent());
 	// INITIALIZATIONS
 	
 	bool renInit = ren->init();
