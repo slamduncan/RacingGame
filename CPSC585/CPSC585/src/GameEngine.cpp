@@ -14,8 +14,6 @@
 #include <iostream>
 
 //For XML Parser
-//#include "tinyxml.h"
-//#include "tinystr.h"
 #include "ProjectNumbers.h"
 
 //Test stuff
@@ -35,14 +33,13 @@ Renderer* ren = Renderer::getInstance();
 
 Physics* ph = Physics::Inst();
 
+//Controller, camera, eventSystem handle.
 InputMapper* playerInput = new InputMapper();
-
-//Test Variables
 InputController controller1 = InputController();
 Camera camera1 = Camera();
 EventSystemHandler* evSys = EventSystemHandler::getInstance();
 
-
+//Entity manager
 EntityManager* entManager = EntityManager::getInstance();
 
 
@@ -55,9 +52,11 @@ void handle_key_down( SDL_keysym* keysym )
 {
     switch( keysym->sym ) 
 	{
+		//Quit on esc
 		case SDLK_ESCAPE:
 			ren->quitSDL();
 			break;
+		//Reload the variables on r.
 		case SDLK_r:
 			evSys->emitEvent(new ReloadEvent());
 		default:
@@ -133,50 +132,6 @@ void process_events()
     }
 
 }
-/*
-bool readVariables(){
-	TiXmlDocument doc("../CPSC585/magicNumbers/Controller.xml");
-	return doc.LoadFile();
-}
-*/
-
-
-void updateEntityPosition(Entity &entIn, InputController &contrlIn){
-
-		float lX = (float)contrlIn.getNormalizedLeftAnalogStickX();
-		float lY = (float)contrlIn.getNormalizedLeftAnalogStickY();
-
-		btVector3 offset(lX, 0, lY);
-
-		offset /= 5.0f;
-
-		entIn.move(offset);
-}
-
-void updateRot(){
-
-	/*		
-	if(controller1.isADown())
-			{
-				ren->quitSDL();
-			}
-			if(controller1.isBDown())
-			{
-				if(entityList->size() > 0)
-				{
-					entityList->at(0)->rotate(entityList->at(0)->normal, -1);
-				}
-			}
-			if(controller1.isYDown())
-			{
-				if(entityList->size() > 0)
-				{
-					entityList->at(0)->rotate(entityList->at(0)->normal, 1);
-				}
-			}
-	*/
-}
-
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -234,38 +189,24 @@ btCollisionShape* createTrack(const Entity* ent)
 // Engine Main
 int main(int argc, char** argv)
 {	
-
-	ProjectNumbers p;
-	p.readVariablesIn();
-	int* i = p.CONTROLLER_Turning;
-	int k = p.test;
-	float kjp = p.kModifier;
-	float lksd = p.cModifier;
-	btVector3 g = p.gravity;
 	// INITIALIZATIONS
+
+	//Load variables from the xml file.
+	evSys->emitEvent(new ReloadEvent());	
 	
+	//Initialize the renderer
 	bool renInit = ren->init();
 
 	// DEBUG DRAW SETUP
 	ph->setDebugDrawer(ren);
 	ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
-
-
-
-
-/*	
-	ren->initSDL();	// init SDL for drawing window
-	ren->initGL();	// initializing opengl stuff
-	ren->initFont();
-*/
 	
 	/* Added by Kent */
 	
 	controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
 	
 	if (!controller1.initialize(0)){
-		//SDL_Delay(100);
-		/*ren->outputText("Connect Controller", 1, 0, 0, 1280/2, 720/2);
+		/* SDL_Delay(100);
 		while(!controller1.initialize(0)){
 			Sleep(100);
 		}*/
@@ -273,28 +214,18 @@ int main(int argc, char** argv)
 
 		ren->quitSDL();
 
-	}	
-		
-	evSys->addObserver(&((new TestClass())->mo), EventTypes::BUTTON);
-	evSys->addObserver(&((new InputMapper())->analogObserver), EventTypes::ANALOG);
-
-	ph->setGravity(btVector3(0, -30, 0));
-
+	}				
 	
 	// //RENDERER DEBUG TESTING
-	//
+	
+	// Create all the enitities.
 	Car *car1 = new Car();
 	Track* ground = new Track();
 	Waypoint* waypoint = new Waypoint();
 
 	btScalar carMass = 2.0;
-
-	//btTransform carT1 = btTransform(carMT1, btVector3(0, 1.5, 0));
-	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 10, 0));
-	//carT1.setBasis(carMT1);
 	
-
-	//btTransform carT2 = btTransform(btQuaternion(0, .5, .5, 1), btVector3(.5, 1.5, 0));
+	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3, 0));
 
 	btScalar groundMass = 0.0;
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
@@ -313,11 +244,11 @@ int main(int argc, char** argv)
 	btCollisionShape* groundShape = createTrack(ground);
 	ground->initPhysicsObject(groundShape, groundMass, groundT);
 
+	//Add the entities and physic representations
 	entManager->addCar(car1);
 	entManager->addTrack(ground);
 	ph->addEntity(*car1);
 	ph->addEntity(*ground);
-
 
 	//WAYPOINT
 	waypoint->initRenderObject("model/waypoint.obj");
@@ -334,7 +265,6 @@ int main(int argc, char** argv)
 	GLuint ctex1 = 0;
 	ctex1 = ren->initTexture(carTex1);
 	SDL_FreeSurface(carTex1);
-
 
 	//Set inital game time
 	Uint32 currentTime = SDL_GetTicks();
@@ -359,27 +289,27 @@ int main(int argc, char** argv)
 
 		//// Inputs
 		process_events();
-		//
-		//// AI
+		
 		controller1.emitTriggers();
 		controller1.emitButtons();
 		controller1.emitLeftAnalog();
 		controller1.emitRightAnalog();
-	
+
+		// AI - Doesn't exist yet.....
+
+		// Render
 		ren->clearGL();	// clear the screen
 		
-		//ren->setCamera(camPos, camLookAt);
 		ren->setCamera(camera1);
 
 		ren->glDisableLighting();
-
 		ph->debugDraw();
-
 		ren->glEnableLighting();
 
 		////////////////////////////////////////////////////////
 		// HACKED DRAWING need to fix this
 
+		/* Following draws the springs for the car */
 		for(int i = 0; i < entManager->numCars(); i++)
 		{
 			Car* temp = entManager->getCarList()->at(i);
@@ -401,27 +331,23 @@ int main(int argc, char** argv)
 
 			}
 		}
+		//Draw the waypoints.
 		for(int i = 0; i < entManager->numWaypoints(); i++)
 		{
 			ren->drawEntity(*(entManager->getWaypointList()->at(i)));
 		}
 
-
+		// Draw the track.
 		if(entManager->getTrack())
 		{
 
 			ren->drawEntity(*(entManager->getTrack()));
 		}
 		
-		//
-		////////////////////////////////////////////////////////
-
-
-		//ren->drawLine(btVector3(0, 0, 0), btVector3(0, 10, 0), btVector3(1.f, 1.f, 1.f));
-
 		ren->glEnable2D();
 		frameCount++;
 
+		/* Calculate the frames per second */
 		if((currentTime - oldTime) > 1000){
 			//sprintf_s(frames, "%d FPS", frameCount);	
 			//ren->outputText(frames, 0, 255, 0, 10, 700);
@@ -444,9 +370,6 @@ int main(int argc, char** argv)
 		
 		////ren.draw();		// draw things to the buffer
 		ren->updateGL();	// update the screen
-
-		//// Misc?
-		//// Compute FPS
 	}
 
 	return 0;

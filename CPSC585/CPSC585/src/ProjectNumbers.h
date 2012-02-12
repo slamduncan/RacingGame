@@ -12,13 +12,13 @@
 class ProjectNumbers {
 
 public:
-	int* CONTROLLER_Turning;
-	int test;
+
+	float rotateModifier;
 	float cModifier;
 	float kModifier;
 	btVector3 gravity;
 
-	ProjectNumbers(){test = 0; CONTROLLER_Turning = &test;}
+	ProjectNumbers(){readVariablesIn();}
 
 
 	void readVariablesIn(){

@@ -8,7 +8,7 @@ class ReloadEvent : public Event {
 public:
 	ProjectNumbers numberHolder;
 
-	ReloadEvent(){
+	ReloadEvent() : numberHolder(){
 		numberHolder.readVariablesIn();
 	}
 

@@ -19,7 +19,7 @@ void ProjectNumbers::readController(){
 			{
 				pElem = hDoc.FirstChildElement().FirstChild().Element();
 				if (pElem) 
-					pElem->QueryIntAttribute("value", &test);	
+					pElem->QueryFloatAttribute("value", &rotateModifier);	
 			}
 			
 		}
