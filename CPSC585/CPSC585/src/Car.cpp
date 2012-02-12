@@ -59,7 +59,7 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 	btVector3 tan = getTangent() * engineForce;
 	tan.setY(0);	// project to the xz plane
 	tan /= 4.0f;
-	if(engineForce > 0)
+	if(engineForce < 0)
 	{
 		// player is accelerating, we apply rear wheel force
 		if(newWheels[2].onGround || newWheels[3].onGround)
@@ -74,7 +74,10 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 		// apply to all the wheels
 		for(int i = 0; i < 4; i++)
 		{
-			physicsObject->applyImpulse(tan, wheelOffsets[i]);
+			if(newWheels[i].onGround)
+			{
+				physicsObject->applyImpulse(tan, wheelOffsets[i]);
+			}
 		}
 	}
 }
@@ -116,9 +119,6 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 		updateSpringLocations();
 		setUpWheelStuff();
 		btScalar wheelLength(4.0f);
-		
-		btVector3 groovy = physicsObject->getGravity();
-		printf("gravity: %f, %f,%f\n", groovy.x(), groovy.y(), groovy.z());
 
 		/*
 		printf("Wheel Offset 1: (%f, %f, %f)\n", wheelOffsets[0].getX(),wheelOffsets[0].getY(),wheelOffsets[0].getZ());
@@ -190,7 +190,17 @@ void Car::updateWheels()
 	
 
 	for (int i = 0; i < 4; i++){
-		printf("force: (%f, %f, %f)\n", forces[i].x(), forces[i].y(), forces[i].z());
+		printf("force: (%f, %f, %f)", forces[i].x(), forces[i].y(), forces[i].z());
+		
+		if(newWheels[i].onGround)
+		{
+			printf("true\n");
+		}
+		else
+		{
+			printf("false\n");
+		}
+		
 		btVector3 contact = newWheels[i].getBottomSpringPosition();
 		physicsObject->applyImpulse(forces[i],contact - physicsObject->getCenterOfMassPosition()/*wheelOffsets[i]*/);
 		
