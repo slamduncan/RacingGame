@@ -97,8 +97,6 @@ void process_events()
 
 			if (controller1.isBDown()){
 				
-				int i;
-				cin >> i;
 			}
 			if(controller1.isADown())
 			{
@@ -167,7 +165,7 @@ int main(int argc, char** argv)
 	// Create all the enitities.
 	btScalar carMass = 2.0;
 	
-	btTransform carT1 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, 0));
+	btTransform carT1 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, 0));	
 
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
@@ -175,7 +173,7 @@ int main(int argc, char** argv)
 	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(3.5, 3.5, 0));
 	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 3.5));
 
-	entManager->createCar("model/box.3ds", carMass, carT1);
+	entManager->createCar("model/box.3ds", carMass, carT1);	
 	entManager->createTrack("model/groundBox.lwo", groundT);
 	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 	entManager->createWaypoint("model/waypoint.obj", wayPointT2);
@@ -186,7 +184,7 @@ int main(int argc, char** argv)
 	SDL_Surface* carTex1 = ren->loadIMG("model/box.png");	// load the image into a surface
 	GLuint ctex1 = 0;	// pointer to texture in GPU
 	ctex1 = ren->initTexture(carTex1);	// initializes the pointer to texture in GPU
-	SDL_FreeSurface(carTex1);	// we can free the texture one it's in GPU memory
+	SDL_FreeSurface(carTex1);	// we can free the texture once it's in GPU memory
 
 	//Set inital game time
 	Uint32 currentTime = SDL_GetTicks();

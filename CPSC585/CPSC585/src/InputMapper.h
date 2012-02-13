@@ -23,5 +23,6 @@ public:
 	MethodObserver<LeftAnalogEvent, InputMapper> analogObserver;
 	MethodObserver<TriggerEvent, InputMapper> triggerObserver;
 	MethodObserver<ReloadEvent, InputMapper> variableObserver;
+	bool goingForward;
 };
 #endif
