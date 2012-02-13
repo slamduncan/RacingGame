@@ -41,8 +41,12 @@ public:
 
 	void setUpWheelStuff();
 
+	int getNextWaypointIndex();
+	void setNextWaypointIndex(int in);
+
 private:
 	btScalar width, length, height;
+	int nextWaypoint;
 
 	// 3 power up slots, circular array of powerups?
 
