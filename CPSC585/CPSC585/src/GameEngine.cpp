@@ -4,9 +4,6 @@
 
 #include "EntityManager.h"
 
-#include "al.h"
-
-
 //#include "Entity.h"
 #include "InputController.h"
 #include <time.h>
@@ -283,7 +280,7 @@ int main(int argc, char** argv)
 		std::stringstream ss;
 		ss << frameCount/counter;
 
-		ren->outputText(entManager->getCarList()->at(0)->toString(), 0, 255, 0, 200, 200);
+		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
 		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
 		
 		ren->glDisable2D();

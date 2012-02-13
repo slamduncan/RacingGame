@@ -2,7 +2,6 @@
 #include "EntityManager.h"
 #include "Renderer.h"
 
-//HIIIIII
 Physics* Physics::physInstance = 0;
 EntityManager* entityManager;
 Renderer* physRender;
@@ -16,13 +15,6 @@ Physics* Physics::Inst(void){
 
 Physics::Physics(void) : variableObserver(this, &Physics::updateVariables)
 {
-	/*
-	btBroadphaseInterface* broadphase;
-	btDefaultCollisionConfiguration* collisionConfiguration;
-	btCollisionDispatcher* dispatcher;
-	btSequentialImpulseConstraintSolver* solver;
-	btDiscreteDynamicsWorld* dynamicsWorld;
-	*/
 	entityManager = EntityManager::getInstance();
 	physRender = Renderer::getInstance();
 
@@ -54,7 +46,6 @@ void Physics::step()
 
 	for (int i = 0; i < entityManager->getCarList()->size(); i++){
 		entityManager->getCarList()->at(i)->updateWheels();
-		//entityManager->getCarList()->at(i)->cheatAndFixRotation();
 	}
 }
 

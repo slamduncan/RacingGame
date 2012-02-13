@@ -107,15 +107,7 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 		updateSpringLocations();
 		setUpWheelStuff();
 		btScalar wheelLength(4.0f);
-
-		/*
-		printf("Wheel Offset 1: (%f, %f, %f)\n", wheelOffsets[0].getX(),wheelOffsets[0].getY(),wheelOffsets[0].getZ());
-		printf("Wheel Offset 2: (%f, %f, %f)\n", wheelOffsets[1].getX(),wheelOffsets[1].getY(),wheelOffsets[1].getZ());
-		printf("Wheel Offset 3: (%f, %f, %f)\n", wheelOffsets[2].getX(),wheelOffsets[2].getY(),wheelOffsets[2].getZ());
-		printf("Wheel Offset 4: (%f, %f, %f)\n", wheelOffsets[3].getX(),wheelOffsets[3].getY(),wheelOffsets[3].getZ());
-		*/
-
-		//Bug found here; was using wheelOffsets[3] for newWheels 1,2 and 3.		
+	
 		newWheels[0] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue, (gravity),(getPosition() + wheelOffsets[0]),
 			(getPosition() + wheelOffsets[0] - getNormal()*3.0f), physicsObject);
@@ -139,15 +131,16 @@ void Car::updateWheels()
 {
 	updateSpringLocations();
 
+	// simulate suspension
 	btVector3 forces[4];
 	btScalar sideFriction[4] = {btScalar(0.f),btScalar(0.f),btScalar(0.f),btScalar(0.f)}; 
 	for (int i = 0; i < 4; i++){
 		forces[i] = newWheels[i].calcForce(getPosition() + wheelOffsets[i], getNormal());
 	}
 
+	// simulate side friction
 	for(int i = 0; i < 4; i++)
 	{
-		
 		if(newWheels[i].hitObject)
 		{
 			btVector3 contact = newWheels[i].getBottomSpringPosition();
@@ -157,8 +150,6 @@ void Car::updateWheels()
 			resolveSingleBilateral(*physicsObject, contact, *groundObject, contact, btScalar(0.),getBinormal(), sideFriction[i], 1/60.0f);
 		}
 	}
-
-	
 
 	for (int i = 0; i < 4; i++){
 		btVector3 contact = newWheels[i].getBottomSpringPosition();
@@ -174,10 +165,10 @@ void Car::updateWheels()
 
 			physicsObject->applyImpulse(getBinormal() * sideFriction[i]*0.1f,relpos);
 		}
-		//cheatAndFixRotation();
 	}
 }
 
+// probably not needed anymore
 void Car::updateSpringLocations()
 {
 	btVector3 position = getPosition();
@@ -191,15 +182,10 @@ void Car::updateSpringLocations()
 	wheelOffsets[3] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((+width/2.0f) - 0.5f/* - 0.5f*/)) + (tangent * (+length/2.0f - 1.0f));
 }
 
-void Car::setUpWheelStuff(){
-
-	/*
-	kValue = abs((gravity.getY() * carMass ) / (restDisplacement * 4));
-	critDampingValue = 2 * sqrt(kValue * carMass);
-	hoverValue = btScalar(1.0f);
-	*/
+void Car::setUpWheelStuff()
+{
 	kValue = 20.0f;
-	critDampingValue = 2 * sqrt(kValue * 2.0);
+	critDampingValue = 2 * btSqrt(kValue * 2.0f);
 	hoverValue = btScalar(1.0f);
 }
 

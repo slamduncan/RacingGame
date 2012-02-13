@@ -5,7 +5,6 @@ EntityManager* EntityManager::instance = 0;
 
 EntityManager::EntityManager()
 {
-	//phyEngine = Physics::Inst();
 	// need to find a better way to store the track
 	track = NULL;
 }
@@ -194,9 +193,7 @@ void EntityManager::resetCarOrientation(int index)
 
 	btVector3 position = transform.getOrigin();
 
-	transform.setIdentity();
-
-	transform.setOrigin(position);
+	transform.setBasis(btMatrix3x3(btQuaternion(0, 1, 0, 1)));
 
 	carList[index]->physicsObject->setWorldTransform(transform);
 }
@@ -204,10 +201,7 @@ void EntityManager::resetCarOrientation(int index)
 void EntityManager::resetCar(int index, btVector3 &position)
 {
 	resetCarPosition(index, position);
-
-	btTransform transform = btTransform(btQuaternion(0, 1, 0, 1), position);
-
-	carList[index]->physicsObject->setWorldTransform(transform);
+	resetCarOrientation(index);
 
 	carList[index]->physicsObject->clearForces();
 
