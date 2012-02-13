@@ -14,7 +14,7 @@ Physics* Physics::Inst(void){
 	return physInstance;
 }
 
-Physics::Physics(void)
+Physics::Physics(void) : variableObserver(this, &Physics::updateVariables)
 {
 	/*
 	btBroadphaseInterface* broadphase;
@@ -31,6 +31,8 @@ Physics::Physics(void)
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	solver = new btSequentialImpulseConstraintSolver;
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,broadphase,solver,collisionConfiguration);
+
+	variableObserver.init(EventTypes::RELOAD_VARIABLES);
 }
 
 Physics::~Physics(void)
@@ -48,24 +50,12 @@ Physics::~Physics(void)
 
 void Physics::step()
 {	
-	//physRender->updateGL();
- 	
 	dynamicsWorld->stepSimulation(1/60.f,10);
 
 	for (int i = 0; i < entityManager->getCarList()->size(); i++){
 		entityManager->getCarList()->at(i)->updateWheels();
 		//entityManager->getCarList()->at(i)->cheatAndFixRotation();
 	}
-
-	//btCollisionObjectArray temp = dynamicsWorld->getCollisionObjectArray();
-
-	//btCollisionObject* temp2 = temp.at(0);
-
-	//btTransform trans = temp2->getWorldTransform();
-
-	
-
-	//printf("car data: %f,%f,%f\n", trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()); 
 }
 
 void Physics::setGravity(const btVector3 &gravityIn)
@@ -104,3 +94,7 @@ btDiscreteDynamicsWorld* Physics::getDiscreteDynamicsWorld(){
 }
 
 btVector3 Physics::getGravity(){return gravity;}
+
+void Physics::updateVariables(ReloadEvent *e){
+	setGravity(e->numberHolder.gravity);
+}

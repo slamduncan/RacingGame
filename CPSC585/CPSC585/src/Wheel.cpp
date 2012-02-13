@@ -17,7 +17,18 @@ Wheel::Wheel(btScalar radius, btScalar lengthOfSpring, btScalar lengthOfSpringWi
 			kModifier = .01f;
 			//kModifier = 0.5f;
 			//
+
+			onGround = false;
+
 			dynamicsWorld = Physics::Inst()->getDiscreteDynamicsWorld();
+
+			hitObject = NULL;
+
+}
+
+Wheel::Wheel(WheelInfo &wi, btVector3 &gravity, btRigidBody* physicsObject)
+{
+
 }
 
 btVector3 Wheel::getAttachedToCarPosition(){
@@ -53,63 +64,75 @@ btVector3 Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 	//If we have hit something 
 	if (RayCallback.hasHit())
 	{
+		onGround = true;
+
+		hitObject = RayCallback.m_collisionObject;
+		
 		//Distance into the ground the ray went. (Currently assuming the ground is normal)
 		//CHANGE THIS CODE WHEN WE START ADDING BUMPS.
 
 		//btScalar disInGrd = btVector3(0,1,0).dot(RayCallback.m_hitPointWorld - rayEnd);
 		btScalar disInGrd = (RayCallback.m_hitPointWorld - rayEnd).length();
 
-		//Inside of ground
-		if (disInGrd >= 0.0f)
-		{
-			inGround = true;
-			//Move the spring up so that the "wheel" or hover value is between it and the gound still
-			//bottomSpringPosition = RayCallback.m_hitPointWorld + hoverValue * carNormal;
 
-			bottomSpringPosition = RayCallback.m_hitPointWorld;
-		}
-		//Else we are off the ground so no force???	
+		//Move the spring up so that the "wheel" or hover value is between it and the gound still
+		//bottomSpringPosition = RayCallback.m_hitPointWorld + hoverValue * carNormal;
 
+		bottomSpringPosition = RayCallback.m_hitPointWorld;
+
+		
+		btVector3 FORCEDIRECTION = carNormal;
+		//btVector3 FORCEDIRECTION = btVector3(0,1,0);
+
+		//Assuming here that bottomSpringPosition is calculated correctly.
+		//Check here to make sure displacement is correct.... May be reversed due to directions
+		btScalar displacement = restLengthOfSpring  - ((attachedToCarPosition - bottomSpringPosition).length());
+
+		// Car Normal is here to provide the direction of the force.
+		btVector3 initialForce = (kValue * displacement * FORCEDIRECTION) * kModifier;
+
+		//Get the speed of dsiplacement for the attacment point of the spring.
+		btVector3 speedOfDisplacement = btVector3(0,0,0);
+		speedOfDisplacement = physicsObject->getVelocityInLocalPoint(RayCallback.m_hitPointWorld - physicsObject->getCenterOfMassPosition());
+
+		//printf("Speed of Displacement: %.3f, %.3f, %.3f\n",speedOfDisplacement.getX(),speedOfDisplacement.getY(),speedOfDisplacement.getZ());
+
+		//Use this speed times crossed onto the wheel axis (carNormal) to find how much of that
+		//Velocity is being applied along the wheel axis. This will affect the wheel
+		// dampening.
+		btScalar suspensionVelocity = FORCEDIRECTION.dot(speedOfDisplacement);
+
+		//printf("Suspension Velocity: %.3f\n",suspensionVelocity);
+
+		//Use that speed and the critical damping value to find the damping force.
+		btScalar dampingForce = cValue * suspensionVelocity * dampingModifier;
+
+
+		//Combine the forces to get the total force that should be applied.
+		btVector3 totalForce = initialForce - dampingForce*FORCEDIRECTION;
+
+		//printf("(%.3f, %.3f, %.3f),(%.3f, %.3f, %.3f), %.3f \n", totalForce.x(), totalForce.y(), totalForce.z(), initialForce.getX(), initialForce.getY(), initialForce.getZ(), dampingForce);
+
+		btScalar maxForce = 30.0f / physicsObject->getInvMass();
+
+		if (totalForce.length() > maxForce)
+			totalForce = totalForce.normalize() * maxForce;
+		//physicsObject->applyImpulse(totalForce, attachedToCarPosition);
+
+		return totalForce;
 	}
-	if (!inGround)
+	else
 	{
-		return btVector3(0,0,0);
+		onGround = false;
+		return btVector3(0, 0, 0);
 	}
-
-	btVector3 FORCEDIRECTION = carNormal.normalized();
-	//btVector3 FORCEDIRECTION = btVector3(0,1,0);
-
-	//Assuming here that bottomSpringPosition is calculated correctly.
-	//Check here to make sure displacement is correct.... May be reversed due to directions
-	btScalar displacement = restLengthOfSpring  - ((attachedToCarPosition - bottomSpringPosition).length());
-
-	// Car Normal is here to provide the direction of the force.
-	btVector3 initialForce = (kValue * displacement * FORCEDIRECTION) * kModifier;
-
-	//Get the speed of dsiplacement for the attacment point of the spring.
-	btVector3 speedOfDisplacement = btVector3(0,0,0);
-	speedOfDisplacement = physicsObject->getVelocityInLocalPoint(RayCallback.m_hitPointWorld - physicsObject->getCenterOfMassPosition());
-
-	//printf("Speed of Displacement: %.3f, %.3f, %.3f\n",speedOfDisplacement.getX(),speedOfDisplacement.getY(),speedOfDisplacement.getZ());
-
-	//Use this speed times crossed onto the wheel axis (carNormal) to find how much of that
-	//Velocity is being applied along the wheel axis. This will affect the wheel
-	// dampening.
-	float suspensionVelocity = FORCEDIRECTION.dot(speedOfDisplacement);
-
-	//printf("Suspension Velocity: %.3f\n",suspensionVelocity);
-
-	//Use that speed and the critical damping value to find the damping force.
-	float dampingForce = cValue * suspensionVelocity * dampingModifier;
+}
 
 
-	//Combine the forces to get the total force that should be applied.
-	btVector3 totalForce = initialForce - dampingForce*FORCEDIRECTION;
+void Wheel::setKModifier(btScalar &inK){
+	kModifier = inK;
+}
 
-	//printf("(%.3f, %.3f, %.3f),(%.3f, %.3f, %.3f), %.3f \n", totalForce.x(), totalForce.y(), totalForce.z(), initialForce.getX(), initialForce.getY(), initialForce.getZ(), dampingForce);
-
-	if (totalForce.length() > 10.0)
-		totalForce *= 10.0 / totalForce.length();
-	//physicsObject->applyImpulse(totalForce, attachedToCarPosition);
-	return totalForce;
+void Wheel::setCModifier(btScalar &inC){
+	dampingModifier = inC;
 }

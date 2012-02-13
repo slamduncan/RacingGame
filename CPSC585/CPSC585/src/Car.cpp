@@ -26,7 +26,9 @@
 //            |                        |
 //     wheel1 |                        | wheel 0
 //            |------------------------|
-Car::Car() : rotationObserver(this, &Car::observeRotation), forwardForceObserver(this, &Car::observeForwardForce)
+Car::Car() : rotationObserver(this, &Car::observeRotation), 
+			forwardForceObserver(this, &Car::observeForwardForce),
+			updateVariableObserver(this, &Car::observeVariables)
 {		
 	Car::width = btScalar(5.0f);
 	Car::height = btScalar(5.0f);
@@ -43,39 +45,41 @@ void Car::initObservers()
 }
 
 void Car::observeRotation(RotationEvent *e){		
-//		physicsObject->setAngularFactor(1000);
-	
 	btVector3 test = e->getQuaternion().getAxis();
 	btVector3 temp = physicsObject->getAngularVelocity();
 	if (temp.length() < 5)
 	//physicsObject->setAngularVelocity(test);
-		physicsObject->applyTorque(-test);		
+		physicsObject->applyTorque(test);		
 }
 
 void Car::observeForwardForce(ForwardForceEvent *e){
-	btVector3 tan = getTangent() * (e->getNormForce());
-	//tan /= 10.0f;
-
 	
-	//btVector3 UP = btVector3(0, 1, 0);
-	//btScalar projVec = tan.dot(UP);
-	//btVector3 offset = UP * -projVec;
-
-	tan.setY(0);
-
-	physicsObject->applyImpulse(tan,getPosition()-btVector3(0,1,0));
-	//physicsObject->applyCentralImpulse(tan);
+	btScalar engineForce = e->getNormForce();
 	
-
-	
-	//physicsObject->applyCentralImpulse(e->getNormForce()*btVector3(1,0,0));
-	
-	//btVector3 temp = physicsObject->getAngularFactor();
-	
-	//physicsObject->applyImpulse(tan + offset, getPosition() + getNormal() * -2.5f - getTangent() * 5.0f);
-	//for (int i = 0; i < 4; i++)
-	//	physicsObject->applyImpulse((tan + offset), wheelOffsets[i]);//getPosition()); 
-	
+	btVector3 tan = getTangent() * engineForce;
+	tan.setY(0);	// project to the xz plane
+	tan /= 4.0f;
+	if(engineForce < 0)
+	{
+		// player is accelerating, we apply rear wheel force
+		if(newWheels[2].onGround || newWheels[3].onGround)
+		{
+			physicsObject->applyImpulse(tan, wheelOffsets[2]);
+			physicsObject->applyImpulse(tan, wheelOffsets[3]);
+		}
+	}
+	// player is decelerating
+	else
+	{
+		// apply to all the wheels
+		for(int i = 0; i < 4; i++)
+		{
+			if(newWheels[i].onGround)
+			{
+				physicsObject->applyImpulse(tan, wheelOffsets[i]);
+			}
+		}
+	}
 }
 
 /*
@@ -85,7 +89,6 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 */
 bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans)
 {
-	carMass = mass;
 	kVal = (mass * 10.0f)/(3.0f * 4.0f);
 	if(cShape != NULL)
 	{
@@ -94,25 +97,17 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 		cShape->calculateLocalInertia(mass, inertia);
 		
 		btDefaultMotionState* entMotionState = new btDefaultMotionState(trans);
-		//entMotionState->setWorldTransform(trans);
+
 		btRigidBody::btRigidBodyConstructionInfo entRigidBodyCI(mass,entMotionState,cShape,inertia);
 
 		physicsObject = new btRigidBody(entRigidBodyCI);
-		physicsObject->setLinearVelocity(btVector3(0,0,0));
-		
-		wheels[0] = Spring(physicsObject, kVal);
-		//wheelOffsets[0] = btVector3(-width/2.f, -height/2.f, -(length/2.f) + 1.f);
-		wheels[1] = Spring(physicsObject, kVal);
-		//wheelOffsets[1] = btVector3(width/2.f,-height/2.f, -(length/2.f) + 1.f);
-		wheels[2] = Spring(physicsObject, kVal);
-		//wheelOffsets[2] = btVector3(-width/2.f,-height/2.f, (length/2.f) - 1.f);
-		wheels[3] = Spring(physicsObject, kVal);	
-		//wheelOffsets[3] = btVector3(width/2.f,-height/2.f, (length/2.f) - 1.f);
+
+		physicsObject->setActivationState(DISABLE_DEACTIVATION);
 
 		updateSpringLocations();
 		setUpWheelStuff();
-		btScalar wheelLength(5.0f);
-		
+		btScalar wheelLength(4.0f);
+
 		/*
 		printf("Wheel Offset 1: (%f, %f, %f)\n", wheelOffsets[0].getX(),wheelOffsets[0].getY(),wheelOffsets[0].getZ());
 		printf("Wheel Offset 2: (%f, %f, %f)\n", wheelOffsets[1].getX(),wheelOffsets[1].getY(),wheelOffsets[1].getZ());
@@ -124,31 +119,15 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 		newWheels[0] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue, (gravity),(getPosition() + wheelOffsets[0]),
 			(getPosition() + wheelOffsets[0] - getNormal()*3.0f), physicsObject);
-		//wheelOffsets[0] = btVector3(-width/2.f, -height/2.f, -(length/2.f) + 1.f);
 		newWheels[1] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue, gravity, getPosition() + wheelOffsets[1],
 			getPosition() + wheelOffsets[1] - getNormal()*3.0f, physicsObject);
-		//wheelOffsets[1] = btVector3(width/2.f,-height/2.f, -(length/2.f) + 1.f);
 		newWheels[2] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue,critDampingValue, gravity, getPosition() + wheelOffsets[2],
 			getPosition() + wheelOffsets[2] - getNormal()*3.0f, physicsObject);
-		//wheelOffsets[2] = btVector3(-width/2.f,-height/2.f, (length/2.f) - 1.f);
 		newWheels[3] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue,gravity, getPosition() + wheelOffsets[3],
 			getPosition() + wheelOffsets[3] - getNormal()*3.0f, physicsObject);			
-
-		
-//		physicsObject->setDamping(0, 0.75);
-
-		/*
-		for(int i = 0; i < 4; i++)
-		{
-			btVector3 temp = wheelOffsets[i];
-
-			printf("(%f, %f, %f)\n", temp.x(), temp.y(), temp.z());
-		}
-		*/
-		//physicsObject->setAngularFactor(btScalar(0.01f));
 
 		return true;
 	}
@@ -160,18 +139,43 @@ void Car::updateWheels()
 {
 	updateSpringLocations();
 
-	btVector3 forces [4];
+	btVector3 forces[4];
+	btScalar sideFriction[4] = {btScalar(0.f),btScalar(0.f),btScalar(0.f),btScalar(0.f)}; 
 	for (int i = 0; i < 4; i++){
 		forces[i] = newWheels[i].calcForce(getPosition() + wheelOffsets[i], getNormal());
 	}
 
-	for (int i = 0; i < 4; i++){
-		btVector3 contact = newWheels[i].getBottomSpringPosition();
-		physicsObject->applyImpulse(forces[i],contact-getPosition());
+	for(int i = 0; i < 4; i++)
+	{
+		
+		if(newWheels[i].hitObject)
+		{
+			btVector3 contact = newWheels[i].getBottomSpringPosition();
+			
+			btRigidBody* groundObject = (class btRigidBody*) newWheels[i].hitObject;
+			
+			resolveSingleBilateral(*physicsObject, contact, *groundObject, contact, btScalar(0.),getBinormal(), sideFriction[i], 1/60.0f);
+		}
 	}
 
-	//printf("\n--------------------------------------------------\n");
+	
 
+	for (int i = 0; i < 4; i++){
+		btVector3 contact = newWheels[i].getBottomSpringPosition();
+		physicsObject->applyImpulse(forces[i],contact - physicsObject->getCenterOfMassPosition()/*wheelOffsets[i]*/);
+		
+		if(sideFriction[i] != btScalar(1.))
+		{
+			btVector3 carNormal = getNormal();
+			
+			btVector3 relpos = contact - physicsObject->getCenterOfMassPosition();
+
+			relpos -= carNormal * (carNormal.dot(relpos));
+
+			physicsObject->applyImpulse(getBinormal() * sideFriction[i]*0.1f,relpos);
+		}
+		//cheatAndFixRotation();
+	}
 }
 
 void Car::updateSpringLocations()
@@ -194,7 +198,7 @@ void Car::setUpWheelStuff(){
 	critDampingValue = 2 * sqrt(kValue * carMass);
 	hoverValue = btScalar(1.0f);
 	*/
-	kValue = 100.0/8.0;
+	kValue = 20.0f;
 	critDampingValue = 2 * sqrt(kValue * 2.0);
 	hoverValue = btScalar(1.0f);
 }
@@ -204,9 +208,16 @@ void Car::cheatAndFixRotation(){
 	btVector3 B = btVector3(0,1,0);
 
 	float angle = acos(A.dot(B))*180.0/M_PI;
-	printf("%f\n",angle);
+	//printf("%f\n",angle);
 
 	if(angle > 30){
 		physicsObject->setAngularVelocity(btVector3(0,0,0));
+	}
+}
+
+void Car::observeVariables(ReloadEvent *e){
+	for (int i = 0; i < 4; i++){
+		newWheels[i].setCModifier(btScalar(e->numberHolder.cModifier));
+		newWheels[i].setKModifier(btScalar(e->numberHolder.kModifier));
 	}
 }

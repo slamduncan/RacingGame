@@ -40,17 +40,20 @@ public:
 
 	void observeRotation(RotationEvent *e);
 	void observeForwardForce(ForwardForceEvent *e);
+	void observeVariables(ReloadEvent *e);
 
 	void setUpWheelStuff();
 	void cheatAndFixRotation();
 
 private:
 	btScalar width, length, height;
+
 	// 3 power up slots, circular array of powerups?
 
 	//Observers
 	MethodObserver<RotationEvent, Car> rotationObserver;
 	MethodObserver<ForwardForceEvent, Car> forwardForceObserver;
+	MethodObserver<ReloadEvent, Car> updateVariableObserver;
 
 
 };

@@ -4,6 +4,9 @@
 #include "btBulletDynamicsCommon.h"
 #include "LinearMath/btIDebugDraw.h"
 #include "Entity.h"
+#include "ReloadEvent.h"
+#include "MethodObserver.h"
+#include "EventTypes.h"
 
 class Physics
 {
@@ -20,6 +23,7 @@ public:
 	void setDebugLevel(int level);
 	btDiscreteDynamicsWorld* getDiscreteDynamicsWorld();
 	btVector3 getGravity();
+	void updateVariables(ReloadEvent *e);
 
 	
 protected:
@@ -34,6 +38,8 @@ private:
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* dynamicsWorld;
+
+	MethodObserver<ReloadEvent, Physics> variableObserver;
 };
 
 #endif
