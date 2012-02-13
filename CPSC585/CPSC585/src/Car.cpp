@@ -115,7 +115,7 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 		printf("Wheel Offset 4: (%f, %f, %f)\n", wheelOffsets[3].getX(),wheelOffsets[3].getY(),wheelOffsets[3].getZ());
 		*/
 
-		//Bug found here; was using wheelOffsets[3] for newWheels 1,2 and 3.
+		//Bug found here; was using wheelOffsets[3] for newWheels 1,2 and 3.		
 		newWheels[0] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue, (gravity),(getPosition() + wheelOffsets[0]),
 			(getPosition() + wheelOffsets[0] - getNormal()*3.0f), physicsObject);
@@ -203,6 +203,7 @@ void Car::setUpWheelStuff(){
 	hoverValue = btScalar(1.0f);
 }
 
+/* This function allows for dynamic modification of the c and k values for the wheels. */
 void Car::observeVariables(ReloadEvent *e){
 	for (int i = 0; i < 4; i++){
 		newWheels[i].setCModifier(btScalar(e->numberHolder.cModifier));
