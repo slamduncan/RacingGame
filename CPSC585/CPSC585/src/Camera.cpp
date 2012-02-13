@@ -30,17 +30,19 @@ Camera::Camera(btVector3 &lookAtPointIn, btVector3& offset) : analogObserver(thi
 
 void Camera::rotateCamera(RightAnalogEvent *e){
 	
+	// cap the angle
+	if(angle > SIMD_2_PI)
+	{
+		angle = btScalar(0.);
+	}
+	if(angle < btScalar(0.))
+	{
+		angle = SIMD_2_PI;
+	}
+	
 	angle = (float)e->getNormX() * SIMD_RADS_PER_DEG * 3.0f;
 
 	computeCameraPosition();
-
-	//printf("X is%f\n", e->getNormX());
-	/*
-	if (!e->isClicked())
-		lookAtPoint = btVector3(lookAtPoint.getX(), lookAtPoint.getY() - e->getNormY(), lookAtPoint.getZ()-e->getNormX());
-	else
-		cameraPosition = btVector3(cameraPosition.getX(), cameraPosition.getY()- e->getNormY(), cameraPosition.getZ()-e->getNormX());
-	*/
 }
 
 Camera::Camera(btVector3 &cameraPositionIn, btVector3 &lookAtPointIn, btScalar distance, btScalar height) : analogObserver(this, & Camera::rotateCamera)
@@ -52,7 +54,6 @@ Camera::Camera(btVector3 &cameraPositionIn, btVector3 &lookAtPointIn, btScalar d
 
 void Camera::computeCameraPosition()
 {
-	//offset = cameraPosition - lookAtPoint;
 
 	offset = offset.rotate(UPVECTOR, angle);
 
@@ -65,13 +66,6 @@ void Camera::setUpCamera(){
 	
 	lookAtVector = (lookAtPoint - cameraPosition).normalize();
 	normal = ((lookAtVector.cross(UPVECTOR)).cross(lookAtVector)).normalize();
-
-	//btVector3 up(0, 1, 0);
-	//btVector3 lookAtVector = (lookAtPoint - pos).normalize();
-
-	//btVector3 binormal = lookAtVector.cross(up);
-
-	//btVector3 normal = (binormal.cross(lookAtVector)).normalize();
 }
 
 void Camera::setUpCamera(btVector3 &lookAtPointIn){
@@ -85,22 +79,9 @@ void Camera::setUpCamera(btVector3 &lookAtPointIn, btVector3 &offset){
 	setUpCamera();
 }
 
-/*
-void Camera::setUpCamera(btVector3 &lookAtPointIn, btVector3 &cameraPositionIn){
-	cameraPosition = cameraPositionIn;
-	lookAtPoint = lookAtPointIn;
-	setUpCamera();
-}*/
-
 void Camera::setUpCamera(btVector3 &lookAtPointIn, btVector3 &cameraPositionIn, btVector3 &upIn){
 	cameraPosition = cameraPositionIn;
 	lookAtPoint = lookAtPointIn;
 	up = upIn;
 	setUpCamera();
-}
-
-void Camera::debug()
-{
-	printf("pos: (%f, %f, %f)\n", cameraPosition.x(), cameraPosition.y(), cameraPosition.z());
-	printf("lookAT: (%f, %f, %f)\n", lookAtPoint.x(), lookAtPoint.y(), lookAtPoint.z());
 }

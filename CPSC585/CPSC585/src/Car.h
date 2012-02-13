@@ -22,11 +22,8 @@ public:
 	btScalar carMass;
 	btScalar restDisplacement;
 	btVector3 gravity;
-	//Car(btVector3 startingPos);
-	Car();
-	//void Observe(TriggerEvent *e);
 
-	//bool initRenderObject(char* filename);
+	Car();
 	bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans);
 
 	Wheel newWheels[4];
@@ -43,7 +40,6 @@ public:
 	void observeVariables(ReloadEvent *e);
 
 	void setUpWheelStuff();
-	void cheatAndFixRotation();
 
 private:
 	btScalar width, length, height;

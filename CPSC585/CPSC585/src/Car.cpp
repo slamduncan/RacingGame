@@ -203,18 +203,6 @@ void Car::setUpWheelStuff(){
 	hoverValue = btScalar(1.0f);
 }
 
-void Car::cheatAndFixRotation(){
-	btVector3 A = this->getNormal();
-	btVector3 B = btVector3(0,1,0);
-
-	float angle = acos(A.dot(B))*180.0/M_PI;
-	//printf("%f\n",angle);
-
-	if(angle > 30){
-		physicsObject->setAngularVelocity(btVector3(0,0,0));
-	}
-}
-
 void Car::observeVariables(ReloadEvent *e){
 	for (int i = 0; i < 4; i++){
 		newWheels[i].setCModifier(btScalar(e->numberHolder.cModifier));

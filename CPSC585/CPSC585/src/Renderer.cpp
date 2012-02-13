@@ -494,6 +494,8 @@ void Renderer::drawEntity(Entity &entity)
 
 	btScalar* matrix = entity.getGLMatrix();
 
+	//printf("(%f, %f, %f)\n", matrix[0], matrix[1]
+
 	glMultMatrixf(matrix);
 
 	for(int i = 0; i < (int)entity.renderObject->mNumMeshes; i++)

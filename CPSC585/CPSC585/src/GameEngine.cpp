@@ -110,7 +110,7 @@ void process_events()
 			{
 				if(entManager->numCars() > 0)
 				{
-					//entManager->resetCarPosition(0, btVector3(0, 1.5, 0));
+					// resetCar(index of car, position we want to reset to)
 					entManager->resetCar(0, btVector3(0, 3, 0));
 				}
 			}
@@ -133,59 +133,6 @@ void process_events()
 
 }
 
-
-////////////////////////////////////////////////////////////////////////
-// HACKED SHAPE FACTORY IN WORKS
-
-btCollisionShape* createCarPhysicsObject()
-{
-	return new btBoxShape(btVector3(5, 2.5, 2.5));
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-// HACKED
-btCollisionShape* createTrack(const Entity* ent)
-{
-	btCollisionShape* objShape;
-
-	// Generate the physics representation
-	if(ent->renderObject->HasMeshes())
-	{
-		// generate triangle mesh for bullet
-		btTriangleMesh* bttm = new btTriangleMesh();
-		
-		for(unsigned int i = 0; i < ent->renderObject->mNumMeshes; i++)
-		{
-			aiMesh* mesh = ent->renderObject->mMeshes[i];
-		
-			for(unsigned int j = 0; j < mesh->mNumFaces; j++)
-			{
-				
-				aiFace* face = &mesh->mFaces[j];	// get a face
-		
-				int index0 = face->mIndices[0];
-				int index1 = face->mIndices[1];
-				int index2 = face->mIndices[2];
-
-				aiVector3D* v0 = &mesh->mVertices[index0];
-				aiVector3D* v1 = &mesh->mVertices[index1];
-				aiVector3D* v2 = &mesh->mVertices[index2];
-
-				btVector3 btv0 = btVector3(v0->x, v0->y, v0->z);
-				btVector3 btv1 = btVector3(v1->x, v1->y, v1->z);
-				btVector3 btv2 = btVector3(v2->x, v2->y, v2->z);
-
-				bttm->addTriangle(btv0, btv1, btv2, false);	// addTriangle(v0, v1, v2, removeDupes)
-			}
-		}
-
-		objShape = new btBvhTriangleMeshShape(bttm, true, true);
-	}
-
-	return objShape;
-}
-
-
 // Engine Main
 int main(int argc, char** argv)
 {	
@@ -205,6 +152,7 @@ int main(int argc, char** argv)
 	
 	controller1.initSDLJoystick();	//Init SDL joystick stuff -KD
 	
+	// need to fix this so that we can maybe allow the user to know they need to plug in a controller
 	if (!controller1.initialize(0)){
 		/* SDL_Delay(100);
 		while(!controller1.initialize(0)){
@@ -219,52 +167,27 @@ int main(int argc, char** argv)
 	// //RENDERER DEBUG TESTING
 	
 	// Create all the enitities.
-	Car *car1 = new Car();
-	Track* ground = new Track();
-	Waypoint* waypoint = new Waypoint();
-
 	btScalar carMass = 2.0;
 	
-	btTransform carT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3, 0));
+	btTransform carT1 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, 0));
 
-	btScalar groundMass = 0.0;
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
-	///////////////////////////////////////////////////////////////////////////////////////
-	// EXTREME HACK HERE
-	// I'll need to create a factory for the physics objects later so we can build almost any shape we need
+	btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 0));
+	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(3.5, 3.5, 0));
+	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 3.5));
 
-	// CAR1
-	car1->initRenderObject("model/box.3ds");
-	btCollisionShape* carShape1 = createCarPhysicsObject();
-	car1->initPhysicsObject(carShape1, carMass, carT1);
-	
-	// GROUND
-	ground->initRenderObject("model/groundBox.lwo");
-	btCollisionShape* groundShape = createTrack(ground);
-	ground->initPhysicsObject(groundShape, groundMass, groundT);
+	entManager->createCar("model/box.3ds", carMass, carT1);
+	entManager->createTrack("model/groundBox.lwo", groundT);
+	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
+	entManager->createWaypoint("model/waypoint.obj", wayPointT2);
+	entManager->createWaypoint("model/waypoint.obj", wayPointT3);
 
-	//Add the entities and physic representations
-	entManager->addCar(car1);
-	entManager->addTrack(ground);
-	ph->addEntity(*car1);
-	ph->addEntity(*ground);
-
-	//WAYPOINT
-	waypoint->initRenderObject("model/waypoint.obj");
-	btCollisionShape* waypointShape = createTrack(waypoint);
-	btTransform wayPointT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 0));
-	btScalar temp = btScalar(0);
-	waypoint->initPhysicsObject(waypointShape, temp, wayPointT); 
-	entManager->addWaypoint(waypoint);	
-
-	///* Inialize Observers used in entities */
-	car1->initObservers();
-
-	SDL_Surface* carTex1 = ren->loadIMG("model/box.png");
-	GLuint ctex1 = 0;
-	ctex1 = ren->initTexture(carTex1);
-	SDL_FreeSurface(carTex1);
+	// debug texture
+	SDL_Surface* carTex1 = ren->loadIMG("model/box.png");	// load the image into a surface
+	GLuint ctex1 = 0;	// pointer to texture in GPU
+	ctex1 = ren->initTexture(carTex1);	// initializes the pointer to texture in GPU
+	SDL_FreeSurface(carTex1);	// we can free the texture one it's in GPU memory
 
 	//Set inital game time
 	Uint32 currentTime = SDL_GetTicks();
@@ -272,15 +195,19 @@ int main(int argc, char** argv)
 	int frameCount = 0;
 	int counter = 1;
 
+
 	//Initialize camera settings.
-	btVector3 camOffset = car1->getNormal()*10 + car1->getTangent()*15;
-	btVector3 camLookAt = car1->getPosition() + btVector3(0, 0, 0);
+	btVector3 car1N = entManager->getCar(0)->getNormal()*10;
+	btVector3 car1T = entManager->getCar(0)->getTangent()*30;
+	
+	btVector3 camOffset = car1N + car1T;
+	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
 
 	// game loop
 	while(1)
 	{		
-		btVector3 camLookAt = car1->getPosition() + btVector3(0, 0, 0);
+		camLookAt = entManager->getCar(0)->getPosition();
 	
 		camera1.setUpCamera(camLookAt);
 		
@@ -306,9 +233,6 @@ int main(int argc, char** argv)
 		ph->debugDraw();
 		ren->glEnableLighting();
 
-		////////////////////////////////////////////////////////
-		// HACKED DRAWING need to fix this
-
 		/* Following draws the springs for the car */
 		for(int i = 0; i < entManager->numCars(); i++)
 		{
@@ -318,6 +242,7 @@ int main(int argc, char** argv)
 			ren->drawEntity(*temp);
 			ren->textureOff();
 			
+			// for each wheel we need to draw a line
 			for(int j = 0; j < 4; j++)
 			{
 				//Spring aWheel = temp->wheels[j];
@@ -331,6 +256,7 @@ int main(int argc, char** argv)
 
 			}
 		}
+		
 		//Draw the waypoints.
 		for(int i = 0; i < entManager->numWaypoints(); i++)
 		{
@@ -340,7 +266,6 @@ int main(int argc, char** argv)
 		// Draw the track.
 		if(entManager->getTrack())
 		{
-
 			ren->drawEntity(*(entManager->getTrack()));
 		}
 		
@@ -366,9 +291,6 @@ int main(int argc, char** argv)
 		
 		ren->glDisable2D();
 
-
-		
-		////ren.draw();		// draw things to the buffer
 		ren->updateGL();	// update the screen
 	}
 

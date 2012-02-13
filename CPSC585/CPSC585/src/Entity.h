@@ -27,6 +27,9 @@
 class Entity
 {
 private:
+	//btTransform transform;
+
+
 //	bool isInit;
 //	int loaded;
 
@@ -59,12 +62,13 @@ public:
 	void move(float x, float y, float z);
 	void move(const btVector3 &newPos);
 	void rotate(const btVector3 &axis, int deg);
-	btScalar* getGLMatrix();
+	
+	virtual btScalar* getGLMatrix();
 
-	btVector3 getPosition();
-	btVector3 getTangent();
-	btVector3 getNormal();
-	btVector3 getBinormal();
+	virtual btVector3 getPosition();
+	virtual btVector3 getTangent();
+	virtual btVector3 getNormal();
+	virtual btVector3 getBinormal();
 
 	//bool loadObj(char* filename, btScalar &mass, btTransform &trans);
 	
