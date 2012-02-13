@@ -63,7 +63,7 @@ int TextureManager::loadTexture(std::string filename, std::string name)
 		glTexImage2D(GL_TEXTURE_2D, 0, nChannel, image->w, image->h, 0, texType, GL_UNSIGNED_BYTE, image->pixels);
 		glBindTexture(GL_TEXTURE_2D, 0);  // unbind our texture
 		
-		texman.insert(pair<string, int>(filename, texID));
+		texman.insert(pair<string, int>(name, texID));
 
 		// free up the image since we already have it in GPU memory
 		if(image)
@@ -109,10 +109,8 @@ GLuint TextureManager::getTexture(std::string key)
 	int counter = texman.count(key);
 	
 	if(counter > 0)
-	{
-		GLuint texID = texman.find(key)->second;
-		
-		return texID;
+	{	
+		return texman.find(key)->second;
 	}
 	else
 	{
