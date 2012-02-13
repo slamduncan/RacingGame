@@ -23,6 +23,7 @@
 			ConfigurationType="4"
 			CharacterSet="2"
 			ManagedExtensions="0"
+			BuildLogFile="$(IntDir)\tinyXMLBuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -98,6 +99,7 @@
 			CharacterSet="2"
 			ManagedExtensions="0"
 			WholeProgramOptimization="1"
+			BuildLogFile="$(IntDir)\tinyXMLBuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"

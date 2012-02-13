@@ -177,11 +177,7 @@ int main(int argc, char** argv)
 	entManager->createWaypoint("model/waypoint.obj", wayPointT3);
 
 
-	// debug texture
-	SDL_Surface* carTex1 = ren->loadIMG("model/box.png");	// load the image into a surface
-	GLuint ctex1 = 0;	// pointer to texture in GPU
-	ctex1 = ren->initTexture(carTex1);	// initializes the pointer to texture in GPU
-	SDL_FreeSurface(carTex1);	// we can free the texture once it's in GPU memory
+	ren->genTexture("model/box.png", "car1");
 
 	//Set inital game time
 	Uint32 currentTime = SDL_GetTicks();
@@ -232,7 +228,7 @@ int main(int argc, char** argv)
 		{
 			Car* temp = entManager->getCarList()->at(i);
 			
-			ren->textureOn(ctex1);
+			ren->textureOn(ren->getTexture("car1"));
 			ren->drawEntity(*temp);
 			ren->textureOff();
 			
