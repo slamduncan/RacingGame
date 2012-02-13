@@ -13,7 +13,7 @@ Renderer::Renderer()
 	height = 720;
 	bpp = 0;
 
-	tm = TextureManager::initialize();
+	tm = TextureManager::getInstance();
 	//TextureManager::initialize();	// initialize our texture manager
 }
 
@@ -152,9 +152,8 @@ int Renderer::initGL()
     }
 	std::cout << "GLEW initialized" << std::endl;
 	
-	GLenum fboCheck = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+	GLenum fboCheck = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);	// check if fbos are supported
 		
-	// error if it isn't
 	if (fboCheck != GL_FRAMEBUFFER_COMPLETE_EXT)
 	{
 		std::cout << "FBO failed to initialize" << std::endl;
@@ -171,7 +170,8 @@ int Renderer::initGL()
 
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity( );
-    gluPerspective( 60.0, ratio, 1.0, 1024.0 );	// need to fix this to change fov on the fly
+    // horizontal fov, vertical fov, min view distance, max view distance
+	gluPerspective( 60.0, ratio, 1.0, 1024.0 );	// need to fix this to change fov on the fly
 	glMatrixMode(GL_MODELVIEW);	// switch back to model view
 
 	glDisable2D();
@@ -206,7 +206,6 @@ int Renderer::initFont()
 
 /*
 *	Closes SDL/window and quits the program?
-*
 */
 void Renderer::quitSDL()
 {
@@ -223,6 +222,17 @@ SDL_Surface* Renderer::loadIMG(string filename)
 
 	return image;
 }
+
+void Renderer::genTexture(std::string filename, std::string key)
+{
+	tm->loadTexture(filename, key);
+}
+
+GLuint Renderer::getTexture(std::string key)
+{
+	return tm->getTexture(key);
+}
+
 GLuint Renderer::initTexture(SDL_Surface* image)
 {
 	GLuint texID = 0;

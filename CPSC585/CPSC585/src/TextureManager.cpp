@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 
-//using namespace std;
+using namespace std;
 
 TextureManager* TextureManager::instance = 0;
 
@@ -62,12 +62,8 @@ int TextureManager::loadTexture(std::string filename, std::string name)
 		//glTexParameterf(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
 		glTexImage2D(GL_TEXTURE_2D, 0, nChannel, image->w, image->h, 0, texType, GL_UNSIGNED_BYTE, image->pixels);
 		glBindTexture(GL_TEXTURE_2D, 0);  // unbind our texture
-
-		//textureMap.insert(name, texID);
-
-		//textureMap.insert(pair<string,GLuint>(string("test"),200) );
-
-		//textureMap.insert(std::pair<std::string, GLuint>("test", 32432));
+		
+		texman.insert(pair<string, int>(filename, texID));
 
 		// free up the image since we already have it in GPU memory
 		if(image)
@@ -106,4 +102,20 @@ int TextureManager::getNumTex()
 int TextureManager::getTexID(int index)
 {
 	return 0;
+}
+
+GLuint TextureManager::getTexture(std::string key)
+{
+	int counter = texman.count(key);
+	
+	if(counter > 0)
+	{
+		GLuint texID = texman.find(key)->second;
+		
+		return texID;
+	}
+	else
+	{
+		return 0;
+	}
 }

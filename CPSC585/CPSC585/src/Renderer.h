@@ -63,6 +63,10 @@ public:
 	}
 
 	SDL_Surface* loadIMG(std::string filename);
+	void Renderer::genTexture(std::string filename, std::string key);
+	GLuint getTexture(std::string key);
+	
+	
 	GLuint initTexture(SDL_Surface* image);
 	void textureOn(GLuint texID);
 	void textureOff();

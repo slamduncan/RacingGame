@@ -42,8 +42,6 @@ EventSystemHandler* evSys = EventSystemHandler::getInstance();
 //Entity manager
 EntityManager* entManager = EntityManager::getInstance();
 
-
-
 /*
 *	Handles what to do when key has been pressed
 *
@@ -182,6 +180,7 @@ int main(int argc, char** argv)
 	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 	entManager->createWaypoint("model/waypoint.obj", wayPointT2);
 	entManager->createWaypoint("model/waypoint.obj", wayPointT3);
+
 
 	// debug texture
 	SDL_Surface* carTex1 = ren->loadIMG("model/box.png");	// load the image into a surface
