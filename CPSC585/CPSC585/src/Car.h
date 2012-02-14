@@ -13,6 +13,8 @@ class Car : public Entity
 {
 
 public:
+	btRigidBody* chassis;
+	
 	btScalar kVal;
 	
 	//Variable added to test the new spring system.

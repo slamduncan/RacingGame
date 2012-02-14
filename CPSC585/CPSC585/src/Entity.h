@@ -11,6 +11,7 @@
 #include "LinearMath/btQuaternion.h"
 #include "LinearMath/btTransform.h"
 #include "LinearMath/btMatrix3x3.h"
+#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 #include "BulletCollision/CollisionShapes/btTriangleMesh.h"
 #include "BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h"
 #include "BulletCollision/Gimpact/btGImpactShape.h"
@@ -43,11 +44,14 @@ public:
 	//btScalar mass;
 
 
+
+
 	// render model (objloader)
 	const aiScene* renderObject;
 
 	// physics model (bullet)
-	btRigidBody* physicsObject;
+	//btRigidBody* physicsObject;
+	btCollisionObject* physicsObject;
 
 	//Observer
 	virtual void initObservers() = 0;

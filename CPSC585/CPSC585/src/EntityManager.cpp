@@ -74,7 +74,7 @@ void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
 
 	addCar(car);
 
-	Physics::Inst()->addEntity(*car);
+	Physics::Inst()->addRigidBody(*car);
 
 	//phyEngine->addEntity(*car);
 }
@@ -203,10 +203,10 @@ void EntityManager::resetCar(int index, btVector3 &position)
 	resetCarPosition(index, position);
 	resetCarOrientation(index);
 
-	carList[index]->physicsObject->clearForces();
+	carList[index]->chassis->clearForces();
 
-	carList[index]->physicsObject->setLinearVelocity(btVector3(0, 0, 0));
-	carList[index]->physicsObject->setAngularVelocity(btVector3(0, 0, 0));
+	carList[index]->chassis->setLinearVelocity(btVector3(0, 0, 0));
+	carList[index]->chassis->setAngularVelocity(btVector3(0, 0, 0));
 }
 
 btAlignedObjectArray<Car*>* EntityManager::getCarList()

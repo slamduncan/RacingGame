@@ -57,12 +57,24 @@ void Physics::setGravity(const btVector3 &gravityIn)
 
 void Physics::addEntity(const Entity &ent)
 {
-	dynamicsWorld->addRigidBody(ent.physicsObject);
+	//dynamicsWorld->addRigidBody(btRigidBody::upcast(ent.physicsObject));
+	dynamicsWorld->addCollisionObject(ent.physicsObject);
 }
 
 void Physics::removeEntity(const Entity &ent)
 {
-	dynamicsWorld->removeRigidBody(ent.physicsObject);
+	//dynamicsWorld->removeRigidBody(btRigidBody::upcast(ent.physicsObject));
+	dynamicsWorld->removeCollisionObject(ent.physicsObject);
+}
+
+void Physics::addRigidBody(const Entity &entity)
+{
+	dynamicsWorld->addRigidBody(btRigidBody::upcast(entity.physicsObject));
+}
+
+void Physics::removeRigidBody(const Entity &entity)
+{
+	dynamicsWorld->removeRigidBody(btRigidBody::upcast(entity.physicsObject));
 }
 
 void Physics::setDebugDrawer(btIDebugDraw *debugDrawer)
