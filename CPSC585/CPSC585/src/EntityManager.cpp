@@ -70,7 +70,8 @@ void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
 
 	car->initPhysicsObject(boxShape, mass, trans);
 
-	car->initObservers();
+	if (carList.size() < 1)
+		car->initObservers();
 
 	addCar(car);
 

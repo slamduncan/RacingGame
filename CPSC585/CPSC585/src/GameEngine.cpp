@@ -21,13 +21,14 @@
 #include <windows.h>
 #include "InputMapper.h"
 #include "Camera.h"
+#include "AIHandler.h"
 
 using namespace std;
 
 // Other init
 // ie. Physics, AI, Renderer, Sound, Container for ents?
 Renderer* ren = Renderer::getInstance();
-
+AIHandler* ai = AIHandler::getInstance();
 Physics* ph = Physics::Inst();
 
 //Controller, camera, eventSystem handle.
@@ -163,6 +164,7 @@ int main(int argc, char** argv)
 	btScalar carMass = 2.0;
 	
 	btTransform carT1 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, 0));	
+	btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15, 3, 0));	
 
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
@@ -171,6 +173,7 @@ int main(int argc, char** argv)
 	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 3.5));
 
 	entManager->createCar("model/box.3ds", carMass, carT1);	
+	entManager->createCar("model/box.3ds", carMass, carT2);	
 	entManager->createTrack("model/groundBox.lwo", groundT);
 	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 	entManager->createWaypoint("model/waypoint.obj", wayPointT2);
@@ -213,6 +216,7 @@ int main(int argc, char** argv)
 		controller1.emitRightAnalog();
 
 		// AI - Doesn't exist yet.....
+		ai->generateNextMove();
 
 		// Render
 		ren->clearGL();	// clear the screen

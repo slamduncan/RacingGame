@@ -35,6 +35,7 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	Car::length = btScalar(10.0f);
 	gravity = Physics::Inst()->getGravity();
 	restDisplacement = btScalar(2.0f);
+	nextWaypoint = 0;
 }
 
 void Car::initObservers()
@@ -203,3 +204,6 @@ void Car::observeVariables(ReloadEvent *e){
 		newWheels[i].setKModifier(btScalar(e->numberHolder.kModifier));
 	}
 }
+
+int Car::getNextWaypointIndex(){return nextWaypoint;}
+void Car::setNextWaypointIndex(int in){ nextWaypoint = in;}
