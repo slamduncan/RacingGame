@@ -53,7 +53,7 @@ Shader::Shader()
 	p = 0;
 }
 
-Shader::Shader(char* frag, char* vert)
+Shader::Shader(char* vert, char* frag)
 {
 	const char* vSource = textFileRead(vert);
 	const char* fSource = textFileRead(frag);
@@ -79,6 +79,7 @@ Shader::~Shader()
 
 }
 
+// returns the address of a uniform give it's name
 GLint Shader::getUniform(const char* name)
 {
 	GLint loc = glGetUniformLocation(p, name);
@@ -86,6 +87,7 @@ GLint Shader::getUniform(const char* name)
 	return loc;
 }
 
+// bind the shader to opengl
 void Shader::turnShadersOn()
 {	
 	glUseProgram(p);

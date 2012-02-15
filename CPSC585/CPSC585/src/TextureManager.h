@@ -36,7 +36,14 @@ public:
 
 		return instance;
 	}
-	
+
+	enum IDTYPE
+	{
+		TEXTURE = 0,
+		FBO,
+		VBO
+	};
+
 
 	int loadTexture(std::string filename, std::string name);
 	int loadTextureFromImage();

@@ -17,10 +17,13 @@ private:
 	int textFileWrite(char* filename, char *s);
 
 public:
+	// v - vertex
+	// f - fragment
+	// p - program
 	GLuint v, f, p;
 	
 	Shader();
-	Shader(char* frag, char* vert);
+	Shader(char* vert, char* frag);
 	~Shader();
 
 	GLint getUniform(const char* name); 

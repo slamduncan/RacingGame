@@ -213,6 +213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\FBO.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\ForwardForceEvent.cpp"
 				>
 			</File>
@@ -254,6 +258,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Shader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\ShaderManager.cpp"
 				>
 			</File>
 			<File
@@ -339,6 +347,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\FBO.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\ForwardForceEvent.h"
 				>
 			</File>
@@ -396,6 +408,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Shader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\ShaderManager.h"
 				>
 			</File>
 			<File

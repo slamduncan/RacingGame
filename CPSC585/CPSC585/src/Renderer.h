@@ -21,7 +21,7 @@
 #include "LinearMath/btTransform.h"
 #include "LinearMath/btIDebugDraw.h"
 
-#include "Shader.h"
+#include "ShaderManager.h"
 #include "Entity.h"
 #include "TextureManager.h"
 
