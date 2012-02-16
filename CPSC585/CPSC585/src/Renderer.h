@@ -16,15 +16,16 @@
 #include "SDL_ttf.h"
 #include "SDL_image.h"
 
-
+#include "LinearMath/btScalar.h"
 #include "LinearMath/btVector3.h"
+#include "LinearMath/btAlignedObjectArray.h"
 #include "LinearMath/btTransform.h"
 #include "LinearMath/btIDebugDraw.h"
 
 #include "ShaderManager.h"
-#include "Entity.h"
+#include "EntityManager.h"
 #include "TextureManager.h"
-
+#include "Light.h"
 #include "Camera.h"
 
 
@@ -47,7 +48,7 @@ private:
 
 	const SDL_VideoInfo* info;	// pointer to video info for screen
 
-	Shader shader;	// shader for drawing
+	btAlignedObjectArray<Light> lights;
 
 public:
 

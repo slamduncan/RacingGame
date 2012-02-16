@@ -13,6 +13,10 @@ Renderer::Renderer()
 	height = 720;
 	bpp = 0;
 
+	Light light0 = Light(btVector3(50, 50, 50));
+
+	lights.push_back(light0);
+
 	tm = TextureManager::getInstance();
 	//TextureManager::initialize();	// initialize our texture manager
 }
@@ -37,7 +41,7 @@ bool Renderer::init()
 {
 	int a = initSDL();
 	int b = initGL();
-	int c =initFont();
+	int c = initFont();
 
 	if(a+b+c != 0)
 	{
@@ -138,7 +142,7 @@ int Renderer::initGL()
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);         // set the diffuse color for the light
     glLightfv(GL_LIGHT0, GL_SPECULAR, spec);			// set the specular color of the light
     glLightfv(GL_LIGHT0, GL_AMBIENT, amb);			// set the specular color of the light
-	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);        // set the position of the light
+	glLightfv(GL_LIGHT0, GL_POSITION, lights[0].getPosition());        // set the position of the light
 
 
 	glEnable(GL_COLOR_MATERIAL);						// allow shading for colored material
