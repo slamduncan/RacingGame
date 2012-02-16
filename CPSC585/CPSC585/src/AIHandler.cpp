@@ -2,9 +2,10 @@
 
 AIHandler* AIHandler::instance = 0;
 
-AIHandler::AIHandler(){
+AIHandler::AIHandler() : reloadObserver(this, &AIHandler::reloadVariables){
 	waypoints = EntityManager::getInstance()->getWaypointList();
 	cars = EntityManager::getInstance()->getCarList();
+	turningModifier = 1.0;
 }
 
 void AIHandler::generateNextMove(){
@@ -15,8 +16,16 @@ void AIHandler::generateNextMove(){
 
 		btVector3 carPos =  c->getPosition();
 		btVector3 wayPos = w->getPosition();
-		btScalar angle = carPos.angle(wayPos);
-		c->observeRotation(new RotationEvent(btQuaternion(c->getNormal(), -angle)));
+		btVector3 tan = c->getTangent();
+		btVector3 toWaypoint = wayPos - carPos;		
+		btVector3 angleRot = toWaypoint -  tan.normalized();
+		btScalar k = angleRot.dot(c->getBinormal());
+
+		c->observeRotation(new RotationEvent(btQuaternion(0, k*turningModifier,0,0)));		
 		int p = 0;
 	}
+}
+
+void AIHandler::reloadVariables(ReloadEvent *e){
+	turningModifier = e->numberHolder.aiInfo.rotateModifier;
 }

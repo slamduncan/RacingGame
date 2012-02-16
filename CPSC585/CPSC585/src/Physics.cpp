@@ -99,5 +99,5 @@ btDiscreteDynamicsWorld* Physics::getDiscreteDynamicsWorld(){
 btVector3 Physics::getGravity(){return gravity;}
 
 void Physics::updateVariables(ReloadEvent *e){
-	setGravity(e->numberHolder.gravity);
+	setGravity(e->numberHolder.physicsInfo.gravity);
 }

@@ -47,5 +47,5 @@ InputMapper::InputMapper() : analogObserver(this, &InputMapper::updateRotation),
 }
 
 void InputMapper::updateVariables(ReloadEvent *e){
-	rotationModifier = e->numberHolder.rotateModifier;
+	rotationModifier = e->numberHolder.controllerInfo.rotateModifier;
 }

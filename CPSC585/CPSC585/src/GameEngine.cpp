@@ -169,7 +169,7 @@ int main(int argc, char** argv)
 
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
-	btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 0));
+	btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, -2));
 	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(3.5, 3.5, 0));
 	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 3.5));
 
@@ -177,8 +177,8 @@ int main(int argc, char** argv)
 	entManager->createCar("model/box.3ds", carMass, carT2);	
 	entManager->createTrack("model/groundBox.lwo", groundT);
 	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
-	entManager->createWaypoint("model/waypoint.obj", wayPointT2);
-	entManager->createWaypoint("model/waypoint.obj", wayPointT3);
+	//entManager->createWaypoint("model/waypoint.obj", wayPointT2);
+	//entManager->createWaypoint("model/waypoint.obj", wayPointT3);
 
 
 	ren->genTexture("model/box.png", "car1");

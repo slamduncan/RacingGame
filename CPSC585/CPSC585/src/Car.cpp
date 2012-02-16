@@ -200,8 +200,8 @@ void Car::setUpWheelStuff()
 /* This function allows for dynamic modification of the c and k values for the wheels. */
 void Car::observeVariables(ReloadEvent *e){
 	for (int i = 0; i < 4; i++){
-		newWheels[i].setCModifier(btScalar(e->numberHolder.cModifier));
-		newWheels[i].setKModifier(btScalar(e->numberHolder.kModifier));
+		newWheels[i].setCModifier(btScalar(e->numberHolder.physicsInfo.cModifier));
+		newWheels[i].setKModifier(btScalar(e->numberHolder.physicsInfo.kModifier));
 	}
 }
 

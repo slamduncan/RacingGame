@@ -19,7 +19,37 @@ void ProjectNumbers::readController(){
 			{
 				pElem = hDoc.FirstChildElement().FirstChild().Element();
 				if (pElem) 
-					pElem->QueryFloatAttribute("value", &rotateModifier);	
+					pElem->QueryFloatAttribute("value", &controllerInfo.rotateModifier);	
+			}
+			
+		}
+		else
+		{
+			printf("Error: Cannot open XML file\n");
+		}
+}
+
+
+void ProjectNumbers::readAI(){
+		std::ifstream infile("../CPSC585/magicNumbers/Controller.xml");
+
+		if(infile)
+		{	
+			printf("AI file found\n");
+			
+			TiXmlDocument doc("../CPSC585/magicNumbers/AI.xml");
+			//TiXmlDocument doc = TiXmlDocument("../CPSC585/magicNumbers/Controler.xml");
+			doc.LoadFile();
+		
+			TiXmlHandle hDoc(&doc);
+			TiXmlElement* pElem;
+			TiXmlHandle hRoot(0);				
+
+			//Controller: Turning Constant
+			{
+				pElem = hDoc.FirstChildElement().FirstChild().Element();
+				if (pElem) 
+					pElem->QueryFloatAttribute("value", &aiInfo.rotateModifier);	
 			}
 			
 		}
@@ -49,13 +79,13 @@ void ProjectNumbers::readPhysics(){
 			{
 				pElem = hDoc.FirstChildElement().ChildElement(0).Element();				
 				if (pElem) 
-					pElem->QueryFloatAttribute("value", &kModifier);	
+					pElem->QueryFloatAttribute("value", &physicsInfo.kModifier);	
 			}
 			//Phsyics: damping Value
 			{
 				pElem = hDoc.FirstChildElement().ChildElement(1).Element();
 				if(pElem)
-					pElem->QueryFloatAttribute("value", &cModifier);
+					pElem->QueryFloatAttribute("value", &physicsInfo.cModifier);
 			}
 			//Physics: Gravity Value
 			{
@@ -66,7 +96,7 @@ void ProjectNumbers::readPhysics(){
 					pElem->QueryFloatAttribute("xComponent", &x); 
 					pElem->QueryFloatAttribute("yComponent", &y);
 					pElem->QueryFloatAttribute("zComponent", &z);
-					gravity = btVector3(x, y, z);
+					physicsInfo.gravity = btVector3(x, y, z);
 				}
 
 			}

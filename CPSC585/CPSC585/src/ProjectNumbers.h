@@ -12,11 +12,19 @@
 class ProjectNumbers {
 
 public:
+	struct controller{		
+		float rotateModifier;
+	} controllerInfo;
 
-	float rotateModifier;
-	float cModifier;
-	float kModifier;
-	btVector3 gravity;
+	struct physics{
+		float cModifier;
+		float kModifier;
+		btVector3 gravity;
+	} physicsInfo;
+
+	struct AI{
+		float rotateModifier;
+	} aiInfo;
 
 	ProjectNumbers(){readVariablesIn();}
 
@@ -28,6 +36,7 @@ public:
 
 	void readPhysics();
 	void readController();
+	void readAI();
 
 };
 #endif
