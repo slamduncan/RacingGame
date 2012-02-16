@@ -348,6 +348,7 @@ bool InputController::isButtonDown(Button in){
 		case B_button: {return B;}
 		case X_button: {return X;}
 		case Y_button: {return Y;}
+		case R_Bump: {return rightBump;}
 	}
 	return false;
 }

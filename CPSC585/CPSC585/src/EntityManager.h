@@ -54,6 +54,7 @@ public:
 	};
 
 	Car* getCar(int index);
+	Waypoint* getWaypoint(int index);
 
 
 	void createCar(char* path, btScalar &mass, btTransform &trans);

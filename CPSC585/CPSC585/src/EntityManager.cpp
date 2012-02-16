@@ -56,6 +56,13 @@ Car* EntityManager::getCar(int index)
 
 }
 
+Waypoint* EntityManager::getWaypoint(int index)
+{
+	assert(index >= 0 && index < numWaypoints());
+
+	return waypointList[index];
+}
+
 void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
 {
 	btScalar width = btScalar(10.0f);

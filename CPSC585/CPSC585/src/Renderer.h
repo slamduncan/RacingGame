@@ -34,6 +34,7 @@ class Renderer : public btIDebugDraw
 private:
 	static Renderer *instance;
 	TextureManager* tm;
+	EntityManager* em;
 
 	Renderer();	
 	
@@ -74,6 +75,9 @@ public:
 	void framebufferOn(GLuint fbID);
 	void framebufferOff();
 
+	void shaderOn(Shader &s);
+	void shaderOff(Shader &s);
+
 
 	bool init();
 	int initSDL();
@@ -85,8 +89,9 @@ public:
 	void setCamera(const btVector3& pos, const btVector3& lookAt); 
 	void setCamera(const Camera& cam);
 
-	void draw();
+	void draw(Shader &s);
 	void drawEntity(Entity &entity);
+	void drawAll();
 
 	void drawPlane(float height);
 	void drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width = 1.0);

@@ -18,6 +18,7 @@ Renderer::Renderer()
 	lights.push_back(light0);
 
 	tm = TextureManager::getInstance();
+	em = EntityManager::getInstance();
 	//TextureManager::initialize();	// initialize our texture manager
 }
 
@@ -27,10 +28,6 @@ Renderer::~Renderer()
 	TTF_CloseFont(debugFont);
 	TTF_Quit();
 
-	if(tm != NULL)
-	{
-		delete tm;
-	}
 	if(instance != NULL)
 	{
 		delete instance;
@@ -290,6 +287,48 @@ void Renderer::framebufferOff()
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 
+void Renderer::shaderOn(Shader &s)
+{
+	s.turnShadersOn();
+}
+
+void Renderer::shaderOff(Shader &s)
+{
+	s.turnShadersOff();
+}
+
+void Renderer::draw(Shader &s)
+{
+	shaderOn(s);
+
+	drawAll();
+
+	shaderOff(s);
+}
+
+void Renderer::drawAll()
+{
+	// draw the track
+	drawEntity(*(em->getTrack()));
+
+	// draw all cars
+	for(int i = 0; i < em->numCars(); i++)
+	{
+		drawEntity(*(em->getCar(i)));
+	}
+
+
+	// draw powerups
+
+	// draw obstacles
+
+	// debug draw waypoints
+	for(int i = 0; i < em->numWaypoints(); i++)
+	{
+		drawEntity(*(em->getWaypoint(i)));
+	}
+}
+
 
 /*
 *	Outputs text to the screen using textures
@@ -445,6 +484,7 @@ void Renderer::setCamera(const Camera& cam){
 /*
 *	draws a white box centered on the screen
 */
+/*
 void Renderer::draw()
 {
 	glPushMatrix();
@@ -470,7 +510,7 @@ void Renderer::draw()
 
 	glDisable2D();
 }
-
+*/
 void Renderer::drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width)
 {
 	assert(width >= 1);

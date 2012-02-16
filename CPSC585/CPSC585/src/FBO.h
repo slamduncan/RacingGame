@@ -2,6 +2,7 @@
 #define FBO_H
 
 #include "glew.h"
+#include <stdio.h>
 
 class FBO
 {

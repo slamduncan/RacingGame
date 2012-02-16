@@ -40,6 +40,10 @@ EventSystemHandler* evSys = EventSystemHandler::getInstance();
 //Entity manager
 EntityManager* entManager = EntityManager::getInstance();
 
+// TESTING AREA
+bool depthShader = false;
+
+
 /*
 *	Handles what to do when key has been pressed
 *
@@ -93,7 +97,8 @@ void process_events()
 			fprintf(stderr, "BUTTONS HOW DO THEY WORK\n");
 			controller1.update(event);
 
-			if (controller1.isBDown()){
+			if (controller1.isBDown())
+			{
 				
 			}
 			if(controller1.isADown())
@@ -113,6 +118,18 @@ void process_events()
 				if(entManager->numCars() > 0)
 				{
 					entManager->resetCarOrientation(0);
+				}
+			}
+			if(controller1.isButtonDown(controller1.R_Bump))
+			{
+				printf("in here\n");
+				if(depthShader)
+				{
+					depthShader = false;
+				}
+				else
+				{
+					depthShader = true;
 				}
 			}
 
@@ -198,6 +215,11 @@ int main(int argc, char** argv)
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
 
+
+	Shader test = Shader("shader/basic.vert", "shader/depth.frag");
+	test.debug();
+
+
 	// game loop
 	while(1)
 	{		
@@ -228,7 +250,18 @@ int main(int argc, char** argv)
 		ph->debugDraw();
 		ren->glEnableLighting();
 
-		/* Following draws the springs for the car */
+		if(depthShader)
+		{
+			ren->draw(test);
+		}
+		else
+		{
+			ren->drawAll();
+		}
+		//ren->draw(test);
+
+/*
+		//Following draws the springs for the car
 		for(int i = 0; i < entManager->numCars(); i++)
 		{
 			Car* temp = entManager->getCarList()->at(i);
@@ -263,7 +296,7 @@ int main(int argc, char** argv)
 		{
 			ren->drawEntity(*(entManager->getTrack()));
 		}
-		
+*/		
 		ren->glEnable2D();
 		frameCount++;
 
