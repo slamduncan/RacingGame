@@ -6,6 +6,8 @@ AIHandler::AIHandler() : reloadObserver(this, &AIHandler::reloadVariables){
 	waypoints = EntityManager::getInstance()->getWaypointList();
 	cars = EntityManager::getInstance()->getCarList();
 	turningModifier = 1.0;
+	forwardModifier = 1.0;
+	reloadObserver.init(EventTypes::RELOAD_VARIABLES);
 }
 
 void AIHandler::generateNextMove(){
@@ -19,13 +21,21 @@ void AIHandler::generateNextMove(){
 		btVector3 tan = c->getTangent();
 		btVector3 toWaypoint = wayPos - carPos;		
 		btVector3 angleRot = toWaypoint -  tan.normalized();
-		btScalar k = angleRot.dot(c->getBinormal());
-
-		c->observeRotation(new RotationEvent(btQuaternion(0, k*turningModifier,0,0)));		
+		btScalar turningScalar = angleRot.dot(c->getBinormal());
+		btScalar distance = toWaypoint.length();
+		btScalar forwardForce = btScalar(-distance*forwardModifier);
+		
+		RotationEvent* re = new RotationEvent(btQuaternion(0, turningScalar*turningModifier,0,0));
+		c->observeRotation(re);		
+		delete re;
+		ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0);
+		c->observeForwardForce(ffe);
+		delete ffe;
 		int p = 0;
 	}
 }
 
 void AIHandler::reloadVariables(ReloadEvent *e){
 	turningModifier = e->numberHolder.aiInfo.rotateModifier;
+	forwardModifier = e->numberHolder.aiInfo.drivingModifier;
 }

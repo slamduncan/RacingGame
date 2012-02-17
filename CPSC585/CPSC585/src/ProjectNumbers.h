@@ -24,14 +24,16 @@ public:
 
 	struct AI{
 		float rotateModifier;
+		float drivingModifier;
 	} aiInfo;
 
-	ProjectNumbers(){readVariablesIn();}
+	ProjectNumbers(){}//readVariablesIn();}
 
 
 	void readVariablesIn(){
 		readPhysics();
 		readController();
+		readAI();
 	}
 
 	void readPhysics();

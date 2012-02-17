@@ -18,6 +18,7 @@ private:
 	AIHandler();
 	MethodObserver<ReloadEvent, AIHandler> reloadObserver;
 	float turningModifier;
+	float forwardModifier;
 
 public:
 	void reloadVariables(ReloadEvent *e);

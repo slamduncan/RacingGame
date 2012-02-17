@@ -31,7 +31,7 @@ void ProjectNumbers::readController(){
 
 
 void ProjectNumbers::readAI(){
-		std::ifstream infile("../CPSC585/magicNumbers/Controller.xml");
+		std::ifstream infile("../CPSC585/magicNumbers/AI.xml");
 
 		if(infile)
 		{	
@@ -45,11 +45,17 @@ void ProjectNumbers::readAI(){
 			TiXmlElement* pElem;
 			TiXmlHandle hRoot(0);				
 
-			//Controller: Turning Constant
+			//AI: Turning Constant
 			{
-				pElem = hDoc.FirstChildElement().FirstChild().Element();
+				pElem = hDoc.FirstChildElement().ChildElement(0).Element();
 				if (pElem) 
 					pElem->QueryFloatAttribute("value", &aiInfo.rotateModifier);	
+			}
+			//AI Driving Constant
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(1).Element();
+				if (pElem)
+					pElem->QueryFloatAttribute("value", &aiInfo.drivingModifier);
 			}
 			
 		}

@@ -59,6 +59,7 @@ void handle_key_down( SDL_keysym* keysym )
 		//Reload the variables on r.
 		case SDLK_r:
 			evSys->emitEvent(new ReloadEvent());
+			break;
 		default:
 			break;
     }
