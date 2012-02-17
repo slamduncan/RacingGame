@@ -122,7 +122,6 @@ void process_events()
 			}
 			if(controller1.isButtonDown(controller1.R_Bump))
 			{
-				printf("in here\n");
 				if(depthShader)
 				{
 					depthShader = false;
@@ -216,7 +215,7 @@ int main(int argc, char** argv)
 	camera1.setUpCamera(camLookAt, camOffset);
 
 
-	Shader test = Shader("shader/basic.vert", "shader/depth.frag");
+	Shader test = Shader("shader/basic.vert", "shader/nd.frag");
 	test.debug();
 
 

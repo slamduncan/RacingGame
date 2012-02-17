@@ -480,6 +480,10 @@
 				RelativePath=".\magicNumbers\Physics.xml"
 				>
 			</File>
+			<File
+				RelativePath=".\magicNumbers\Renderer.xml"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
