@@ -31,7 +31,6 @@ private:
 
 	char* textFileRead(const char* filename);
 	int textFileWrite(char* filename, char *s);
-
 	std::vector<Param> paramList;
 
 public:
