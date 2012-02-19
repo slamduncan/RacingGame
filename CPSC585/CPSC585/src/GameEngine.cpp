@@ -290,10 +290,10 @@ int main(int argc, char** argv)
 		//// Inputs
 		process_events();
 		
-		//controller1.emitTriggers();
-		//controller1.emitButtons();
-		//controller1.emitLeftAnalog();
-		//controller1.emitRightAnalog();
+		controller1.emitTriggers();
+		controller1.emitButtons();
+		controller1.emitLeftAnalog();
+		controller1.emitRightAnalog();
 
 		// AI - Doesn't exist yet.....
 
