@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<Renderer>
+	<width value = "1280" />
+	<height value = "720" />
+	<Light0>
+		<position x = "50.0" y = "50.0" z = "50.0"/>
+		<diffuse r = "1.0" g = "1.0" b = "1.0" a = "1.0"/>
+		<spec r = "1.0" g = "1.0" b = "1.0" a = "1.0"/>
+		<ambient r = "1.0" g = "1.0" b = "1.0" a = "1.0"/>
+	</Light0>
+	<Camera>
+		<entity value = "0" />
+	</Camera>
+	
+	<Shader>
+		<vsm value = "0.25"/>
+	</Shader>
+	<FBO>
+	
+	</FBO>
+</Renderer>

@@ -15,8 +15,6 @@ Wheel::Wheel(btScalar radius, btScalar lengthOfSpring, btScalar lengthOfSpringWi
 			physicsObject = physicsRigid;
 			dampingModifier = .001f;
 			kModifier = .01f;
-			//kModifier = 0.5f;
-			//
 
 			onGround = false;
 
@@ -111,13 +109,10 @@ btVector3 Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 		//Combine the forces to get the total force that should be applied.
 		btVector3 totalForce = initialForce - dampingForce*FORCEDIRECTION;
 
-		//printf("(%.3f, %.3f, %.3f),(%.3f, %.3f, %.3f), %.3f \n", totalForce.x(), totalForce.y(), totalForce.z(), initialForce.getX(), initialForce.getY(), initialForce.getZ(), dampingForce);
-
 		btScalar maxForce = 30.0f / physicsObject->getInvMass();
 
 		if (totalForce.length() > maxForce)
 			totalForce = totalForce.normalize() * maxForce;
-		//physicsObject->applyImpulse(totalForce, attachedToCarPosition);
 
 		return totalForce;
 	}

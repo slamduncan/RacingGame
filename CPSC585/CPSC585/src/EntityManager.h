@@ -1,5 +1,12 @@
 #ifndef ENTITY_MANAGER_H
 #define ENTITY_MANAGER_H
+
+//#define NDEBUG
+#include <assert.h>
+
+
+#include "ShapeFactory.h"
+#include "Physics.h"
 #include "Entity.h"
 #include "Car.h"
 #include "Track.h"
@@ -20,6 +27,8 @@ private:
 	static EntityManager* instance;
 
 	EntityManager();
+
+	ShapeFactory sFactory;
 
 public:
 
@@ -43,6 +52,15 @@ public:
 		OBSTACLE,
 		WAYPOINT
 	};
+
+	Car* getCar(int index);
+	Waypoint* getWaypoint(int index);
+
+
+	void createCar(char* path, btScalar &mass, btTransform &trans);
+	void createTrack(char* path, btTransform &trans);
+	void createWaypoint(char* path, btTransform &trans);
+	void createObstacle(char* path, btScalar &mass, btTransform &trans);
 
 	void addCar(Car* car);
 	void addTrack(Track* track);

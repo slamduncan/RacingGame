@@ -2,7 +2,6 @@
 #include "EntityManager.h"
 #include "Renderer.h"
 
-//HIIIIII
 Physics* Physics::physInstance = 0;
 EntityManager* entityManager;
 Renderer* physRender;
@@ -16,13 +15,6 @@ Physics* Physics::Inst(void){
 
 Physics::Physics(void) : variableObserver(this, &Physics::updateVariables)
 {
-	/*
-	btBroadphaseInterface* broadphase;
-	btDefaultCollisionConfiguration* collisionConfiguration;
-	btCollisionDispatcher* dispatcher;
-	btSequentialImpulseConstraintSolver* solver;
-	btDiscreteDynamicsWorld* dynamicsWorld;
-	*/
 	entityManager = EntityManager::getInstance();
 	physRender = Renderer::getInstance();
 
@@ -54,7 +46,6 @@ void Physics::step()
 
 	for (int i = 0; i < entityManager->getCarList()->size(); i++){
 		entityManager->getCarList()->at(i)->updateWheels();
-		//entityManager->getCarList()->at(i)->cheatAndFixRotation();
 	}
 }
 
@@ -66,12 +57,24 @@ void Physics::setGravity(const btVector3 &gravityIn)
 
 void Physics::addEntity(const Entity &ent)
 {
-	dynamicsWorld->addRigidBody(ent.physicsObject);
+	//dynamicsWorld->addRigidBody(btRigidBody::upcast(ent.physicsObject));
+	dynamicsWorld->addCollisionObject(ent.physicsObject);
 }
 
 void Physics::removeEntity(const Entity &ent)
 {
-	dynamicsWorld->removeRigidBody(ent.physicsObject);
+	//dynamicsWorld->removeRigidBody(btRigidBody::upcast(ent.physicsObject));
+	dynamicsWorld->removeCollisionObject(ent.physicsObject);
+}
+
+void Physics::addRigidBody(const Entity &entity)
+{
+	dynamicsWorld->addRigidBody(btRigidBody::upcast(entity.physicsObject));
+}
+
+void Physics::removeRigidBody(const Entity &entity)
+{
+	dynamicsWorld->removeRigidBody(btRigidBody::upcast(entity.physicsObject));
 }
 
 void Physics::setDebugDrawer(btIDebugDraw *debugDrawer)
@@ -96,5 +99,5 @@ btDiscreteDynamicsWorld* Physics::getDiscreteDynamicsWorld(){
 btVector3 Physics::getGravity(){return gravity;}
 
 void Physics::updateVariables(ReloadEvent *e){
-	setGravity(e->numberHolder.gravity);
+	setGravity(e->numberHolder.physicsInfo.gravity);
 }

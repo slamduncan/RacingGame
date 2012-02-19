@@ -18,6 +18,10 @@ public:
 	void setGravity(const btVector3 &gravity);
 	void addEntity(const Entity &ent);
 	void removeEntity(const Entity &ent);
+	
+	void addRigidBody(const Entity &entity);
+	void removeRigidBody(const Entity &entity);
+
 	void setDebugDrawer(btIDebugDraw *debugDrawer);
 	void debugDraw();
 	void setDebugLevel(int level);

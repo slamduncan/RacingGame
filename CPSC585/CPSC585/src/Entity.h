@@ -11,6 +11,7 @@
 #include "LinearMath/btQuaternion.h"
 #include "LinearMath/btTransform.h"
 #include "LinearMath/btMatrix3x3.h"
+#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 #include "BulletCollision/CollisionShapes/btTriangleMesh.h"
 #include "BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h"
 #include "BulletCollision/Gimpact/btGImpactShape.h"
@@ -27,6 +28,9 @@
 class Entity
 {
 private:
+	//btTransform transform;
+
+
 //	bool isInit;
 //	int loaded;
 
@@ -40,11 +44,14 @@ public:
 	//btScalar mass;
 
 
+
+
 	// render model (objloader)
 	const aiScene* renderObject;
 
 	// physics model (bullet)
-	btRigidBody* physicsObject;
+	//btRigidBody* physicsObject;
+	btCollisionObject* physicsObject;
 
 	//Observer
 	virtual void initObservers() = 0;
@@ -59,12 +66,13 @@ public:
 	void move(float x, float y, float z);
 	void move(const btVector3 &newPos);
 	void rotate(const btVector3 &axis, int deg);
-	btScalar* getGLMatrix();
+	
+	virtual btScalar* getGLMatrix();
 
-	btVector3 getPosition();
-	btVector3 getTangent();
-	btVector3 getNormal();
-	btVector3 getBinormal();
+	virtual btVector3 getPosition();
+	virtual btVector3 getTangent();
+	virtual btVector3 getNormal();
+	virtual btVector3 getBinormal();
 
 	//bool loadObj(char* filename, btScalar &mass, btTransform &trans);
 	

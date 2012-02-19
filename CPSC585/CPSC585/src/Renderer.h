@@ -16,15 +16,16 @@
 #include "SDL_ttf.h"
 #include "SDL_image.h"
 
-
+#include "LinearMath/btScalar.h"
 #include "LinearMath/btVector3.h"
+#include "LinearMath/btAlignedObjectArray.h"
 #include "LinearMath/btTransform.h"
 #include "LinearMath/btIDebugDraw.h"
 
-#include "Shader.h"
-#include "Entity.h"
+#include "ShaderManager.h"
+#include "EntityManager.h"
 #include "TextureManager.h"
-
+#include "Light.h"
 #include "Camera.h"
 
 
@@ -33,6 +34,7 @@ class Renderer : public btIDebugDraw
 private:
 	static Renderer *instance;
 	TextureManager* tm;
+	EntityManager* em;
 
 	Renderer();	
 	
@@ -47,7 +49,7 @@ private:
 
 	const SDL_VideoInfo* info;	// pointer to video info for screen
 
-	Shader shader;	// shader for drawing
+	btAlignedObjectArray<Light> lights;
 
 public:
 
@@ -63,11 +65,18 @@ public:
 	}
 
 	SDL_Surface* loadIMG(std::string filename);
+	void Renderer::genTexture(std::string filename, std::string key);
+	GLuint getTexture(std::string key);
+	
+	
 	GLuint initTexture(SDL_Surface* image);
 	void textureOn(GLuint texID);
 	void textureOff();
 	void framebufferOn(GLuint fbID);
 	void framebufferOff();
+
+	void shaderOn(Shader &s);
+	void shaderOff(Shader &s);
 
 
 	bool init();
@@ -80,8 +89,9 @@ public:
 	void setCamera(const btVector3& pos, const btVector3& lookAt); 
 	void setCamera(const Camera& cam);
 
-	void draw();
+	void draw(Shader &s);
 	void drawEntity(Entity &entity);
+	void drawAll();
 
 	void drawPlane(float height);
 	void drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width = 1.0);

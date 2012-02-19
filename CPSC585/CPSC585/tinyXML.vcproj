@@ -23,6 +23,7 @@
 			ConfigurationType="4"
 			CharacterSet="2"
 			ManagedExtensions="0"
+			BuildLogFile="$(IntDir)\tinyXMLBuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -54,7 +55,7 @@
 				PrecompiledHeaderThrough=""
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation=""
-				ProgramDataBaseFileName="$(OutDir)\tinyXMLSTL_debug.pdb"
+				ProgramDataBaseFileName="$(OutDir)\tinyXML_debug.pdb"
 				BrowseInformation="1"
 				WarningLevel="4"
 				DebugInformationFormat="4"
@@ -98,6 +99,7 @@
 			CharacterSet="2"
 			ManagedExtensions="0"
 			WholeProgramOptimization="1"
+			BuildLogFile="$(IntDir)\tinyXMLBuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -127,7 +129,7 @@
 				PrecompiledHeaderThrough="StdAfx.h"
 				PrecompiledHeaderFile="$(IntDir)$(TargetName).pch"
 				AssemblerListingLocation=""
-				ProgramDataBaseFileName="$(OutDir)\tinyXMLSTL.pdb"
+				ProgramDataBaseFileName="$(OutDir)\tinyXML.pdb"
 				BrowseInformation="1"
 				WarningLevel="3"
 				DebugInformationFormat="3"

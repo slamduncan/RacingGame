@@ -35,6 +35,7 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	Car::length = btScalar(10.0f);
 	gravity = Physics::Inst()->getGravity();
 	restDisplacement = btScalar(2.0f);
+	nextWaypoint = 0;
 }
 
 void Car::initObservers()
@@ -46,10 +47,14 @@ void Car::initObservers()
 
 void Car::observeRotation(RotationEvent *e){		
 	btVector3 test = e->getQuaternion().getAxis();
-	btVector3 temp = physicsObject->getAngularVelocity();
+	
+	btVector3 temp = chassis->getAngularVelocity();
+	//btVector3 temp = physicsObject->getAngularVelocity();
+	
 	if (temp.length() < 5)
 	//physicsObject->setAngularVelocity(test);
-		physicsObject->applyTorque(test);		
+		//physicsObject->applyTorque(test);
+		chassis->applyTorque(test);	
 }
 
 void Car::observeForwardForce(ForwardForceEvent *e){
@@ -64,8 +69,8 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 		// player is accelerating, we apply rear wheel force
 		if(newWheels[2].onGround || newWheels[3].onGround)
 		{
-			physicsObject->applyImpulse(tan, wheelOffsets[2]);
-			physicsObject->applyImpulse(tan, wheelOffsets[3]);
+			chassis->applyImpulse(tan, wheelOffsets[2]);
+			chassis->applyImpulse(tan, wheelOffsets[3]);
 		}
 	}
 	// player is decelerating
@@ -76,7 +81,7 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 		{
 			if(newWheels[i].onGround)
 			{
-				physicsObject->applyImpulse(tan, wheelOffsets[i]);
+				chassis->applyImpulse(tan, wheelOffsets[i]);
 			}
 		}
 	}
@@ -102,32 +107,27 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 
 		physicsObject = new btRigidBody(entRigidBodyCI);
 
+		chassis = btRigidBody::upcast(physicsObject);
+
 		physicsObject->setActivationState(DISABLE_DEACTIVATION);
+		chassis->setActivationState(DISABLE_DEACTIVATION);
 
 		updateSpringLocations();
 		setUpWheelStuff();
 		btScalar wheelLength(4.0f);
-
-		/*
-		printf("Wheel Offset 1: (%f, %f, %f)\n", wheelOffsets[0].getX(),wheelOffsets[0].getY(),wheelOffsets[0].getZ());
-		printf("Wheel Offset 2: (%f, %f, %f)\n", wheelOffsets[1].getX(),wheelOffsets[1].getY(),wheelOffsets[1].getZ());
-		printf("Wheel Offset 3: (%f, %f, %f)\n", wheelOffsets[2].getX(),wheelOffsets[2].getY(),wheelOffsets[2].getZ());
-		printf("Wheel Offset 4: (%f, %f, %f)\n", wheelOffsets[3].getX(),wheelOffsets[3].getY(),wheelOffsets[3].getZ());
-		*/
-
-		//Bug found here; was using wheelOffsets[3] for newWheels 1,2 and 3.
+	
 		newWheels[0] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue, (gravity),(getPosition() + wheelOffsets[0]),
-			(getPosition() + wheelOffsets[0] - getNormal()*3.0f), physicsObject);
+			(getPosition() + wheelOffsets[0] - getNormal()*3.0f), chassis);
 		newWheels[1] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue, gravity, getPosition() + wheelOffsets[1],
-			getPosition() + wheelOffsets[1] - getNormal()*3.0f, physicsObject);
+			getPosition() + wheelOffsets[1] - getNormal()*3.0f, chassis);
 		newWheels[2] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue,critDampingValue, gravity, getPosition() + wheelOffsets[2],
-			getPosition() + wheelOffsets[2] - getNormal()*3.0f, physicsObject);
+			getPosition() + wheelOffsets[2] - getNormal()*3.0f, chassis);
 		newWheels[3] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue,gravity, getPosition() + wheelOffsets[3],
-			getPosition() + wheelOffsets[3] - getNormal()*3.0f, physicsObject);			
+			getPosition() + wheelOffsets[3] - getNormal()*3.0f, chassis);			
 
 		return true;
 	}
@@ -139,45 +139,44 @@ void Car::updateWheels()
 {
 	updateSpringLocations();
 
+	// simulate suspension
 	btVector3 forces[4];
 	btScalar sideFriction[4] = {btScalar(0.f),btScalar(0.f),btScalar(0.f),btScalar(0.f)}; 
 	for (int i = 0; i < 4; i++){
 		forces[i] = newWheels[i].calcForce(getPosition() + wheelOffsets[i], getNormal());
 	}
 
+	// simulate side friction
 	for(int i = 0; i < 4; i++)
 	{
-		
 		if(newWheels[i].hitObject)
 		{
 			btVector3 contact = newWheels[i].getBottomSpringPosition();
 			
 			btRigidBody* groundObject = (class btRigidBody*) newWheels[i].hitObject;
 			
-			resolveSingleBilateral(*physicsObject, contact, *groundObject, contact, btScalar(0.),getBinormal(), sideFriction[i], 1/60.0f);
+			resolveSingleBilateral(*chassis, contact, *groundObject, contact, btScalar(0.),getBinormal(), sideFriction[i], 1/60.0f);
 		}
 	}
 
-	
-
 	for (int i = 0; i < 4; i++){
 		btVector3 contact = newWheels[i].getBottomSpringPosition();
-		physicsObject->applyImpulse(forces[i],contact - physicsObject->getCenterOfMassPosition()/*wheelOffsets[i]*/);
+		chassis->applyImpulse(forces[i],contact - chassis->getCenterOfMassPosition()/*wheelOffsets[i]*/);
 		
 		if(sideFriction[i] != btScalar(1.))
 		{
 			btVector3 carNormal = getNormal();
 			
-			btVector3 relpos = contact - physicsObject->getCenterOfMassPosition();
+			btVector3 relpos = contact - chassis->getCenterOfMassPosition();
 
 			relpos -= carNormal * (carNormal.dot(relpos));
 
-			physicsObject->applyImpulse(getBinormal() * sideFriction[i]*0.1f,relpos);
+			chassis->applyImpulse(getBinormal() * sideFriction[i]*0.1f,relpos);
 		}
-		//cheatAndFixRotation();
 	}
 }
 
+// probably not needed anymore
 void Car::updateSpringLocations()
 {
 	btVector3 position = getPosition();
@@ -191,33 +190,20 @@ void Car::updateSpringLocations()
 	wheelOffsets[3] = (normal * ((-height/2.0f) + 0.5f)) + (binormal * ((+width/2.0f) - 0.5f/* - 0.5f*/)) + (tangent * (+length/2.0f - 1.0f));
 }
 
-void Car::setUpWheelStuff(){
-
-	/*
-	kValue = abs((gravity.getY() * carMass ) / (restDisplacement * 4));
-	critDampingValue = 2 * sqrt(kValue * carMass);
-	hoverValue = btScalar(1.0f);
-	*/
+void Car::setUpWheelStuff()
+{
 	kValue = 20.0f;
-	critDampingValue = 2 * sqrt(kValue * 2.0);
+	critDampingValue = 2 * btSqrt(kValue * 2.0f);
 	hoverValue = btScalar(1.0f);
 }
 
-void Car::cheatAndFixRotation(){
-	btVector3 A = this->getNormal();
-	btVector3 B = btVector3(0,1,0);
-
-	float angle = acos(A.dot(B))*180.0/M_PI;
-	//printf("%f\n",angle);
-
-	if(angle > 30){
-		physicsObject->setAngularVelocity(btVector3(0,0,0));
-	}
-}
-
+/* This function allows for dynamic modification of the c and k values for the wheels. */
 void Car::observeVariables(ReloadEvent *e){
 	for (int i = 0; i < 4; i++){
-		newWheels[i].setCModifier(btScalar(e->numberHolder.cModifier));
-		newWheels[i].setKModifier(btScalar(e->numberHolder.kModifier));
+		newWheels[i].setCModifier(btScalar(e->numberHolder.physicsInfo.cModifier));
+		newWheels[i].setKModifier(btScalar(e->numberHolder.physicsInfo.kModifier));
 	}
 }
+
+int Car::getNextWaypointIndex(){return nextWaypoint;}
+void Car::setNextWaypointIndex(int in){ nextWaypoint = in;}

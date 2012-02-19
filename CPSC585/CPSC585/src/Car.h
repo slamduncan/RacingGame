@@ -13,6 +13,8 @@ class Car : public Entity
 {
 
 public:
+	btRigidBody* chassis;
+	
 	btScalar kVal;
 	
 	//Variable added to test the new spring system.
@@ -22,11 +24,8 @@ public:
 	btScalar carMass;
 	btScalar restDisplacement;
 	btVector3 gravity;
-	//Car(btVector3 startingPos);
-	Car();
-	//void Observe(TriggerEvent *e);
 
-	//bool initRenderObject(char* filename);
+	Car();
 	bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans);
 
 	Wheel newWheels[4];
@@ -43,10 +42,13 @@ public:
 	void observeVariables(ReloadEvent *e);
 
 	void setUpWheelStuff();
-	void cheatAndFixRotation();
+
+	int getNextWaypointIndex();
+	void setNextWaypointIndex(int in);
 
 private:
 	btScalar width, length, height;
+	int nextWaypoint;
 
 	// 3 power up slots, circular array of powerups?
 

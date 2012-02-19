@@ -11,10 +11,10 @@ void InputMapper::updateRotation(double controllerInputX, double controllerInput
 void InputMapper::updateRotation(LeftAnalogEvent *e){
 //	rotation = btQuaternion(e->getXVal(), e->getYVal(), 0, 0);	
 	if (lastTriggerEvent){
-		if (lastTriggerEvent->getValue() <= 0)
-			rotation = btQuaternion(0, -(float)(e->getXVal()), 0, 0);	
-		else
+		if (goingForward)
 			rotation = btQuaternion(0, (float)(e->getXVal()), 0, 0);	
+		else
+			rotation = btQuaternion(0, -(float)(e->getXVal()), 0, 0);	
 	}
 	//rotation.normalize();
 	rotation /= rotationModifier;
@@ -24,6 +24,12 @@ void InputMapper::updateRotation(LeftAnalogEvent *e){
 void InputMapper::updateForwardForce(TriggerEvent *e){
 	delete lastTriggerEvent;
 	lastTriggerEvent = new TriggerEvent(*e);
+	if (e->getValue() > 0){
+		goingForward = true;
+	}
+	if (e->getValue() < 0){
+		goingForward = false;
+	}
 	EventSystemHandler::getInstance()->emitEvent(new ForwardForceEvent(btScalar(e->getValue()), btScalar(e->getNormValue())));
 }
 
@@ -37,8 +43,9 @@ InputMapper::InputMapper() : analogObserver(this, &InputMapper::updateRotation),
 	analogObserver.init(EventTypes::LEFT_ANALOG);
 	triggerObserver.init(EventTypes::TRIGGER);
 	variableObserver.init(EventTypes::RELOAD_VARIABLES);	
+	goingForward = false;
 }
 
 void InputMapper::updateVariables(ReloadEvent *e){
-	rotationModifier = e->numberHolder.rotateModifier;
+	rotationModifier = e->numberHolder.controllerInfo.rotateModifier;
 }

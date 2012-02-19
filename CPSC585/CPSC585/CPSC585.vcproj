@@ -41,6 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="./include/GL;./include/OpenAL;./include/XMLParser;./include/assimp;./include/SDL;./include/BulletSteves;./magicNumbers"
+				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
@@ -117,6 +118,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="./include/GL;./include/OpenAL;./include/XMLParser;./include/assimp;./include/SDL;./include/BulletSteves;./magicNumbers"
+				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -175,6 +177,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\src\AIHandler.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\AnalogEvent.cpp"
 				>
 			</File>
@@ -207,6 +213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\FBO.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\ForwardForceEvent.cpp"
 				>
 			</File>
@@ -220,6 +230,10 @@
 			</File>
 			<File
 				RelativePath=".\src\InputMapper.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Light.cpp"
 				>
 			</File>
 			<File
@@ -248,6 +262,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Shader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\ShaderManager.cpp"
 				>
 			</File>
 			<File
@@ -293,6 +311,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\src\AIHandler.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\AnalogEvent.h"
 				>
 			</File>
@@ -329,6 +351,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\FBO.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\ForwardForceEvent.h"
 				>
 			</File>
@@ -342,6 +368,10 @@
 			</File>
 			<File
 				RelativePath=".\src\LeftAnalogEvent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Light.h"
 				>
 			</File>
 			<File
@@ -386,6 +416,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Shader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\ShaderManager.h"
 				>
 			</File>
 			<File
@@ -435,11 +469,19 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
+				RelativePath=".\magicNumbers\AI.xml"
+				>
+			</File>
+			<File
 				RelativePath=".\magicNumbers\Controller.xml"
 				>
 			</File>
 			<File
 				RelativePath=".\magicNumbers\Physics.xml"
+				>
+			</File>
+			<File
+				RelativePath=".\magicNumbers\Renderer.xml"
 				>
 			</File>
 		</Filter>

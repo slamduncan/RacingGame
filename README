@@ -25,6 +25,11 @@ Current Features:
 	Dynamic loading of variables. (Using XML)
 
 Tool being used on this project:
+SDL_opengl - drawing to the screen
 GLEW - shaders and frame buffer effects
 SDL - Window creation
 SDL_ttf - text to opengl
+SDL_image - reading images
+OpenAL - Sound
+Bullet - Physics engine
+TinyXML - XML parser for live update

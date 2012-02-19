@@ -18,17 +18,13 @@ public:
 	void setUpCamera();
 	void setUpCamera(btVector3 &lookAtPointIn);
 	void setUpCamera(btVector3 &lookAtPointIn, btVector3 &offset);
-	
-//	void setUpCamera(btVector3 &lookAtPointIn,btVector3 &cameraPositionIn);
+
 	void setUpCamera(btVector3 &lookAtPointIn, btVector3 &cameraPosition, btVector3 &upIn);
 
-	void debug();
 
 	btVector3 offset;
 
 	btVector3 up, lookAtPoint, cameraPosition, normal, lookAtVector;
-
-
 
 	btScalar angle;
 

@@ -5,7 +5,7 @@ EntityManager* EntityManager::instance = 0;
 
 EntityManager::EntityManager()
 {
-	// HACK ISH need to fix
+	// need to find a better way to store the track
 	track = NULL;
 }
 
@@ -16,9 +16,17 @@ EntityManager::~EntityManager()
 {
 	for(int i = 0; i < carList.size(); i++)
 	{
-		delete carList[i];
+		if(carList[i])
+			delete carList[i];
 	}
 	carList.clear();
+
+	for(int i = 0; i < waypointList.size(); i++)
+	{
+		if(waypointList[i])
+			delete waypointList[i];
+	}
+	waypointList.clear();
 
 /*
 	for(int i = 0; i < powerUpList.size(); i++)
@@ -40,13 +48,92 @@ EntityManager::~EntityManager()
 	}
 }
 
+Car* EntityManager::getCar(int index)
+{
+	assert(index >= 0 && index < numCars());
+
+	return carList[index];
+
+}
+
+Waypoint* EntityManager::getWaypoint(int index)
+{
+	assert(index >= 0 && index < numWaypoints());
+
+	return waypointList[index];
+}
+
+void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
+{
+	btScalar width = btScalar(10.0f);
+	btScalar height = btScalar(5.f);
+	btScalar depth = btScalar(5.f);
+
+	Car* car = new Car();
+
+	car->initRenderObject(path);
+	
+	btCollisionShape* boxShape = sFactory.createBox(width, height, depth);
+
+	car->initPhysicsObject(boxShape, mass, trans);
+
+	if (carList.size() < 1)
+		car->initObservers();
+
+	addCar(car);
+
+	Physics::Inst()->addRigidBody(*car);
+
+	//phyEngine->addEntity(*car);
+}
+
+void EntityManager::createTrack(char* path, btTransform &trans)
+{
+	btScalar mass = btScalar(0.f);
+
+	Track* trk = new Track();
+
+	trk->initRenderObject(path);
+
+	btCollisionShape* triMesh = sFactory.createStaticTriangleMesh(trk->renderObject);
+
+	trk->initPhysicsObject(triMesh, mass, trans);
+
+	addTrack(trk);
+
+	Physics::Inst()->addEntity(*trk);
+}
+
+void EntityManager::createWaypoint(char* path, btTransform &trans)
+{
+	btScalar mass = btScalar(0.f);
+	
+	Waypoint* wp = new Waypoint();
+
+	wp->initRenderObject(path);
+
+	btCollisionShape* triMesh = sFactory.createStaticTriangleMesh(wp->renderObject);
+
+	wp->initPhysicsObject(triMesh, mass, trans);
+
+	addWaypoint(wp);
+}
+
+void EntityManager::createObstacle(char* path, btScalar &mass, btTransform &trans)
+{
+
+}
+
 void EntityManager::addCar(Car* car)
 {
 	carList.push_back(car);
 }
+
+// THIS IS VERY UNSAFE ATM
+// We need a way to remove the track from the physics world first before we delete it.
 void EntityManager::addTrack(Track* track)
 {
-	this->track = track;
+	this->track = track;	// will memleak if we try to create another create
 }
 void EntityManager::addPowerUp()
 {
@@ -81,7 +168,6 @@ void EntityManager::removeWaypoint()
 	
 }
 
-
 int EntityManager::numCars()
 {
 	return carList.size();
@@ -115,9 +201,7 @@ void EntityManager::resetCarOrientation(int index)
 
 	btVector3 position = transform.getOrigin();
 
-	transform.setIdentity();
-
-	transform.setOrigin(position);
+	transform.setBasis(btMatrix3x3(btQuaternion(0, 1, 0, 1)));
 
 	carList[index]->physicsObject->setWorldTransform(transform);
 }
@@ -127,17 +211,11 @@ void EntityManager::resetCar(int index, btVector3 &position)
 	resetCarPosition(index, position);
 	resetCarOrientation(index);
 
-	carList[index]->physicsObject->clearForces();
-	carList[index]->updateSpringLocations();
+	carList[index]->chassis->clearForces();
 
-	carList[index]->physicsObject->setLinearVelocity(btVector3(0, 0, 0));
-	carList[index]->physicsObject->setAngularVelocity(btVector3(0, 0, 0));
+	carList[index]->chassis->setLinearVelocity(btVector3(0, 0, 0));
+	carList[index]->chassis->setAngularVelocity(btVector3(0, 0, 0));
 }
-
-
-
-
-
 
 btAlignedObjectArray<Car*>* EntityManager::getCarList()
 {

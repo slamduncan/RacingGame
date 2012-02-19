@@ -28,17 +28,18 @@
 //#include "aiPostProcess.h"
 #include "aiScene.h"
 
-
 class ShapeFactory
 {
 public:
 	ShapeFactory();
+
 	~ShapeFactory();
 
 	btCollisionShape* createBox(btScalar &width, btScalar &height, btScalar &depth);
 	btCollisionShape* createSphere(btScalar & radius);
-	btCollisionShape* createPlane(btVector3 &point, btVector3& normal);
-	void createTriangleMesh(aiScene *renderObject);
+	btCollisionShape* createPlane(btVector3& normal);
+	btCollisionShape* createStaticTriangleMesh(const aiScene *renderObject);
+	btCollisionShape* createDynamicTriangleMesh(const aiScene * renderObject);
 };
 
 #endif

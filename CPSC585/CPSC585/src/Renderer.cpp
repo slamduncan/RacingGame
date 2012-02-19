@@ -13,7 +13,12 @@ Renderer::Renderer()
 	height = 720;
 	bpp = 0;
 
-	tm = TextureManager::initialize();
+	Light light0 = Light(btVector3(50, 50, 50));
+
+	lights.push_back(light0);
+
+	tm = TextureManager::getInstance();
+	em = EntityManager::getInstance();
 	//TextureManager::initialize();	// initialize our texture manager
 }
 
@@ -23,10 +28,6 @@ Renderer::~Renderer()
 	TTF_CloseFont(debugFont);
 	TTF_Quit();
 
-	if(tm != NULL)
-	{
-		delete tm;
-	}
 	if(instance != NULL)
 	{
 		delete instance;
@@ -37,7 +38,7 @@ bool Renderer::init()
 {
 	int a = initSDL();
 	int b = initGL();
-	int c =initFont();
+	int c = initFont();
 
 	if(a+b+c != 0)
 	{
@@ -138,7 +139,7 @@ int Renderer::initGL()
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);         // set the diffuse color for the light
     glLightfv(GL_LIGHT0, GL_SPECULAR, spec);			// set the specular color of the light
     glLightfv(GL_LIGHT0, GL_AMBIENT, amb);			// set the specular color of the light
-	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);        // set the position of the light
+	glLightfv(GL_LIGHT0, GL_POSITION, lights[0].getPosition());        // set the position of the light
 
 
 	glEnable(GL_COLOR_MATERIAL);						// allow shading for colored material
@@ -152,9 +153,8 @@ int Renderer::initGL()
     }
 	std::cout << "GLEW initialized" << std::endl;
 	
-	GLenum fboCheck = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+	GLenum fboCheck = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);	// check if fbos are supported
 		
-	// error if it isn't
 	if (fboCheck != GL_FRAMEBUFFER_COMPLETE_EXT)
 	{
 		std::cout << "FBO failed to initialize" << std::endl;
@@ -171,7 +171,8 @@ int Renderer::initGL()
 
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity( );
-    gluPerspective( 60.0, ratio, 1.0, 1024.0 );	// need to fix this to change fov on the fly
+    // horizontal fov, vertical fov, min view distance, max view distance
+	gluPerspective( 60.0, ratio, 1.0, 1024.0 );	// need to fix this to change fov on the fly
 	glMatrixMode(GL_MODELVIEW);	// switch back to model view
 
 	glDisable2D();
@@ -206,7 +207,6 @@ int Renderer::initFont()
 
 /*
 *	Closes SDL/window and quits the program?
-*
 */
 void Renderer::quitSDL()
 {
@@ -223,6 +223,17 @@ SDL_Surface* Renderer::loadIMG(string filename)
 
 	return image;
 }
+
+void Renderer::genTexture(std::string filename, std::string key)
+{
+	tm->loadTexture(filename, key);
+}
+
+GLuint Renderer::getTexture(std::string key)
+{
+	return tm->getTexture(key);
+}
+
 GLuint Renderer::initTexture(SDL_Surface* image)
 {
 	GLuint texID = 0;
@@ -274,6 +285,48 @@ void Renderer::framebufferOn(GLuint fbID)
 void Renderer::framebufferOff()
 {
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+}
+
+void Renderer::shaderOn(Shader &s)
+{
+	s.turnShadersOn();
+}
+
+void Renderer::shaderOff(Shader &s)
+{
+	s.turnShadersOff();
+}
+
+void Renderer::draw(Shader &s)
+{
+	shaderOn(s);
+
+	drawAll();
+
+	shaderOff(s);
+}
+
+void Renderer::drawAll()
+{
+	// draw the track
+	drawEntity(*(em->getTrack()));
+
+	// draw all cars
+	for(int i = 0; i < em->numCars(); i++)
+	{
+		drawEntity(*(em->getCar(i)));
+	}
+
+
+	// draw powerups
+
+	// draw obstacles
+
+	// debug draw waypoints
+	for(int i = 0; i < em->numWaypoints(); i++)
+	{
+		drawEntity(*(em->getWaypoint(i)));
+	}
 }
 
 
@@ -431,6 +484,7 @@ void Renderer::setCamera(const Camera& cam){
 /*
 *	draws a white box centered on the screen
 */
+/*
 void Renderer::draw()
 {
 	glPushMatrix();
@@ -456,7 +510,7 @@ void Renderer::draw()
 
 	glDisable2D();
 }
-
+*/
 void Renderer::drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width)
 {
 	assert(width >= 1);
@@ -493,6 +547,8 @@ void Renderer::drawEntity(Entity &entity)
 	glPushMatrix();
 
 	btScalar* matrix = entity.getGLMatrix();
+
+	//printf("(%f, %f, %f)\n", matrix[0], matrix[1]
 
 	glMultMatrixf(matrix);
 
