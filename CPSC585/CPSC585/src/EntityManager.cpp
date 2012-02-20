@@ -28,13 +28,13 @@ EntityManager::~EntityManager()
 	}
 	waypointList.clear();
 
-/*
+
 	for(int i = 0; i < powerUpList.size(); i++)
 	{
 		delete powerUpList[i];
 	}
 	powerUpList.clear();
-*/
+
 /*
 	for(int i = 0; i < obstacleList.size(); i++)
 	{
@@ -135,9 +135,9 @@ void EntityManager::addTrack(Track* track)
 {
 	this->track = track;	// will memleak if we try to create another create
 }
-void EntityManager::addPowerUp()
+void EntityManager::addPowerUp(PowerUp* powerup)
 {
-
+	powerUpList.push_back(powerup);
 }
 void EntityManager::addObstacle()
 {
@@ -174,7 +174,7 @@ int EntityManager::numCars()
 }
 int EntityManager::numPowerUps()
 {
-	return 0;
+	return powerUpList.size();
 }
 int EntityManager::numObstacles()
 {
@@ -229,4 +229,9 @@ btAlignedObjectArray<Waypoint*>* EntityManager::getWaypointList()
 Track* EntityManager::getTrack()
 {
 	return track;
+}
+
+btAlignedObjectArray<PowerUp*>* EntityManager::getPowerUpList()
+{
+	return &powerUpList;
 }

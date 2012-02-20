@@ -205,5 +205,29 @@ void Car::observeVariables(ReloadEvent *e){
 	}
 }
 
+PowerUp Car::GetPowerUpAt( int index )
+{
+	if( index >= 0 && index < MAX_POWERUPS  )
+		return m_CarPowerUps[index];
+}
+
+void Car::AddPowerUp( int type )
+{
+	for( int i = 0; i < MAX_POWERUPS; i++ )
+	{
+		if( m_CarPowerUps[i].GetType() == EMPTY )
+		{
+			m_CarPowerUps[i].SetType( type );
+			break;
+		}
+	}
+}
+
+void Car::UsePowerUp( int index )
+{
+	if( index >= 0 && index < MAX_POWERUPS  )
+		m_CarPowerUps[index].SetType( EMPTY );
+}
+
 int Car::getNextWaypointIndex(){return nextWaypoint;}
 void Car::setNextWaypointIndex(int in){ nextWaypoint = in;}

@@ -249,6 +249,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\PowerUp.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\ProjectNumbers.cpp"
 				>
 			</File>
@@ -388,6 +392,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Physics.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\PowerUp.h"
 				>
 			</File>
 			<File
