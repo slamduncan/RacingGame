@@ -8,6 +8,11 @@
 #include "Entity.h"
 #include "Spring.h"
 #include "Wheel.h"
+#include "PowerUp.h"
+
+#ifndef MAX_POWERUPS
+#define MAX_POWERUPS           3 // subtract this by 1 when initializing array of power-ups
+#endif
 
 class Car : public Entity
 {
@@ -46,17 +51,20 @@ public:
 	int getNextWaypointIndex();
 	void setNextWaypointIndex(int in);
 
+	PowerUp GetPowerUpAt( int index );
+	void AddPowerUp( int type );
+	void UsePowerUp( int index );
+
 private:
 	btScalar width, length, height;
 	int nextWaypoint;
 
 	// 3 power up slots, circular array of powerups?
+	PowerUp m_CarPowerUps[MAX_POWERUPS - 1];
 
 	//Observers
 	MethodObserver<RotationEvent, Car> rotationObserver;
 	MethodObserver<ForwardForceEvent, Car> forwardForceObserver;
 	MethodObserver<ReloadEvent, Car> updateVariableObserver;
-
-
 };
 #endif

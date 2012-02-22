@@ -11,14 +11,14 @@
 #include "Car.h"
 #include "Track.h"
 #include "Waypoint.h"
-//#include "PowerUp.h"
+#include "PowerUp.h"
 #include "LinearMath\btAlignedObjectArray.h"
 
 class EntityManager
 {
 private:
 	btAlignedObjectArray<Car*> carList;
-	//btAlignedObjectArray<PowerUp*> powerUpList;
+	btAlignedObjectArray<PowerUp*> powerUpList;
 	//btAlignedObjectArray<Obstacle*> obstacleList;
 	btAlignedObjectArray<Waypoint*> waypointList;
 
@@ -64,7 +64,7 @@ public:
 
 	void addCar(Car* car);
 	void addTrack(Track* track);
-	void addPowerUp();
+	void addPowerUp(PowerUp* powerup);
 	void addObstacle();
 	void addWaypoint(Waypoint* waypoint);
 	
@@ -86,7 +86,7 @@ public:
 	btAlignedObjectArray<Car*>* getCarList();
 	btAlignedObjectArray<Waypoint*>* getWaypointList();
 	Track* getTrack();
-	// btAlignedObjectArray<PowerUp*>* getPowerUpList();
+	btAlignedObjectArray<PowerUp*>* getPowerUpList();
 	// btAlignedObjectArray<Obstacle*>* getObstacleList();
 
 };
