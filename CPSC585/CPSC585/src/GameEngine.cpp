@@ -216,8 +216,8 @@ int main(int argc, char** argv)
 	camera1.setUpCamera(camLookAt, camOffset);
 
 
-	Shader test = Shader("shader/basic.vert", "shader/nd.frag");
-	test.debug();
+	Shader ssao = Shader("shader/basic.vert", "shader/nd.frag");
+	ssao.debug();
 
 
 	// game loop
@@ -252,7 +252,7 @@ int main(int argc, char** argv)
 
 		if(depthShader)
 		{
-			ren->draw(test);
+			ren->draw(ssao);
 		}
 		else
 		{

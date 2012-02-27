@@ -25,6 +25,7 @@
 #include "ShaderManager.h"
 #include "EntityManager.h"
 #include "TextureManager.h"
+#include "FBO.h"
 #include "Light.h"
 #include "Camera.h"
 
@@ -35,6 +36,9 @@ private:
 	static Renderer *instance;
 	TextureManager* tm;
 	EntityManager* em;
+	ShaderManager* sm;
+	FBO fb;
+
 
 	Renderer();	
 	
@@ -77,6 +81,10 @@ public:
 
 	void shaderOn(Shader &s);
 	void shaderOff(Shader &s);
+
+	void shadowMapPass();
+	void ssaoPass();
+	void abtexPass();
 
 
 	bool init();

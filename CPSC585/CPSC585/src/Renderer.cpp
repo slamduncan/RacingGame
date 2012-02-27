@@ -19,6 +19,7 @@ Renderer::Renderer()
 
 	tm = TextureManager::getInstance();
 	em = EntityManager::getInstance();
+	sm = new ShaderManager();
 	//TextureManager::initialize();	// initialize our texture manager
 }
 
@@ -31,6 +32,11 @@ Renderer::~Renderer()
 	if(instance != NULL)
 	{
 		delete instance;
+	}
+
+	if(sm != NULL)
+	{
+		delete sm;
 	}
 }
 
@@ -306,6 +312,28 @@ void Renderer::draw(Shader &s)
 	shaderOff(s);
 }
 
+//
+// update this funciton so it does a pass per player
+//
+void Renderer::shadowMapPass()
+{
+	// for each light source in our scene
+	for(int i = 0; i < lights.size(); i++)
+	{
+		setCamera(lights[i].getPosition(), btVector3(0, 0, 0));
+	}
+}
+
+void Renderer::ssaoPass()
+{
+
+}
+
+void Renderer::abtexPass()
+{
+
+}
+
 void Renderer::drawAll()
 {
 	// draw the track
@@ -314,7 +342,26 @@ void Renderer::drawAll()
 	// draw all cars
 	for(int i = 0; i < em->numCars(); i++)
 	{
-		drawEntity(*(em->getCar(i)));
+		
+		Car* temp = em->getCar(i);
+
+		textureOn(getTexture("car1"));
+		drawEntity(*temp);
+		textureOff();
+
+		// for each wheel we need to draw a line
+		for(int j = 0; j < 4; j++)
+		{
+			//Spring aWheel = temp->wheels[j];
+			Wheel aWheel = temp->newWheels[j];
+
+			btVector3 springPos = aWheel.getAttachedToCarPosition();
+
+			btVector3 springLength = aWheel.getBottomSpringPosition();
+
+			drawLine(springPos, springLength, 0, 0, 255, 3.0f);
+
+		}
 	}
 
 
