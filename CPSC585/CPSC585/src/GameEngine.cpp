@@ -189,6 +189,9 @@ int main(int argc, char** argv)
 	btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, -2));
 	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(3.5, 3.5, 0));
 	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 3.5));
+	
+	btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, -10));
+
 
 	entManager->createCar("model/box.3ds", carMass, carT1);	
 	entManager->createCar("model/box.3ds", carMass, carT2);	
@@ -196,6 +199,7 @@ int main(int argc, char** argv)
 	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT2);
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT3);
+	entManager->createPowerup("model/powerup.lwo", powerupT1);
 
 
 	ren->genTexture("model/box.png", "car1");

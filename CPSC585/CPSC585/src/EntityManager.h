@@ -55,11 +55,13 @@ public:
 
 	Car* getCar(int index);
 	Waypoint* getWaypoint(int index);
+	PowerUp* getPowerup(int index);
 
 
 	void createCar(char* path, btScalar &mass, btTransform &trans);
 	void createTrack(char* path, btTransform &trans);
 	void createWaypoint(char* path, btTransform &trans);
+	void createPowerup(char* path, btTransform &trans);
 	void createObstacle(char* path, btScalar &mass, btTransform &trans);
 
 	void addCar(Car* car);
