@@ -18,4 +18,14 @@
 	<FBO>
 	
 	</FBO>
+  <Texture>
+    <car1 path = "model/box.png"/>
+    <car2 path = "model/box.png"/>
+    <car3 path = "model/box.png"/>
+    <car4 path = "model/box.png"/>
+    <car5 path = "model/box.png"/>
+    <car6 path = "model/box.png"/>
+    <car7 path = "model/box.png"/>
+    <car8 path = "model/box.png"/>
+  </Texture>
 </Renderer>

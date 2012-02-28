@@ -13,7 +13,7 @@ Renderer::Renderer()
 	height = 720;
 	bpp = 0;
 
-	Light light0 = Light(btVector3(50, 50, 50));
+	Light light0 = Light(btVector3(50, 50, 0));
 
 	lights.push_back(light0);
 
@@ -51,6 +51,11 @@ bool Renderer::init()
 		fprintf(stderr, "Renderer failed to init\na = %d, b = %d, c = %d\n", a, b, c);
 		return false;
 	}
+
+	int d = initTexs();
+	int e = initShaders();
+
+
 	return true;
 }
 
@@ -211,6 +216,33 @@ int Renderer::initFont()
 	return counter;
 }
 
+int Renderer::initTexs()
+{
+	tm->genTexture("model/box.png", "car1");	// load the car texture into GPU memory
+	tm->genTexture(width, height, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
+	tm->genTexture(width, height, "gaussian");	// gaussian blur
+	tm->genTexture(width, height, "smap");		// shadow maps
+	tm->genTexture(width, height, "nd");		// create a texture for ssao pass 1
+	tm->genTexture(width, height, "ssao");		// create a texture for ssao pass 2
+	tm->genTexture(width, height, "rblur");		// radial blur
+
+	fb.init(width, height);
+	
+
+	//printf("num textures %d\n", tm->getNumTex());
+
+	return 0;
+}
+int Renderer::initShaders()
+{
+	depth2pass = Shader("shader/basic.vert", "shader/d2.frag");
+	depth2pass.debug();
+	ndpass = Shader("shader/basic.vert", "shader/nd.frag");
+	ndpass.debug();
+	return 0;
+}
+
+
 /*
 *	Closes SDL/window and quits the program?
 */
@@ -320,7 +352,20 @@ void Renderer::shadowMapPass()
 	// for each light source in our scene
 	for(int i = 0; i < lights.size(); i++)
 	{
-		setCamera(lights[i].getPosition(), btVector3(0, 0, 0));
+		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
+
+		fb.attachTexture(getTexture("depth2l1"), GL_COLOR_ATTACHMENT0_EXT);
+
+		fb.turnOn();
+		
+		shaderOn(depth2pass);
+
+		drawAll();
+
+		shaderOff(depth2pass);
+		fb.turnOff();
+		fb.deattachTexture();
+
 	}
 }
 
@@ -380,6 +425,32 @@ void Renderer::drawAll()
 	}
 }
 
+void Renderer::drawTexture(std::string texName)
+{
+    glMatrixMode (GL_MODELVIEW); 
+	glPushMatrix (); 
+	glLoadIdentity (); 
+	glMatrixMode (GL_PROJECTION); 
+	glPushMatrix (); 
+	glLoadIdentity ();
+
+	textureOn(getTexture(texName));
+    glBegin (GL_QUADS); 
+	glTexCoord2f(0.0f, 1.0f); 
+	glVertex3i (-1, -1, -1); 
+	glTexCoord2f(1.0f, 1.0f); 
+	glVertex3i (1, -1, -1); 
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3i (1, 1, -1); 
+	glTexCoord2f(0.0f, 0.0f); 
+	glVertex3i (-1, 1, -1); 
+	glEnd ();
+    textureOff();
+	glPopMatrix (); 
+	glMatrixMode (GL_MODELVIEW); 
+	glPopMatrix ();
+
+}
 
 /*
 *	Outputs text to the screen using textures

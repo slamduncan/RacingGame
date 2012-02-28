@@ -39,6 +39,10 @@ private:
 	ShaderManager* sm;
 	FBO fb;
 
+	Shader depth2pass;
+	Shader ndpass;
+	Shader gaussian;
+	Shader radblur;
 
 	Renderer();	
 	
@@ -91,6 +95,8 @@ public:
 	int initSDL();
 	int initGL();
 	int initFont();
+	int initTexs();
+	int initShaders();
 
 	void outputText(std::string text, int r, int g, int b, int x, int y);
 
@@ -103,6 +109,9 @@ public:
 
 	void drawPlane(float height);
 	void drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width = 1.0);
+	
+	void drawTexture(std::string texName);
+
 
 	void glEnable2D();
 	void glDisable2D();

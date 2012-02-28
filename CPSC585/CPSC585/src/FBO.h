@@ -16,6 +16,7 @@ public:
 
 	void init(int width, int height);
 	void attachTexture(GLuint texture, GLenum type);
+	void deattachTexture();
 
 	bool isValid();
 
