@@ -20,11 +20,14 @@ public:
 		float cModifier;
 		float kModifier;
 		btVector3 gravity;
+		float staticFrictionModifier;
+		float dynamicFrictionModifier;
 	} physicsInfo;
 
 	struct AI{
 		float rotateModifier;
 		float drivingModifier;
+		float maxMovementForce;
 	} aiInfo;
 
 	ProjectNumbers(){}//readVariablesIn();}

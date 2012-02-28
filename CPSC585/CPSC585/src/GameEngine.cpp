@@ -60,6 +60,46 @@ void createWaypoint(){
 
 }
 
+void writeWaypoints(const char* fileName){
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	ofstream file(fileName);
+	if (file.is_open())
+	{
+		for (int i = 0; i < wayList->size(); i++)
+		{
+			std::string temp = wayList->at(i)->toString();
+			file << temp;
+		}
+		file.close();
+	}
+	else
+		printf("Unable to open Waypoint File - Write\n");
+}
+
+void readWaypoints(const char* fileName){
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	wayList->clear();
+	ifstream file(fileName);
+	string line;
+	stringstream ss;
+	if (file.is_open())
+	{
+		while (file.good()){
+			getline(file, line);
+			ss << line;
+			int x, y, z;
+			ss >> x;
+			ss >> y;
+			ss >> z;
+			btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(x, y, z));
+			entManager->createWaypoint("model/waypoint.obj", wayPointT1);
+		}
+		file.close();
+	}
+	else
+		printf("Unable to open Waypoint File - Read\n");
+}
+
 
 /*
 *	Handles what to do when key has been pressed
@@ -76,6 +116,9 @@ void handle_key_down( SDL_keysym* keysym )
 		//Reload the variables on r.
 		case SDLK_r:
 			evSys->emitEvent(new ReloadEvent());
+			break;
+		case SDLK_w:
+			writeWaypoints("waypoints.w");
 			break;
 		default:
 			break;

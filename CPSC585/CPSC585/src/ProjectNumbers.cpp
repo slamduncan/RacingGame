@@ -57,7 +57,12 @@ void ProjectNumbers::readAI(){
 				if (pElem)
 					pElem->QueryFloatAttribute("value", &aiInfo.drivingModifier);
 			}
-			
+			//AI max forward force
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(2).Element();
+				if (pElem)
+					pElem->QueryFloatAttribute("value", &aiInfo.maxMovementForce);
+			}
 		}
 		else
 		{
@@ -105,6 +110,17 @@ void ProjectNumbers::readPhysics(){
 					physicsInfo.gravity = btVector3(x, y, z);
 				}
 
+			}
+
+			//Phsyics: Friction Value
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(3).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.staticFrictionModifier);
+				
+				pElem = hDoc.FirstChildElement().ChildElement(4).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.dynamicFrictionModifier);
 			}
 			
 		}

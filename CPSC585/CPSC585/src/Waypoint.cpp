@@ -65,6 +65,27 @@ void Waypoint::positionCheck(Car* car){
 		if (!nextWaypoints.empty())
 			car->setNextWaypointIndex(nextIndex);
 	}
+	//Else look ahead for one closer?
+	//int closerPointIndex = -1;
+	//btScalar turnFactor = (toWaypoint - car->getTangent()).dot(car->getBinormal());
+	//btScalar length = (getPosition() - car->getPosition()).length();
+	//Waypoint* possibleWayPoint = nextWaypoints.at(0);
+	//for (int i = 0; i < 2; i++)
+	//{
+	//	toWaypoint = possibleWayPoint->getPosition() - car->getPosition();
+	//	btScalar tempTurnFactor = (toWaypoint - car->getTangent()).dot(car->getBinormal());
+	//	btScalar tempLength = toWaypoint.length();
+	//	amount = possibleWayPoint->getTangent().dot(toWaypoint);
+	//	if (abs(tempTurnFactor) < abs(turnFactor) && amount > 0)
+	//	{
+	//		turnFactor = tempTurnFactor;
+	//		length = tempLength;
+	//		closerPointIndex = possibleWayPoint->getIndex();
+	//	}
+	//	possibleWayPoint = possibleWayPoint->getWaypointList().at(0);
+	//}
+	//if (closerPointIndex != -1)
+	//	car->setNextWaypointIndex(closerPointIndex);
 }
 
 void Waypoint::addNextWaypoint(Waypoint *waypoint){
@@ -95,4 +116,14 @@ void Waypoint::removeWaypointFromList(int indexOfWaypointToRemove){
 			return;
 		}
 	}
+}
+
+std::vector<Waypoint*> Waypoint::getWaypointList(){return nextWaypoints;}
+
+std::string Waypoint::toString()
+{
+	std::stringstream stream;
+	stream << getPosition().x() << " " << getPosition().y() << " " << getPosition().z() << " \n";
+	
+	return stream.str();
 }
