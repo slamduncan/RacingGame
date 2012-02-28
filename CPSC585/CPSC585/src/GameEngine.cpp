@@ -48,7 +48,8 @@ void createWaypoint(){
 	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
 	Car* c = entManager->getCar(0);
 	btScalar a = c->getTangent().angle(btVector3(1,0,0));
-	btTransform wayPointT1 = btTransform(btQuaternion(btVector3(0,1,0),a),entManager->getCar(0)->getPosition() + btVector3(0,3,0));
+//	btTransform wayPointT1 = btTransform(btQuaternion(btVector3(0,1,0),a),entManager->getCar(0)->getPosition() + btVector3(0,3,0));
+	btTransform wayPointT1 = c->physicsObject->getWorldTransform();
 	//btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1),entManager->getCar(0)->getPosition() + btVector3(0,3,0));
 	Waypoint* previousWay = wayList->at(wayList->size()-1);
 	previousWay->removeWaypointFromList(wayList->at(0)->getIndex());
