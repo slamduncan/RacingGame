@@ -168,6 +168,7 @@ void EntityManager::addObstacle()
 }
 void EntityManager::addWaypoint(Waypoint* waypoint)
 {
+	waypoint->setIndex(waypointList.size());
 	waypointList.push_back(waypoint);
 }
 void EntityManager::removeCar()

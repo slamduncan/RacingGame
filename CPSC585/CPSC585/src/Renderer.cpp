@@ -596,7 +596,7 @@ void Renderer::drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, f
 void Renderer::drawEntity(Entity &entity)
 {
 	glPushMatrix();
-
+	
 	btScalar* matrix = entity.getGLMatrix();
 
 	//printf("(%f, %f, %f)\n", matrix[0], matrix[1]
@@ -700,7 +700,10 @@ void Renderer::drawEntity(Entity &entity)
 
 	}
 
-	glPopMatrix();
+	glPopMatrix();	
+	drawLine(entity.getPosition(),entity.getPosition()+ entity.getTangent(), 256, 0, 0, 10);
+	drawLine(entity.getPosition(),entity.getPosition()+ entity.getNormal(), 0, 256, 0, 10);
+	drawLine(entity.getPosition(), entity.getPosition()+entity.getBinormal(), 0, 0, 256, 10);
 }
 
 void Renderer::drawPlane(float height)

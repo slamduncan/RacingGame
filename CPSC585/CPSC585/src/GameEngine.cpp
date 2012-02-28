@@ -43,6 +43,23 @@ EntityManager* entManager = EntityManager::getInstance();
 // TESTING AREA
 bool depthShader = false;
 
+//Dynamic creation of waypoints
+void createWaypoint(){
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	Car* c = entManager->getCar(0);
+	btScalar a = c->getTangent().angle(btVector3(1,0,0));
+	btTransform wayPointT1 = btTransform(btQuaternion(btVector3(0,1,0),a),entManager->getCar(0)->getPosition() + btVector3(0,3,0));
+	//btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1),entManager->getCar(0)->getPosition() + btVector3(0,3,0));
+	Waypoint* previousWay = wayList->at(wayList->size()-1);
+	previousWay->removeWaypointFromList(wayList->at(0)->getIndex());
+	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
+	
+	Waypoint* newWay = wayList->at(wayList->size()-1);
+	previousWay->addNextWaypoint(newWay);
+	newWay->addNextWaypoint(wayList->at(0));
+
+}
+
 
 /*
 *	Handles what to do when key has been pressed
@@ -100,7 +117,7 @@ void process_events()
 
 			if (controller1.isBDown())
 			{
-				
+				createWaypoint();
 			}
 			if(controller1.isADown())
 			{
@@ -143,6 +160,8 @@ void process_events()
     }
 
 }
+
+
 
 // Engine Main
 int main(int argc, char** argv)
@@ -187,7 +206,7 @@ int main(int argc, char** argv)
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
 	btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, -2));
-	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(3.5, 3.5, 0));
+	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(25, 3.5, 0));
 	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 3.5));
 	
 	btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, -10));
@@ -198,6 +217,17 @@ int main(int argc, char** argv)
 	entManager->createTrack("model/groundBox.lwo", groundT);
 	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT2);
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	for (int i = 0; i < wayList->size()-1; i++)
+	{
+		Waypoint* w1 = wayList->at(i);
+		Waypoint* w2 = wayList->at(i+1);
+		w1->addNextWaypoint(w2);
+	}
+	Waypoint* w1 = wayList->at(0);
+	Waypoint* w2 = wayList->at(wayList->size()-1);
+	w2->addNextWaypoint(w1);
+
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT3);
 	entManager->createPowerup("model/powerup.lwo", powerupT1);
 
