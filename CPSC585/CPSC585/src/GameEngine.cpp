@@ -248,20 +248,13 @@ int main(int argc, char** argv)
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
 
-/*
-	Shader ssao1 = Shader("shader/basic.vert", "shader/nd.frag");
-	ssao1.debug();
-
-
 	LoadBackgroundSoundFile("Documentation/Music/Engine.wav");
+	//LoadBackgroundSoundFile("Documentation/Music/In Game Music.wav");
 
-	Shader depthPass = Shader("shader/basic.vert", "shader/d2.frag");
-	depthPass.debug();
-*/
 	// game loop
 	while(1)
 	{		
-		alSourcef(source, AL_PITCH, 1.0f + entManager->getCar(0)->GetSpeed() );
+		//alSourcef(source, AL_PITCH, 1.0f + entManager->getCar(0)->GetSpeed() );
 
 		camLookAt = entManager->getCar(0)->getPosition();
 	
