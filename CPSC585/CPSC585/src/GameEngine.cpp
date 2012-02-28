@@ -47,7 +47,7 @@ bool depthShader = false;
 void createWaypoint(){
 	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
 	Car* c = entManager->getCar(0);
-	btScalar a = c->getTangent().angle(btVector3(1,0,0));
+	//btScalar a = c->getTangent().angle(btVector3(1,0,0));
 //	btTransform wayPointT1 = btTransform(btQuaternion(btVector3(0,1,0),a),entManager->getCar(0)->getPosition() + btVector3(0,3,0));
 	btTransform wayPointT1 = c->physicsObject->getWorldTransform();
 	//btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1),entManager->getCar(0)->getPosition() + btVector3(0,3,0));
@@ -58,7 +58,6 @@ void createWaypoint(){
 	Waypoint* newWay = wayList->at(wayList->size()-1);
 	previousWay->addNextWaypoint(newWay);
 	newWay->addNextWaypoint(wayList->at(0));
-
 }
 
 
@@ -247,11 +246,13 @@ int main(int argc, char** argv)
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
 
+/*
+	Shader ssao1 = Shader("shader/basic.vert", "shader/nd.frag");
+	ssao1.debug();
 
-	Shader ssao = Shader("shader/basic.vert", "shader/nd.frag");
-	ssao.debug();
-
-
+	Shader depthPass = Shader("shader/basic.vert", "shader/d2.frag");
+	depthPass.debug();
+*/
 	// game loop
 	while(1)
 	{		
@@ -275,23 +276,28 @@ int main(int argc, char** argv)
 
 		// Render
 		ren->clearGL();	// clear the screen
-		
-		ren->setCamera(camera1);
 
 		ren->glDisableLighting();
 		ph->debugDraw();
 		ren->glEnableLighting();
-
+/*
 		if(depthShader)
 		{
-			ren->draw(ssao);
+			ren->draw(ssao1);
 		}
 		else
 		{
 			ren->drawAll();
 		}
+*/
 		//ren->draw(test);
 
+		ren->shadowMapPass();
+
+		ren->setCamera(camera1);
+		//ren->drawTexture("depth2l1");
+
+		ren->drawAll();
 /*
 		//Following draws the springs for the car
 		for(int i = 0; i < entManager->numCars(); i++)
