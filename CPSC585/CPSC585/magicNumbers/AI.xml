@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
 <AI>
-  <turningModifier value = "100.0" />
-  <drivingModifier value = "500.0" />
+  <turningModifier value = "10.0" />
+  <drivingModifier value = "350.0" />
 </AI>
