@@ -7,7 +7,9 @@
 
 #include <stdio.h>
 
-void LoadSoundFile(ALbyte* FileName)
+ALuint  source;
+
+void LoadBackgroundSoundFile(ALbyte* FileName)
 {
 	ALCdevice* device = alcOpenDevice(NULL);
 	ALCcontext* context = alcCreateContext(device, NULL);
@@ -21,7 +23,6 @@ void LoadSoundFile(ALbyte* FileName)
 	ALfloat source0Vel[]={ 0.0, 0.0, 0.0};
 
 	ALuint  buffer;
-	ALuint  source;
 
 	ALsizei size,freq;
 	ALenum  format;
@@ -73,10 +74,6 @@ void LoadSoundFile(ALbyte* FileName)
 	alSourcei(source, AL_LOOPING, AL_TRUE);
 
 	alSourcePlay(source);
-
-
-
-
 }
 
 

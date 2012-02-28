@@ -23,6 +23,8 @@
 #include "Camera.h"
 #include "AIHandler.h"
 
+#include "Sound.h"
+
 using namespace std;
 
 // Other init
@@ -251,10 +253,13 @@ int main(int argc, char** argv)
 	Shader ssao = Shader("shader/basic.vert", "shader/nd.frag");
 	ssao.debug();
 
+	LoadBackgroundSoundFile("Documentation/Music/Engine.wav");
 
 	// game loop
 	while(1)
 	{		
+		alSourcef(source, AL_PITCH, 1.0f + entManager->getCar(0)->GetSpeed() );
+
 		camLookAt = entManager->getCar(0)->getPosition();
 	
 		camera1.setUpCamera(camLookAt);
