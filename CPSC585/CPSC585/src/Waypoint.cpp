@@ -123,7 +123,13 @@ std::vector<Waypoint*> Waypoint::getWaypointList(){return nextWaypoints;}
 std::string Waypoint::toString()
 {
 	std::stringstream stream;
-	stream << getPosition().x() << " " << getPosition().y() << " " << getPosition().z() << " \n";
+	stream << getPosition().x() << " " << getPosition().y() << " " << getPosition().z() << " ";
+	for (int i = 0; i < 3; i++)
+	{
+		btVector3 row = transform.getBasis().getRow(i);
+		stream << row.x() << " " << row.y() << " " << row.z() << " ";
+	}
+	stream << "\n";
 	
 	return stream.str();
 }

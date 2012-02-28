@@ -89,14 +89,37 @@ void readWaypoints(const char* fileName){
 		while (file.good()){
 			getline(file, line);
 			ss << line;
-			int x, y, z;
+			float x, y, z, r1, r2, r3, r4,r5,r6, r7,r8,r9;
 			ss >> x;
 			ss >> y;
 			ss >> z;
-			btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(x, y, z));
+			ss >> r1;
+			ss >> r2;
+			ss >> r3;
+
+			ss >> r4;
+			ss >> r5;
+			ss >> r6;
+
+			ss >> r7;
+			ss >> r8;
+			ss >> r9;
+			btMatrix3x3 temp = btMatrix3x3(r1,r2,r3,r4,r5,r6,r7,r8,r9);
+			btTransform wayPointT1 = btTransform(temp, btVector3(x, y, z));
 			entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 		}
+		for (int i = 0; i < wayList->size()-1; i++)
+		{
+			Waypoint* w1 = wayList->at(i);
+			Waypoint* w2 = wayList->at(i+1);
+			w1->addNextWaypoint(w2);
+		}
+		Waypoint* w1 = wayList->at(0);
+		Waypoint* w2 = wayList->at(wayList->size()-1);
+		w2->addNextWaypoint(w1);
+		
 		file.close();
+		entManager->getCar(0)->setNextWaypointIndex(0);
 	}
 	else
 		printf("Unable to open Waypoint File - Read\n");
@@ -121,6 +144,9 @@ void handle_key_down( SDL_keysym* keysym )
 			break;
 		case SDLK_w:
 			writeWaypoints("waypoints.w");
+			break;
+		case SDLK_l:
+			readWaypoints("waypoints.w");
 			break;
 		default:
 			break;
