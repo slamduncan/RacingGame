@@ -26,6 +26,8 @@ public:
 	int getIndex();
 	void setIndex(int in);
 	void removeWaypointFromList(int indexOfWaypointToRemove);
+	std::vector<Waypoint*> getWaypointList();
+	std::string toString();
 };
 
 #endif

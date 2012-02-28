@@ -7,6 +7,7 @@ AIHandler::AIHandler() : reloadObserver(this, &AIHandler::reloadVariables){
 	cars = EntityManager::getInstance()->getCarList();
 	turningModifier = 1.0;
 	forwardModifier = 1.0;
+	maxMovementForce = 1.0;
 	reloadObserver.init(EventTypes::RELOAD_VARIABLES);
 }
 
@@ -35,6 +36,10 @@ void AIHandler::generateNextMove(){
 		RotationEvent* re = new RotationEvent(btQuaternion(0, turningScalar*turningModifier,0,0));
 		c->observeRotation(re);		
 		delete re;
+		if (forwardForce > maxMovementForce)
+			forwardForce = maxMovementForce;
+		else if (forwardForce < -maxMovementForce)
+			forwardForce = -maxMovementForce;
 		ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0);
 		c->observeForwardForce(ffe);
 		delete ffe;
@@ -45,4 +50,5 @@ void AIHandler::generateNextMove(){
 void AIHandler::reloadVariables(ReloadEvent *e){
 	turningModifier = e->numberHolder.aiInfo.rotateModifier;
 	forwardModifier = e->numberHolder.aiInfo.drivingModifier;
+	maxMovementForce = e->numberHolder.aiInfo.maxMovementForce;
 }

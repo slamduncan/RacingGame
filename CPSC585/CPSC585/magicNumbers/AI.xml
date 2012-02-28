@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <AI>
   <turningModifier value = "10.0" />
-  <drivingModifier value = "350.0" />
+  <drivingModifier value = "250.0" />
+  <maxMovementForce value = "10000.0" />
 </AI>
