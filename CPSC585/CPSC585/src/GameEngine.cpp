@@ -136,20 +136,30 @@ void handle_key_down( SDL_keysym* keysym )
 	{
 		//Quit on esc
 		case SDLK_ESCAPE:
-			ren->quitSDL();
-			break;
+			{
+				ren->quitSDL();
+				break;
+			}
 		//Reload the variables on r.
 		case SDLK_r:
-			evSys->emitEvent(new ReloadEvent());
-			break;
+			{
+				evSys->emitEvent(new ReloadEvent());
+				break;
+			}
 		case SDLK_w:
-			writeWaypoints("waypoints.w");
-			break;
+			{
+				//writeWaypoints("waypoints.w");
+				break;
+			}
 		case SDLK_l:
-			readWaypoints("waypoints.w");
-			break;
+			{
+				//readWaypoints("waypoints.w");
+				break;
+			}
 		default:
-			break;
+			{
+				break;
+			}
     }
 
 }
@@ -284,6 +294,11 @@ int main(int argc, char** argv)
 
 
 	entManager->createCar("model/box.3ds", carMass, carT1);	
+	/*for(int i = 0; i < 30; i++){
+		btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15*i, 3, 0));	
+		entManager->createCar("model/box.3ds", carMass, carT2);	
+	}*/
+
 	entManager->createCar("model/box.3ds", carMass, carT2);	
 	entManager->createTrack("model/groundBox.lwo", groundT);
 	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
@@ -411,6 +426,7 @@ int main(int argc, char** argv)
 			ren->drawEntity(*(entManager->getTrack()));
 		}
 */		
+
 		ren->glEnable2D();
 		frameCount++;
 
