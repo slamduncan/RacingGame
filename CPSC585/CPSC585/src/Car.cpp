@@ -36,6 +36,7 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	gravity = Physics::Inst()->getGravity();
 	restDisplacement = btScalar(2.0f);
 	nextWaypoint = 0;
+	m_Speed = 0.0f;
 }
 
 void Car::initObservers()
@@ -66,6 +67,10 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 	tan /= 4.0f;
 	if(engineForce < 0)
 	{
+		float NewSpeed = m_Speed + (engineForce * -0.0005);
+		if( NewSpeed < (engineForce * -1.0) )
+			m_Speed = NewSpeed;
+
 		// player is accelerating, we apply rear wheel force
 		if(newWheels[2].onGround || newWheels[3].onGround)
 		{
@@ -76,6 +81,10 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 	// player is decelerating
 	else
 	{
+		float NewSpeed = m_Speed - 0.0005;
+		if( NewSpeed > 0 )
+			m_Speed = NewSpeed;
+
 		// apply to all the wheels
 		for(int i = 0; i < 4; i++)
 		{
@@ -231,3 +240,13 @@ void Car::UsePowerUp( int index )
 
 int Car::getNextWaypointIndex(){return nextWaypoint;}
 void Car::setNextWaypointIndex(int in){ nextWaypoint = in;}
+
+float Car::GetSpeed()
+{
+	return m_Speed;
+}
+
+void Car::SetSpeed( float speed )
+{
+	m_Speed = speed;
+}
