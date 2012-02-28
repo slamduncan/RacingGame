@@ -51,6 +51,11 @@ bool Renderer::init()
 		fprintf(stderr, "Renderer failed to init\na = %d, b = %d, c = %d\n", a, b, c);
 		return false;
 	}
+
+	int d = initTexs();
+	int e = initShaders();
+
+
 	return true;
 }
 
@@ -210,6 +215,28 @@ int Renderer::initFont()
 	}
 	return counter;
 }
+
+int Renderer::initTexs()
+{
+	tm->genTexture("model/box.png", "car1");	// load the car texture into GPU memory
+	tm->genTexture(width, height, "depthl1");	// create a texture for our shadow map might need mulitple textures for multiple lights
+	tm->genTexture(width, height, "gaussian");	// gaussian blur
+	tm->genTexture(width, height, "smap");		// shadow maps
+	tm->genTexture(width, height, "nd");		// create a texture for ssao pass 1
+	tm->genTexture(width, height, "ssao");		// create a texture for ssao pass 2
+	tm->genTexture(width, height, "rblur");		// radial blur
+
+	//printf("num textures %d\n", tm->getNumTex());
+
+	return 0;
+}
+int Renderer::initShaders()
+{
+
+
+	return 0;
+}
+
 
 /*
 *	Closes SDL/window and quits the program?

@@ -163,6 +163,8 @@ GLuint TextureManager::genTexture(unsigned int width, unsigned int height, std::
 	//glTexParameterf(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_UNSIGNED_INT, NULL);	// generate 32bit precision floats for each channel
 	glBindTexture(GL_TEXTURE_2D, 0);  // unbind out texture
+
+	texman.insert(pair<string, GLuint>(key, texID));
 	
 	return texID;
 }
@@ -175,12 +177,15 @@ void TextureManager::freeTexture()
 
 void TextureManager::freeAll()
 {
-
+	for(int i = 0; i < texman.size(); i++)
+	{
+		//glDeleteTextures(1, texman.);
+	}
 }
 
 int TextureManager::getNumTex()
 {
-	return numTextures;
+	return texman.size();
 }
 
 int TextureManager::getTexID(int index)

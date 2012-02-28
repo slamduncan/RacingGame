@@ -201,9 +201,6 @@ int main(int argc, char** argv)
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT3);
 	entManager->createPowerup("model/powerup.lwo", powerupT1);
 
-
-	ren->genTexture("model/box.png", "car1");
-
 	//Set inital game time
 	Uint32 currentTime = SDL_GetTicks();
 	Uint32 oldTime = SDL_GetTicks();

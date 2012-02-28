@@ -91,6 +91,8 @@ public:
 	int initSDL();
 	int initGL();
 	int initFont();
+	int initTexs();
+	int initShaders();
 
 	void outputText(std::string text, int r, int g, int b, int x, int y);
 
