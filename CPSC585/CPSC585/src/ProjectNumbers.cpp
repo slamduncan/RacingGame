@@ -112,7 +112,7 @@ void ProjectNumbers::readPhysics(){
 
 			}
 
-			//Phsyics: Friction Value
+			//Phyics: Friction Value
 			{
 				pElem = hDoc.FirstChildElement().ChildElement(3).Element();
 				if(pElem)
@@ -122,6 +122,13 @@ void ProjectNumbers::readPhysics(){
 				if(pElem)
 					pElem->QueryFloatAttribute("value", &physicsInfo.dynamicFrictionModifier);
 			}
+			//Physics: ForwardForceModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(5).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.forwardForceModifier);
+			}
+
 			
 		}
 		else

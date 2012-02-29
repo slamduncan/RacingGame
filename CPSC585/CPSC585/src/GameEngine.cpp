@@ -239,8 +239,6 @@ int main(int argc, char** argv)
 {	
 	// INITIALIZATIONS
 
-	//Load variables from the xml file.
-	evSys->emitEvent(new ReloadEvent());	
 	
 	//Initialize the renderer
 	bool renInit = ren->init();
@@ -307,6 +305,9 @@ int main(int argc, char** argv)
 	Uint32 oldTime = SDL_GetTicks();
 	int frameCount = 0;
 	int counter = 1;
+	int instantFrameCount = 0;
+	stringstream instantFrameCountBuffer;
+	string instantFrameString = "";
 
 
 	//Initialize camera settings.
@@ -317,8 +318,11 @@ int main(int argc, char** argv)
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
 
-	LoadBackgroundSoundFile("Documentation/Music/Engine.wav");
-	//LoadBackgroundSoundFile("Documentation/Music/In Game Music.wav");
+	//LoadBackgroundSoundFile("Documentation/Music/Engine.wav");
+	LoadBackgroundSoundFile("Documentation/Music/In Game Music.wav");
+
+	//Load variables from the xml file.
+	evSys->emitEvent(new ReloadEvent());	
 
 	// game loop
 	while(1)
@@ -406,15 +410,20 @@ int main(int argc, char** argv)
 */		
 		ren->glEnable2D();
 		frameCount++;
+		instantFrameCount++;
 
 		/* Calculate the frames per second */
 		if((currentTime - oldTime) > 1000){
-			//sprintf_s(frames, "%d FPS", frameCount);	
+			//sprintf_s(frames, "%d FPS", frameCount);				
+			std::stringstream ssInstant;
+			ssInstant << instantFrameCount << " Instant FPS";
 			//ren->outputText(frames, 0, 255, 0, 10, 700);
 			//std::cout << frameCount << "\n";
 			//frameCount = 0;
+			instantFrameCount = 0;
+			instantFrameString = ssInstant.str();			
 			counter++;
-			oldTime = currentTime;
+			oldTime = currentTime;			
 		}		
 		currentTime = SDL_GetTicks();
 		
@@ -423,6 +432,7 @@ int main(int argc, char** argv)
 
 		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
 		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
+		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
 		
 		ren->glDisable2D();
 

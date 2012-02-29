@@ -37,13 +37,14 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	restDisplacement = btScalar(2.0f);
 	nextWaypoint = 0;
 	m_Speed = 0.0f;
+	forwardForceModifier = 1.0;
 }
 
 void Car::initObservers()
 {	
 	rotationObserver.init(EventTypes::ROTATION);
 	forwardForceObserver.init(EventTypes::FORWARD_FORCE);
-
+	updateVariableObserver.init(EventTypes::RELOAD_VARIABLES);
 }
 
 void Car::observeRotation(RotationEvent *e){		
@@ -62,7 +63,7 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 	
 	btScalar engineForce = e->getNormForce();
 	
-	btVector3 tan = getTangent() * engineForce;
+	btVector3 tan = getTangent() * engineForce * forwardForceModifier;
 	tan.setY(0);	// project to the xz plane
 	tan /= 4.0f;
 	if(engineForce < 0)
@@ -74,8 +75,8 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 		// player is accelerating, we apply rear wheel force
 		if(newWheels[2].onGround || newWheels[3].onGround)
 		{
-			chassis->applyImpulse(tan, wheelOffsets[2]);
-			chassis->applyImpulse(tan, wheelOffsets[3]);
+			chassis->applyForce(tan, wheelOffsets[2]);
+			chassis->applyForce(tan, wheelOffsets[3]);
 		}
 	}
 	// player is decelerating
@@ -90,7 +91,7 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 		{
 			if(newWheels[i].onGround)
 			{
-				chassis->applyImpulse(tan, wheelOffsets[i]);
+				chassis->applyForce(tan, wheelOffsets[i]);
 			}
 		}
 	}
@@ -212,6 +213,7 @@ void Car::observeVariables(ReloadEvent *e){
 		newWheels[i].setCModifier(btScalar(e->numberHolder.physicsInfo.cModifier));
 		newWheels[i].setKModifier(btScalar(e->numberHolder.physicsInfo.kModifier));
 	}
+	forwardForceModifier = e->numberHolder.physicsInfo.forwardForceModifier;
 }
 
 PowerUp Car::GetPowerUpAt( int index )
