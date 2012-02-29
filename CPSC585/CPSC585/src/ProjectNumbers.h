@@ -19,6 +19,7 @@ public:
 	struct physics{
 		float cModifier;
 		float kModifier;
+		float forwardForceModifier;
 		btVector3 gravity;
 		float staticFrictionModifier;
 		float dynamicFrictionModifier;
