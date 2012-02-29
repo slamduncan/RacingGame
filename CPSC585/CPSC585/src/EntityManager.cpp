@@ -123,6 +123,8 @@ void EntityManager::createWaypoint(char* path, btTransform &trans)
 
 	wp->initPhysicsObject(triMesh, mass, trans);
 
+	wp->initObservers();
+
 	addWaypoint(wp);
 }
 

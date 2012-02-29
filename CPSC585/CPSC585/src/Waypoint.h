@@ -8,6 +8,8 @@ class Waypoint : public Entity {
 	btTransform transform;
 	std::vector<Waypoint*> nextWaypoints;
 	int index;
+	float goToNextWaypointDistanceBefore, goToNextWaypointDistanceAfter;
+	MethodObserver<ReloadEvent, Waypoint> updateVariableObserver;
 public:
 	
 	bool initPhysicsObject(btCollisionShape *shape, btScalar &mass, btTransform &location);
@@ -21,6 +23,7 @@ public:
 
 	Waypoint();
 
+	void observeVariables(ReloadEvent *e);
 	void positionCheck(Car* car);
 	void addNextWaypoint(Waypoint* waypoint);
 	int getIndex();

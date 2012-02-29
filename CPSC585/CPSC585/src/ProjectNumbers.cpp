@@ -63,6 +63,16 @@ void ProjectNumbers::readAI(){
 				if (pElem)
 					pElem->QueryFloatAttribute("value", &aiInfo.maxMovementForce);
 			}
+
+			//AI nextWaypoint area.
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(3).Element();
+				if (pElem)
+				{
+					pElem->QueryFloatAttribute("beforeValue", &aiInfo.goToNextWaypointDistanceBefore);
+					pElem->QueryFloatAttribute("afterValue", &aiInfo.goToNextWaypointDistanceAfter);
+				}
+			}
 		}
 		else
 		{

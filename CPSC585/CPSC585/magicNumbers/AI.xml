@@ -2,5 +2,6 @@
 <AI>
   <turningModifier value = "10.0" />
   <drivingModifier value = "10050.0" />
-  <maxMovementForce value = "1000000.0" />  
+  <maxMovementForce value = "1000000.0" />
+  <goToNextWaypointDistance beforeValue ="5.0" afterValue ="-10.0" />
 </AI>
