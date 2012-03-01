@@ -419,10 +419,10 @@ void Renderer::drawAll()
 	// draw obstacles
 
 	// debug draw waypoints
-	/*for(int i = 0; i < em->numWaypoints(); i++)
+	for(int i = 0; i < em->numWaypoints(); i++)
 	{
 		drawEntity(*(em->getWaypoint(i)));
-	}*/
+	}
 }
 
 void Renderer::drawTexture(std::string texName)

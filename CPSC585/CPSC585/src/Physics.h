@@ -42,6 +42,7 @@ private:
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* dynamicsWorld;
+	btScalar staticFrictionScalar, dynamicFrictionScalar;
 
 	MethodObserver<ReloadEvent, Physics> variableObserver;
 };
