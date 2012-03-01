@@ -5,6 +5,7 @@ Waypoint::Waypoint() : updateVariableObserver(this,&Waypoint::observeVariables){
 	goToNextWaypointDistanceBefore = 0.0;
 	goToNextWaypointDistanceAfter = -10.0;
 	throttlePercentage = 1.0;
+	throttleValue = -32767.0;
 }
 
 int Waypoint::getThrottle(){return throttleValue;}

@@ -40,13 +40,13 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	forwardForceModifier = 1.0;
 	sideFrictionModifier = 1.0;
 	forwardFrictionModifier = 1.0;
+	updateVariableObserver.init(EventTypes::RELOAD_VARIABLES);
 }
 
 void Car::initObservers()
 {	
 	rotationObserver.init(EventTypes::ROTATION);
-	forwardForceObserver.init(EventTypes::FORWARD_FORCE);
-	updateVariableObserver.init(EventTypes::RELOAD_VARIABLES);
+	forwardForceObserver.init(EventTypes::FORWARD_FORCE);	
 }
 
 void Car::observeRotation(RotationEvent *e){		

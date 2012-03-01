@@ -20,6 +20,7 @@ private:
 	float turningModifier;
 	float forwardModifier;
 	float maxMovementForce;
+	btScalar lastAngleForce;
 
 public:
 	void reloadVariables(ReloadEvent *e);

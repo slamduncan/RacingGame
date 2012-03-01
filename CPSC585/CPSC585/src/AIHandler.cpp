@@ -30,10 +30,15 @@ void AIHandler::generateNextMove(){
 		btVector3 toWaypoint = wayPos - carPos;		
 		btVector3 angleRot = toWaypoint -  tan.normalized();
 		btScalar turningScalar = angleRot.dot(c->getBinormal());
+		btScalar rateOfChange = lastAngleForce - turningScalar;
+
+		btScalar roationForce = turningScalar*turningModifier - rateOfChange;
+		lastAngleForce = roationForce;
 		btScalar distance = toWaypoint.length();
 		btScalar forwardForce = btScalar(-distance*forwardModifier);
+		//btScalar forwardForce = btScalar(w->getThrottle());
 		
-		RotationEvent* re = new RotationEvent(btQuaternion(0, turningScalar*turningModifier,0,0));
+		RotationEvent* re = new RotationEvent(btQuaternion(0, roationForce,0,0));
 		c->observeRotation(re);		
 		delete re;
 		if (forwardForce > maxMovementForce)

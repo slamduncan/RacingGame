@@ -191,12 +191,12 @@ void handle_key_down( SDL_keysym* keysym )
 			}
 		case SDLK_w:
 			{
-				//writeWaypoints("waypoints.w");
+				writeWaypoints("waypoints.w");
 				break;
 			}
 		case SDLK_l:
 			{
-				//readWaypoints("waypoints.w");
+				readWaypoints("waypoints.w");
 				break;
 			}
 		default:
@@ -245,7 +245,9 @@ void process_events()
 			}
 			if(controller1.isADown())
 			{				
-				deleteWaypoint();
+				//deleteWaypoint();
+				int i;
+				cin >> i;
 			}
 			if(controller1.isXDown())
 			{
