@@ -32,6 +32,7 @@ public:
 	void setIndex(int in);
 	int getThrottle();
 	void setThrottle(int value);
+	void setTransform(btTransform &inT);
 	void removeWaypointFromList(int indexOfWaypointToRemove);
 	std::vector<Waypoint*> getWaypointList();
 	std::string toString();

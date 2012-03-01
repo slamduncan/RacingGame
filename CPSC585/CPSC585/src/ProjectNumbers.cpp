@@ -73,6 +73,13 @@ void ProjectNumbers::readAI(){
 					pElem->QueryFloatAttribute("afterValue", &aiInfo.goToNextWaypointDistanceAfter);
 				}
 			}
+
+			//AI turningRateOfChange
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(4).Element();
+				if (pElem)
+					pElem->QueryFloatAttribute("value", &aiInfo.rateOfChangeModifier);
+			}
 		}
 		else
 		{

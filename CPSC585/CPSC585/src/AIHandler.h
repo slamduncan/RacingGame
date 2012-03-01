@@ -20,6 +20,7 @@ private:
 	float turningModifier;
 	float forwardModifier;
 	float maxMovementForce;
+	float rateOfChangeModifier;
 	btScalar lastAngleForce;
 
 public:

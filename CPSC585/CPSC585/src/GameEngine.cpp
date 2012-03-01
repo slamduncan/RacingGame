@@ -118,6 +118,15 @@ void writeWaypoints(const char* fileName){
 		printf("Unable to open Waypoint File - Write\n");
 }
 
+void moveWaypoint(){
+	int index = getClosestWaypoint();
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	Waypoint* w = wayList->at(index);
+	Car* car = entManager->getCar(0);
+	btTransform cT = car->physicsObject->getWorldTransform();
+	w->setTransform(cT);
+}
+
 void readWaypoints(const char* fileName){
 	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
 	wayList->clear();
@@ -160,6 +169,17 @@ void readWaypoints(const char* fileName){
 		Waypoint* w1 = wayList->at(0);
 		Waypoint* w2 = wayList->at(wayList->size()-1);
 		w2->addNextWaypoint(w1);
+
+		for (int i = 0; i < wayList->size()-1; i++){
+			btVector3 tan = wayList->at(i)->getWaypointList().at(0)->getPosition() - wayList->at(i)->getPosition();
+			tan.normalize();
+			btVector3 biNorm = tan.cross(btVector3(0,1,0));
+			btVector3 normal = biNorm.cross(tan);
+
+			btMatrix3x3 matrix = btMatrix3x3(tan.x(), normal.x(), biNorm.x(), tan.y(), normal.y(), biNorm.y(), tan.z(), normal.z(), biNorm.z());
+			btTransform t = btTransform(matrix, wayList->at(i)->getPosition());
+			wayList->at(i)->setTransform(t);
+		}
 		
 		file.close();
 		entManager->getCar(0)->setNextWaypointIndex(0);

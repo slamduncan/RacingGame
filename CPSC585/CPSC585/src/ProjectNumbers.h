@@ -33,6 +33,7 @@ public:
 		float maxMovementForce;
 		float goToNextWaypointDistanceBefore;
 		float goToNextWaypointDistanceAfter;
+		float rateOfChangeModifier;
 	} aiInfo;
 
 	ProjectNumbers(){}//readVariablesIn();}

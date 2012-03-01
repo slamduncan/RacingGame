@@ -32,12 +32,13 @@ void AIHandler::generateNextMove(){
 		btScalar turningScalar = angleRot.dot(c->getBinormal());
 		btScalar rateOfChange = lastAngleForce - turningScalar;
 
-		btScalar roationForce = turningScalar*turningModifier - rateOfChange;
-		lastAngleForce = roationForce;
+		btScalar roationForce = turningScalar*turningModifier - rateOfChange*rateOfChangeModifier;
+		lastAngleForce = turningScalar;
+
 		btScalar distance = toWaypoint.length();
 		btScalar forwardForce = btScalar(-distance*forwardModifier);
 		//btScalar forwardForce = btScalar(w->getThrottle());
-		
+
 		RotationEvent* re = new RotationEvent(btQuaternion(0, roationForce,0,0));
 		c->observeRotation(re);		
 		delete re;
@@ -56,4 +57,5 @@ void AIHandler::reloadVariables(ReloadEvent *e){
 	turningModifier = e->numberHolder.aiInfo.rotateModifier;
 	forwardModifier = e->numberHolder.aiInfo.drivingModifier;
 	maxMovementForce = e->numberHolder.aiInfo.maxMovementForce;
+	rateOfChangeModifier = e->numberHolder.aiInfo.rateOfChangeModifier;
 }

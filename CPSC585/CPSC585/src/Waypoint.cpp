@@ -149,3 +149,7 @@ void Waypoint::observeVariables(ReloadEvent *e){
 	goToNextWaypointDistanceBefore = e->numberHolder.aiInfo.goToNextWaypointDistanceBefore;
 	goToNextWaypointDistanceAfter = e->numberHolder.aiInfo.goToNextWaypointDistanceAfter;
 }
+
+void Waypoint::setTransform(btTransform &inT){
+	transform = inT;
+}
