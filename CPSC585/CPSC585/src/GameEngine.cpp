@@ -62,6 +62,45 @@ void createWaypoint(){
 	newWay->addNextWaypoint(wayList->at(0));
 }
 
+int getClosestWaypoint(){
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	Car* car = entManager->getCar(0);
+	float distance = 10000.0;
+	int index = -1;
+	Waypoint* currentWaypoint;
+	for (int i = 0; i < wayList->size(); i++)
+	{
+		currentWaypoint = wayList->at(i);
+		float tempDist = (car->getPosition() - currentWaypoint->getPosition()).length();
+		if (tempDist < distance){
+			distance = tempDist;
+			index = i;
+		}
+	}
+	return index;
+}
+
+/* NOTE: THIS FUNCTION IS ONLY DEFINED FOR WHEN THERE IS AN ORDERED LIST OF SINGLE WAYPOINTS */
+//Issues exist with this funtion...
+void deleteWaypoint(){
+	int index = getClosestWaypoint();
+	if (index != -1)
+	{
+		btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+		if (index != 0)
+		{
+			wayList->at(index-1)->removeWaypointFromList(index);
+			wayList->at(index-1)->addNextWaypoint(wayList->at(index + 1));
+		}
+		else{
+			wayList->at(wayList->size()-1)->removeWaypointFromList(index);
+			wayList->at(wayList->size()-1)->addNextWaypoint(wayList->at(index + 1));
+		}
+
+		wayList->at(index)->initRenderObject("model/deletedWaypoint.obj");
+	}
+}
+
 void writeWaypoints(const char* fileName){
 	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
 	ofstream file(fileName);
@@ -201,8 +240,8 @@ void process_events()
 				createWaypoint();
 			}
 			if(controller1.isADown())
-			{
-				ren->quitSDL();
+			{				
+				deleteWaypoint();
 			}
 			if(controller1.isXDown())
 			{
@@ -229,6 +268,10 @@ void process_events()
 				{
 					depthShader = true;
 				}
+			}
+			if (controller1.isButtonDown(controller1.Start_button))
+			{
+				ren->quitSDL();
 			}
 
 			break;

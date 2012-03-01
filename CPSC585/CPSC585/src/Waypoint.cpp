@@ -1,7 +1,9 @@
 #include "Waypoint.h"
 
-Waypoint::Waypoint(){
+Waypoint::Waypoint() : updateVariableObserver(this,&Waypoint::observeVariables){
 	nextWaypoints = std::vector<Waypoint*>();
+	goToNextWaypointDistanceBefore = 0.0;
+	goToNextWaypointDistanceAfter = -10.0;
 }
 
 bool Waypoint::initPhysicsObject(btCollisionShape *shape, btScalar &mass, btTransform &location){
@@ -12,7 +14,7 @@ bool Waypoint::initPhysicsObject(btCollisionShape *shape, btScalar &mass, btTran
 }
 void Waypoint::initObservers()
 {
-
+	updateVariableObserver.init(EventTypes::RELOAD_VARIABLES);
 }
 
 btScalar* Waypoint::getGLMatrix()
@@ -59,7 +61,7 @@ void Waypoint::positionCheck(Car* car){
 	//If amount is less than 0, then car is past this.
 	btScalar amount = getTangent().dot(toWaypoint);
 
-	if (amount < 3.0 && amount > -5.0){
+	if (amount < goToNextWaypointDistanceBefore && amount > goToNextWaypointDistanceAfter){
 		int nextIndex = nextWaypoints.at(0)->getIndex();
 		//Do stuff to find the next waypoint!
 		if (!nextWaypoints.empty())
@@ -132,4 +134,9 @@ std::string Waypoint::toString()
 	stream << "\n";
 	
 	return stream.str();
+}
+
+void Waypoint::observeVariables(ReloadEvent *e){
+	goToNextWaypointDistanceBefore = e->numberHolder.aiInfo.goToNextWaypointDistanceBefore;
+	goToNextWaypointDistanceAfter = e->numberHolder.aiInfo.goToNextWaypointDistanceAfter;
 }

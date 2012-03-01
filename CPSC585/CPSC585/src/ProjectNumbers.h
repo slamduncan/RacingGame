@@ -29,6 +29,8 @@ public:
 		float rotateModifier;
 		float drivingModifier;
 		float maxMovementForce;
+		float goToNextWaypointDistanceBefore;
+		float goToNextWaypointDistanceAfter;
 	} aiInfo;
 
 	ProjectNumbers(){}//readVariablesIn();}
