@@ -60,7 +60,7 @@ public:
 
 	void createCar(char* path, btScalar &mass, btTransform &trans);
 	void createTrack(char* path, btTransform &trans);
-	void createWaypoint(char* path, btTransform &trans);
+	void createWaypoint(char* path, btTransform &trans, int carThrottle = 32767);
 	void createPowerup(char* path, btTransform &trans);
 	void createObstacle(char* path, btScalar &mass, btTransform &trans);
 

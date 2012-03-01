@@ -6,4 +6,6 @@
   <staticFrictionModifier value ="1.0" />
   <dynamicFrictionModifier value = "1.0"/>
   <forwardForceModifier value ="100.0"/>
+  <sideFrictionModifier value ="50.0"/>
+  <forwardFrictionModifier value ="100.0"/>
 </Physics>

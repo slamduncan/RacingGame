@@ -4,6 +4,13 @@ Waypoint::Waypoint() : updateVariableObserver(this,&Waypoint::observeVariables){
 	nextWaypoints = std::vector<Waypoint*>();
 	goToNextWaypointDistanceBefore = 0.0;
 	goToNextWaypointDistanceAfter = -10.0;
+	throttlePercentage = 1.0;
+}
+
+int Waypoint::getThrottle(){return throttleValue;}
+
+void Waypoint::setThrottle(int value){
+	throttleValue = value;
 }
 
 bool Waypoint::initPhysicsObject(btCollisionShape *shape, btScalar &mass, btTransform &location){
@@ -131,6 +138,7 @@ std::string Waypoint::toString()
 		btVector3 row = transform.getBasis().getRow(i);
 		stream << row.x() << " " << row.y() << " " << row.z() << " ";
 	}
+	stream << getThrottle() << " ";
 	stream << "\n";
 	
 	return stream.str();

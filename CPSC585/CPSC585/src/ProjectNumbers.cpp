@@ -138,8 +138,19 @@ void ProjectNumbers::readPhysics(){
 				if(pElem)
 					pElem->QueryFloatAttribute("value", &physicsInfo.forwardForceModifier);
 			}
-
+			//Physics: sideFrictionModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(6).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.sideFrictionModifier);
+			}
 			
+			//Physics: forwardFrictionModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(7).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.forwardFrictionModifier);
+			}
 		}
 		else
 		{

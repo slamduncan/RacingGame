@@ -111,7 +111,7 @@ void EntityManager::createTrack(char* path, btTransform &trans)
 	Physics::Inst()->addEntity(*trk);
 }
 
-void EntityManager::createWaypoint(char* path, btTransform &trans)
+void EntityManager::createWaypoint(char* path, btTransform &trans, int carThrottle)
 {
 	btScalar mass = btScalar(0.f);
 	
@@ -124,6 +124,8 @@ void EntityManager::createWaypoint(char* path, btTransform &trans)
 	wp->initPhysicsObject(triMesh, mass, trans);
 
 	wp->initObservers();
+
+	wp->setThrottle(carThrottle);
 
 	addWaypoint(wp);
 }

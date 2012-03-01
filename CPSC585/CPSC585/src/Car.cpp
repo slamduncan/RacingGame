@@ -38,6 +38,8 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	nextWaypoint = 0;
 	m_Speed = 0.0f;
 	forwardForceModifier = 1.0;
+	sideFrictionModifier = 1.0;
+	forwardFrictionModifier = 1.0;
 }
 
 void Car::initObservers()
@@ -181,7 +183,7 @@ void Car::updateWheels()
 
 			relpos -= carNormal * (carNormal.dot(relpos));
 
-			chassis->applyImpulse(getBinormal() * sideFriction[i]*0.1f,relpos);
+			chassis->applyForce(getBinormal() * sideFriction[i]*0.1f * sideFrictionModifier,relpos);
 		}
 	}
 }
@@ -214,6 +216,8 @@ void Car::observeVariables(ReloadEvent *e){
 		newWheels[i].setKModifier(btScalar(e->numberHolder.physicsInfo.kModifier));
 	}
 	forwardForceModifier = e->numberHolder.physicsInfo.forwardForceModifier;
+	sideFrictionModifier = e->numberHolder.physicsInfo.sideFrictionModifier;
+	forwardFrictionModifier = e->numberHolder.physicsInfo.forwardFrictionModifier;
 }
 
 PowerUp Car::GetPowerUpAt( int index )

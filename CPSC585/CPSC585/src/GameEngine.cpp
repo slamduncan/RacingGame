@@ -60,6 +60,7 @@ void createWaypoint(){
 	Waypoint* newWay = wayList->at(wayList->size()-1);
 	previousWay->addNextWaypoint(newWay);
 	newWay->addNextWaypoint(wayList->at(0));
+	newWay->setThrottle(controller1.getTriggers());
 }
 
 int getClosestWaypoint(){
@@ -129,6 +130,7 @@ void readWaypoints(const char* fileName){
 			getline(file, line);
 			ss << line;
 			float x, y, z, r1, r2, r3, r4,r5,r6, r7,r8,r9;
+			int throttle;
 			ss >> x;
 			ss >> y;
 			ss >> z;
@@ -143,9 +145,11 @@ void readWaypoints(const char* fileName){
 			ss >> r7;
 			ss >> r8;
 			ss >> r9;
+
+			ss >> throttle;
 			btMatrix3x3 temp = btMatrix3x3(r1,r2,r3,r4,r5,r6,r7,r8,r9);
 			btTransform wayPointT1 = btTransform(temp, btVector3(x, y, z));
-			entManager->createWaypoint("model/waypoint.obj", wayPointT1);
+			entManager->createWaypoint("model/waypoint.obj", wayPointT1, throttle);
 		}
 		for (int i = 0; i < wayList->size()-1; i++)
 		{

@@ -63,6 +63,8 @@ private:
 	int nextWaypoint;
 	float m_Speed;
 	float forwardForceModifier;
+	float sideFrictionModifier;
+	float forwardFrictionModifier;
 
 	// 3 power up slots, circular array of powerups?
 	PowerUp m_CarPowerUps[MAX_POWERUPS - 1];

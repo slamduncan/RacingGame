@@ -23,6 +23,8 @@ public:
 		btVector3 gravity;
 		float staticFrictionModifier;
 		float dynamicFrictionModifier;
+		float sideFrictionModifier;
+		float forwardFrictionModifier;
 	} physicsInfo;
 
 	struct AI{

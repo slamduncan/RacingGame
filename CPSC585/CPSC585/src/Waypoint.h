@@ -10,6 +10,8 @@ class Waypoint : public Entity {
 	int index;
 	float goToNextWaypointDistanceBefore, goToNextWaypointDistanceAfter;
 	MethodObserver<ReloadEvent, Waypoint> updateVariableObserver;
+	float throttlePercentage;
+	int throttleValue;
 public:
 	
 	bool initPhysicsObject(btCollisionShape *shape, btScalar &mass, btTransform &location);
@@ -21,13 +23,15 @@ public:
 	btVector3 getNormal();
 	btVector3 getBinormal();
 
-	Waypoint();
+	Waypoint();		
 
 	void observeVariables(ReloadEvent *e);
 	void positionCheck(Car* car);
 	void addNextWaypoint(Waypoint* waypoint);
 	int getIndex();
 	void setIndex(int in);
+	int getThrottle();
+	void setThrottle(int value);
 	void removeWaypointFromList(int indexOfWaypointToRemove);
 	std::vector<Waypoint*> getWaypointList();
 	std::string toString();
