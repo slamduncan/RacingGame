@@ -421,7 +421,7 @@ void Renderer::drawAll()
 	// debug draw waypoints
 	for(int i = 0; i < em->numWaypoints(); i++)
 	{
-		drawEntity(*(em->getWaypoint(i)));
+	//	drawEntity(*(em->getWaypoint(i)));
 	}
 }
 

@@ -184,7 +184,7 @@ void Car::updateWheels()
 
 	for (int i = 0; i < 4; i++){
 		btVector3 contact = newWheels[i].getBottomSpringPosition();
-		chassis->applyImpulse(forces[i]*springForceModifier,contact - chassis->getCenterOfMassPosition()/*wheelOffsets[i]*/);
+		chassis->applyForce(forces[i]*springForceModifier,contact - chassis->getCenterOfMassPosition()/*wheelOffsets[i]*/);
 		
 		if(sideFriction[i] != btScalar(1.))
 		{
