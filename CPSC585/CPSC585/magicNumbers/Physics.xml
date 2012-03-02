@@ -8,4 +8,5 @@
   <forwardForceModifier value ="100.0"/>
   <sideFrictionModifier value ="75.0"/>
   <forwardFrictionModifier value ="100.0"/>
+  <turningForceModifier value ="1.0" />
 </Physics>

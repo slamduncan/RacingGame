@@ -42,6 +42,7 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	forwardFrictionModifier = 1.0;
 	updateVariableObserver.init(EventTypes::RELOAD_VARIABLES);
 	nextWaypoint = -1;
+	turningForceModifier = 1.0;
 }
 
 void Car::initObservers()
@@ -51,7 +52,7 @@ void Car::initObservers()
 }
 
 void Car::observeRotation(RotationEvent *e){		
-	btVector3 test = e->getQuaternion().getAxis();
+	btVector3 test = e->getQuaternion().getAxis()*turningForceModifier;
 	
 	btVector3 temp = chassis->getAngularVelocity();
 	//btVector3 temp = physicsObject->getAngularVelocity();
@@ -219,6 +220,7 @@ void Car::observeVariables(ReloadEvent *e){
 	forwardForceModifier = e->numberHolder.physicsInfo.forwardForceModifier;
 	sideFrictionModifier = e->numberHolder.physicsInfo.sideFrictionModifier;
 	forwardFrictionModifier = e->numberHolder.physicsInfo.forwardFrictionModifier;
+	turningForceModifier = e->numberHolder.physicsInfo.turningForceModifier;
 }
 
 PowerUp Car::GetPowerUpAt( int index )
