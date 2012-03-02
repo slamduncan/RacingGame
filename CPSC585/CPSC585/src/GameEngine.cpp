@@ -382,7 +382,10 @@ int main(int argc, char** argv)
 	}*/
 
 	entManager->createCar("model/box.3ds", carMass, carT2);	
+	
 	entManager->createTrack("model/groundBox.lwo", groundT);
+	//entManager->createTrack("model/Track1tri.lwo", groundT);
+	
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT2);
 	//btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
