@@ -54,10 +54,6 @@ void Car::initObservers()
 
 void Car::observeRotation(RotationEvent *e){		
 	btVector3 test = e->getQuaternion().getAxis()*turningForceModifier;
-	//magic number alert!
-	/********************************************************************************************************************/
-	//test = turningForceModifier*test;
-	/********************************************************************************************************************/
 
 	btVector3 temp = chassis->getAngularVelocity();
 	//btVector3 temp = physicsObject->getAngularVelocity();
@@ -175,10 +171,7 @@ void Car::updateWheels()
 			btRigidBody* groundObject = (class btRigidBody*) newWheels[i].hitObject;
 			
 			resolveSingleBilateral(*chassis, contact, *groundObject, contact, btScalar(0.),getBinormal(), sideFriction[i], 1/60.0f);
-			//Magic number alert!
-			/********************************************************************************************************************/
 			sideFriction[i] *=sideFrictionModifier;
-			/********************************************************************************************************************/
 		}
 	}
 
