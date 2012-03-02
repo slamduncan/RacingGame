@@ -157,11 +157,12 @@ void Car::updateWheels()
 	// simulate suspension
 	btVector3 forces[4];
 	btScalar sideFriction[4] = {btScalar(0.f),btScalar(0.f),btScalar(0.f),btScalar(0.f)}; 
+	btScalar forwardFriction[4] = {btScalar(0.f),btScalar(0.f),btScalar(0.f),btScalar(0.f)};
 	for (int i = 0; i < 4; i++){
 		forces[i] = newWheels[i].calcForce(getPosition() + wheelOffsets[i], getNormal());
 	}
 
-	// simulate side friction
+	// simulate side friction, forward friction
 	for(int i = 0; i < 4; i++)
 	{
 		if(newWheels[i].hitObject)
@@ -172,8 +173,12 @@ void Car::updateWheels()
 			
 			resolveSingleBilateral(*chassis, contact, *groundObject, contact, btScalar(0.),getBinormal(), sideFriction[i], 1/60.0f);
 			sideFriction[i] *=sideFrictionModifier;
+
+			resolveSingleBilateral(*chassis, contact, *groundObject, contact, btScalar(0.),getTangent(), forwardFriction[i], 1/60.0f);
+			forwardFriction[i] *=forwardFrictionModifier;
 		}
 	}
+	
 
 	for (int i = 0; i < 4; i++){
 		btVector3 contact = newWheels[i].getBottomSpringPosition();
@@ -189,6 +194,18 @@ void Car::updateWheels()
 
 			chassis->applyForce(getBinormal() * sideFriction[i]*0.1f * sideFrictionModifier,relpos);
 		}
+	
+		if(forwardFriction[i] != btScalar(1.))
+		{
+			btVector3 carNormal = getNormal();
+			
+			btVector3 relpos = contact - chassis->getCenterOfMassPosition();
+
+			relpos -= carNormal * (carNormal.dot(relpos));
+
+			chassis->applyForce(getTangent() * forwardFriction[i]*0.1f * forwardFrictionModifier,relpos);
+		}
+		
 	}
 }
 

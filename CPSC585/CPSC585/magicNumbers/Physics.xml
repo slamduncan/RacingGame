@@ -7,7 +7,7 @@
   <dynamicFrictionModifier value = "1.0"/>
   <forwardForceModifier value ="100.0"/>
   <sideFrictionModifier value ="15.0"/>
-  <forwardFrictionModifier value ="100.0"/>
+  <forwardFrictionModifier value ="3.0"/>
   <turningForceModifier value ="7.0" />
   <springForceModifier value="1.0"/>
 </Physics>
