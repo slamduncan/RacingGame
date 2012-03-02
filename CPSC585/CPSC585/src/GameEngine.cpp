@@ -237,7 +237,8 @@ void handle_key_down( SDL_keysym* keysym )
 			}
 		case SDLK_l:
 			{
-				readWaypoints("waypoints.w");
+				//readWaypoints("waypoints.w");
+				readWaypoints("sandboxWaypoints.w");
 				break;
 			}
 		default:
@@ -297,9 +298,18 @@ void process_events()
 				{
 					// resetCar(index of car, position we want to reset to)
 					int index = getClosestWaypoint();
-					Waypoint *w = entManager->getWaypoint(index);
-					//entManager->resetCar(0, btVector3(0, 3, 0));
-					entManager->resetCar(0, w->getTransform());
+					if (entManager->getWaypointList()->size() > 0 && index != -1)
+					{
+						Waypoint *w = entManager->getWaypoint(index);						
+						btTransform trans = w->getTransform();
+						btQuaternion q = btQuaternion(btVector3(0,1,0), trans.getRotation().getAngle() + SIMD_PI);
+						trans.setRotation(q);
+						entManager->resetCar(0, trans);
+					}
+					else
+					{
+						entManager->resetCar(0, btVector3(0, 3, 0));
+					}
 
 				}
 			}
@@ -394,8 +404,8 @@ int main(int argc, char** argv)
 
 	entManager->createCar("model/box.3ds", carMass, carT2);	
 	
-	//entManager->createTrack("model/groundBox.lwo", groundT);
-	entManager->createTrack("model/Track1tri.lwo", groundT);
+	entManager->createTrack("model/groundBox.lwo", groundT);
+	//entManager->createTrack("model/Track1tri.lwo", groundT);
 	
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT2);
