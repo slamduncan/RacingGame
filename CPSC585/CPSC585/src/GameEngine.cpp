@@ -70,9 +70,9 @@ void createWaypoint(){
 	newWay->setThrottle(controller1.getTriggers());
 }
 
-int getClosestWaypoint(){
+int getClosestWaypoint(Car* car = entManager->getCar(0)){
 	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
-	Car* car = entManager->getCar(0);
+	//Car* car = entManager->getCar(0);
 	float distance = 10000.0;
 	int index = -1;
 	Waypoint* currentWaypoint;
@@ -296,7 +296,11 @@ void process_events()
 				if(entManager->numCars() > 0)
 				{
 					// resetCar(index of car, position we want to reset to)
-					entManager->resetCar(0, btVector3(0, 3, 0));
+					int index = getClosestWaypoint();
+					Waypoint *w = entManager->getWaypoint(index);
+					//entManager->resetCar(0, btVector3(0, 3, 0));
+					entManager->resetCar(0, w->getTransform());
+
 				}
 			}
 			if(controller1.isYDown())

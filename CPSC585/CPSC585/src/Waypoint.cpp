@@ -156,3 +156,5 @@ void Waypoint::observeVariables(ReloadEvent *e){
 void Waypoint::setTransform(btTransform &inT){
 	transform = inT;
 }
+
+btTransform Waypoint::getTransform(){return transform;}

@@ -223,11 +223,24 @@ void EntityManager::resetCarPosition(int index, btVector3 &position)
 
 }
 
+
+void EntityManager::resetCar(int index, btTransform &transform)
+{
+	//btTransform transform = carList[index]->physicsObject->getWorldTransform();
+
+	//transform.setOrigin(position);
+	carList[index]->chassis->clearForces();
+	carList[index]->chassis->setLinearVelocity(btVector3(0, 0, 0));
+	carList[index]->chassis->setAngularVelocity(btVector3(0, 0, 0));
+	carList[index]->physicsObject->setWorldTransform(transform);
+
+}
+
 void EntityManager::resetCarOrientation(int index)
 {
 	btTransform transform = carList[index]->physicsObject->getWorldTransform();
 
-	btVector3 position = transform.getOrigin();
+	//btVector3 position = transform.getOrigin();
 
 	transform.setBasis(btMatrix3x3(btQuaternion(0, 1, 0, 1)));
 
