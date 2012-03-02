@@ -13,12 +13,13 @@ Renderer::Renderer()
 	height = 720;
 	bpp = 0;
 
-	Light light0 = Light(btVector3(50, 50, 50));
+	Light light0 = Light(btVector3(50, 50, 0));
 
 	lights.push_back(light0);
 
 	tm = TextureManager::getInstance();
 	em = EntityManager::getInstance();
+	sm = new ShaderManager();
 	//TextureManager::initialize();	// initialize our texture manager
 }
 
@@ -31,6 +32,11 @@ Renderer::~Renderer()
 	if(instance != NULL)
 	{
 		delete instance;
+	}
+
+	if(sm != NULL)
+	{
+		delete sm;
 	}
 }
 
@@ -45,6 +51,11 @@ bool Renderer::init()
 		fprintf(stderr, "Renderer failed to init\na = %d, b = %d, c = %d\n", a, b, c);
 		return false;
 	}
+
+	int d = initTexs();
+	int e = initShaders();
+
+
 	return true;
 }
 
@@ -205,6 +216,33 @@ int Renderer::initFont()
 	return counter;
 }
 
+int Renderer::initTexs()
+{
+	tm->genTexture("model/box.png", "car1");	// load the car texture into GPU memory
+	tm->genTexture(width, height, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
+	tm->genTexture(width, height, "gaussian");	// gaussian blur
+	tm->genTexture(width, height, "smap");		// shadow maps
+	tm->genTexture(width, height, "nd");		// create a texture for ssao pass 1
+	tm->genTexture(width, height, "ssao");		// create a texture for ssao pass 2
+	tm->genTexture(width, height, "rblur");		// radial blur
+
+	fb.init(width, height);
+	
+
+	//printf("num textures %d\n", tm->getNumTex());
+
+	return 0;
+}
+int Renderer::initShaders()
+{
+	depth2pass = Shader("shader/basic.vert", "shader/d2.frag");
+	depth2pass.debug();
+	ndpass = Shader("shader/basic.vert", "shader/nd.frag");
+	ndpass.debug();
+	return 0;
+}
+
+
 /*
 *	Closes SDL/window and quits the program?
 */
@@ -306,6 +344,41 @@ void Renderer::draw(Shader &s)
 	shaderOff(s);
 }
 
+//
+// update this funciton so it does a pass per player
+//
+void Renderer::shadowMapPass()
+{
+	// for each light source in our scene
+	for(int i = 0; i < lights.size(); i++)
+	{
+		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
+
+		fb.attachTexture(getTexture("depth2l1"), GL_COLOR_ATTACHMENT0_EXT);
+
+		fb.turnOn();
+		
+		shaderOn(depth2pass);
+
+		drawAll();
+
+		shaderOff(depth2pass);
+		fb.turnOff();
+		fb.deattachTexture();
+
+	}
+}
+
+void Renderer::ssaoPass()
+{
+
+}
+
+void Renderer::abtexPass()
+{
+
+}
+
 void Renderer::drawAll()
 {
 	// draw the track
@@ -314,11 +387,34 @@ void Renderer::drawAll()
 	// draw all cars
 	for(int i = 0; i < em->numCars(); i++)
 	{
-		drawEntity(*(em->getCar(i)));
+		
+		Car* temp = em->getCar(i);
+
+		textureOn(getTexture("car1"));
+		drawEntity(*temp);
+		textureOff();
+
+		// for each wheel we need to draw a line
+		for(int j = 0; j < 4; j++)
+		{
+			//Spring aWheel = temp->wheels[j];
+			Wheel aWheel = temp->newWheels[j];
+
+			btVector3 springPos = aWheel.getAttachedToCarPosition();
+
+			btVector3 springLength = aWheel.getBottomSpringPosition();
+
+			drawLine(springPos, springLength, 0, 0, 255, 3.0f);
+
+		}
 	}
 
 
 	// draw powerups
+	for(int i = 0; i < em->numPowerUps(); i++)
+	{
+		drawEntity(*(em->getPowerup(i)));
+	}
 
 	// draw obstacles
 
@@ -329,6 +425,32 @@ void Renderer::drawAll()
 	}
 }
 
+void Renderer::drawTexture(std::string texName)
+{
+    glMatrixMode (GL_MODELVIEW); 
+	glPushMatrix (); 
+	glLoadIdentity (); 
+	glMatrixMode (GL_PROJECTION); 
+	glPushMatrix (); 
+	glLoadIdentity ();
+
+	textureOn(getTexture(texName));
+    glBegin (GL_QUADS); 
+	glTexCoord2f(0.0f, 1.0f); 
+	glVertex3i (-1, -1, -1); 
+	glTexCoord2f(1.0f, 1.0f); 
+	glVertex3i (1, -1, -1); 
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3i (1, 1, -1); 
+	glTexCoord2f(0.0f, 0.0f); 
+	glVertex3i (-1, 1, -1); 
+	glEnd ();
+    textureOff();
+	glPopMatrix (); 
+	glMatrixMode (GL_MODELVIEW); 
+	glPopMatrix ();
+
+}
 
 /*
 *	Outputs text to the screen using textures
@@ -545,7 +667,7 @@ void Renderer::drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, f
 void Renderer::drawEntity(Entity &entity)
 {
 	glPushMatrix();
-
+	
 	btScalar* matrix = entity.getGLMatrix();
 
 	//printf("(%f, %f, %f)\n", matrix[0], matrix[1]
@@ -649,7 +771,10 @@ void Renderer::drawEntity(Entity &entity)
 
 	}
 
-	glPopMatrix();
+	glPopMatrix();	
+	drawLine(entity.getPosition(),entity.getPosition()+ entity.getTangent(), 256, 0, 0, 10);
+	drawLine(entity.getPosition(),entity.getPosition()+ entity.getNormal(), 0, 256, 0, 10);
+	drawLine(entity.getPosition(), entity.getPosition()+entity.getBinormal(), 0, 0, 256, 10);
 }
 
 void Renderer::drawPlane(float height)

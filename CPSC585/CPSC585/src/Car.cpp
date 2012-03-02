@@ -36,13 +36,17 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	gravity = Physics::Inst()->getGravity();
 	restDisplacement = btScalar(2.0f);
 	nextWaypoint = 0;
+	m_Speed = 0.0f;
+	forwardForceModifier = 1.0;
+	sideFrictionModifier = 1.0;
+	forwardFrictionModifier = 1.0;
+	updateVariableObserver.init(EventTypes::RELOAD_VARIABLES);
 }
 
 void Car::initObservers()
 {	
 	rotationObserver.init(EventTypes::ROTATION);
-	forwardForceObserver.init(EventTypes::FORWARD_FORCE);
-
+	forwardForceObserver.init(EventTypes::FORWARD_FORCE);	
 }
 
 void Car::observeRotation(RotationEvent *e){		
@@ -61,27 +65,35 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 	
 	btScalar engineForce = e->getNormForce();
 	
-	btVector3 tan = getTangent() * engineForce;
+	btVector3 tan = getTangent() * engineForce * forwardForceModifier;
 	tan.setY(0);	// project to the xz plane
 	tan /= 4.0f;
 	if(engineForce < 0)
 	{
+		float NewSpeed = m_Speed + (engineForce * -0.0005);
+		if( NewSpeed < (engineForce * -1.0) )
+			m_Speed = NewSpeed;
+
 		// player is accelerating, we apply rear wheel force
 		if(newWheels[2].onGround || newWheels[3].onGround)
 		{
-			chassis->applyImpulse(tan, wheelOffsets[2]);
-			chassis->applyImpulse(tan, wheelOffsets[3]);
+			chassis->applyForce(tan, wheelOffsets[2]);
+			chassis->applyForce(tan, wheelOffsets[3]);
 		}
 	}
 	// player is decelerating
 	else
 	{
+		float NewSpeed = m_Speed - 0.0005;
+		if( NewSpeed > 0 )
+			m_Speed = NewSpeed;
+
 		// apply to all the wheels
 		for(int i = 0; i < 4; i++)
 		{
 			if(newWheels[i].onGround)
 			{
-				chassis->applyImpulse(tan, wheelOffsets[i]);
+				chassis->applyForce(tan, wheelOffsets[i]);
 			}
 		}
 	}
@@ -171,7 +183,7 @@ void Car::updateWheels()
 
 			relpos -= carNormal * (carNormal.dot(relpos));
 
-			chassis->applyImpulse(getBinormal() * sideFriction[i]*0.1f,relpos);
+			chassis->applyForce(getBinormal() * sideFriction[i]*0.1f * sideFrictionModifier,relpos);
 		}
 	}
 }
@@ -203,6 +215,9 @@ void Car::observeVariables(ReloadEvent *e){
 		newWheels[i].setCModifier(btScalar(e->numberHolder.physicsInfo.cModifier));
 		newWheels[i].setKModifier(btScalar(e->numberHolder.physicsInfo.kModifier));
 	}
+	forwardForceModifier = e->numberHolder.physicsInfo.forwardForceModifier;
+	sideFrictionModifier = e->numberHolder.physicsInfo.sideFrictionModifier;
+	forwardFrictionModifier = e->numberHolder.physicsInfo.forwardFrictionModifier;
 }
 
 PowerUp Car::GetPowerUpAt( int index )
@@ -231,3 +246,13 @@ void Car::UsePowerUp( int index )
 
 int Car::getNextWaypointIndex(){return nextWaypoint;}
 void Car::setNextWaypointIndex(int in){ nextWaypoint = in;}
+
+float Car::GetSpeed()
+{
+	return m_Speed;
+}
+
+void Car::SetSpeed( float speed )
+{
+	m_Speed = speed;
+}

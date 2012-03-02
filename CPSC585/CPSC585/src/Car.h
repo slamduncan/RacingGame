@@ -55,9 +55,16 @@ public:
 	void AddPowerUp( int type );
 	void UsePowerUp( int index );
 
+	float GetSpeed();
+	void SetSpeed( float speed );
+
 private:
 	btScalar width, length, height;
 	int nextWaypoint;
+	float m_Speed;
+	float forwardForceModifier;
+	float sideFrictionModifier;
+	float forwardFrictionModifier;
 
 	// 3 power up slots, circular array of powerups?
 	PowerUp m_CarPowerUps[MAX_POWERUPS - 1];

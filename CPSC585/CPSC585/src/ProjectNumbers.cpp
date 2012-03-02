@@ -57,7 +57,29 @@ void ProjectNumbers::readAI(){
 				if (pElem)
 					pElem->QueryFloatAttribute("value", &aiInfo.drivingModifier);
 			}
-			
+			//AI max forward force
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(2).Element();
+				if (pElem)
+					pElem->QueryFloatAttribute("value", &aiInfo.maxMovementForce);
+			}
+
+			//AI nextWaypoint area.
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(3).Element();
+				if (pElem)
+				{
+					pElem->QueryFloatAttribute("beforeValue", &aiInfo.goToNextWaypointDistanceBefore);
+					pElem->QueryFloatAttribute("afterValue", &aiInfo.goToNextWaypointDistanceAfter);
+				}
+			}
+
+			//AI turningRateOfChange
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(4).Element();
+				if (pElem)
+					pElem->QueryFloatAttribute("value", &aiInfo.rateOfChangeModifier);
+			}
 		}
 		else
 		{
@@ -106,7 +128,36 @@ void ProjectNumbers::readPhysics(){
 				}
 
 			}
+
+			//Phyics: Friction Value
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(3).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.staticFrictionModifier);
+				
+				pElem = hDoc.FirstChildElement().ChildElement(4).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.dynamicFrictionModifier);
+			}
+			//Physics: ForwardForceModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(5).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.forwardForceModifier);
+			}
+			//Physics: sideFrictionModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(6).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.sideFrictionModifier);
+			}
 			
+			//Physics: forwardFrictionModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(7).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.forwardFrictionModifier);
+			}
 		}
 		else
 		{

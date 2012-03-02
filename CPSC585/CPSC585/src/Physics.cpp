@@ -100,4 +100,6 @@ btVector3 Physics::getGravity(){return gravity;}
 
 void Physics::updateVariables(ReloadEvent *e){
 	setGravity(e->numberHolder.physicsInfo.gravity);
+	staticFrictionScalar = e->numberHolder.physicsInfo.staticFrictionModifier;
+	dynamicFrictionScalar = e->numberHolder.physicsInfo.dynamicFrictionModifier;
 }

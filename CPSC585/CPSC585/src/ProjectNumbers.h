@@ -19,12 +19,21 @@ public:
 	struct physics{
 		float cModifier;
 		float kModifier;
+		float forwardForceModifier;
 		btVector3 gravity;
+		float staticFrictionModifier;
+		float dynamicFrictionModifier;
+		float sideFrictionModifier;
+		float forwardFrictionModifier;
 	} physicsInfo;
 
 	struct AI{
 		float rotateModifier;
 		float drivingModifier;
+		float maxMovementForce;
+		float goToNextWaypointDistanceBefore;
+		float goToNextWaypointDistanceAfter;
+		float rateOfChangeModifier;
 	} aiInfo;
 
 	ProjectNumbers(){}//readVariablesIn();}

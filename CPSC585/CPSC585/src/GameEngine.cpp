@@ -23,6 +23,8 @@
 #include "Camera.h"
 #include "AIHandler.h"
 
+#include "Sound.h"
+
 using namespace std;
 
 // Other init
@@ -43,6 +45,149 @@ EntityManager* entManager = EntityManager::getInstance();
 // TESTING AREA
 bool depthShader = false;
 
+//Dynamic creation of waypoints
+void createWaypoint(){
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	Car* c = entManager->getCar(0);
+	//btScalar a = c->getTangent().angle(btVector3(1,0,0));
+//	btTransform wayPointT1 = btTransform(btQuaternion(btVector3(0,1,0),a),entManager->getCar(0)->getPosition() + btVector3(0,3,0));
+	btTransform wayPointT1 = c->physicsObject->getWorldTransform();
+	//btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1),entManager->getCar(0)->getPosition() + btVector3(0,3,0));
+	Waypoint* previousWay = wayList->at(wayList->size()-1);
+	previousWay->removeWaypointFromList(wayList->at(0)->getIndex());
+	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
+	
+	Waypoint* newWay = wayList->at(wayList->size()-1);
+	previousWay->addNextWaypoint(newWay);
+	newWay->addNextWaypoint(wayList->at(0));
+	newWay->setThrottle(controller1.getTriggers());
+}
+
+int getClosestWaypoint(){
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	Car* car = entManager->getCar(0);
+	float distance = 10000.0;
+	int index = -1;
+	Waypoint* currentWaypoint;
+	for (int i = 0; i < wayList->size(); i++)
+	{
+		currentWaypoint = wayList->at(i);
+		float tempDist = (car->getPosition() - currentWaypoint->getPosition()).length();
+		if (tempDist < distance){
+			distance = tempDist;
+			index = i;
+		}
+	}
+	return index;
+}
+
+/* NOTE: THIS FUNCTION IS ONLY DEFINED FOR WHEN THERE IS AN ORDERED LIST OF SINGLE WAYPOINTS */
+//Issues exist with this funtion...
+void deleteWaypoint(){
+	int index = getClosestWaypoint();
+	if (index != -1)
+	{
+		btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+		if (index != 0)
+		{
+			wayList->at(index-1)->removeWaypointFromList(index);
+			wayList->at(index-1)->addNextWaypoint(wayList->at(index + 1));
+		}
+		else{
+			wayList->at(wayList->size()-1)->removeWaypointFromList(index);
+			wayList->at(wayList->size()-1)->addNextWaypoint(wayList->at(index + 1));
+		}
+
+		wayList->at(index)->initRenderObject("model/deletedWaypoint.obj");
+	}
+}
+
+void writeWaypoints(const char* fileName){
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	ofstream file(fileName);
+	if (file.is_open())
+	{
+		for (int i = 0; i < wayList->size(); i++)
+		{
+			std::string temp = wayList->at(i)->toString();
+			file << temp;
+		}
+		file.close();
+	}
+	else
+		printf("Unable to open Waypoint File - Write\n");
+}
+
+void moveWaypoint(){
+	int index = getClosestWaypoint();
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	Waypoint* w = wayList->at(index);
+	Car* car = entManager->getCar(0);
+	btTransform cT = car->physicsObject->getWorldTransform();
+	w->setTransform(cT);
+}
+
+void readWaypoints(const char* fileName){
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	wayList->clear();
+	ifstream file(fileName);
+	string line;
+	stringstream ss;
+	if (file.is_open())
+	{
+		while (file.good()){
+			getline(file, line);
+			ss << line;
+			float x, y, z, r1, r2, r3, r4,r5,r6, r7,r8,r9;
+			int throttle;
+			ss >> x;
+			ss >> y;
+			ss >> z;
+			ss >> r1;
+			ss >> r2;
+			ss >> r3;
+
+			ss >> r4;
+			ss >> r5;
+			ss >> r6;
+
+			ss >> r7;
+			ss >> r8;
+			ss >> r9;
+
+			ss >> throttle;
+			btMatrix3x3 temp = btMatrix3x3(r1,r2,r3,r4,r5,r6,r7,r8,r9);
+			btTransform wayPointT1 = btTransform(temp, btVector3(x, y, z));
+			entManager->createWaypoint("model/waypoint.obj", wayPointT1, throttle);
+		}
+		for (int i = 0; i < wayList->size()-1; i++)
+		{
+			Waypoint* w1 = wayList->at(i);
+			Waypoint* w2 = wayList->at(i+1);
+			w1->addNextWaypoint(w2);
+		}
+		Waypoint* w1 = wayList->at(0);
+		Waypoint* w2 = wayList->at(wayList->size()-1);
+		w2->addNextWaypoint(w1);
+
+		for (int i = 0; i < wayList->size()-1; i++){
+			btVector3 tan = wayList->at(i)->getWaypointList().at(0)->getPosition() - wayList->at(i)->getPosition();
+			tan.normalize();
+			btVector3 biNorm = tan.cross(btVector3(0,1,0));
+			btVector3 normal = biNorm.cross(tan);
+
+			btMatrix3x3 matrix = btMatrix3x3(tan.x(), normal.x(), biNorm.x(), tan.y(), normal.y(), biNorm.y(), tan.z(), normal.z(), biNorm.z());
+			btTransform t = btTransform(matrix, wayList->at(i)->getPosition());
+			wayList->at(i)->setTransform(t);
+		}
+		
+		file.close();
+		entManager->getCar(0)->setNextWaypointIndex(0);
+	}
+	else
+		printf("Unable to open Waypoint File - Read\n");
+}
+
 
 /*
 *	Handles what to do when key has been pressed
@@ -54,14 +199,30 @@ void handle_key_down( SDL_keysym* keysym )
 	{
 		//Quit on esc
 		case SDLK_ESCAPE:
-			ren->quitSDL();
-			break;
+			{
+				ren->quitSDL();
+				break;
+			}
 		//Reload the variables on r.
 		case SDLK_r:
-			evSys->emitEvent(new ReloadEvent());
-			break;
+			{
+				evSys->emitEvent(new ReloadEvent());
+				break;
+			}
+		case SDLK_w:
+			{
+				writeWaypoints("waypoints.w");
+				break;
+			}
+		case SDLK_l:
+			{
+				readWaypoints("waypoints.w");
+				break;
+			}
 		default:
-			break;
+			{
+				break;
+			}
     }
 
 }
@@ -100,11 +261,13 @@ void process_events()
 
 			if (controller1.isBDown())
 			{
-				
+				createWaypoint();
 			}
 			if(controller1.isADown())
-			{
-				ren->quitSDL();
+			{				
+				//deleteWaypoint();
+				int i;
+				cin >> i;
 			}
 			if(controller1.isXDown())
 			{
@@ -132,6 +295,10 @@ void process_events()
 					depthShader = true;
 				}
 			}
+			if (controller1.isButtonDown(controller1.Start_button))
+			{
+				ren->quitSDL();
+			}
 
 			break;
 		case SDL_JOYBUTTONUP:
@@ -144,13 +311,13 @@ void process_events()
 
 }
 
+
+
 // Engine Main
 int main(int argc, char** argv)
 {	
 	// INITIALIZATIONS
 
-	//Load variables from the xml file.
-	evSys->emitEvent(new ReloadEvent());	
 	
 	//Initialize the renderer
 	bool renInit = ren->init();
@@ -187,24 +354,44 @@ int main(int argc, char** argv)
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
 	btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, -2));
-	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(3.5, 3.5, 0));
+	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(25, 3.5, 0));
 	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 3.5));
+	
+	btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, -10));
+
 
 	entManager->createCar("model/box.3ds", carMass, carT1);	
+	/*for(int i = 0; i < 30; i++){
+		btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15*i, 3, 0));	
+		entManager->createCar("model/box.3ds", carMass, carT2);	
+	}*/
+
 	entManager->createCar("model/box.3ds", carMass, carT2);	
 	entManager->createTrack("model/groundBox.lwo", groundT);
 	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT2);
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	for (int i = 0; i < wayList->size()-1; i++)
+	{
+		Waypoint* w1 = wayList->at(i);
+		Waypoint* w2 = wayList->at(i+1);
+		w1->addNextWaypoint(w2);
+	}
+	Waypoint* w1 = wayList->at(0);
+	Waypoint* w2 = wayList->at(wayList->size()-1);
+	w2->addNextWaypoint(w1);
+
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT3);
-
-
-	ren->genTexture("model/box.png", "car1");
+	entManager->createPowerup("model/powerup.lwo", powerupT1);
 
 	//Set inital game time
 	Uint32 currentTime = SDL_GetTicks();
 	Uint32 oldTime = SDL_GetTicks();
 	int frameCount = 0;
 	int counter = 1;
+	int instantFrameCount = 0;
+	stringstream instantFrameCountBuffer;
+	string instantFrameString = "";
 
 
 	//Initialize camera settings.
@@ -215,14 +402,17 @@ int main(int argc, char** argv)
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
 
+	//LoadBackgroundSoundFile("Documentation/Music/Engine.wav");
+	LoadBackgroundSoundFile("Documentation/Music/In Game Music.wav");
 
-	Shader test = Shader("shader/basic.vert", "shader/nd.frag");
-	test.debug();
-
+	//Load variables from the xml file.
+	evSys->emitEvent(new ReloadEvent());	
 
 	// game loop
 	while(1)
 	{		
+		//alSourcef(source, AL_PITCH, 1.0f + entManager->getCar(0)->GetSpeed() );
+
 		camLookAt = entManager->getCar(0)->getPosition();
 	
 		camera1.setUpCamera(camLookAt);
@@ -243,23 +433,28 @@ int main(int argc, char** argv)
 
 		// Render
 		ren->clearGL();	// clear the screen
-		
-		ren->setCamera(camera1);
 
 		ren->glDisableLighting();
 		ph->debugDraw();
 		ren->glEnableLighting();
-
+/*
 		if(depthShader)
 		{
-			ren->draw(test);
+			ren->draw(ssao1);
 		}
 		else
 		{
 			ren->drawAll();
 		}
+*/
 		//ren->draw(test);
 
+		ren->shadowMapPass();
+
+		ren->setCamera(camera1);
+		//ren->drawTexture("depth2l1");
+
+		ren->drawAll();
 /*
 		//Following draws the springs for the car
 		for(int i = 0; i < entManager->numCars(); i++)
@@ -297,17 +492,23 @@ int main(int argc, char** argv)
 			ren->drawEntity(*(entManager->getTrack()));
 		}
 */		
+
 		ren->glEnable2D();
 		frameCount++;
+		instantFrameCount++;
 
 		/* Calculate the frames per second */
 		if((currentTime - oldTime) > 1000){
-			//sprintf_s(frames, "%d FPS", frameCount);	
+			//sprintf_s(frames, "%d FPS", frameCount);				
+			std::stringstream ssInstant;
+			ssInstant << instantFrameCount << " Instant FPS";
 			//ren->outputText(frames, 0, 255, 0, 10, 700);
 			//std::cout << frameCount << "\n";
 			//frameCount = 0;
+			instantFrameCount = 0;
+			instantFrameString = ssInstant.str();			
 			counter++;
-			oldTime = currentTime;
+			oldTime = currentTime;			
 		}		
 		currentTime = SDL_GetTicks();
 		
@@ -316,6 +517,7 @@ int main(int argc, char** argv)
 
 		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
 		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
+		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
 		
 		ren->glDisable2D();
 

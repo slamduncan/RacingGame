@@ -63,6 +63,13 @@ Waypoint* EntityManager::getWaypoint(int index)
 	return waypointList[index];
 }
 
+PowerUp* EntityManager::getPowerup(int index)
+{
+	assert(index >=0 && index < numPowerUps());
+
+	return powerUpList[index];
+}
+
 void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
 {
 	btScalar width = btScalar(10.0f);
@@ -104,7 +111,7 @@ void EntityManager::createTrack(char* path, btTransform &trans)
 	Physics::Inst()->addEntity(*trk);
 }
 
-void EntityManager::createWaypoint(char* path, btTransform &trans)
+void EntityManager::createWaypoint(char* path, btTransform &trans, int carThrottle)
 {
 	btScalar mass = btScalar(0.f);
 	
@@ -116,7 +123,27 @@ void EntityManager::createWaypoint(char* path, btTransform &trans)
 
 	wp->initPhysicsObject(triMesh, mass, trans);
 
+	wp->initObservers();
+
+	wp->setThrottle(carThrottle);
+
 	addWaypoint(wp);
+}
+
+void EntityManager::createPowerup(char* path, btTransform &trans)
+{
+	btScalar mass = btScalar(0.f);
+	
+	PowerUp* pup = new PowerUp();
+
+	pup->initRenderObject(path);
+	
+	btCollisionShape* triMesh = sFactory.createStaticTriangleMesh(pup->renderObject);
+
+	pup->initPhysicsObject(triMesh, mass, trans);
+
+	addPowerUp(pup);
+
 }
 
 void EntityManager::createObstacle(char* path, btScalar &mass, btTransform &trans)
@@ -133,7 +160,7 @@ void EntityManager::addCar(Car* car)
 // We need a way to remove the track from the physics world first before we delete it.
 void EntityManager::addTrack(Track* track)
 {
-	this->track = track;	// will memleak if we try to create another create
+	this->track = track;	// will memleak if we try to create another track
 }
 void EntityManager::addPowerUp(PowerUp* powerup)
 {
@@ -145,6 +172,7 @@ void EntityManager::addObstacle()
 }
 void EntityManager::addWaypoint(Waypoint* waypoint)
 {
+	waypoint->setIndex(waypointList.size());
 	waypointList.push_back(waypoint);
 }
 void EntityManager::removeCar()
