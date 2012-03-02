@@ -419,7 +419,7 @@ void Renderer::drawAll()
 	// draw obstacles
 
 	// debug draw waypoints
-#if 0
+#if 1
 	for(int i = 0; i < em->numWaypoints(); i++)
 	{
 		drawEntity(*(em->getWaypoint(i)));
