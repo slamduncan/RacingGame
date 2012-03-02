@@ -422,7 +422,7 @@ void Renderer::drawAll()
 #if 1
 	for(int i = 0; i < em->numWaypoints(); i++)
 	{
-		drawEntity(*(em->getWaypoint(i)));
+	//	drawEntity(*(em->getWaypoint(i)));
 	}
 #endif
 }
