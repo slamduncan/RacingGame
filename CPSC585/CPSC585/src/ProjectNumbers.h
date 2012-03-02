@@ -13,28 +13,29 @@ class ProjectNumbers {
 
 public:
 	struct controller{		
-		float rotateModifier;
+		float rotateModifier; //InputMapper
 	} controllerInfo;
 
 	struct physics{
-		float cModifier;
-		float kModifier;
-		float forwardForceModifier;
-		btVector3 gravity;
-		float staticFrictionModifier;
-		float dynamicFrictionModifier;
-		float sideFrictionModifier;
-		float forwardFrictionModifier;
-		float turningForceModifier;
+		float cModifier; //Car
+		float kModifier; //Car
+		float forwardForceModifier; //Car 
+		btVector3 gravity; //Physics
+		float staticFrictionModifier; //Physics
+		float dynamicFrictionModifier; //Physics
+		float sideFrictionModifier; //Car
+		float forwardFrictionModifier; //Car
+		float turningForceModifier; //Car
+		float springForceModifier; //Car
 	} physicsInfo;
 
 	struct AI{
-		float rotateModifier;
-		float drivingModifier;
-		float maxMovementForce;
-		float goToNextWaypointDistanceBefore;
-		float goToNextWaypointDistanceAfter;
-		float rateOfChangeModifier;
+		float rotateModifier; //AiHandler
+		float drivingModifier; //AiHandler
+		float maxMovementForce; //AiHandler
+		float goToNextWaypointDistanceBefore; //AiHandler
+		float goToNextWaypointDistanceAfter; //AiHandler
+		float rateOfChangeModifier; //AiHandler
 	} aiInfo;
 
 	ProjectNumbers(){}//readVariablesIn();}

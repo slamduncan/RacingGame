@@ -53,13 +53,20 @@ void createWaypoint(){
 //	btTransform wayPointT1 = btTransform(btQuaternion(btVector3(0,1,0),a),entManager->getCar(0)->getPosition() + btVector3(0,3,0));
 	btTransform wayPointT1 = c->physicsObject->getWorldTransform();
 	//btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1),entManager->getCar(0)->getPosition() + btVector3(0,3,0));
-	Waypoint* previousWay = wayList->at(wayList->size()-1);
-	previousWay->removeWaypointFromList(wayList->at(0)->getIndex());
+	Waypoint* previousWay;
+	if (wayList->size()>0)
+	{
+		previousWay = wayList->at(wayList->size()-1);
+		previousWay->removeWaypointFromList(wayList->at(0)->getIndex());
+	}
 	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 	
 	Waypoint* newWay = wayList->at(wayList->size()-1);
-	previousWay->addNextWaypoint(newWay);
-	newWay->addNextWaypoint(wayList->at(0));
+	if (wayList->size()>1)
+	{
+		previousWay->addNextWaypoint(newWay);
+		newWay->addNextWaypoint(wayList->at(0));
+	}
 	newWay->setThrottle(controller1.getTriggers());
 }
 
@@ -383,8 +390,8 @@ int main(int argc, char** argv)
 
 	entManager->createCar("model/box.3ds", carMass, carT2);	
 	
-	entManager->createTrack("model/groundBox.lwo", groundT);
-	//entManager->createTrack("model/Track1tri.lwo", groundT);
+	//entManager->createTrack("model/groundBox.lwo", groundT);
+	entManager->createTrack("model/Track1tri.lwo", groundT);
 	
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT2);

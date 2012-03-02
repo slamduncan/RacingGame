@@ -66,6 +66,7 @@ private:
 	float sideFrictionModifier;
 	float forwardFrictionModifier;
 	float turningForceModifier;
+	float springForceModifier;
 
 	// 3 power up slots, circular array of powerups?
 	PowerUp m_CarPowerUps[MAX_POWERUPS - 1];

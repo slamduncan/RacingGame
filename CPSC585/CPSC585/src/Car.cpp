@@ -43,6 +43,7 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	updateVariableObserver.init(EventTypes::RELOAD_VARIABLES);
 	nextWaypoint = -1;
 	turningForceModifier = 1.0;
+	springForceModifier = 1.0;
 }
 
 void Car::initObservers()
@@ -76,7 +77,7 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 	tan /= 4.0f;
 	if(engineForce < 0)
 	{
-		float NewSpeed = m_Speed + (engineForce * -0.0005);
+		float NewSpeed = GetSpeed() + (engineForce * -0.0005);
 		if( NewSpeed < (engineForce * -1.0) )
 			m_Speed = NewSpeed;
 
@@ -90,7 +91,7 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 	// player is decelerating
 	else
 	{
-		float NewSpeed = m_Speed - 0.0005;
+		float NewSpeed = GetSpeed() - 0.0005;
 		if( NewSpeed > 0 )
 			m_Speed = NewSpeed;
 
@@ -102,7 +103,7 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 				chassis->applyForce(tan, wheelOffsets[i]);
 			}
 		}
-	}
+	}	
 }
 
 /*
@@ -183,7 +184,7 @@ void Car::updateWheels()
 
 	for (int i = 0; i < 4; i++){
 		btVector3 contact = newWheels[i].getBottomSpringPosition();
-		chassis->applyForce(forces[i],contact - chassis->getCenterOfMassPosition()/*wheelOffsets[i]*/);
+		chassis->applyImpulse(forces[i]*springForceModifier,contact - chassis->getCenterOfMassPosition()/*wheelOffsets[i]*/);
 		
 		if(sideFriction[i] != btScalar(1.))
 		{
@@ -229,6 +230,7 @@ void Car::observeVariables(ReloadEvent *e){
 	sideFrictionModifier = e->numberHolder.physicsInfo.sideFrictionModifier;
 	forwardFrictionModifier = e->numberHolder.physicsInfo.forwardFrictionModifier;
 	turningForceModifier = e->numberHolder.physicsInfo.turningForceModifier;
+	springForceModifier = e->numberHolder.physicsInfo.springForceModifier;
 }
 
 PowerUp Car::GetPowerUpAt( int index )
@@ -260,7 +262,9 @@ void Car::setNextWaypointIndex(int in){ nextWaypoint = in;}
 
 float Car::GetSpeed()
 {
-	return m_Speed;
+	float temp1 = chassis->getLinearVelocity().dot(getTangent());
+	float sign = temp1/abs(temp1);
+	return sign * chassis->getLinearVelocity().length();
 }
 
 void Car::SetSpeed( float speed )
