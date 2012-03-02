@@ -26,6 +26,7 @@ public:
 		float sideFrictionModifier;
 		float forwardFrictionModifier;
 		float turningForceModifier;
+		float springForceModifier;
 	} physicsInfo;
 
 	struct AI{

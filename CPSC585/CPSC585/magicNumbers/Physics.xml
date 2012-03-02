@@ -9,4 +9,5 @@
   <sideFrictionModifier value ="75.0"/>
   <forwardFrictionModifier value ="100.0"/>
   <turningForceModifier value ="1.0" />
+  <springForceModifier value="1.0"/>
 </Physics>

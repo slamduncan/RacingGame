@@ -6,12 +6,16 @@
 #include "TriggerEvent.h"
 #include "ReloadEvent.h"
 #include "MethodObserver.h"
+#include "Car.h"
+#include "EntityManager.h"
 
 class InputMapper{
 private:
 	btQuaternion rotation;	
 	TriggerEvent* lastTriggerEvent;
 	float rotationModifier;
+	EntityManager* entManager;
+	Car* playerCar;
 
 public:
 	InputMapper();
@@ -24,5 +28,6 @@ public:
 	MethodObserver<TriggerEvent, InputMapper> triggerObserver;
 	MethodObserver<ReloadEvent, InputMapper> variableObserver;
 	bool goingForward;
+	
 };
 #endif
