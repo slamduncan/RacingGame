@@ -41,6 +41,7 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	sideFrictionModifier = 1.0;
 	forwardFrictionModifier = 1.0;
 	updateVariableObserver.init(EventTypes::RELOAD_VARIABLES);
+	nextWaypoint = -1;
 }
 
 void Car::initObservers()

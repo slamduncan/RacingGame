@@ -122,8 +122,15 @@ void moveWaypoint(){
 	int index = getClosestWaypoint();
 	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
 	Waypoint* w = wayList->at(index);
-	Car* car = entManager->getCar(0);
-	btTransform cT = car->physicsObject->getWorldTransform();
+	Car* car = entManager->getCar(0);	
+
+	btVector3 tan = w->getWaypointList().at(0)->getPosition() - w->getPosition();
+	tan.normalize();
+	btVector3 biNorm = tan.cross(btVector3(0,1,0));
+	btVector3 normal = biNorm.cross(tan);
+
+	btMatrix3x3 matrix = btMatrix3x3(tan.x(), normal.x(), biNorm.x(), tan.y(), normal.y(), biNorm.y(), tan.z(), normal.z(), biNorm.z());
+	btTransform cT = btTransform(matrix, car->getPosition());	
 	w->setTransform(cT);
 }
 
@@ -165,12 +172,16 @@ void readWaypoints(const char* fileName){
 			Waypoint* w1 = wayList->at(i);
 			Waypoint* w2 = wayList->at(i+1);
 			w1->addNextWaypoint(w2);
+			stringstream ss;
+			ss << w1->getIndex();
+			ren->draw3dText(w1->getPosition(), ss.str().c_str());
 		}
+		
 		Waypoint* w1 = wayList->at(0);
 		Waypoint* w2 = wayList->at(wayList->size()-1);
 		w2->addNextWaypoint(w1);
 
-		for (int i = 0; i < wayList->size()-1; i++){
+		for (int i = 0; i <= wayList->size()-1; i++){
 			btVector3 tan = wayList->at(i)->getWaypointList().at(0)->getPosition() - wayList->at(i)->getPosition();
 			tan.normalize();
 			btVector3 biNorm = tan.cross(btVector3(0,1,0));
@@ -182,7 +193,10 @@ void readWaypoints(const char* fileName){
 		}
 		
 		file.close();
-		entManager->getCar(0)->setNextWaypointIndex(0);
+		for (int i = 1; i < entManager->getCarList()->size(); i++)
+			entManager->getCar(i)->setNextWaypointIndex(0);
+		//Update the waypoint variables.
+		evSys->emitEvent(new ReloadEvent());
 	}
 	else
 		printf("Unable to open Waypoint File - Read\n");
@@ -266,8 +280,9 @@ void process_events()
 			if(controller1.isADown())
 			{				
 				//deleteWaypoint();
-				int i;
-				cin >> i;
+				//int i;
+				//cin >> i;
+				moveWaypoint();
 			}
 			if(controller1.isXDown())
 			{
@@ -368,18 +383,18 @@ int main(int argc, char** argv)
 
 	entManager->createCar("model/box.3ds", carMass, carT2);	
 	entManager->createTrack("model/groundBox.lwo", groundT);
-	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
+	//entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT2);
-	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
-	for (int i = 0; i < wayList->size()-1; i++)
-	{
-		Waypoint* w1 = wayList->at(i);
-		Waypoint* w2 = wayList->at(i+1);
-		w1->addNextWaypoint(w2);
-	}
-	Waypoint* w1 = wayList->at(0);
-	Waypoint* w2 = wayList->at(wayList->size()-1);
-	w2->addNextWaypoint(w1);
+	//btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	//for (int i = 0; i < wayList->size()-1; i++)
+	//{
+	//	Waypoint* w1 = wayList->at(i);
+	//	Waypoint* w2 = wayList->at(i+1);
+	//	w1->addNextWaypoint(w2);
+	//}
+	//Waypoint* w1 = wayList->at(0);
+	//Waypoint* w2 = wayList->at(wayList->size()-1);
+	//w2->addNextWaypoint(w1);
 
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT3);
 	entManager->createPowerup("model/powerup.lwo", powerupT1);

@@ -68,9 +68,12 @@ void Waypoint::positionCheck(Car* car){
 	
 	//If amount is less than 0, then car is past this.
 	btScalar amount = getTangent().dot(toWaypoint);
+	btScalar amount2 = toWaypoint.dot(getTangent());
+	btScalar test = toWaypoint.length();
 
 	if (amount < goToNextWaypointDistanceBefore && amount > goToNextWaypointDistanceAfter){
 		int nextIndex = nextWaypoints.at(0)->getIndex();
+		printf("%d\n", nextIndex);
 		//Do stuff to find the next waypoint!
 		if (!nextWaypoints.empty())
 			car->setNextWaypointIndex(nextIndex);

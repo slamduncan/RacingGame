@@ -15,6 +15,9 @@ void AIHandler::generateNextMove(){
 	for(int i = 1; i < cars->size(); i++){
 		Car* c = cars->at(i);
 		int waypointIndex = c->getNextWaypointIndex();
+		if (waypointIndex == -1){
+			return;
+		}
 		Waypoint* w = waypoints->at(waypointIndex);
 		w->positionCheck(c);
 		while (waypointIndex != c->getNextWaypointIndex())
