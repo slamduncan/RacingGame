@@ -59,6 +59,8 @@ public:
 	float GetSpeed();
 	void SetSpeed( float speed );
 
+	float GetForwardForceModifier();
+
 private:
 	btScalar width, length, height;
 	int nextWaypoint;

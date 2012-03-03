@@ -72,12 +72,15 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 	btVector3 tan = getTangent() * engineForce * forwardForceModifier;
 	tan.setY(0);	// project to the xz plane
 	tan /= 4.0f;
+
+	// Calculate the artificial speed of the car to be used
+	// for engine sound
+	float NewSpeed = GetSpeed() + (engineForce * -0.0005);
+		if( NewSpeed < (engineForce * -1.0) )
+			SetSpeed(NewSpeed);
+
 	if(engineForce < 0)
 	{
-		float NewSpeed = GetSpeed() + (engineForce * -0.0005);
-		if( NewSpeed < (engineForce * -1.0) )
-			m_Speed = NewSpeed;
-
 		// player is accelerating, we apply rear wheel force
 		if(newWheels[2].onGround || newWheels[3].onGround)
 		{
@@ -88,10 +91,6 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 	// player is decelerating
 	else
 	{
-		float NewSpeed = GetSpeed() - 0.0005;
-		if( NewSpeed > 0 )
-			m_Speed = NewSpeed;
-
 		// apply to all the wheels
 		for(int i = 0; i < 4; i++)
 		{
@@ -281,4 +280,9 @@ float Car::GetSpeed()
 void Car::SetSpeed( float speed )
 {
 	m_Speed = speed;
+}
+
+float Car::GetForwardForceModifier()
+{
+	return forwardForceModifier;
 }

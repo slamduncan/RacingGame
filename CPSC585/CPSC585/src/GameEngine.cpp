@@ -499,8 +499,8 @@ int main(int argc, char** argv)
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
 
-	//LoadBackgroundSoundFile("Documentation/Music/Engine.wav");
-	LoadBackgroundSoundFile("Documentation/Music/In Game Music.wav");
+	LoadBackgroundSoundFile("Documentation/Music/Engine.wav");
+	//LoadBackgroundSoundFile("Documentation/Music/In Game Music.wav");
 
 	//Load variables from the xml file.
 	evSys->emitEvent(new ReloadEvent());	
@@ -508,9 +508,17 @@ int main(int argc, char** argv)
 	// game loop
 	while(1)
 	{		
-		//alSourcef(source, AL_PITCH, 1.0f + entManager->getCar(0)->GetSpeed() );
+		// Calculate engine's change in pitch
+		float EngineModifier = (entManager->getCar(0)->GetSpeed() / (-1 * entManager->getCar(0)->GetForwardForceModifier()));
 
-		camLookAt = entManager->getCar(1)->getPosition();
+		// If going in reverse, we still want engine to rev up
+		if(EngineModifier < 0)
+			EngineModifier *= -1;
+
+		// Play car engine sound
+		alSourcef(source, AL_PITCH, 1.0f + EngineModifier );
+
+		camLookAt = entManager->getCar(0)->getPosition();
 	
 		camera1.setUpCamera(camLookAt);
 		
