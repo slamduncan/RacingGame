@@ -77,6 +77,7 @@ void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
 	btScalar depth = btScalar(5.f);
 
 	Car* car = new Car();
+	car->carMass = mass;
 
 	car->initRenderObject(path);
 	
@@ -173,7 +174,7 @@ void EntityManager::addObstacle()
 void EntityManager::addWaypoint(Waypoint* waypoint)
 {
 	waypoint->setIndex(waypointList.size());
-	waypointList.push_back(waypoint);
+	waypointList.push_back(waypoint);	
 }
 void EntityManager::removeCar()
 {

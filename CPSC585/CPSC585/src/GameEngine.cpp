@@ -24,7 +24,7 @@
 #include "AIHandler.h"
 
 #include "Sound.h"
-
+#define SANDBOX 0
 using namespace std;
 
 // Other init
@@ -82,11 +82,44 @@ int getClosestWaypoint(Car* car = entManager->getCar(0)){
 		float tempDist = (car->getPosition() - currentWaypoint->getPosition()).length();
 		if (tempDist < distance){
 			distance = tempDist;
-			index = i;
+			index = wayList->at(i)->getIndex();
 		}
 	}
 	return index;
 }
+
+
+void addWaypointInbetween()
+{
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	int prevIndex = getClosestWaypoint();
+	if (prevIndex == -1)
+		return;
+	/*else if (prevIndex == wayList->size()-1)
+	{
+		createWaypoint();
+		return;
+	}*/
+	Car* c = entManager->getCar(0);
+	
+
+	btTransform wayPointT1 = c->physicsObject->getWorldTransform();
+	
+	Waypoint* previousWay = wayList->at(prevIndex);		
+	int nextIndex = previousWay->getWaypointList().at(0)->getIndex();
+	previousWay->removeWaypointFromList(wayList->at(nextIndex)->getIndex());
+	
+	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
+	
+	Waypoint* newWay = wayList->at(wayList->size()-1);
+	if (wayList->size()>1)
+	{
+		previousWay->addNextWaypoint(newWay);
+		newWay->addNextWaypoint(wayList->at(nextIndex));
+	}
+	newWay->setThrottle(controller1.getTriggers());
+}
+
 
 /* NOTE: THIS FUNCTION IS ONLY DEFINED FOR WHEN THERE IS AN ORDERED LIST OF SINGLE WAYPOINTS */
 //Issues exist with this funtion...
@@ -114,10 +147,15 @@ void writeWaypoints(const char* fileName){
 	ofstream file(fileName);
 	if (file.is_open())
 	{
+		Waypoint* nextWaypoint = wayList->at(0);
 		for (int i = 0; i < wayList->size(); i++)
 		{
-			std::string temp = wayList->at(i)->toString();
+			std::string temp = nextWaypoint->toString();
 			file << temp;
+			if (nextWaypoint->getWaypointList().size() > 0)
+				nextWaypoint = nextWaypoint->getWaypointList().at(0);
+			else
+				break;			
 		}
 		file.close();
 	}
@@ -232,13 +270,20 @@ void handle_key_down( SDL_keysym* keysym )
 			}
 		case SDLK_w:
 			{
+#if SANDBOX
+				writeWaypoints("sandboxWaypoints.w");
+#else
 				writeWaypoints("waypoints.w");
+#endif
 				break;
 			}
 		case SDLK_l:
 			{
-				//readWaypoints("waypoints.w");
-				readWaypoints("sandboxWaypoints.w");
+#if SANDBOX
+				readWaypoints("sandboxWaypoints.w");				
+#else
+				readWaypoints("waypoints.w");
+#endif
 				break;
 			}
 		default:
@@ -335,6 +380,10 @@ void process_events()
 			{
 				ren->quitSDL();
 			}
+			if (controller1.isButtonDown(controller1.L_Bump))
+			{
+				addWaypointInbetween();
+			}
 
 			break;
 		case SDL_JOYBUTTONUP:
@@ -397,15 +446,24 @@ int main(int argc, char** argv)
 
 
 	entManager->createCar("model/box.3ds", carMass, carT1);	
-	/*for(int i = 0; i < 30; i++){
-		btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15*i, 3, 0));	
-		entManager->createCar("model/box.3ds", carMass, carT2);	
-	}*/
-
 	entManager->createCar("model/box.3ds", carMass, carT2);	
+	for(int i = 1; i < 2; i++){
+		btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, -i*15));	
+		entManager->createCar("model/box.3ds", carMass, carT2);	
+		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15, 3, -i*15));	
+		entManager->createCar("model/box.3ds", carMass, carT3);	
+
+	}
+
+
 	
+	
+#if SANDBOX
 	entManager->createTrack("model/groundBox.lwo", groundT);
-	//entManager->createTrack("model/Track1tri.lwo", groundT);
+#else
+	entManager->createTrack("model/Track1tri.lwo", groundT);
+#endif
+
 	
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT2);
@@ -452,7 +510,7 @@ int main(int argc, char** argv)
 	{		
 		//alSourcef(source, AL_PITCH, 1.0f + entManager->getCar(0)->GetSpeed() );
 
-		camLookAt = entManager->getCar(0)->getPosition();
+		camLookAt = entManager->getCar(1)->getPosition();
 	
 		camera1.setUpCamera(camLookAt);
 		
@@ -467,7 +525,7 @@ int main(int argc, char** argv)
 		controller1.emitLeftAnalog();
 		controller1.emitRightAnalog();
 
-		// AI - Doesn't exist yet.....
+		// AI
 		ai->generateNextMove();
 
 		// Render
