@@ -77,6 +77,7 @@ void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
 	btScalar depth = btScalar(5.f);
 
 	Car* car = new Car();
+	car->carMass = mass;
 
 	car->initRenderObject(path);
 	
@@ -138,12 +139,13 @@ void EntityManager::createPowerup(char* path, btTransform &trans)
 
 	pup->initRenderObject(path);
 	
+	//Taking this out for a bit; doesn't need to be a trimesh really
 	btCollisionShape* triMesh = sFactory.createStaticTriangleMesh(pup->renderObject);
+	//btCollisionShape* sphereMesh = sFactory.createSphere(btScalar(2.5f));
 
 	pup->initPhysicsObject(triMesh, mass, trans);
 
 	addPowerUp(pup);
-
 }
 
 void EntityManager::createObstacle(char* path, btScalar &mass, btTransform &trans)
@@ -173,7 +175,7 @@ void EntityManager::addObstacle()
 void EntityManager::addWaypoint(Waypoint* waypoint)
 {
 	waypoint->setIndex(waypointList.size());
-	waypointList.push_back(waypoint);
+	waypointList.push_back(waypoint);	
 }
 void EntityManager::removeCar()
 {
@@ -223,11 +225,24 @@ void EntityManager::resetCarPosition(int index, btVector3 &position)
 
 }
 
+
+void EntityManager::resetCar(int index, btTransform &transform)
+{
+	//btTransform transform = carList[index]->physicsObject->getWorldTransform();
+
+	//transform.setOrigin(position);
+	carList[index]->chassis->clearForces();
+	carList[index]->chassis->setLinearVelocity(btVector3(0, 0, 0));
+	carList[index]->chassis->setAngularVelocity(btVector3(0, 0, 0));
+	carList[index]->physicsObject->setWorldTransform(transform);
+
+}
+
 void EntityManager::resetCarOrientation(int index)
 {
 	btTransform transform = carList[index]->physicsObject->getWorldTransform();
 
-	btVector3 position = transform.getOrigin();
+	//btVector3 position = transform.getOrigin();
 
 	transform.setBasis(btMatrix3x3(btQuaternion(0, 1, 0, 1)));
 

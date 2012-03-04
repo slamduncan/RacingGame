@@ -73,6 +73,7 @@ public:
 	virtual btVector3 getTangent();
 	virtual btVector3 getNormal();
 	virtual btVector3 getBinormal();
+	
 
 	//bool loadObj(char* filename, btScalar &mass, btTransform &trans);
 	

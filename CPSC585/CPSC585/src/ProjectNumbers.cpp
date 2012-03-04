@@ -165,6 +165,14 @@ void ProjectNumbers::readPhysics(){
 				if(pElem)
 					pElem->QueryFloatAttribute("value", &physicsInfo.turningForceModifier);
 			}
+
+			//Physics: turningModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(9).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.springForceModifier);
+			}
+
 		}
 		else
 		{

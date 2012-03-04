@@ -82,6 +82,7 @@ public:
 	int numWaypoints();
 
 	void resetCarPosition(int index, btVector3 &position);
+	void resetCar(int index, btTransform &transform);
 	void resetCarOrientation(int index);
 	void resetCar(int index, btVector3 &position);
 
