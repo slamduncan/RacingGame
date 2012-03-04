@@ -91,7 +91,7 @@ public:
 	Track* getTrack();
 	btAlignedObjectArray<PowerUp*>* getPowerUpList();
 	// btAlignedObjectArray<Obstacle*>* getObstacleList();
-
+	int getCarIndexViaPointer(btCollisionObject* p);
 };
 
 #endif

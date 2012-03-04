@@ -448,7 +448,7 @@ int main(int argc, char** argv)
 	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 3.5));
 	
 	for(int i = 1; i < 5; i++){
-		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, -50*i));
+		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 7.5, 50*i));
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
 	}
 
@@ -636,6 +636,9 @@ int main(int argc, char** argv)
 		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
 		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
 		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
+
+		printf("NP: %d\n", entManager->getCar(0)->GetNumberPowerUps());
+		//entManager->getCarList()->at(0)->outputPowerups();
 
 		std::stringstream ssLapTime;
 

@@ -136,6 +136,7 @@ void EntityManager::createPowerup(char* path, btTransform &trans)
 	btScalar mass = btScalar(0.f);
 	
 	PowerUp* pup = new PowerUp();
+	pup->SetType(1);
 
 	pup->initRenderObject(path);
 	
@@ -146,6 +147,8 @@ void EntityManager::createPowerup(char* path, btTransform &trans)
 	pup->initPhysicsObject(triMesh, mass, trans);
 
 	addPowerUp(pup);
+
+	Physics::Inst()->addEntity(*pup);
 }
 
 void EntityManager::createObstacle(char* path, btScalar &mass, btTransform &trans)
@@ -277,4 +280,13 @@ Track* EntityManager::getTrack()
 btAlignedObjectArray<PowerUp*>* EntityManager::getPowerUpList()
 {
 	return &powerUpList;
+}
+
+int EntityManager::getCarIndexViaPointer(btCollisionObject* p){
+	for(int i=0; i < carList.size(); i++){
+		if(p == carList.at(i)->physicsObject){
+			return i;
+		}
+	}
+	return -1;
 }

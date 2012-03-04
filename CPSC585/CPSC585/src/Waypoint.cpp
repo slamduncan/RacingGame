@@ -73,7 +73,7 @@ void Waypoint::positionCheck(Car* car){
 
 	if (amount < goToNextWaypointDistanceBefore && amount > goToNextWaypointDistanceAfter){
 		int nextIndex = nextWaypoints.at(0)->getIndex();
-		printf("%d\n", nextIndex);
+		//printf("%d\n", nextIndex);
 		//Do stuff to find the next waypoint!
 		if (!nextWaypoints.empty())
 			car->setNextWaypointIndex(nextIndex);
