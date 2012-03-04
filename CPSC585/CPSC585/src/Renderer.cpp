@@ -354,18 +354,23 @@ void Renderer::shadowMapPass()
 	{
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
-		fb.attachTexture(getTexture("depth2l1"), GL_COLOR_ATTACHMENT0_EXT);
-
 		fb.turnOn();
+		fb.attachTexture(getTexture("depth2l1"), GL_COLOR_ATTACHMENT0_EXT);
+		
+		if(!fb.isValid())
+		{
+			printf("Error: incomplete FBO\n");
+		}
+
 		
 		shaderOn(depth2pass);
 
 		drawAll();
 
 		shaderOff(depth2pass);
-		fb.turnOff();
+		
 		fb.deattachTexture();
-
+		fb.turnOff();
 	}
 }
 

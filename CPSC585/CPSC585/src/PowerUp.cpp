@@ -31,7 +31,14 @@ bool PowerUp::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTran
 		// need to update the mass to make it as a variable?
 		btRigidBody::btRigidBodyConstructionInfo entRigidBodyCI(0,entMotionState,cShape,btVector3(0, 0, 0));
 
-		physicsObject = new btRigidBody(entRigidBodyCI);
+		//physicsObject = new btRigidBody(entRigidBodyCI);
+
+		physicsObject = new btGhostObject();
+
+		physicsObject->setCollisionShape(cShape);
+		physicsObject->setWorldTransform(trans);
+
+		//physicsObject->setCollision
 
 		return true;
 	}

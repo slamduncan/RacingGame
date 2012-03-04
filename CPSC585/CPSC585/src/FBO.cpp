@@ -17,9 +17,9 @@ void FBO::init(int width, int height)
 
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rb);	// bind it
 
-	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGBA, width, height);
+	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, width, height);
 
-	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, rb);
+	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER_EXT, rb);
 
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);	// unbind the render buffer
 

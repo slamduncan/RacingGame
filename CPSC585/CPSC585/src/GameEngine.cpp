@@ -367,14 +367,7 @@ void process_events()
 			}
 			if(controller1.isButtonDown(controller1.R_Bump))
 			{
-				if(depthShader)
-				{
-					depthShader = false;
-				}
-				else
-				{
-					depthShader = true;
-				}
+
 			}
 			if(controller1.isButtonDown(controller1.L_Bump)){
 				printf("Trying to use a speed boost...\n");
@@ -448,7 +441,7 @@ int main(int argc, char** argv)
 	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 3.5));
 	
 	for(int i = 1; i < 5; i++){
-		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, -50*i));
+		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 7.5, -50*i));
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
 	}
 
@@ -566,10 +559,12 @@ int main(int argc, char** argv)
 
 		ren->shadowMapPass();
 
-		ren->setCamera(camera1);
-		//ren->drawTexture("depth2l1");
+//		ren->clearGL();
 
-		ren->drawAll();
+//		ren->setCamera(camera1);
+//		ren->drawTexture("depth2l1");
+
+//		ren->drawAll();
 /*
 		//Following draws the springs for the car
 		for(int i = 0; i < entManager->numCars(); i++)
