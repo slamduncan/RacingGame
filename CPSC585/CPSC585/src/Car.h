@@ -29,6 +29,7 @@ public:
 	btScalar carMass;
 	btScalar restDisplacement;
 	btVector3 gravity;
+	btScalar lastAngleForce;
 
 	Car();
 	bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans);
@@ -59,6 +60,8 @@ public:
 	float GetSpeed();
 	void SetSpeed( float speed );
 	btCollisionObject* getPhysicsObject();
+
+	float GetForwardForceModifier();
 
 private:
 	btScalar width, length, height;

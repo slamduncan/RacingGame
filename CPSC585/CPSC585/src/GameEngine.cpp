@@ -24,7 +24,7 @@
 #include "AIHandler.h"
 
 #include "Sound.h"
-
+#define SANDBOX 0
 using namespace std;
 
 // Other init
@@ -82,11 +82,44 @@ int getClosestWaypoint(Car* car = entManager->getCar(0)){
 		float tempDist = (car->getPosition() - currentWaypoint->getPosition()).length();
 		if (tempDist < distance){
 			distance = tempDist;
-			index = i;
+			index = wayList->at(i)->getIndex();
 		}
 	}
 	return index;
 }
+
+
+void addWaypointInbetween()
+{
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	int prevIndex = getClosestWaypoint();
+	if (prevIndex == -1)
+		return;
+	/*else if (prevIndex == wayList->size()-1)
+	{
+		createWaypoint();
+		return;
+	}*/
+	Car* c = entManager->getCar(0);
+	
+
+	btTransform wayPointT1 = c->physicsObject->getWorldTransform();
+	
+	Waypoint* previousWay = wayList->at(prevIndex);		
+	int nextIndex = previousWay->getWaypointList().at(0)->getIndex();
+	previousWay->removeWaypointFromList(wayList->at(nextIndex)->getIndex());
+	
+	entManager->createWaypoint("model/waypoint.obj", wayPointT1);
+	
+	Waypoint* newWay = wayList->at(wayList->size()-1);
+	if (wayList->size()>1)
+	{
+		previousWay->addNextWaypoint(newWay);
+		newWay->addNextWaypoint(wayList->at(nextIndex));
+	}
+	newWay->setThrottle(controller1.getTriggers());
+}
+
 
 /* NOTE: THIS FUNCTION IS ONLY DEFINED FOR WHEN THERE IS AN ORDERED LIST OF SINGLE WAYPOINTS */
 //Issues exist with this funtion...
@@ -114,10 +147,15 @@ void writeWaypoints(const char* fileName){
 	ofstream file(fileName);
 	if (file.is_open())
 	{
+		Waypoint* nextWaypoint = wayList->at(0);
 		for (int i = 0; i < wayList->size(); i++)
 		{
-			std::string temp = wayList->at(i)->toString();
+			std::string temp = nextWaypoint->toString();
 			file << temp;
+			if (nextWaypoint->getWaypointList().size() > 0)
+				nextWaypoint = nextWaypoint->getWaypointList().at(0);
+			else
+				break;			
 		}
 		file.close();
 	}
@@ -232,13 +270,20 @@ void handle_key_down( SDL_keysym* keysym )
 			}
 		case SDLK_w:
 			{
+#if SANDBOX
+				writeWaypoints("sandboxWaypoints.w");
+#else
 				writeWaypoints("waypoints.w");
+#endif
 				break;
 			}
 		case SDLK_l:
 			{
-				//readWaypoints("waypoints.w");
-				readWaypoints("sandboxWaypoints.w");
+#if SANDBOX
+				readWaypoints("sandboxWaypoints.w");				
+#else
+				readWaypoints("waypoints.w");
+#endif
 				break;
 			}
 		default:
@@ -340,6 +385,10 @@ void process_events()
 			{
 				ren->quitSDL();
 			}
+			if (controller1.isButtonDown(controller1.L_Bump))
+			{
+				addWaypointInbetween();
+			}
 
 			break;
 		case SDL_JOYBUTTONUP:
@@ -404,17 +453,21 @@ int main(int argc, char** argv)
 	}
 
 	entManager->createCar("model/box.3ds", carMass, carT1);	
-	/*for(int i = 0; i < 30; i++){
-		btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15*i, 3, 0));	
+	entManager->createCar("model/box.3ds", carMass, carT2);	
+	for(int i = 1; i < 2; i++){
+		btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, -i*15));	
 		entManager->createCar("model/box.3ds", carMass, carT2);	
-	}*/
+		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15, 3, -i*15));	
+		entManager->createCar("model/box.3ds", carMass, carT3);	
+	}
 	
-
-	entManager->createCar("model/box.3ds", carMass, carT2);
 	
-	
+#if SANDBOX
 	entManager->createTrack("model/groundBox.lwo", groundT);
-	//entManager->createTrack("model/Track1tri.lwo", groundT);
+#else
+	entManager->createTrack("model/Track1tri.lwo", groundT);
+#endif
+
 	
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT1);
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT2);
@@ -441,6 +494,9 @@ int main(int argc, char** argv)
 	stringstream instantFrameCountBuffer;
 	string instantFrameString = "";
 
+	// Variables for lap time
+	int LapMinutes = 0;
+	int LapSeconds = 0;
 
 	//Initialize camera settings.
 	btVector3 car1N = entManager->getCar(0)->getNormal()*10;
@@ -450,16 +506,27 @@ int main(int argc, char** argv)
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
 
-	//LoadBackgroundSoundFile("Documentation/Music/Engine.wav");
-	LoadBackgroundSoundFile("Documentation/Music/In Game Music.wav");
+	ALuint EngineSource = 2;
+	LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
+	LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	//Load variables from the xml file.
 	evSys->emitEvent(new ReloadEvent());	
 
+	float EngineModifier = 0;
+
 	// game loop
 	while(1)
 	{		
-		//alSourcef(source, AL_PITCH, 1.0f + entManager->getCar(0)->GetSpeed() );
+		// Calculate engine's change in pitch
+		EngineModifier = (entManager->getCar(0)->GetSpeed() / (-1 * entManager->getCar(0)->GetForwardForceModifier()));
+
+		// If going in reverse, we still want engine to rev up
+		if(EngineModifier < 0)
+			EngineModifier *= -1;
+
+		// Change pitch of engine sound
+		alSourcef(EngineSource, AL_PITCH, 1.0f + EngineModifier );
 
 		camLookAt = entManager->getCar(0)->getPosition();
 	
@@ -476,7 +543,7 @@ int main(int argc, char** argv)
 		controller1.emitLeftAnalog();
 		controller1.emitRightAnalog();
 
-		// AI - Doesn't exist yet.....
+		// AI
 		ai->generateNextMove();
 
 		// Render
@@ -545,10 +612,12 @@ int main(int argc, char** argv)
 		frameCount++;
 		instantFrameCount++;
 
+		int TimeDifference = currentTime - oldTime;
+
 		/* Calculate the frames per second */
-		if((currentTime - oldTime) > 1000){
-			//sprintf_s(frames, "%d FPS", frameCount);				
+		if((TimeDifference) > 1000){
 			std::stringstream ssInstant;
+			//sprintf_s(frames, "%d FPS", frameCount);				
 			ssInstant << instantFrameCount << " Instant FPS";
 			//ren->outputText(frames, 0, 255, 0, 10, 700);
 			//std::cout << frameCount << "\n";
@@ -556,7 +625,8 @@ int main(int argc, char** argv)
 			instantFrameCount = 0;
 			instantFrameString = ssInstant.str();			
 			counter++;
-			oldTime = currentTime;			
+			oldTime = currentTime;		
+			LapSeconds++;
 		}		
 		currentTime = SDL_GetTicks();
 		
@@ -566,6 +636,31 @@ int main(int argc, char** argv)
 		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
 		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
 		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
+
+		std::stringstream ssLapTime;
+
+		// Calculate the current lap time
+		if( LapMinutes < 10 )
+			ssLapTime << "0";
+		ssLapTime << LapMinutes << ":";
+
+		if( LapSeconds >= 60 )
+		{
+			LapSeconds = 0;
+			LapMinutes++;
+		}
+		else if( LapSeconds < 10 )
+			ssLapTime << "0";
+		ssLapTime << LapSeconds << ":";
+
+		if( TimeDifference < 100 )
+			ssLapTime << "0";
+		else if( TimeDifference >= 1000 )
+			TimeDifference = 999;
+
+		ssLapTime << TimeDifference / 10;
+		// Display the current lap time
+		ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);
 		
 		ren->glDisable2D();
 

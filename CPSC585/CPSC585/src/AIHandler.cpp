@@ -33,14 +33,18 @@ void AIHandler::generateNextMove(){
 		btVector3 toWaypoint = wayPos - carPos;		
 		btVector3 angleRot = toWaypoint -  tan.normalized();
 		btScalar turningScalar = angleRot.dot(c->getBinormal());
-		btScalar rateOfChange = lastAngleForce - turningScalar;
+		btScalar rateOfChange = c->lastAngleForce - turningScalar;
 
 		btScalar roationForce = turningScalar*turningModifier - rateOfChange*rateOfChangeModifier;
-		lastAngleForce = turningScalar;
+		c->lastAngleForce = turningScalar;
 
 		btScalar distance = toWaypoint.length();
 		btScalar forwardForce = btScalar(-distance*forwardModifier);
 		//btScalar forwardForce = btScalar(w->getThrottle());
+		if(roationForce > maxMovementForce)
+			roationForce = maxMovementForce;
+		else if(roationForce < -maxMovementForce)
+			roationForce = - maxMovementForce;
 
 		RotationEvent* re = new RotationEvent(btQuaternion(0, roationForce,0,0));
 		c->observeRotation(re);		
@@ -52,7 +56,7 @@ void AIHandler::generateNextMove(){
 		ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0);
 		c->observeForwardForce(ffe);
 		delete ffe;
-		int p = 0;
+		//printf("Car: %d, Forward = %f, Turn = %f\n", i, forwardForce, roationForce);
 	}
 }
 
