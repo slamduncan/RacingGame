@@ -36,7 +36,7 @@ bool PowerUp::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTran
 		physicsObject->setCollisionShape(cShape);
 		physicsObject->setWorldTransform(trans);
 		
-		printf("I have internal type value: %i\n",physicsObject->getInternalType());
+		//printf("I have internal type value: %i\n",physicsObject->getInternalType());
 		//physicsObject->seta
 		physicsObject->setCollisionFlags(physicsObject->CF_NO_CONTACT_RESPONSE);
 		return true;

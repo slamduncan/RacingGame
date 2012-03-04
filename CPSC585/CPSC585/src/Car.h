@@ -32,6 +32,7 @@ public:
 	btScalar restDisplacement;
 	btVector3 gravity;
 	btScalar lastAngleForce;
+	int id;
 
 	Car();
 	bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans);

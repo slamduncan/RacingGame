@@ -44,6 +44,7 @@ EntityManager* entManager = EntityManager::getInstance();
 
 // TESTING AREA
 bool depthShader = false;
+int waypointIndex1 = 0, waypointIndex2 = 0 ;
 
 //Dynamic creation of waypoints
 void createWaypoint(){
@@ -153,7 +154,19 @@ void writeWaypoints(const char* fileName){
 			std::string temp = nextWaypoint->toString();
 			file << temp;
 			if (nextWaypoint->getWaypointList().size() > 0)
-				nextWaypoint = nextWaypoint->getWaypointList().at(0);
+			/*	if (nextWaypoint->split)
+				{
+					std::string temp = nextWaypoint->toString();
+					file << temp;
+					Waypoint* partOfPath = nextWaypoint;
+					for(int count = 0; count < nextWaypoint->getWaypointList().size();;)
+					{
+						partOfPath = partOfPath->getWaypointList(0);
+						if (
+					}
+				}
+				else*/
+					nextWaypoint = nextWaypoint->getWaypointList().at(0);
 			else
 				break;			
 		}
@@ -179,16 +192,105 @@ void moveWaypoint(){
 	w->setTransform(cT);
 }
 
+void markWaypointSplit(){
+	int index = getClosestWaypoint();
+	entManager->getWaypoint(index)->split = !entManager->getWaypoint(index)->split;
+}
+
+void saveWaypointIndex1(){
+	waypointIndex1 = getClosestWaypoint();
+}
+
+void savedWaypointIndex2(){
+	waypointIndex2 = getClosestWaypoint();
+}
+
+void markConverge(){
+	entManager->getWaypoint(getClosestWaypoint())->converge = true;
+}
+
+void connectWaypointsTruncate(){
+	Waypoint* w1 = entManager->getWaypoint(waypointIndex1);
+	Waypoint* w2 = entManager->getWaypoint(waypointIndex2);
+	w1->getWaypointList().clear();
+	w1->addNextWaypoint(w2);
+}
+
+void connectWaypointsAddition(){
+	Waypoint* w1 = entManager->getWaypoint(waypointIndex1);
+	Waypoint* w2 = entManager->getWaypoint(waypointIndex2);
+	w1->addNextWaypoint(w2);
+}
+
+
 void readWaypoints(const char* fileName){
 	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
 	wayList->clear();
 	ifstream file(fileName);
 	string line;
 	stringstream ss;
+	bool split = false;
+	btAlignedObjectArray<Waypoint*> convergeList, splitList;
 	if (file.is_open())
 	{
 		while (file.good()){
 			getline(file, line);
+			if (line.compare("SPLIT") == 0)
+			{
+				getline(file, line);
+				split = true;
+//				splitList.push_back(entManager->getWaypoint(entManager->getWaypointList()->size()-1);
+				ss << line;				
+				int count;
+				ss >> count;
+
+				Waypoint* lastWaypoint;
+				Waypoint* splitWaypoint = entManager->getWaypoint(entManager->getWaypointList()->size()-1);				
+				bool addSplitWaypoint = true;
+				int splitCount = 0;
+				
+				while(splitCount != count)
+				{
+					getline(file, line);
+					if (line.compare("CONVERGE") == 0)
+					{						
+						addSplitWaypoint = true;
+						convergeList.push_back(lastWaypoint);
+						splitCount++;
+						continue;					
+					}
+					ss << line;
+					float x, y, z, r1, r2, r3, r4,r5,r6, r7,r8,r9;
+					int throttle;
+					ss >> x;
+					ss >> y;
+					ss >> z;
+					ss >> r1;
+					ss >> r2;
+					ss >> r3;
+
+					ss >> r4;
+					ss >> r5;
+					ss >> r6;
+
+					ss >> r7;
+					ss >> r8;
+					ss >> r9;
+
+					ss >> throttle;
+					btMatrix3x3 temp = btMatrix3x3(r1,r2,r3,r4,r5,r6,r7,r8,r9);
+					btTransform wayPointT1 = btTransform(temp, btVector3(x, y, z));
+					entManager->createWaypoint("model/waypoint.obj", wayPointT1, throttle);
+					lastWaypoint = entManager->getWaypoint(entManager->getWaypointList()->size()-1);
+					if (addSplitWaypoint)
+					{
+						splitWaypoint->addNextWaypoint(lastWaypoint);
+						addSplitWaypoint = false;
+					}
+				}				
+			}
+			if (split)
+				getline(file, line);
 			ss << line;
 			float x, y, z, r1, r2, r3, r4,r5,r6, r7,r8,r9;
 			int throttle;
@@ -211,15 +313,26 @@ void readWaypoints(const char* fileName){
 			btMatrix3x3 temp = btMatrix3x3(r1,r2,r3,r4,r5,r6,r7,r8,r9);
 			btTransform wayPointT1 = btTransform(temp, btVector3(x, y, z));
 			entManager->createWaypoint("model/waypoint.obj", wayPointT1, throttle);
+			if (split)
+			{
+				split = false;
+				Waypoint* convergeWaypoint = entManager->getWaypoint(entManager->getWaypointList()->size()-1);
+				for (int i = 0; i < convergeList.size(); i++)
+				{
+					convergeList.at(i)->addNextWaypoint(convergeWaypoint);
+				}
+
+			}
 		}
 		for (int i = 0; i < wayList->size()-1; i++)
 		{
 			Waypoint* w1 = wayList->at(i);
 			Waypoint* w2 = wayList->at(i+1);
-			w1->addNextWaypoint(w2);
-			stringstream ss;
+			if (w1->getWaypointList().empty())
+				w1->addNextWaypoint(w2);
+			/*stringstream ss;
 			ss << w1->getIndex();
-			ren->draw3dText(w1->getPosition(), ss.str().c_str());
+			ren->draw3dText(w1->getPosition(), ss.str().c_str());*/
 		}
 		
 		Waypoint* w1 = wayList->at(0);
@@ -637,7 +750,7 @@ int main(int argc, char** argv)
 		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
 		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
 
-		printf("NP: %d\n", entManager->getCar(0)->GetNumberPowerUps());
+		//printf("NP: %d\n", entManager->getCar(0)->GetNumberPowerUps());
 		//entManager->getCarList()->at(0)->outputPowerups();
 
 		std::stringstream ssLapTime;

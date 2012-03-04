@@ -423,6 +423,8 @@ void Renderer::drawAll()
 	for(int i = 0; i < em->numWaypoints(); i++)
 	{
 		drawEntity(*(em->getWaypoint(i)));
+		for(int j = 0; j < em->getWaypoint(i)->getWaypointList().size(); j++)
+			drawLine(em->getWaypoint(i)->getPosition(), em->getWaypoint(i)->getWaypointList().at(j)->getPosition(), 256, 0, 0 );
 	}
 #endif
 }

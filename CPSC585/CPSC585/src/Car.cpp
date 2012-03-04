@@ -44,7 +44,7 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	nextWaypoint = -1;
 	turningForceModifier = 1.0;
 	springForceModifier = 1.0;
-	lastAngleForce = 0.0;
+	lastAngleForce = 0.0;	
 
 	PowerUp p1 = PowerUp();
 	PowerUp p2 = PowerUp();
@@ -267,7 +267,7 @@ int Car::AddPowerUp( int type )
 	{
 		if( m_CarPowerUps[i].GetType() == EMPTY )
 		{
-			printf("Adding powerup at location %d with type %d\n",i,type);
+			//printf("Adding powerup at location %d with type %d\n",i,type);
 			m_CarPowerUps[i].SetType( type );
 //			printf("NP After: %d\n", GetNumberPowerUps());
 			return 1;
