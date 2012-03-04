@@ -490,6 +490,9 @@ int main(int argc, char** argv)
 	stringstream instantFrameCountBuffer;
 	string instantFrameString = "";
 
+	// Variables for lap time
+	int LapMinutes = 0;
+	int LapSeconds = 0;
 
 	//Initialize camera settings.
 	btVector3 car1N = entManager->getCar(0)->getNormal()*10;
@@ -506,11 +509,13 @@ int main(int argc, char** argv)
 	//Load variables from the xml file.
 	evSys->emitEvent(new ReloadEvent());	
 
+	float EngineModifier = 0;
+
 	// game loop
 	while(1)
 	{		
 		// Calculate engine's change in pitch
-		float EngineModifier = (entManager->getCar(0)->GetSpeed() / (-1 * entManager->getCar(0)->GetForwardForceModifier()));
+		EngineModifier = (entManager->getCar(0)->GetSpeed() / (-1 * entManager->getCar(0)->GetForwardForceModifier()));
 
 		// If going in reverse, we still want engine to rev up
 		if(EngineModifier < 0)
@@ -603,10 +608,12 @@ int main(int argc, char** argv)
 		frameCount++;
 		instantFrameCount++;
 
+		int TimeDifference = currentTime - oldTime;
+
 		/* Calculate the frames per second */
-		if((currentTime - oldTime) > 1000){
-			//sprintf_s(frames, "%d FPS", frameCount);				
+		if((TimeDifference) > 1000){
 			std::stringstream ssInstant;
+			//sprintf_s(frames, "%d FPS", frameCount);				
 			ssInstant << instantFrameCount << " Instant FPS";
 			//ren->outputText(frames, 0, 255, 0, 10, 700);
 			//std::cout << frameCount << "\n";
@@ -614,7 +621,8 @@ int main(int argc, char** argv)
 			instantFrameCount = 0;
 			instantFrameString = ssInstant.str();			
 			counter++;
-			oldTime = currentTime;			
+			oldTime = currentTime;		
+			LapSeconds++;
 		}		
 		currentTime = SDL_GetTicks();
 		
@@ -624,6 +632,31 @@ int main(int argc, char** argv)
 		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
 		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
 		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
+
+		std::stringstream ssLapTime;
+
+		// Calculate the current lap time
+		if( LapMinutes < 10 )
+			ssLapTime << "0";
+		ssLapTime << LapMinutes << ":";
+
+		if( LapSeconds >= 60 )
+		{
+			LapSeconds = 0;
+			LapMinutes++;
+		}
+		else if( LapSeconds < 10 )
+			ssLapTime << "0";
+		ssLapTime << LapSeconds << ":";
+
+		if( TimeDifference < 100 )
+			ssLapTime << "0";
+		else if( TimeDifference >= 1000 )
+			TimeDifference = 999;
+
+		ssLapTime << TimeDifference / 10;
+		// Display the current lap time
+		ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);
 		
 		ren->glDisable2D();
 
