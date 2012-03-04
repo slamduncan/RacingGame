@@ -6,6 +6,8 @@ Waypoint::Waypoint() : updateVariableObserver(this,&Waypoint::observeVariables){
 	goToNextWaypointDistanceAfter = -10.0;
 	throttlePercentage = 1.0;
 	throttleValue = -32767.0;
+	split = false;
+	converge = false;
 }
 
 int Waypoint::getThrottle(){return throttleValue;}
@@ -72,11 +74,24 @@ void Waypoint::positionCheck(Car* car){
 	btScalar test = toWaypoint.length();
 
 	if (amount < goToNextWaypointDistanceBefore && amount > goToNextWaypointDistanceAfter){
-		int nextIndex = nextWaypoints.at(0)->getIndex();
-		printf("%d\n", nextIndex);
-		//Do stuff to find the next waypoint!
-		if (!nextWaypoints.empty())
-			car->setNextWaypointIndex(nextIndex);
+		int id = car->id;
+		int nextIndex = 0;
+		if (!nextWaypoints.empty()){
+			if (id % nextWaypoints.size() == 0)
+			{
+				nextIndex = nextWaypoints.at(0)->getIndex();
+				printf("%d\n", nextIndex);
+			}
+			else
+			{
+				nextIndex = nextWaypoints.at(1)->getIndex();
+				printf("%d\n", nextIndex);
+			}
+				//Do stuff to find the next waypoint!
+				if (!nextWaypoints.empty())
+					car->setNextWaypointIndex(nextIndex);
+		}
+
 	}
 	//Else look ahead for one closer?
 	//int closerPointIndex = -1;
@@ -112,6 +127,10 @@ void Waypoint::addNextWaypoint(Waypoint *waypoint){
 	}
 
 	nextWaypoints.push_back(waypoint);
+	if (nextWaypoints.size() >= 2)
+		split = true;
+	else
+		split = false;
 }
 
 int Waypoint::getIndex(){
@@ -126,6 +145,10 @@ void Waypoint::removeWaypointFromList(int indexOfWaypointToRemove){
 		if (nextWaypoints.at(i)->getIndex() == indexOfWaypointToRemove)
 		{
 			nextWaypoints.erase(nextWaypoints.begin() + i);
+			if (nextWaypoints.size() <= 1)
+				split = false;
+			else
+				split = true;
 			return;
 		}
 	}
@@ -144,6 +167,13 @@ std::string Waypoint::toString()
 	}
 	stream << getThrottle() << " ";
 	stream << "\n";
+	if (nextWaypoints.size() >= 2)
+	{
+		split = true;
+		stream << "SPLIT\n" << nextWaypoints.size() << " \n";
+	}
+	if (converge)
+		stream << "CONVERGE\n";
 	
 	return stream.str();
 }

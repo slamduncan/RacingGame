@@ -78,6 +78,7 @@ void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
 
 	Car* car = new Car();
 	car->carMass = mass;
+	car->id = carList.size();
 
 	car->initRenderObject(path);
 	

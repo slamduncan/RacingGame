@@ -12,8 +12,10 @@ class Waypoint : public Entity {
 	MethodObserver<ReloadEvent, Waypoint> updateVariableObserver;
 	float throttlePercentage;
 	int throttleValue;
-public:
 	
+public:
+	bool split;
+	bool converge;
 	bool initPhysicsObject(btCollisionShape *shape, btScalar &mass, btTransform &location);
 	void initObservers();
 

@@ -44,7 +44,7 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	nextWaypoint = -1;
 	turningForceModifier = 1.0;
 	springForceModifier = 1.0;
-	lastAngleForce = 0.0;
+	lastAngleForce = 0.0;	
 }
 
 void Car::initObservers()
