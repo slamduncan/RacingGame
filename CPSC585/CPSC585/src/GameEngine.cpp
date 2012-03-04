@@ -331,6 +331,11 @@ void process_events()
 					depthShader = true;
 				}
 			}
+			if(controller1.isButtonDown(controller1.L_Bump)){
+				printf("Trying to use a speed boost...\n");
+				entManager->getCar(0)->UsePowerUp(0);
+			}
+
 			if (controller1.isButtonDown(controller1.Start_button))
 			{
 				ren->quitSDL();
@@ -393,16 +398,20 @@ int main(int argc, char** argv)
 	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(25, 3.5, 0));
 	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 3.5));
 	
-	btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, -100));
-
+	for(int i = 1; i < 5; i++){
+		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, -50*i));
+		entManager->createPowerup("model/powerup.lwo", powerupT1);
+	}
 
 	entManager->createCar("model/box.3ds", carMass, carT1);	
 	/*for(int i = 0; i < 30; i++){
 		btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15*i, 3, 0));	
 		entManager->createCar("model/box.3ds", carMass, carT2);	
 	}*/
+	
 
-	entManager->createCar("model/box.3ds", carMass, carT2);	
+	entManager->createCar("model/box.3ds", carMass, carT2);
+	
 	
 	entManager->createTrack("model/groundBox.lwo", groundT);
 	//entManager->createTrack("model/Track1tri.lwo", groundT);
@@ -421,7 +430,7 @@ int main(int argc, char** argv)
 	//w2->addNextWaypoint(w1);
 
 	//entManager->createWaypoint("model/waypoint.obj", wayPointT3);
-	entManager->createPowerup("model/powerup.lwo", powerupT1);
+	//entManager->createPowerup("model/powerup.lwo", powerupT1);
 
 	//Set inital game time
 	Uint32 currentTime = SDL_GetTicks();

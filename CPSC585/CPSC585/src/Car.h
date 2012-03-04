@@ -11,7 +11,7 @@
 #include "PowerUp.h"
 
 #ifndef MAX_POWERUPS
-#define MAX_POWERUPS           3 // subtract this by 1 when initializing array of power-ups
+#define MAX_POWERUPS           3 // Use this value when initializing array of power-ups
 #endif
 
 class Car : public Entity
@@ -52,7 +52,8 @@ public:
 	void setNextWaypointIndex(int in);
 
 	PowerUp GetPowerUpAt( int index );
-	void AddPowerUp( int type );
+	int AddPowerUp( int type );
+	int GetNumberPowerUps();
 	void UsePowerUp( int index );
 
 	float GetSpeed();
@@ -70,7 +71,7 @@ private:
 	float springForceModifier;
 
 	// 3 power up slots, circular array of powerups?
-	PowerUp m_CarPowerUps[MAX_POWERUPS - 1];
+	PowerUp m_CarPowerUps[MAX_POWERUPS];
 
 	//Observers
 	MethodObserver<RotationEvent, Car> rotationObserver;

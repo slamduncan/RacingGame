@@ -44,6 +44,7 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	nextWaypoint = -1;
 	turningForceModifier = 1.0;
 	springForceModifier = 1.0;
+
 }
 
 void Car::initObservers()
@@ -249,22 +250,49 @@ PowerUp Car::GetPowerUpAt( int index )
 		return m_CarPowerUps[index];
 }
 
-void Car::AddPowerUp( int type )
+int Car::AddPowerUp( int type )
 {
 	for( int i = 0; i < MAX_POWERUPS; i++ )
 	{
 		if( m_CarPowerUps[i].GetType() == EMPTY )
 		{
 			m_CarPowerUps[i].SetType( type );
-			break;
+			return 1;
 		}
 	}
+	return 0;
+}
+
+int Car::GetNumberPowerUps(){
+	int count = 0;
+	for(int i = 0; i < MAX_POWERUPS; i++){
+		if(m_CarPowerUps[i].GetType() != EMPTY){
+			count++;
+		}
+	}
+	return count;
 }
 
 void Car::UsePowerUp( int index )
 {
-	if( index >= 0 && index < MAX_POWERUPS  )
+	if( index >= 0 && index < MAX_POWERUPS  ){
+		int pUpType = m_CarPowerUps[index].GetType();
 		m_CarPowerUps[index].SetType( EMPTY );
+
+		printf("Activating powerup with type %i!\n",pUpType);
+		switch(pUpType){
+			case 1:
+				//SPEED POWERUP
+				chassis->applyCentralForce(-10000.0*getTangent());
+				break;
+			case 2:
+				//TODO: PROJECTILE POWERUP
+				break;
+			case 3:
+				//TODO: TRACTION POWERUP
+				break;
+		}
+	}
 }
 
 int Car::getNextWaypointIndex(){return nextWaypoint;}

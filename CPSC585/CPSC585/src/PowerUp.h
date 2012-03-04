@@ -5,10 +5,10 @@
 
 enum PowerUpType
 {
-	SPEED = 0,
+	EMPTY = 0,
+	SPEED,
 	PROJECTILE,
 	TRACTION,
-	EMPTY
 };
 
 class PowerUp : public Entity

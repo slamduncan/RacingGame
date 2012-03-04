@@ -42,10 +42,9 @@ Physics::~Physics(void)
     delete broadphase;
 }
 
-void carHitPowerup(){
-	printf("I HIT IT AND ALSO I HATE YOU \n");
-}
-
+//*********************************************************************************
+//This code will either be completely replaced or wind up in car.cpp!
+//Used for checking contact pairs
 struct ContactSensorCallback : public btCollisionWorld::ContactResultCallback {
 	
 	//! Constructor, pass whatever context you want to have available when processing contacts
@@ -68,12 +67,13 @@ struct ContactSensorCallback : public btCollisionWorld::ContactResultCallback {
 			pt = cp.m_localPointB;
 		}
 		// do stuff
-		printf("I hit a thing.\n");
+		//printf("I hit a thing.\n");
 		powerUp->hitPowerup();
 
 		return 0; // Return value not used for anything.
 	}
 };
+//*********************************************************************************
 
 void Physics::step()
 {	
@@ -85,7 +85,9 @@ void Physics::step()
 		
 
 		//***********************************************************
-		//This code will be moved later!! -Steve
+		//This code will be moved!! (Probably to a function powerUpCollide in Car...)
+		//This code may be replaced for a more optimal version.
+
 		//Check collision with any powerups
 		btCollisionObject* carPointer = entityManager->getCar(i)->getPhysicsObject();
 		
@@ -97,13 +99,20 @@ void Physics::step()
 
 			dynamicsWorld->contactPairTest(carPointer,pUpPointer,callback);
 
-			//Contact test will set the powerup's collected variable!! (collected or not collected)
+			//Contact test will set the powerup's "collected" variable! (collected or not collected)
 			//If we hit this powerup:
 			if(entityManager->getPowerup(j)->isHit()){
-				//entityManager->getCar(i)->AddPowerUp(1);
-				//TODO: DECONSTRUCT THE POWERUP!
+				//added = 1 if was collected, 0 otherwise.
+				int added = entityManager->getCar(i)->AddPowerUp(1);
+				//printf("Now I have %i powerups!\n",entityManager->getCar(i)->GetNumberPowerUps());
+
+				//Do we want the powerup to vanish anyway if a car has full powerups??
+
+				//TODO: DECONSTRUCT THE POWERUP! (Or start a respawn timer?)
 				entityManager->getPowerUpList()->remove(entityManager->getPowerup(j));
 				break;
+			}else{
+				//printf("I didn't hit anything, but I have %i powerups.\n",entityManager->getCar(i)->GetNumberPowerUps());
 			}
 		}
 		//***********************************************************
