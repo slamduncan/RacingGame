@@ -499,8 +499,9 @@ int main(int argc, char** argv)
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
 
-	LoadBackgroundSoundFile("Documentation/Music/Engine.wav");
-	//LoadBackgroundSoundFile("Documentation/Music/In Game Music.wav");
+	ALuint EngineSource = 2;
+	LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
+	LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	//Load variables from the xml file.
 	evSys->emitEvent(new ReloadEvent());	
@@ -515,8 +516,8 @@ int main(int argc, char** argv)
 		if(EngineModifier < 0)
 			EngineModifier *= -1;
 
-		// Play car engine sound
-		alSourcef(source, AL_PITCH, 1.0f + EngineModifier );
+		// Change pitch of engine sound
+		alSourcef(EngineSource, AL_PITCH, 1.0f + EngineModifier );
 
 		camLookAt = entManager->getCar(0)->getPosition();
 	
