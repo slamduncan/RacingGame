@@ -88,7 +88,7 @@ int Renderer::initSDL()
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	//SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 0);
+	SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 0);
 
 	vflags = SDL_OPENGL;	// set the video flags to allow opengl rendering
 
@@ -428,6 +428,8 @@ void Renderer::drawAll()
 	for(int i = 0; i < em->numWaypoints(); i++)
 	{
 		drawEntity(*(em->getWaypoint(i)));
+		for(int j = 0; j < em->getWaypoint(i)->getWaypointList().size(); j++)
+			drawLine(em->getWaypoint(i)->getPosition(), em->getWaypoint(i)->getWaypointList().at(j)->getPosition(), 256, 0, 0 );
 	}
 #endif
 }

@@ -1,6 +1,8 @@
 #ifndef CAR_H
 #define CAR_H
 
+#include <assert.h>
+
 #include "TypedObserver.h"
 #include "TriggerEvent.h"
 #include "RotationEvent.h"
@@ -30,6 +32,7 @@ public:
 	btScalar restDisplacement;
 	btVector3 gravity;
 	btScalar lastAngleForce;
+	int id;
 
 	Car();
 	bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans);
@@ -53,6 +56,7 @@ public:
 	void setNextWaypointIndex(int in);
 
 	PowerUp GetPowerUpAt( int index );
+	
 	int AddPowerUp( int type );
 	int GetNumberPowerUps();
 	void UsePowerUp( int index );
@@ -62,6 +66,10 @@ public:
 	btCollisionObject* getPhysicsObject();
 
 	float GetForwardForceModifier();
+
+	std::string toString();
+
+	void outputPowerups();
 
 private:
 	btScalar width, length, height;
@@ -74,7 +82,9 @@ private:
 	float springForceModifier;
 
 	// 3 power up slots, circular array of powerups?
+	//btAlignedObjectArray<PowerUp*> m_CarPowerUps;
 	PowerUp m_CarPowerUps[MAX_POWERUPS];
+
 
 	//Observers
 	MethodObserver<RotationEvent, Car> rotationObserver;

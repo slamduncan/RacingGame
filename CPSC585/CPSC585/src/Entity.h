@@ -81,7 +81,7 @@ public:
 	virtual bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans) = 0;
 
 	void debug();
-	std::string toString();
+	virtual std::string toString();
 };
 
 #endif

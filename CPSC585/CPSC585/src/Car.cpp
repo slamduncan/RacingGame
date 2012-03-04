@@ -44,7 +44,16 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	nextWaypoint = -1;
 	turningForceModifier = 1.0;
 	springForceModifier = 1.0;
-	lastAngleForce = 0.0;
+	lastAngleForce = 0.0;	
+
+	PowerUp p1 = PowerUp();
+	PowerUp p2 = PowerUp();
+	PowerUp p3 = PowerUp();
+
+	m_CarPowerUps[0] = p1;
+	m_CarPowerUps[1] = p2;
+	m_CarPowerUps[2] = p3;
+
 }
 
 void Car::initObservers()
@@ -245,24 +254,30 @@ void Car::observeVariables(ReloadEvent *e){
 
 PowerUp Car::GetPowerUpAt( int index )
 {
-	if( index >= 0 && index < MAX_POWERUPS  )
-		return m_CarPowerUps[index];
+	assert(index >= 0 && index < MAX_POWERUPS);
+	
+	return m_CarPowerUps[index];
 }
 
 int Car::AddPowerUp( int type )
 {
+//	printf("NP Before: %d\n", GetNumberPowerUps());
+
 	for( int i = 0; i < MAX_POWERUPS; i++ )
 	{
 		if( m_CarPowerUps[i].GetType() == EMPTY )
 		{
+			//printf("Adding powerup at location %d with type %d\n",i,type);
 			m_CarPowerUps[i].SetType( type );
+//			printf("NP After: %d\n", GetNumberPowerUps());
 			return 1;
 		}
 	}
 	return 0;
-}
+ }
 
 int Car::GetNumberPowerUps(){
+	
 	int count = 0;
 	for(int i = 0; i < MAX_POWERUPS; i++){
 		if(m_CarPowerUps[i].GetType() != EMPTY){
@@ -274,7 +289,7 @@ int Car::GetNumberPowerUps(){
 
 void Car::UsePowerUp( int index )
 {
-	if( index >= 0 && index < MAX_POWERUPS  ){
+	if( index >= 0 && index < MAX_POWERUPS ){
 		int pUpType = m_CarPowerUps[index].GetType();
 		m_CarPowerUps[index].SetType( EMPTY );
 
@@ -316,4 +331,41 @@ float Car::GetForwardForceModifier()
 
 btCollisionObject* Car::getPhysicsObject(){
 	return physicsObject;
+}
+
+std::string Car::toString()
+{
+
+	std::string st = Entity::toString();
+/*
+	std::stringstream stream;
+
+	stream << "\nPowerup: ";
+//
+
+	for(int i = 0; i < MAX_POWERUPS; i++)
+	{
+		int type = GetPowerUpAt(i).GetType();
+		//printf("Type %d\n", type);
+		
+		//ss << GetPowerUpAt(i).GetType() << ", ";
+	}
+
+	//ss << "\n";
+	std::string output = stream.str();
+*/
+	return st;
+}
+
+void Car::outputPowerups()
+{
+	printf("Powerups: ");
+	for(int i = 0; i < MAX_POWERUPS; i++)
+	{
+		int type = GetPowerUpAt(i).GetType();
+		//printf("Type %d\n", type);
+		printf("%d, ",type); 
+		//ss << GetPowerUpAt(i).GetType() << ", ";
+	}
+	printf("\n");
 }
