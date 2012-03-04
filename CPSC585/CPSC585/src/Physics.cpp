@@ -1,6 +1,7 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include "Renderer.h"
+#include "PowerUp.h"
 
 Physics* Physics::physInstance = 0;
 EntityManager* entityManager;
@@ -20,6 +21,7 @@ Physics::Physics(void) : variableObserver(this, &Physics::updateVariables)
 
 	broadphase = new btDbvtBroadphase();
 	collisionConfiguration = new btDefaultCollisionConfiguration();
+	
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	solver = new btSequentialImpulseConstraintSolver;
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,broadphase,solver,collisionConfiguration);
@@ -40,13 +42,73 @@ Physics::~Physics(void)
     delete broadphase;
 }
 
+void carHitPowerup(){
+	printf("I HIT IT AND ALSO I HATE YOU \n");
+}
+
+struct ContactSensorCallback : public btCollisionWorld::ContactResultCallback {
+	
+	//! Constructor, pass whatever context you want to have available when processing contacts
+	ContactSensorCallback(btCollisionObject& tgtBody, PowerUp* pUp/*, ... */)
+		: btCollisionWorld::ContactResultCallback(), body(tgtBody), powerUp(pUp){}
+	
+	btCollisionObject& body; //!< The body the sensor is monitoring (in our case it's the car)
+	PowerUp* powerUp;	//The powerup under consideration (wanted to avoid doing this..)
+
+	//! Called with each contact for your own processing (e.g. test if contacts fall in within sensor parameters)
+	virtual btScalar addSingleResult(btManifoldPoint& cp,
+		const btCollisionObject* colObj0,int partId0,int index0,
+		const btCollisionObject* colObj1,int partId1,int index1)
+	{
+		btVector3 pt; // will be set to point of collision relative to body
+		if(colObj0==&body) {
+			pt = cp.m_localPointA;
+		} else {
+			assert(colObj1==&body && "body does not match either collision object");
+			pt = cp.m_localPointB;
+		}
+		// do stuff
+		printf("I hit a thing.\n");
+		powerUp->hitPowerup();
+
+		return 0; // Return value not used for anything.
+	}
+};
+
 void Physics::step()
 {	
 	dynamicsWorld->stepSimulation(1/60.f,10);
 
 	for (int i = 0; i < entityManager->getCarList()->size(); i++){
+		//update springs
 		entityManager->getCarList()->at(i)->updateWheels();
+		
+
+		//***********************************************************
+		//This code will be moved later!! -Steve
+		//Check collision with any powerups
+		btCollisionObject* carPointer = entityManager->getCar(i)->getPhysicsObject();
+		
+		//For each powerup...
+		for(int j = 0; j < entityManager->getPowerUpList()->size(); j++){
+			//Grab a pointer to it, perform the contact test
+			btCollisionObject* pUpPointer = entityManager->getPowerup(j)->getPhysicsObject();
+			ContactSensorCallback callback(*carPointer, entityManager->getPowerup(j));
+
+			dynamicsWorld->contactPairTest(carPointer,pUpPointer,callback);
+
+			//Contact test will set the powerup's collected variable!! (collected or not collected)
+			//If we hit this powerup:
+			if(entityManager->getPowerup(j)->isHit()){
+				//entityManager->getCar(i)->AddPowerUp(1);
+				//TODO: DECONSTRUCT THE POWERUP!
+				entityManager->getPowerUpList()->remove(entityManager->getPowerup(j));
+				break;
+			}
+		}
+		//***********************************************************
 	}
+
 }
 
 void Physics::setGravity(const btVector3 &gravityIn)

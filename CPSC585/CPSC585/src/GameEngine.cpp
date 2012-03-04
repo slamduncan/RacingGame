@@ -393,7 +393,7 @@ int main(int argc, char** argv)
 	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(25, 3.5, 0));
 	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 3.5));
 	
-	btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, -10));
+	btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, -100));
 
 
 	entManager->createCar("model/box.3ds", carMass, carT1);	

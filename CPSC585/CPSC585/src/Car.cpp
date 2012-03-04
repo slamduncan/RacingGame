@@ -184,7 +184,7 @@ void Car::updateWheels()
 		btVector3 contact = newWheels[i].getBottomSpringPosition();
 		chassis->applyForce(forces[i]*springForceModifier,contact - chassis->getCenterOfMassPosition()/*wheelOffsets[i]*/);
 		
-		if(sideFriction[i] != btScalar(1.))
+		if(sideFriction[i] != btScalar(1.) && newWheels[i].hitObject)
 		{
 			btVector3 carNormal = getNormal();
 			
@@ -195,7 +195,7 @@ void Car::updateWheels()
 			chassis->applyForce(getBinormal() * sideFriction[i]*0.1f * sideFrictionModifier,relpos);
 		}
 	
-		if(forwardFriction[i] != btScalar(1.))
+		if(forwardFriction[i] != btScalar(1.) && newWheels[i].hitObject)
 		{
 			btVector3 carNormal = getNormal();
 			
@@ -280,4 +280,8 @@ float Car::GetSpeed()
 void Car::SetSpeed( float speed )
 {
 	m_Speed = speed;
+}
+
+btCollisionObject* Car::getPhysicsObject(){
+	return physicsObject;
 }

@@ -138,12 +138,13 @@ void EntityManager::createPowerup(char* path, btTransform &trans)
 
 	pup->initRenderObject(path);
 	
+	//Taking this out for a bit; doesn't need to be a trimesh really
 	btCollisionShape* triMesh = sFactory.createStaticTriangleMesh(pup->renderObject);
+	//btCollisionShape* sphereMesh = sFactory.createSphere(btScalar(2.5f));
 
 	pup->initPhysicsObject(triMesh, mass, trans);
 
 	addPowerUp(pup);
-
 }
 
 void EntityManager::createObstacle(char* path, btScalar &mass, btTransform &trans)

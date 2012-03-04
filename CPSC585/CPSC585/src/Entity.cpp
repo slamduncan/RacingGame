@@ -144,7 +144,6 @@ void Entity::debug()
 
 }
 
-
 /*
 *	Returns a string presentation of the entity
 *

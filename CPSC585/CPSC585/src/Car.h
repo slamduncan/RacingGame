@@ -57,6 +57,7 @@ public:
 
 	float GetSpeed();
 	void SetSpeed( float speed );
+	btCollisionObject* getPhysicsObject();
 
 private:
 	btScalar width, length, height;
