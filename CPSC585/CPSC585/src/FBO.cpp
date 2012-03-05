@@ -12,7 +12,7 @@ void FBO::init(int width, int height)
 {
 	glGenFramebuffersEXT(1, &fb);	// generate the FBO
 	turnOn();	// bind the FBO to initialize data for it
-
+/*
 	glGenRenderbuffersEXT(1, &rb);	// generate the render buffer
 
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rb);	// bind it
@@ -22,7 +22,7 @@ void FBO::init(int width, int height)
 	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER_EXT, rb);
 
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);	// unbind the render buffer
-
+*/
 	turnOff();	// unbind it to resume normal frame buffer
 }
 
@@ -42,16 +42,12 @@ void FBO::attachTexture(GLuint texture, GLenum type)
 		return;
 	}
 */	
-	turnOn();
 	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, texture, 0);
-	turnOff();
 }
 
 void FBO::deattachTexture()
 {
-	turnOn();
 	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, 0, 0);
-	turnOff();
 }
 
 bool FBO::isValid()

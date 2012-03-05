@@ -27,6 +27,12 @@
 #define SANDBOX 0
 using namespace std;
 
+// FPS LIMITING DATA
+const int TICKS_PER_SECONDS = 60;
+const int SKIP_TICKS = 1000/TICKS_PER_SECONDS;
+const int MAX_FRAMESKIP = 5;
+
+
 // Other init
 // ie. Physics, AI, Renderer, Sound, Container for ents?
 Renderer* ren = Renderer::getInstance();
@@ -351,7 +357,7 @@ void readWaypoints(const char* fileName){
 		}
 		
 		file.close();
-		for (int i = 1; i < entManager->getCarList()->size(); i++)
+		for (int i = 0; i < entManager->getCarList()->size(); i++)
 			entManager->getCar(i)->setNextWaypointIndex(0);
 		//Update the waypoint variables.
 		evSys->emitEvent(new ReloadEvent());
@@ -436,7 +442,7 @@ void process_events()
 		}
 		break;
 		case SDL_JOYBUTTONDOWN:
-			fprintf(stderr, "BUTTONS HOW DO THEY WORK\n");
+			//fprintf(stderr, "BUTTONS HOW DO THEY WORK\n");
 			controller1.update(event);
 
 			if (controller1.isBDown())
@@ -483,7 +489,7 @@ void process_events()
 
 			}
 			if(controller1.isButtonDown(controller1.L_Bump)){
-				printf("Trying to use a speed boost...\n");
+				//printf("Trying to use a speed boost...\n");
 				entManager->getCar(0)->UsePowerUp(0);
 			}
 
@@ -549,22 +555,22 @@ int main(int argc, char** argv)
 
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
-	btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, -2));
-	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(25, 3.5, 0));
-	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 3.5));
+	btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 3.5f, -2.f));
+	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(25.f, 3.5f, 0.f));
+	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 3.5f, 3.5f));
 	
 	for(int i = 1; i < 5; i++){
-		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 7.5,50*i));
+		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 7.5f, 50.f*i));
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
 	}
 
-	entManager->createCar("model/box.3ds", carMass, carT1);	
-	entManager->createCar("model/box.3ds", carMass, carT2);	
+	entManager->createCar("model/ship1.lwo", carMass, carT1);	
+	entManager->createCar("model/ship1.lwo", carMass, carT2);	
 	for(int i = 1; i < 2; i++){
-		btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, -i*15));	
-		entManager->createCar("model/box.3ds", carMass, carT2);	
-		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15, 3, -i*15));	
-		entManager->createCar("model/box.3ds", carMass, carT3);	
+		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
+		entManager->createCar("model/ship1.lwo", carMass, carT3);	
+		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
+		entManager->createCar("model/ship1.lwo", carMass, carT4);	
 	}
 	
 	
@@ -574,35 +580,10 @@ int main(int argc, char** argv)
 	entManager->createTrack("model/Track1tri.lwo", groundT);
 #endif
 
-	
-	//entManager->createWaypoint("model/waypoint.obj", wayPointT1);
-	//entManager->createWaypoint("model/waypoint.obj", wayPointT2);
-	//btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
-	//for (int i = 0; i < wayList->size()-1; i++)
-	//{
-	//	Waypoint* w1 = wayList->at(i);
-	//	Waypoint* w2 = wayList->at(i+1);
-	//	w1->addNextWaypoint(w2);
-	//}
-	//Waypoint* w1 = wayList->at(0);
-	//Waypoint* w2 = wayList->at(wayList->size()-1);
-	//w2->addNextWaypoint(w1);
-
-	//entManager->createWaypoint("model/waypoint.obj", wayPointT3);
-	//entManager->createPowerup("model/powerup.lwo", powerupT1);
-
-	//Set inital game time
-	Uint32 currentTime = SDL_GetTicks();
-	Uint32 oldTime = SDL_GetTicks();
-	int frameCount = 0;
-	int counter = 1;
-	int instantFrameCount = 0;
-	stringstream instantFrameCountBuffer;
-	string instantFrameString = "";
-
 	// Variables for lap time
 	int LapMinutes = 0;
 	int LapSeconds = 0;
+	int LapMilliseconds = 0;
 
 	//Initialize camera settings.
 	btVector3 car1N = entManager->getCar(0)->getNormal()*10;
@@ -621,36 +602,79 @@ int main(int argc, char** argv)
 
 	float EngineModifier = 0;
 
+	int LapNumber = 1;
+	int WaypointIndex = -1;
+	int CurrentWaypointIndex = 0;
+
+	//Set inital game time
+	Uint32 currentTime = SDL_GetTicks();
+	Uint32 oldTime = SDL_GetTicks();
+	int frameCount = 0;
+	int counter = 1;
+	int instantFrameCount = 0;
+	stringstream instantFrameCountBuffer;
+	string instantFrameString = "";
+
+	int loops;
+	float interpolation;
+	bool running = true;
+
+	Uint32 next_game_tick = SDL_GetTicks();
 	// game loop
-	while(1)
+	while(running)
 	{		
-		// Calculate engine's change in pitch
-		EngineModifier = (entManager->getCar(0)->GetSpeed() / (-1 * entManager->getCar(0)->GetForwardForceModifier()));
-
-		// If going in reverse, we still want engine to rev up
-		if(EngineModifier < 0)
-			EngineModifier *= -1;
-
-		// Change pitch of engine sound
-		alSourcef(EngineSource, AL_PITCH, 1.0f + EngineModifier );
-
-		camLookAt = entManager->getCar(0)->getPosition();
-	
-		camera1.setUpCamera(camLookAt);
+		loops = 0;
 		
-		//// Physics
-		ph->step();
+		while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAMESKIP)
+		{
+			// Calculate engine's change in pitch
+			EngineModifier = (entManager->getCar(0)->GetSpeed() / (-1 * entManager->getCar(0)->GetForwardForceModifier()));
 
-		//// Inputs
-		process_events();
+			// If going in reverse, we still want engine to rev up
+			if(EngineModifier < 0)
+				EngineModifier *= -1;
+
+			// Change pitch of engine sound
+			alSourcef(EngineSource, AL_PITCH, 1.0f + EngineModifier );
+
+			camLookAt = entManager->getCar(0)->getPosition();
 		
-		controller1.emitTriggers();
-		controller1.emitButtons();
-		controller1.emitLeftAnalog();
-		controller1.emitRightAnalog();
+			camera1.setUpCamera(camLookAt);
+			
+			//// Physics
+			ph->step();
 
-		// AI
-		ai->generateNextMove();
+			//// Inputs
+			process_events();
+			
+			controller1.emitTriggers();
+			controller1.emitButtons();
+			controller1.emitLeftAnalog();
+			controller1.emitRightAnalog();
+
+			// AI
+			ai->generateNextMove();
+
+			// Calculate current lap for player's car
+			WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
+			if( WaypointIndex != CurrentWaypointIndex )
+			{
+				CurrentWaypointIndex = WaypointIndex;
+				if( CurrentWaypointIndex == 0 )
+				{
+					LapNumber++;
+					LapMinutes = 0;
+					LapSeconds = 0;
+					LapMilliseconds = 0;
+				}
+			}
+
+			next_game_tick += SKIP_TICKS;
+			loops++;
+			instantFrameCount++;
+		}
+
+		interpolation = float(SDL_GetTicks() + SKIP_TICKS - next_game_tick/ float(SKIP_TICKS));
 
 		// Render
 		ren->clearGL();	// clear the screen
@@ -658,71 +682,48 @@ int main(int argc, char** argv)
 		ren->glDisableLighting();
 		ph->debugDraw();
 		ren->glEnableLighting();
-/*
-		if(depthShader)
-		{
-			ren->draw(ssao1);
-		}
-		else
-		{
-			ren->drawAll();
-		}
-*/
-		//ren->draw(test);
 
 		ren->shadowMapPass();
-
-//		ren->clearGL();
-
-//		ren->setCamera(camera1);
-//		ren->drawTexture("depth2l1");
-
-//		ren->drawAll();
-/*
-		//Following draws the springs for the car
-		for(int i = 0; i < entManager->numCars(); i++)
-		{
-			Car* temp = entManager->getCarList()->at(i);
-			
-			ren->textureOn(ren->getTexture("car1"));
-			ren->drawEntity(*temp);
-			ren->textureOff();
-			
-			// for each wheel we need to draw a line
-			for(int j = 0; j < 4; j++)
-			{
-				//Spring aWheel = temp->wheels[j];
-				Wheel aWheel = temp->newWheels[j];
-
-				btVector3 springPos = aWheel.getAttachedToCarPosition();
-
-				btVector3 springLength = aWheel.getBottomSpringPosition();
-
-				ren->drawLine(springPos, springLength, 0, 0, 255, 3.0f);
-
-			}
-		}
 		
-		//Draw the waypoints.
-		for(int i = 0; i < entManager->numWaypoints(); i++)
-		{
-			ren->drawEntity(*(entManager->getWaypointList()->at(i)));
-		}
+		ren->clearGL();
 
-		// Draw the track.
-		if(entManager->getTrack())
-		{
-			ren->drawEntity(*(entManager->getTrack()));
-		}
-*/		
+		//ren->drawTexture("depth2l1");
+		ren->setCamera(camera1);
+		//ren->draw();
+
+		//ren->clearGL();		
+		//ren->setCamera(camera1);
+		ren->drawAll();
+
 
 		ren->glEnable2D();
+
+		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
+
+		int TimeDifference = currentTime - oldTime;
+		if((TimeDifference) > 1000){
+			std::stringstream ssInstant;
+			//sprintf_s(frames, "%d FPS", frameCount);				
+			ssInstant << instantFrameCount << " Instant FPS";
+			//ren->outputText(frames, 0, 255, 0, 10, 700);
+			//std::cout << frameCount << "\n";
+			//frameCount = 0;
+			instantFrameCount = 0;
+			instantFrameString = ssInstant.str();			
+			counter++;
+			oldTime = currentTime;		
+			LapSeconds++;
+		}		
+		currentTime = SDL_GetTicks();
+
+		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
+/*
 		frameCount++;
 		instantFrameCount++;
 
 		int TimeDifference = currentTime - oldTime;
 
-		/* Calculate the frames per second */
+		// Calculate the frames per second 
 		if((TimeDifference) > 1000){
 			std::stringstream ssInstant;
 			//sprintf_s(frames, "%d FPS", frameCount);				
@@ -741,14 +742,18 @@ int main(int argc, char** argv)
 		std::stringstream ss;
 		ss << frameCount/counter;
 
-		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
+		
 		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
 		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
 
 		//printf("NP: %d\n", entManager->getCar(0)->GetNumberPowerUps());
 		//entManager->getCarList()->at(0)->outputPowerups();
+*/
+
 
 		std::stringstream ssLapTime;
+		std::stringstream ssLap;
+		ssLap << LapNumber;
 
 		// Calculate the current lap time
 		if( LapMinutes < 10 )
@@ -769,10 +774,14 @@ int main(int argc, char** argv)
 		else if( TimeDifference >= 1000 )
 			TimeDifference = 999;
 
-		ssLapTime << TimeDifference / 10;
+		LapMilliseconds = TimeDifference / 10;
+		ssLapTime << LapMilliseconds;
 		// Display the current lap time
 		ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);
+		ren->outputText("Lap: " + ssLap.str(), 255, 0, 0, 0, 640);
 		
+	
+
 		ren->glDisable2D();
 
 		ren->updateGL();	// update the screen

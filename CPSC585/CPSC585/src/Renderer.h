@@ -40,6 +40,7 @@ private:
 	FBO fb;
 
 	Shader depth2pass;
+	Shader shadowPass;
 	Shader ndpass;
 	Shader gaussian;
 	Shader radblur;
@@ -112,6 +113,7 @@ public:
 	
 	void drawTexture(std::string texName);
 
+	void draw();
 
 	void glEnable2D();
 	void glDisable2D();

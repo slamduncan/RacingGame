@@ -70,7 +70,7 @@ void Physics::step()
 //				printf("carTemp %d\n", carTemp);
 				
 				int added = carTemp->AddPowerUp(entityManager->getPowerup(i)->GetType());
-				PowerUp * toDelete = entityManager->getPowerup(i);
+				PowerUp* toDelete = entityManager->getPowerup(i);
 				
 				
 				entityManager->getPowerUpList()->remove(toDelete);
@@ -80,8 +80,6 @@ void Physics::step()
 				//dynamicsWorld->removeCollisionObject(entityManager->getPowerup(i)->physicsObject);
 				
 				//delete toDelete;
-				
-
 
 				i--;
 				break;
