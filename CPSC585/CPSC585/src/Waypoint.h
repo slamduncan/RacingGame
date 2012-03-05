@@ -12,6 +12,7 @@ class Waypoint : public Entity {
 	MethodObserver<ReloadEvent, Waypoint> updateVariableObserver;
 	float throttlePercentage;
 	int throttleValue;
+	int direction;
 	
 public:
 	bool split;

@@ -8,6 +8,7 @@ Waypoint::Waypoint() : updateVariableObserver(this,&Waypoint::observeVariables){
 	throttleValue = -32767.0;
 	split = false;
 	converge = false;
+	direction = 0;
 }
 
 int Waypoint::getThrottle(){return throttleValue;}
@@ -70,22 +71,24 @@ void Waypoint::positionCheck(Car* car){
 	
 	//If amount is less than 0, then car is past this.
 	btScalar amount = getTangent().dot(toWaypoint);
-	btScalar amount2 = toWaypoint.dot(getTangent());
-	btScalar test = toWaypoint.length();
+	btScalar amount2 = toWaypoint.dot(getTangent());	
 
 	if (amount < goToNextWaypointDistanceBefore && amount > goToNextWaypointDistanceAfter){
 		int id = car->id;
 		int nextIndex = 0;
-		if (!nextWaypoints.empty()){
-			if (id % nextWaypoints.size() == 0)
+		printf("%d\n", direction);
+		if (!nextWaypoints.empty()){			
+			if (direction % nextWaypoints.size() == 0)
 			{
 				nextIndex = nextWaypoints.at(0)->getIndex();
 				printf("%d\n", nextIndex);
+				direction = id % nextWaypoints.size();
 			}
 			else
 			{
 				nextIndex = nextWaypoints.at(1)->getIndex();
 				printf("%d\n", nextIndex);
+				direction = id % nextWaypoints.size();
 			}
 				//Do stuff to find the next waypoint!
 				if (!nextWaypoints.empty())
