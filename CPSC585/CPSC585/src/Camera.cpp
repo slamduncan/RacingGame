@@ -33,16 +33,17 @@ void Camera::rotateCamera(RightAnalogEvent *e){
 	// cap the angle
 	if(angle > SIMD_2_PI)
 	{
-		angle = btScalar(0.);
+	angle = btScalar(0.);
 	}
 	if(angle < btScalar(0.))
 	{
-		angle = SIMD_2_PI;
+	angle = SIMD_2_PI;
 	}
-	
+
 	angle = (float)e->getNormX() * SIMD_RADS_PER_DEG * 3.0f;
 
 	computeCameraPosition();
+	
 }
 
 Camera::Camera(btVector3 &cameraPositionIn, btVector3 &lookAtPointIn, btScalar distance, btScalar height) : analogObserver(this, & Camera::rotateCamera)
@@ -50,6 +51,25 @@ Camera::Camera(btVector3 &cameraPositionIn, btVector3 &lookAtPointIn, btScalar d
 	cameraPosition = cameraPositionIn;
 	lookAtPoint = lookAtPointIn;
 
+}
+
+void Camera::updateCamera(btVector3 &lookAtPointIn, btVector3 &alignVector)
+{
+/*
+	lookAtPoint = lookAtPointIn;
+
+	btScalar offsetLength = offset.length();
+
+	btScalar offsetAmount = alignVector.dot((cameraPosition - lookAtPointIn).normalize());
+
+	btVector3 offsetVector = (offsetAmount/btScalar(10.0f)) * alignVector.normalize();
+
+	//computeCameraPosition();
+
+	cameraPosition = lookAtPoint + offset;
+
+	cameraPosition += offsetVector;
+*/
 }
 
 void Camera::computeCameraPosition()

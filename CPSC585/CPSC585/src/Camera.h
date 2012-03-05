@@ -20,7 +20,7 @@ public:
 	void setUpCamera(btVector3 &lookAtPointIn, btVector3 &offset);
 
 	void setUpCamera(btVector3 &lookAtPointIn, btVector3 &cameraPosition, btVector3 &upIn);
-
+	void updateCamera(btVector3 &lookAtPointIn, btVector3 &alignVector);
 
 	btVector3 offset;
 

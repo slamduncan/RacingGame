@@ -692,7 +692,7 @@ int main(int argc, char** argv)
 
 	//Load variables from the xml file.
 	ReloadEvent* e = new ReloadEvent();
-	evSys->emitEvent(e);	
+	evSys->emitEvent(e);
 	delete e;
 
 	float EngineModifier = 0;
@@ -814,9 +814,10 @@ int main(int argc, char** argv)
 
 			//ren->drawTexture("depth2l1");
 			
-			
 			camLookAt = entManager->getCar(0)->getPosition();
 			camera1.setUpCamera(camLookAt);
+			//camera1.updateCamera(camLookAt, entManager->getCar(0)->getBinormal());
+			
 			ren->setCamera(camera1);
 			//ren->draw();
 
