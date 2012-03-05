@@ -1,13 +1,13 @@
 <?xml version="1.0" ?>
 <Physics>
-  <kModifer value ="1.0" />
-  <cModifier value ="0.1" />
-  <gravity xComponent = "0.0" yComponent ="-30.0" zComponent ="0.0"/>
+  <kModifer value ="2.25" />
+  <cModifier value ="0.2" />
+  <gravity xComponent = "0.0" yComponent ="-145.0" zComponent ="0.0"/>
   <staticFrictionModifier value ="1.0" />
   <dynamicFrictionModifier value = "1.0"/>
-  <forwardForceModifier value ="100.0"/>
-  <sideFrictionModifier value ="15.0"/>
-  <forwardFrictionModifier value ="3.5"/>
-  <turningForceModifier value ="7.0" />
-  <springForceModifier value="1.0"/>
+  <forwardForceModifier value ="350.0"/>
+  <sideFrictionModifier value ="20.0"/>
+  <forwardFrictionModifier value ="4.0"/>
+  <turningForceModifier value ="10.0" />
+  <springForceModifier value="3.0"/>
 </Physics>
