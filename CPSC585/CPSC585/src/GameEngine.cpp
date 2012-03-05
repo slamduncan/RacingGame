@@ -568,7 +568,7 @@ int main(int argc, char** argv)
 	entManager->createCar("model/box.3ds", carMass, carT1);	
 	entManager->createCar("model/box.3ds", carMass, carT2);	
 	for(int i = 1; i < 2; i++){
-		btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, -i*30));	
+		btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, -i*15));	
 		entManager->createCar("model/box.3ds", carMass, carT2);	
 		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15, 3, -i*30));	
 		entManager->createCar("model/box.3ds", carMass, carT3);	
