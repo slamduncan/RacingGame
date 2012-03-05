@@ -38,6 +38,8 @@ int state = 0;
 Timer startTimer;
 bool startAI = false;
 
+int startIndex = 3;
+
 
 // Other init
 // ie. Physics, AI, Renderer, Sound, Container for ents?
@@ -741,9 +743,8 @@ int main(int argc, char** argv)
 			if(startTimer.get_ticks() >5000)
 			{
 				startAI = true;
+				startTimer.stop();
 			}
-
-			
 			
 			loops = 0;
 			
@@ -765,10 +766,13 @@ int main(int argc, char** argv)
 				//// Inputs
 				process_events();
 				
-				controller1.emitTriggers();
-				controller1.emitButtons();
-				controller1.emitLeftAnalog();
-				controller1.emitRightAnalog();
+				if(startAI)
+				{
+					controller1.emitTriggers();
+					controller1.emitButtons();
+					controller1.emitLeftAnalog();
+					controller1.emitRightAnalog();
+				}
 
 				if(startAI)
 				{
@@ -822,6 +826,34 @@ int main(int argc, char** argv)
 
 			ren->glEnable2D();
 
+			// if 2 seconds have passed since the start of the game
+			int timeSinceStart = startTimer.get_ticks();
+			if(timeSinceStart >= 2000 && startIndex == 3)
+			{
+				ren->changeFontSize(50);
+				ren->outputText("3", 255, 255, 255, 640-25, 500);
+				startIndex--;
+			}
+			else if(timeSinceStart >= 3000 && startIndex == 2)
+			{
+				ren->changeFontSize(50);
+				ren->outputText("2", 255, 255, 255, 640-25, 500);
+				startIndex--;
+			}
+			else if(timeSinceStart >= 4000 && startIndex == 1)
+			{
+				ren->changeFontSize(50);
+				ren->outputText("1", 255, 255, 255, 640-25, 500);
+				startIndex--;
+			}
+			else if(startIndex <= 0 && startIndex >= -120)
+			{
+				ren->changeFontSize(50);
+				ren->outputText("GO", 255, 255, 255, 640-25*2, 500);
+				startIndex--;
+			}
+		
+
 			ren->changeFontSize(20);
 			ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
 
@@ -837,7 +869,11 @@ int main(int argc, char** argv)
 				instantFrameString = ssInstant.str();			
 				counter++;
 				oldTime = currentTime;		
-				LapSeconds++;
+				
+				if(startAI)
+				{
+					LapSeconds++;
+				}
 			}		
 			currentTime = SDL_GetTicks();
 
@@ -875,32 +911,35 @@ int main(int argc, char** argv)
 			//entManager->getCarList()->at(0)->outputPowerups();
 	*/
 
-
+			
 			std::stringstream ssLapTime;
 			std::stringstream ssLap;
 			ssLap << LapNumber;
 
-			// Calculate the current lap time
-			if( LapMinutes < 10 )
-				ssLapTime << "0";
-			ssLapTime << LapMinutes << ":";
-
-			if( LapSeconds >= 60 )
+			if(startAI)
 			{
-				LapSeconds = 0;
-				LapMinutes++;
+				// Calculate the current lap time
+				if( LapMinutes < 10 )
+					ssLapTime << "0";
+				ssLapTime << LapMinutes << ":";
+
+				if( LapSeconds >= 60 )
+				{
+					LapSeconds = 0;
+					LapMinutes++;
+				}
+				else if( LapSeconds < 10 )
+					ssLapTime << "0";
+				ssLapTime << LapSeconds << ":";
+
+				if( TimeDifference < 100 )
+					ssLapTime << "0";
+				else if( TimeDifference >= 1000 )
+					TimeDifference = 999;
+				
+				LapMilliseconds = TimeDifference / 10;
+				ssLapTime << LapMilliseconds;
 			}
-			else if( LapSeconds < 10 )
-				ssLapTime << "0";
-			ssLapTime << LapSeconds << ":";
-
-			if( TimeDifference < 100 )
-				ssLapTime << "0";
-			else if( TimeDifference >= 1000 )
-				TimeDifference = 999;
-
-			LapMilliseconds = TimeDifference / 10;
-			ssLapTime << LapMilliseconds;
 			// Display the current lap time
 			ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);
 			ren->outputText("Lap: " + ssLap.str(), 255, 0, 0, 0, 640);
