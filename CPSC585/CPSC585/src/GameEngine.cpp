@@ -836,6 +836,7 @@ int main(int argc, char** argv)
 
 			ren->shadowMapPass();
 			
+			
 			ren->clearGL();
 
 			//ren->drawTexture("depth2l1");
