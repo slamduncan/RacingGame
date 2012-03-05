@@ -365,7 +365,9 @@ void readWaypoints(const char* fileName){
 		for (int i = 0; i < entManager->getCarList()->size(); i++)
 			entManager->getCar(i)->setNextWaypointIndex(0);
 		//Update the waypoint variables.
-		evSys->emitEvent(new ReloadEvent());
+		ReloadEvent* e = new ReloadEvent();
+		evSys->emitEvent(e);
+		delete e;
 	}
 	else
 		printf("Unable to open Waypoint File - Read\n");
@@ -389,7 +391,9 @@ void handle_key_down( SDL_keysym* keysym )
 		//Reload the variables on r.
 		case SDLK_r:
 			{
-				evSys->emitEvent(new ReloadEvent());
+				ReloadEvent* e = new ReloadEvent();
+				evSys->emitEvent(e);
+				delete e;
 				break;
 			}
 		case SDLK_w:
@@ -685,7 +689,9 @@ int main(int argc, char** argv)
 	//LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	//Load variables from the xml file.
-	evSys->emitEvent(new ReloadEvent());	
+	ReloadEvent* e = new ReloadEvent();
+	evSys->emitEvent(e);	
+	delete e;
 
 	float EngineModifier = 0;
 

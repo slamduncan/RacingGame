@@ -51,21 +51,48 @@ InputController::~InputController(){
 void InputController::emitTriggers(){
 //	triggerEvent->setValue(triggers);
 //	triggerEvent->setNormValue(normTriggers);
-	evSys->emitEvent(new TriggerEvent(triggers, normTriggers));
+	TriggerEvent* e = new TriggerEvent(triggers, normTriggers);
+	evSys->emitEvent(e);
+	delete e;
 }
 
 void InputController::emitButtons(){
-	if (A){evSys->emitEvent(new ButtonEvent(A_button));}
-	if (X){evSys->emitEvent(new ButtonEvent(X_button));}
-	if (Y){evSys->emitEvent(new ButtonEvent(Y_button));}
-	if (B){evSys->emitEvent(new ButtonEvent(B_button));}
+	
+	if (A){
+		ButtonEvent* e = new ButtonEvent(A_button);
+		evSys->emitEvent(e);
+		delete e;
+	}	
+	
+	if (X){
+		ButtonEvent* e = new ButtonEvent(X_button);
+		evSys->emitEvent(e);
+		delete e;
+	}
+	
+	
+	if (Y){
+		ButtonEvent* e = new ButtonEvent(Y_button);
+		evSys->emitEvent(e);
+		delete e;
+	}
+	
+	if (B){
+		ButtonEvent* e = new ButtonEvent(B_button);
+		evSys->emitEvent(e);
+		delete e;
+	}
 }
 
 void InputController::emitLeftAnalog(){
-	evSys->emitEvent(new LeftAnalogEvent(leftAnaX, normLeftAnaX, leftAnaY, normLeftAnaY, leftAnaButton));
+	LeftAnalogEvent* e =  new LeftAnalogEvent(leftAnaX, normLeftAnaX, leftAnaY, normLeftAnaY, leftAnaButton);
+	evSys->emitEvent(e);
+	delete e;
 }
 void InputController::emitRightAnalog(){
-	evSys->emitEvent(new RightAnalogEvent(rightAnaX, normRightAnaX, rightAnaY, normRightAnaY, rightAnaButton));
+	RightAnalogEvent* e =  new RightAnalogEvent(rightAnaX, normRightAnaX, rightAnaY, normRightAnaY, rightAnaButton);
+	evSys->emitEvent(e);
+	delete e;
 }	
 
 
@@ -139,7 +166,7 @@ void InputController::update(SDL_Event cntrlEvent){
 						if (triggerInputLimit(cntrlEvent.jaxis.value)){
 							triggers = cntrlEvent.jaxis.value;
 							normTriggers = triggers/MAX_AXIS_VAL;
-							evSys->emitEvent(new TriggerEvent(triggers, normTriggers));
+							//evSys->emitEvent(new TriggerEvent(triggers, normTriggers));
 						}
 						else {
 							triggers = 0;
@@ -179,6 +206,7 @@ void InputController::update(SDL_Event cntrlEvent){
 					{
 						Event* ev = new ButtonEvent(A_button);
 						evSys->emitEvent(ev);
+						delete ev;
 						A = true;
 						break;
 					}
@@ -187,6 +215,7 @@ void InputController::update(SDL_Event cntrlEvent){
 					{
 						Event* ev = new ButtonEvent(B_button);
 						evSys->emitEvent(ev);
+						delete ev;
 						B = true;
 						break;
 					}
@@ -196,6 +225,7 @@ void InputController::update(SDL_Event cntrlEvent){
 					{						
 						Event* ev = new ButtonEvent(X_button);
 						evSys->emitEvent(ev);
+						delete ev;
 						X = true;
 						break;
 					}
@@ -204,6 +234,7 @@ void InputController::update(SDL_Event cntrlEvent){
 					{
 						Event* ev = new ButtonEvent(Y_button);
 						evSys->emitEvent(ev);
+						delete ev;
 						Y = true;
 						break;
 					}
@@ -212,6 +243,7 @@ void InputController::update(SDL_Event cntrlEvent){
 					{
 						Event* ev = new ButtonEvent(L_Bump);
 						evSys->emitEvent(ev);
+						delete ev;
 						leftBump = true;
 						break;
 					}
@@ -220,6 +252,7 @@ void InputController::update(SDL_Event cntrlEvent){
 					{
 						Event* ev = new ButtonEvent(R_Bump);
 						evSys->emitEvent(ev);
+						delete ev;
 						rightBump = true;
 						break;
 					}
@@ -228,6 +261,7 @@ void InputController::update(SDL_Event cntrlEvent){
 					{
 						Event* ev = new ButtonEvent(Start_button);
 						evSys->emitEvent(ev);
+						delete ev;
 						start = true;
 						break;
 					}
