@@ -7,11 +7,11 @@
 #include "RightAnalogEvent.h"
 #include "LeftAnalogEvent.h"
 #define MAX_AXIS_VAL 32767.0
-#define TRIGGER_LIMIT 4000
+#define TRIGGER_LIMIT 8000
 
 InputController::InputController()
 {
-	A = B = X = Y = rightBump = leftBump = start = rightAnaButton = leftAnaButton = false;
+	A = B = X = Y = rightBump = leftBump = start = rightAnaButton = leftAnaButton = backButton = false;
 	leftAnaX = leftAnaY = rightAnaX = rightAnaY = triggers = 0;
 	normLeftAnaX = normLeftAnaY = normRightAnaX = normRightAnaY = normTriggers =  0.0;
 //	triggerEvent = new TriggerEvent(0, 0);
@@ -265,6 +265,11 @@ void InputController::update(SDL_Event cntrlEvent){
 						start = true;
 						break;
 					}
+				case Back_button:
+					{
+						backButton = true;
+						break;
+					}						
 				case R_Analog:
 					{
 						rightAnaButton = true;
@@ -327,6 +332,11 @@ void InputController::update(SDL_Event cntrlEvent){
 						start = false;
 						break;
 					}
+				case Back_button:
+					{
+						backButton = false;
+						break;
+					}
 				case R_Analog:
 					{
 						rightAnaButton = false;
@@ -385,6 +395,7 @@ bool InputController::isButtonDown(Button in){
 		case R_Bump: {return rightBump;}
 		case L_Bump: {return leftBump;}
 		case Start_button: {return start;}
+		case Back_button: {return backButton;}
 	}
 	return false;
 }
