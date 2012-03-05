@@ -39,7 +39,7 @@ Sandbox:
 	There are also some jumps (a 10, 15, 30, 45, and 60 degree jumps).
 	Ai drive in a circle
 
-For All:
+For All:  
 	Sound is working. (Including sound for the player car)
 	Springs implemented.
 	Textures are loading.
