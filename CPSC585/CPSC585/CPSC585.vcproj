@@ -289,6 +289,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Timer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Track.cpp"
 				>
 			</File>
@@ -448,6 +452,10 @@
 			</File>
 			<File
 				RelativePath=".\src\TextureManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Timer.h"
 				>
 			</File>
 			<File

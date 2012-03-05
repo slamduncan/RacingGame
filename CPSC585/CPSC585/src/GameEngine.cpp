@@ -22,6 +22,7 @@
 #include "InputMapper.h"
 #include "Camera.h"
 #include "AIHandler.h"
+#include "Timer.h"
 
 #include "Sound.h"
 #define SANDBOX 0
@@ -33,6 +34,10 @@ const int SKIP_TICKS = 1000/TICKS_PER_SECONDS;
 const int MAX_FRAMESKIP = 5;
 
 int state = 0;
+
+Timer startTimer;
+bool startAI = false;
+
 
 // Other init
 // ie. Physics, AI, Renderer, Sound, Container for ents?
@@ -50,7 +55,7 @@ EventSystemHandler* evSys = EventSystemHandler::getInstance();
 EntityManager* entManager = EntityManager::getInstance();
 
 // TESTING AREA
-int waypointIndex1 = 0, waypointIndex2 = 0 ;
+int waypointIndex1 = 0, waypointIndex2 = 0;
 
 //Dynamic creation of waypoints
 void createWaypoint(){
@@ -554,6 +559,15 @@ void process_events()
 			{
 				if(state == 0)
 				{
+					readWaypoints("waypoints.w");
+					
+					startTimer.start();
+
+					ALuint EngineSource = 2;
+
+					LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
+					LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+
 					state = 1;
 				}
 				else if(state == 1)
@@ -667,8 +681,8 @@ int main(int argc, char** argv)
 	camera1.setUpCamera(camLookAt, camOffset);
 
 	ALuint EngineSource = 2;
-	LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
-	LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+	//LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
+	//LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	//Load variables from the xml file.
 	evSys->emitEvent(new ReloadEvent());	
@@ -718,7 +732,10 @@ int main(int argc, char** argv)
 		}
 		else
 		{
-
+			if(startTimer.get_ticks() >5000)
+			{
+				startAI = true;
+			}
 
 			
 			
@@ -747,8 +764,11 @@ int main(int argc, char** argv)
 				controller1.emitLeftAnalog();
 				controller1.emitRightAnalog();
 
-				// AI
-				ai->generateNextMove();
+				if(startAI)
+				{
+					// AI
+					ai->generateNextMove();
+				}
 
 				// Calculate current lap for player's car
 				WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
