@@ -405,7 +405,7 @@ void handle_key_down( SDL_keysym* keysym )
 #if SANDBOX
 				writeWaypoints("sandboxWaypoints.w");
 #else
-				writeWaypoints("waypoints.w");
+				//writeWaypoints("waypoints.w");
 #endif
 				break;
 			}
@@ -578,8 +578,12 @@ void process_events()
 				}
 				else if(state == 1)
 				{
-					ren->quitSDL();
+				//	ren->quitSDL();
 				}
+			}
+			if (controller1.isButtonDown(controller1.Back_button))
+			{
+				ren->quitSDL();
 			}
 			/*
 			if (controller1.isButtonDown(controller1.L_Bump))
@@ -607,6 +611,29 @@ void process_events()
 }
 
 
+void resetCars(){
+	for (int i = 0; i < entManager->getCarList()->size(); i ++)
+	{
+		Car* c = entManager->getCar(i);
+		if (c->getPosition().y() < -300.0)
+		{
+			// resetCar(index of car, position we want to reset to)
+			int index = getClosestWaypoint(c);
+			if (entManager->getWaypointList()->size() > 0 && index != -1)
+			{
+				Waypoint *w = entManager->getWaypoint(index);						
+				btTransform trans = w->getTransform();
+				btQuaternion q = btQuaternion(btVector3(0,1,0), trans.getRotation().getAngle() + SIMD_PI);
+				trans.setRotation(q);
+				entManager->resetCar(i, trans);
+			}
+			else
+			{
+				entManager->resetCar(i, btVector3(0, 3, 0));
+			}
+		}
+	}
+}
 
 // Engine Main
 int main(int argc, char** argv)
@@ -947,6 +974,8 @@ int main(int argc, char** argv)
 			ren->glDisable2D();
 
 			ren->updateGL();	// update the screen
+
+			resetCars();
 		}
 	}
 
