@@ -491,17 +491,23 @@ void process_events()
 			}
 			if(controller1.isButtonDown(controller1.L_Bump)){
 				printf("Trying to use a speed boost...\n");
-				entManager->getCar(0)->UsePowerUp(0);
+				if(entManager->getCar(0)->GetPowerUpAt(0).GetType() != 0){
+					entManager->getCar(0)->UsePowerUp(0);
+				}else if(entManager->getCar(0)->GetPowerUpAt(1).GetType() != 0){
+					entManager->getCar(0)->UsePowerUp(1);
+				}else if(entManager->getCar(0)->GetPowerUpAt(2).GetType() != 0){
+					entManager->getCar(0)->UsePowerUp(2);
+				}
 			}
 
 			if (controller1.isButtonDown(controller1.Start_button))
 			{
 				ren->quitSDL();
 			}
-			if (controller1.isButtonDown(controller1.L_Bump))
-			{
-				addWaypointInbetween();
-			}
+			//if (controller1.isButtonDown(controller1.L_Bump))
+			//{
+			//	addWaypointInbetween();
+			//}
 
 			break;
 		case SDL_JOYBUTTONUP:

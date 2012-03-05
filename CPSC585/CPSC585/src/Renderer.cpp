@@ -88,7 +88,7 @@ int Renderer::initSDL()
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 0);
+	//SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 0);
 
 	vflags = SDL_OPENGL;	// set the video flags to allow opengl rendering
 
