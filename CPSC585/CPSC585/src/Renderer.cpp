@@ -127,11 +127,12 @@ int Renderer::initGL()
 	//glShadeModel(GL_FLAT);
 	glShadeModel(GL_SMOOTH);	// smooth shading
     glCullFace(GL_BACK);	// remove back facing surfaces
-    //glFrontFace(GL_CCW);	// set front face objects to be in CCW direction
+    glFrontFace(GL_CW);	// set front face objects to be in CCW direction
     glEnable( GL_CULL_FACE );	// allow removing culled surfaces
 	glBlendFunc(GL_ONE, GL_ONE);	
 	//glEnable(GL_BLEND);
 
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	GLfloat diff[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 	GLfloat spec[4] = {0.0f, 0.0f, 0.0f, 0.0f};
@@ -172,7 +173,12 @@ int Renderer::initGL()
 		//printf("Incomplete frame buffer object\n");
 		counter--;
 	}
-	std::cout << "FBO initialized" << std::endl;
+	int colorBufferCount = 0;
+    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT, &colorBufferCount);
+
+	printf("Number of color attachment points: %d\n", colorBufferCount);
+
+	std::cout << "FBO supported" << std::endl;
 
 
 
@@ -237,8 +243,8 @@ int Renderer::initShaders()
 {
 	depth2pass = Shader("shader/basic.vert", "shader/d2.frag");
 	depth2pass.debug();
-	ndpass = Shader("shader/basic.vert", "shader/nd.frag");
-	ndpass.debug();
+	//ndpass = Shader("shader/basic.vert", "shader/nd.frag");
+	//ndpass.debug();
 	return 0;
 }
 
@@ -349,24 +355,28 @@ void Renderer::draw(Shader &s)
 //
 void Renderer::shadowMapPass()
 {
-	// for each light source in our scene
+	// for each light source in our world, generate a depth map for the first car
 	for(int i = 0; i < lights.size(); i++)
 	{
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
-		fb.attachTexture(getTexture("depth2l1"), GL_COLOR_ATTACHMENT0_EXT);
-
 		fb.turnOn();
-		
-		shaderOn(depth2pass);
-
+		glViewport(0, 0, width, height);
+		fb.attachTexture(getTexture("depth2l1"), GL_COLOR_ATTACHMENT0_EXT);
+		clearGL();
+		depth2pass.turnShadersOn();
+		//shaderOn(depth2pass);
 		drawAll();
+		//shaderOff(depth2pass);
+		depth2pass.turnShadersOff();
+			
 
-		shaderOff(depth2pass);
-		fb.turnOff();
 		fb.deattachTexture();
-
+		fb.turnOff();
 	}
+
+	// bind and active the texture
+	// draw using the depth map
 }
 
 void Renderer::ssaoPass()
@@ -394,6 +404,7 @@ void Renderer::drawAll()
 		drawEntity(*temp);
 		textureOff();
 
+/*		
 		// for each wheel we need to draw a line
 		for(int j = 0; j < 4; j++)
 		{
@@ -407,6 +418,7 @@ void Renderer::drawAll()
 			drawLine(springPos, springLength, 0, 0, 255, 3.0f);
 
 		}
+		*/
 	}
 
 
@@ -431,28 +443,33 @@ void Renderer::drawAll()
 
 void Renderer::drawTexture(std::string texName)
 {
-    glMatrixMode (GL_MODELVIEW); 
-	glPushMatrix (); 
-	glLoadIdentity (); 
-	glMatrixMode (GL_PROJECTION); 
-	glPushMatrix (); 
-	glLoadIdentity ();
+	glEnable2D();
+/*
+	glTexCoord2f(0.0f, 1.0f); 
+	glVertex2i(position.x, position.y);
+	glTexCoord2f(0.0f, 0.0f); 
+	glVertex2i(position.x, position.y + ht);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex2i(position.x + wt, position.y + ht);
+	glTexCoord2f(1.0f, 1.0f); 
+	glVertex2i(position.x + wt, position.y);
+
+*/
 
 	textureOn(getTexture(texName));
     glBegin (GL_QUADS); 
-	glTexCoord2f(0.0f, 1.0f); 
-	glVertex3i (-1, -1, -1); 
-	glTexCoord2f(1.0f, 1.0f); 
-	glVertex3i (1, -1, -1); 
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3i (1, 1, -1); 
 	glTexCoord2f(0.0f, 0.0f); 
-	glVertex3i (-1, 1, -1); 
-	glEnd ();
+	glVertex2i (0, 0); 
+	glTexCoord2f(0.0f, 1.0f); 
+	glVertex2i (0,height); 
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2i (width, height); 
+	glTexCoord2f(1.0f, 0.0f); 
+	glVertex2i (width, 0); 
+	glEnd();
     textureOff();
-	glPopMatrix (); 
-	glMatrixMode (GL_MODELVIEW); 
-	glPopMatrix ();
+
+	glDisable2D();
 
 }
 
@@ -561,12 +578,12 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 
 	glTexCoord2f(0.0f, 1.0f); 
 	glVertex2i(position.x, position.y);
-	glTexCoord2f(1.0f, 1.0f); 
-	glVertex2i(position.x + wt, position.y);
-	glTexCoord2f(1.0f, 0.0f); 
-	glVertex2i(position.x + wt, position.y + ht);
 	glTexCoord2f(0.0f, 0.0f); 
 	glVertex2i(position.x, position.y + ht);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex2i(position.x + wt, position.y + ht);
+	glTexCoord2f(1.0f, 1.0f); 
+	glVertex2i(position.x + wt, position.y);
 	glEnd();
 
 	glFinish();
@@ -606,42 +623,11 @@ void Renderer::setCamera(const Camera& cam){
 		cam.normal.getX(), cam.normal.getY(), cam.normal.getZ());
 }
 
-
-/*
-*	draws a white box centered on the screen
-*/
-/*
-void Renderer::draw()
-{
-	glPushMatrix();
-    glLoadIdentity();
-
-	gluLookAt(0, 0, -5,	// camera position
-		      0, 0, 0,	// look at point
-			  0, 1, 0);	// up vector
-		      
-	glColor4f(1, 0, 0, 1);
-	glBegin(GL_QUADS);
-	glVertex3f(-1, -1, 0);
-	glVertex3f(-1, 1, 0);
-	glVertex3f(1, 1, 0);
-	glVertex3f(1, -1, 0);
-	glEnd();
-	glPopMatrix();
-
-	// go into HUD mode
-	glEnable2D();
-
-	outputText("This is a multi\nline test to see if \nnewlines are working correctly", 255, 255, 255, width/3, height/2);
-
-	glDisable2D();
-}
-*/
 void Renderer::drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width)
 {
 	assert(width >= 1);
 	
-	glPushMatrix();
+	//glPushMatrix();
 	glLineWidth(width);
 
 	glBegin(GL_LINES);
@@ -650,15 +636,11 @@ void Renderer::drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, f
 	
 	glVertex3fv(start);
 	glVertex3fv(end);
-	//glVertex3f(start.getX(), start.getY(), start.getZ());
-	//glVertex3f(end.getX(), end.getY(), end.getZ());
-
-	//end.m_floats
-
+	
 	glEnd();
 
 	glLineWidth(1);	// we need to reset the line width back to default as to not effect other things
-	glPopMatrix();
+
 }
 
 
@@ -673,8 +655,6 @@ void Renderer::drawEntity(Entity &entity)
 	glPushMatrix();
 	
 	btScalar* matrix = entity.getGLMatrix();
-
-	//printf("(%f, %f, %f)\n", matrix[0], matrix[1]
 
 	glMultMatrixf(matrix);
 
@@ -714,6 +694,37 @@ void Renderer::drawEntity(Entity &entity)
 			}
 		}
 
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
+
+		if(mesh->HasTextureCoords(0))
+		{
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+
+		//aiVector3D
+
+		glVertexPointer(3, GL_FLOAT, sizeof(aiVector3D), mesh->mVertices);
+		glNormalPointer(GL_FLOAT, sizeof(aiVector3D), mesh->mNormals);
+		
+		if(mesh->HasTextureCoords(0))
+		{
+			glTexCoordPointer(2, GL_FLOAT, sizeof(aiVector3D), mesh->mTextureCoords[0]);
+		}
+
+		glDrawArrays(GL_TRIANGLES, 0, mesh->mNumVertices);
+
+		if(mesh->HasTextureCoords(0))
+		{
+			//glTexCoord2f(mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+
+		glDisableClientState(GL_NORMAL_ARRAY);
+		glDisableClientState(GL_VERTEX_ARRAY);
+		//
+	
+		/*
 		for(int j = 0; j < (int)mesh->mNumFaces; j++)
 		{
 			const aiFace* face = &mesh->mFaces[j];	// get a face
@@ -733,32 +744,10 @@ void Renderer::drawEntity(Entity &entity)
 			for(unsigned int k = 0; k < face->mNumIndices; k++)
 			{
 				int index = face->mIndices[k];
-				
-				/*
-				// the model has a color
-				// need to check this as i don't think we ever get into this if statement
-				if(mesh->mColors[0] != NULL)
-				{
-					const aiColor4D *color = &mesh->mColors[0][index];
-					
-					glColor4f(color->r, color->g, color->b, color->a);
-				}
-
-				*/
-				//Color4f(&mesh->mColors[0][index]);
 
 				if(mesh->HasTextureCoords(0))
 				{
-					//glTexCoord2f(&mesh->mTextureCoords[index]->x, &mesh->mTextureCoords[index]->y);
-
-					//mesh->mTextureCoords[0][index].x;
-
-
-					//printf("(%f, %f)\n", mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
-
 					glTexCoord2f(mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
-
-					//printf("I HAS TEXTURES\n");
 				}
 
 				// the model has normal
@@ -771,14 +760,14 @@ void Renderer::drawEntity(Entity &entity)
 
 			glEnd();
 		}
-
+		*/
 
 	}
 
 	glPopMatrix();	
-	drawLine(entity.getPosition(),entity.getPosition()+ entity.getTangent(), 256, 0, 0, 10);
-	drawLine(entity.getPosition(),entity.getPosition()+ entity.getNormal(), 0, 256, 0, 10);
-	drawLine(entity.getPosition(), entity.getPosition()+entity.getBinormal(), 0, 0, 256, 10);
+	//drawLine(entity.getPosition(),entity.getPosition()+ entity.getTangent(), 256, 0, 0, 10);
+	//drawLine(entity.getPosition(),entity.getPosition()+ entity.getNormal(), 0, 256, 0, 10);
+	//drawLine(entity.getPosition(), entity.getPosition()+entity.getBinormal(), 0, 0, 256, 10);
 }
 
 void Renderer::drawPlane(float height)

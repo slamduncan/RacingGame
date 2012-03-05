@@ -84,8 +84,8 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 
 	// Calculate the artificial speed of the car to be used
 	// for engine sound
-	float NewSpeed = GetSpeed() + (engineForce * -0.0005);
-		if( NewSpeed < (engineForce * -1.0) )
+	float NewSpeed = GetSpeed() + (engineForce * -0.0005f);
+		if( NewSpeed < (engineForce * -1.0f) )
 			SetSpeed(NewSpeed);
 
 	if(engineForce < 0)
