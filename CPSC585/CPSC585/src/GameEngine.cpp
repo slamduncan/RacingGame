@@ -30,7 +30,7 @@ using namespace std;
 // FPS LIMITING DATA
 const int TICKS_PER_SECONDS = 60;
 const int SKIP_TICKS = 1000/TICKS_PER_SECONDS;
-const int MAX_FRAMESKIP = 10;
+const int MAX_FRAMESKIP = 5;
 
 
 // Other init
@@ -694,10 +694,12 @@ int main(int argc, char** argv)
 		
 		ren->clearGL();
 
-		ren->drawTexture("depth2l1");
-
-		ren->clearGL();		
+		//ren->drawTexture("depth2l1");
 		ren->setCamera(camera1);
+		//ren->draw();
+
+		//ren->clearGL();		
+		//ren->setCamera(camera1);
 		ren->drawAll();
 
 

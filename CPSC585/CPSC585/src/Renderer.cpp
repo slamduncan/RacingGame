@@ -13,7 +13,7 @@ Renderer::Renderer()
 	height = 720;
 	bpp = 0;
 
-	Light light0 = Light(btVector3(50, 50, 0));
+	Light light0 = Light(btVector3(-100, 100, 0));
 
 	lights.push_back(light0);
 
@@ -137,7 +137,7 @@ int Renderer::initGL()
 	GLfloat diff[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 	GLfloat spec[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	GLfloat amb[4] = {0.2f, 0.2f, 0.2f, 0.2f};
-	GLfloat lightPos[4] = {5.0f, 5.0f, 0.0f, 0.0f};
+	//GLfloat lightPos[4] = {5.0f, 5.0f, 0.0f, 0.0f};
 
 	// enable lighting
 	glEnable(GL_LIGHTING);
@@ -243,6 +243,10 @@ int Renderer::initShaders()
 {
 	depth2pass = Shader("shader/basic.vert", "shader/d2.frag");
 	depth2pass.debug();
+	shadowPass = Shader("shader/smap.vert", "shader/smap.frag");
+	shadowPass.debug();
+
+
 	//ndpass = Shader("shader/basic.vert", "shader/nd.frag");
 	//ndpass.debug();
 	return 0;
@@ -377,6 +381,10 @@ void Renderer::shadowMapPass()
 
 	// bind and active the texture
 	// draw using the depth map
+
+	
+
+
 }
 
 void Renderer::ssaoPass()
@@ -399,7 +407,7 @@ void Renderer::drawAll()
 	{
 		
 		Car* temp = em->getCar(i);
-
+		glActiveTexture(GL_TEXTURE0);
 		textureOn(getTexture("car1"));
 		drawEntity(*temp);
 		textureOff();
@@ -439,6 +447,24 @@ void Renderer::drawAll()
 			drawLine(em->getWaypoint(i)->getPosition(), em->getWaypoint(i)->getWaypointList().at(j)->getPosition(), 256, 0, 0 );
 	}
 #endif
+}
+
+void Renderer::draw()
+{
+	
+	shadowPass.turnShadersOn();
+	shadowPass.getUniform("ShadowMap");
+	glActiveTexture(GL_TEXTURE7);
+	textureOn(tm->getTexture("depth2l1"));
+	
+	glLightfv(GL_LIGHT0, GL_POSITION, lights.at(0).getPosition());
+
+	glCullFace(GL_BACK);
+	drawAll();
+
+
+	textureOff();
+	shadowPass.turnShadersOff();
 }
 
 void Renderer::drawTexture(std::string texName)
