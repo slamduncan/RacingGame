@@ -40,6 +40,8 @@ bool startAI = false;
 
 int startIndex = 3;
 
+ALuint EngineSource = 2;
+
 
 // Other init
 // ie. Physics, AI, Renderer, Sound, Container for ents?
@@ -569,8 +571,6 @@ void process_events()
 					
 					startTimer.start();
 
-					ALuint EngineSource = 2;
-
 					LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
 					LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
@@ -686,7 +686,6 @@ int main(int argc, char** argv)
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
 
-	ALuint EngineSource = 2;
 	//LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
 	//LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
