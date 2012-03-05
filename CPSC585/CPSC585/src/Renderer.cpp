@@ -407,10 +407,10 @@ void Renderer::drawAll()
 	{
 		
 		Car* temp = em->getCar(i);
-		glActiveTexture(GL_TEXTURE0);
-		textureOn(getTexture("car1"));
+		//glActiveTexture(GL_TEXTURE0);
+		//textureOn(getTexture("car1"));
 		drawEntity(*temp);
-		textureOff();
+		//textureOff();
 
 /*		
 		// for each wheel we need to draw a line

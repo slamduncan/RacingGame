@@ -571,13 +571,13 @@ int main(int argc, char** argv)
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
 	}
 
-	entManager->createCar("model/box.lwo", carMass, carT1);	
-	entManager->createCar("model/box.lwo", carMass, carT2);	
+	entManager->createCar("model/ship1.lwo", carMass, carT1);	
+	entManager->createCar("model/ship1.lwo", carMass, carT2);	
 	for(int i = 1; i < 2; i++){
 		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
-		entManager->createCar("model/box.lwo", carMass, carT3);	
+		entManager->createCar("model/ship1.lwo", carMass, carT3);	
 		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
-		entManager->createCar("model/box.lwo", carMass, carT4);	
+		entManager->createCar("model/ship1.lwo", carMass, carT4);	
 	}
 	
 	
