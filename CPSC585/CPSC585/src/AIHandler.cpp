@@ -12,7 +12,7 @@ AIHandler::AIHandler() : reloadObserver(this, &AIHandler::reloadVariables){
 }
 
 void AIHandler::generateNextMove(){
-	for(int i = 1; i < cars->size(); i++){
+	for(int i = 0; i < cars->size(); i++){
 		Car* c = cars->at(i);
 		int waypointIndex = c->getNextWaypointIndex();
 		if (waypointIndex == -1){
@@ -26,6 +26,9 @@ void AIHandler::generateNextMove(){
 			w->positionCheck(c);
 			waypointIndex = c->getNextWaypointIndex();
 		}
+
+		if( i == 0 )
+			continue;
 
 		btVector3 carPos =  c->getPosition();
 		btVector3 wayPos = w->getPosition();

@@ -351,7 +351,7 @@ void readWaypoints(const char* fileName){
 		}
 		
 		file.close();
-		for (int i = 1; i < entManager->getCarList()->size(); i++)
+		for (int i = 0; i < entManager->getCarList()->size(); i++)
 			entManager->getCar(i)->setNextWaypointIndex(0);
 		//Update the waypoint variables.
 		evSys->emitEvent(new ReloadEvent());
@@ -574,9 +574,9 @@ int main(int argc, char** argv)
 	entManager->createCar("model/box.3ds", carMass, carT1);	
 	entManager->createCar("model/box.3ds", carMass, carT2);	
 	for(int i = 1; i < 2; i++){
-		btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, -i*15));	
+		btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, -i*30));	
 		entManager->createCar("model/box.3ds", carMass, carT2);	
-		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15, 3, -i*15));	
+		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30, 3, -i*30));	
 		entManager->createCar("model/box.3ds", carMass, carT3);	
 	}
 	
@@ -616,6 +616,7 @@ int main(int argc, char** argv)
 	// Variables for lap time
 	int LapMinutes = 0;
 	int LapSeconds = 0;
+	int LapMilliseconds = 0;
 
 	//Initialize camera settings.
 	btVector3 car1N = entManager->getCar(0)->getNormal()*10;
@@ -633,6 +634,10 @@ int main(int argc, char** argv)
 	evSys->emitEvent(new ReloadEvent());	
 
 	float EngineModifier = 0;
+
+	int LapNumber = 1;
+	int WaypointIndex = -1;
+	int CurrentWaypointIndex = 0;
 
 	// game loop
 	while(1)
@@ -664,6 +669,20 @@ int main(int argc, char** argv)
 
 		// AI
 		ai->generateNextMove();
+
+		// Calculate current lap for player's car
+		WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
+		if( WaypointIndex != CurrentWaypointIndex )
+		{
+			CurrentWaypointIndex = WaypointIndex;
+			if( CurrentWaypointIndex == 0 )
+			{
+				LapNumber++;
+				LapMinutes = 0;
+				LapSeconds = 0;
+				LapMilliseconds = 0;
+			}
+		}
 
 		// Render
 		ren->clearGL();	// clear the screen
@@ -760,6 +779,8 @@ int main(int argc, char** argv)
 		//entManager->getCarList()->at(0)->outputPowerups();
 
 		std::stringstream ssLapTime;
+		std::stringstream ssLap;
+		ssLap << LapNumber;
 
 		// Calculate the current lap time
 		if( LapMinutes < 10 )
@@ -780,9 +801,11 @@ int main(int argc, char** argv)
 		else if( TimeDifference >= 1000 )
 			TimeDifference = 999;
 
-		ssLapTime << TimeDifference / 10;
+		LapMilliseconds = TimeDifference / 10;
+		ssLapTime << LapMilliseconds;
 		// Display the current lap time
 		ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);
+		ren->outputText("Lap: " + ssLap.str(), 255, 0, 0, 0, 640);
 		
 		ren->glDisable2D();
 
