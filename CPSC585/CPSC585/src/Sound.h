@@ -63,7 +63,7 @@ void LoadBackgroundSoundFile(ALbyte* FileName)
 	}
 
 	alSourcef(BackGroundSource, AL_PITCH, 1.0f);
-	alSourcef(BackGroundSource, AL_GAIN, 1.0f);
+	alSourcef(BackGroundSource, AL_GAIN, 0.8f);
 	alSourcefv(BackGroundSource, AL_POSITION, source0Pos);
 	alSourcefv(BackGroundSource, AL_VELOCITY, source0Vel);
 	alSourcei(BackGroundSource, AL_BUFFER,buffer);
