@@ -265,6 +265,37 @@ void Renderer::quitSDL()
 	exit(0);
 }
 
+void Renderer::changeFontSize(int size)
+{
+	int counter = 0;
+	/*
+	if(TTF_Init())
+	{
+		fprintf(stderr, "Font failed to initialize: %s\n", TTF_GetError());
+        //quitSDL();
+		counter--;
+	}
+	*/
+
+	if(debugFont != NULL)
+	{
+		TTF_CloseFont(debugFont);
+		debugFont = TTF_OpenFont("font/ARIAL.TTF", size);
+	}
+	else
+	{
+		//printf("Error: Font has yet to be initialized\n");
+		debugFont = TTF_OpenFont("font/ARIAL.TTF", size);
+	}
+}
+
+void Renderer::changeFont(std::string fontpath)
+{
+
+}
+
+
+
 SDL_Surface* Renderer::loadIMG(string filename)
 {
 	SDL_Surface* image = IMG_Load(filename.c_str());

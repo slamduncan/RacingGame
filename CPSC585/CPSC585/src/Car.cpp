@@ -337,24 +337,22 @@ std::string Car::toString()
 {
 
 	std::string st = Entity::toString();
-/*
+
 	std::stringstream stream;
 
 	stream << "\nPowerup: ";
-//
 
 	for(int i = 0; i < MAX_POWERUPS; i++)
 	{
-		int type = GetPowerUpAt(i).GetType();
+		//int type = GetPowerUpAt(i).GetType();
 		//printf("Type %d\n", type);
 		
-		//ss << GetPowerUpAt(i).GetType() << ", ";
+		//stream << GetPowerUpAt(i).GetType() << ", ";
 	}
 
-	//ss << "\n";
-	std::string output = stream.str();
-*/
-	return st;
+	std::string output = st/* + stream.str() */;
+
+	return output;
 }
 
 void Car::outputPowerups()

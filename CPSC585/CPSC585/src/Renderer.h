@@ -99,6 +99,9 @@ public:
 	int initTexs();
 	int initShaders();
 
+	void changeFontSize(int size);
+	void changeFont(std::string fontpath);
+
 	void outputText(std::string text, int r, int g, int b, int x, int y);
 
 	void setCamera(const btVector3& pos, const btVector3& lookAt); 
