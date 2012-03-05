@@ -16,7 +16,7 @@ EventSystemHandler::EventSystemHandler(){
 void EventSystemHandler::emitEvent(Event *e){
 	//Add code to emit the event (look at the type and index into array of registered observers)
 	list[e->getType()].updateAll(e);
-	delete e;
+	//delete e;
 }
 
 void EventSystemHandler::addObserver(Observer *o, EventTypes::EventType type){
