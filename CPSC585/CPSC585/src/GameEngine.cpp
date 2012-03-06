@@ -25,7 +25,7 @@
 #include "Timer.h"
 
 #include "Sound.h"
-#define SANDBOX 0
+#define SANDBOX 1
 using namespace std;
 
 // FPS LIMITING DATA
@@ -628,7 +628,7 @@ int main(int argc, char** argv)
 	
 	
 #if SANDBOX
-	entManager->createTrack("model/groundBoxTri.lwo", groundT);
+	entManager->createTrack("model/groundBox.lwo", groundT);
 #else
 	entManager->createTrack("model/Track1tri.lwo", groundT);
 #endif
@@ -761,10 +761,9 @@ int main(int argc, char** argv)
 		
 		camLookAt = entManager->getCar(0)->getPosition();
 		camera1.setUpCamera(camLookAt);
-		//camera1.updateCamera(camLookAt, entManager->getCar(0)->getBinormal());
-		
-		ren->setCamera(camera1);
-		//ren->draw();
+
+		//ren->setCamera(camera1);
+		ren->draw(camera1);
 
 		//ren->clearGL();		
 		//ren->setCamera(camera1);

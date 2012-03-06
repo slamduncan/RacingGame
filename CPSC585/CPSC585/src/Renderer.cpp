@@ -386,25 +386,54 @@ void Renderer::draw(Shader &s)
 }
 
 //
-// update this funciton so it does a pass per player
+// generates a moment texture for shadow mapping
 //
 void Renderer::shadowMapPass()
 {
 	// for each light source in our world, generate a depth map for the first car
 	for(int i = 0; i < lights.size(); i++)
 	{
-		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
-
 		fb.turnOn();
 		glViewport(0, 0, width, height);
 		fb.attachTexture(getTexture("depth2l1"), GL_COLOR_ATTACHMENT0_EXT);
 		clearGL();
+		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
+
 		depth2pass.turnShadersOn();
-		//shaderOn(depth2pass);
+		
+		glCullFace(GL_BACK);
+
 		drawAll();
+
+		//glCullFace(GL_BACK);
+
+		static double modelView[16];
+		static double projection[16];
+
+		const GLdouble bias[16] = {	0.5, 0.0, 0.0, 0.0, 
+									0.0, 0.5, 0.0, 0.0,
+									0.0, 0.0, 0.5, 0.0,
+									0.5, 0.5, 0.5, 1.0 };
+
+		glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
+		glGetDoublev(GL_PROJECTION_MATRIX, projection);
+
+		glMatrixMode(GL_TEXTURE);
+		glActiveTexture(GL_TEXTURE7);
+
+		glLoadIdentity();	
+		glLoadMatrixd(bias);
+		
+		// concatating all matrice into one.
+		glMultMatrixd(projection);
+		glMultMatrixd(modelView);
+		
+		// Go back to normal matrix mode
+		glMatrixMode(GL_MODELVIEW);
+
+
 		//shaderOff(depth2pass);
 		depth2pass.turnShadersOff();
-			
 
 		fb.deattachTexture();
 		
@@ -482,19 +511,23 @@ void Renderer::drawAll()
 #endif
 }
 
-void Renderer::draw()
+void Renderer::draw(Camera &cam)
 {
 	
 	shadowPass.turnShadersOn();
-	shadowPass.getUniform("ShadowMap");
+	GLuint momentMapUniform = shadowPass.getUniform("ShadowMap");
+	glUniform1i(momentMapUniform,7);
+	
 	glActiveTexture(GL_TEXTURE7);
 	textureOn(tm->getTexture("depth2l1"));
-	
-	glLightfv(GL_LIGHT0, GL_POSITION, lights.at(0).getPosition());
 
-	glCullFace(GL_BACK);
+	// i need to set the camera back here
+	setCamera(cam);
+
+	//glCullFace(GL_BACK);
 	drawAll();
 
+	//setTextureMatrix();
 
 	textureOff();
 	shadowPass.turnShadersOff();
@@ -874,7 +907,8 @@ void Renderer::glEnable2D()
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-
+	
+	glActiveTexture(GL_TEXTURE0);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
 	glEnable(GL_BLEND);
