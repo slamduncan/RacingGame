@@ -521,11 +521,13 @@ void process_events()
 
 			if (controller1.isButtonDown(controller1.Start_button))
 			{
+#if SANDBOX
+				readWaypoints("sandboxWaypoints.w");
+#else 				
 				readWaypoints("waypoints.w");
-
+#endif
 				LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
 				LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
-
 			}
 			if (controller1.isButtonDown(controller1.Back_button))
 			{
@@ -760,7 +762,8 @@ int main(int argc, char** argv)
 		//ren->drawTexture("depth2l1");
 		
 		camLookAt = entManager->getCar(0)->getPosition();
-		camera1.setUpCamera(camLookAt);
+		//camera1.setUpCamera(camLookAt);
+		camera1.updateCamera(camLookAt, entManager->getCar(0)->getBinormal());
 
 		//ren->setCamera(camera1);
 		ren->draw(camera1);
@@ -860,6 +863,7 @@ int main(int argc, char** argv)
 
 		ren->updateGL();	// update the screen
 
+		// Resets any cars which have fallen off the track.
 		resetCars();
 		
 	}

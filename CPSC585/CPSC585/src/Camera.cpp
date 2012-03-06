@@ -55,7 +55,7 @@ Camera::Camera(btVector3 &cameraPositionIn, btVector3 &lookAtPointIn, btScalar d
 
 void Camera::updateCamera(btVector3 &lookAtPointIn, btVector3 &alignVector)
 {
-
+/*
 	lookAtPoint = lookAtPointIn;
 
 	btScalar offsetLength = offset.length();
@@ -69,7 +69,32 @@ void Camera::updateCamera(btVector3 &lookAtPointIn, btVector3 &alignVector)
 	cameraPosition = lookAtPoint + offset;
 
 	cameraPosition += offsetVector;
+*/
 
+	lookAtPoint = lookAtPointIn;
+	btVector3 forwordVector = alignVector.cross(UPVECTOR);
+	btVector3 oldCameraPostion = cameraPosition;
+	btVector3 PostionToBeAt = lookAtPointIn + (forwordVector * offset.x()) + UPVECTOR * offset.y();
+	cameraPosition = PostionToBeAt;
+/*
+	btVector3 currentVector = cameraPosition - lookAtPointIn;
+	btVector3 moveVector = currentVector.dot(alignVector) * alignVector;
+	if (moveVector.length() < 0.001)
+	{
+		moveVector = btVector3(0,0,0);		
+	}
+	btVector3 newPosition = (cameraPosition - moveVector);
+	btVector3 newPositionVector = newPosition - lookAtPointIn;
+	btVector3 temp = newPositionVector.normalized()*offset.length();
+	btVector3 vectorToNormalize = newPositionVector - newPositionVector.normalized()*offset.length();
+	btVector3 finalPosition = newPosition - (vectorToNormalize);
+	cameraPosition = finalPosition;
+
+	if (newPositionVector.dot(forwordVector) < 0.001)
+	{
+		cameraPosition = oldCameraPostion;
+	}
+*/	
 }
 
 void Camera::computeCameraPosition()

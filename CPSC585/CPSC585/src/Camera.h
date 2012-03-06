@@ -32,6 +32,7 @@ private:
 	MethodObserver<RightAnalogEvent, Camera> analogObserver;
 	void rotateCamera(RightAnalogEvent *e);
 
+	btVector3 lastLookatPoint;
 	void computeCameraPosition();
 
 	btVector3 UPVECTOR;
