@@ -126,7 +126,6 @@ int Renderer::initGL()
 	
 	//glShadeModel(GL_FLAT);
 	glShadeModel(GL_SMOOTH);	// smooth shading
-    glCullFace(GL_BACK);	// remove back facing surfaces
     glFrontFace(GL_CW);	// set front face objects to be in CCW direction
     glEnable( GL_CULL_FACE );	// allow removing culled surfaces
 	glBlendFunc(GL_ONE, GL_ONE);	
@@ -400,12 +399,8 @@ void Renderer::shadowMapPass()
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
 		depth2pass.turnShadersOn();
-		
-		glCullFace(GL_BACK);
 
 		drawAll();
-
-		//glCullFace(GL_BACK);
 
 		static double modelView[16];
 		static double projection[16];
@@ -513,7 +508,6 @@ void Renderer::drawAll()
 
 void Renderer::draw(Camera &cam)
 {
-	
 	shadowPass.turnShadersOn();
 	GLuint momentMapUniform = shadowPass.getUniform("ShadowMap");
 	glUniform1i(momentMapUniform,7);
@@ -524,7 +518,7 @@ void Renderer::draw(Camera &cam)
 	// i need to set the camera back here
 	setCamera(cam);
 
-	//glCullFace(GL_BACK);
+	glCullFace(GL_BACK);
 	drawAll();
 
 	//setTextureMatrix();
