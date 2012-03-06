@@ -758,18 +758,18 @@ int main(int argc, char** argv)
 		ren->shadowMapPass();
 		
 		ren->clearGL();
-
-		//ren->drawTexture("depth2l1");
 		
 		camLookAt = entManager->getCar(0)->getPosition();
 		//camera1.setUpCamera(camLookAt);
 		camera1.updateCamera(camLookAt, entManager->getCar(0)->getBinormal());
 
+		//ren->drawTexture("depth2l1");
+
 		//ren->setCamera(camera1);
-		ren->draw(camera1);
+		//ren->draw(camera1);
 
 		//ren->clearGL();		
-		//ren->setCamera(camera1);
+		ren->setCamera(camera1);
 		ren->drawAll();
 
 		ren->glEnable2D();

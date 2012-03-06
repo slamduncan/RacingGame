@@ -400,8 +400,12 @@ void Renderer::shadowMapPass()
 
 		depth2pass.turnShadersOn();
 
+		//glCullFace(GL_FRONT);
+		//glDisable(GL_CULL_FACE);
+		
 		drawAll();
 
+		//glEnable(GL_CULL_FACE);
 		static double modelView[16];
 		static double projection[16];
 
