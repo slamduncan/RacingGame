@@ -116,7 +116,7 @@ public:
 	
 	void drawTexture(std::string texName);
 
-	void draw();
+	void draw(Camera &cam);
 
 	void glEnable2D();
 	void glDisable2D();
