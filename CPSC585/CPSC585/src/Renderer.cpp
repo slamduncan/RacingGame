@@ -772,6 +772,8 @@ void Renderer::drawEntity(Entity &entity)
 		}
 
 		glDrawArrays(GL_TRIANGLES, 0, mesh->mNumVertices);
+		//glDrawElements(GL_TRIANGLE, mesh->mNumVertices, GL_FLOAT, indices);
+		//glDrawElements(GL_TRIANGLES, mesh->mNumVertices, GL_FLOAT, mesh->mVertices);
 
 		if(mesh->HasTextureCoords(0))
 		{

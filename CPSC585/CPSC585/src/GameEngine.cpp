@@ -33,13 +33,6 @@ const int TICKS_PER_SECONDS = 60;
 const int SKIP_TICKS = 1000/TICKS_PER_SECONDS;
 const int MAX_FRAMESKIP = 5;
 
-int state = 0;
-
-Timer startTimer;
-bool startAI = false;
-
-int startIndex = 3;
-
 ALuint EngineSource = 2;
 
 
@@ -460,144 +453,84 @@ void process_events()
 
 			if (controller1.isBDown())
 			{
-				if(state == 0)
-				{
-
-				}
-				else if(state == 1)
-				{
 				//createWaypoint();
-				}
+
 			}
 			if(controller1.isADown())
 			{				
-				if(state == 0)
-				{
-
-				}
-				else if(state == 1)
-				{
 				//deleteWaypoint();
 				//int i;
 				//cin >> i;
 				//moveWaypoint();
-				}
+
 			}
 			if(controller1.isXDown())
 			{
 				
-				if(state == 0)
+				if(entManager->numCars() > 0)
 				{
-
-				}
-				else if(state == 1)
-				{
-					if(entManager->numCars() > 0)
-					{
-						// resetCar(index of car, position we want to reset to)
-						int index = getClosestWaypoint();
-						if (entManager->getWaypointList()->size() > 0 && index != -1)
-						{
-							Waypoint *w = entManager->getWaypoint(index);						
-							btTransform trans = w->getTransform();
-							btQuaternion q = btQuaternion(btVector3(0,1,0), trans.getRotation().getAngle() + SIMD_PI);
-							trans.setRotation(q);
-							entManager->resetCar(0, trans);
-						}
-						else
-						{
-							entManager->resetCar(0, btVector3(0, 3, 0));
-						}
-
-					}
-				}
-			}
-			if(controller1.isYDown())
-			{
-				if(state == 0)
-				{
-
-				}
-				else if(state == 1)
-				{
+					// resetCar(index of car, position we want to reset to)
 					int index = getClosestWaypoint();
 					if (entManager->getWaypointList()->size() > 0 && index != -1)
 					{
-						Waypoint *w = entManager->getWaypoint(index);
+						Waypoint *w = entManager->getWaypoint(index);						
 						btTransform trans = w->getTransform();
-						
-						btMatrix3x3 basis = trans.getBasis();
-
-						btTransform cTrans = entManager->getCar(0)->physicsObject->getWorldTransform();
-						cTrans.setBasis(basis);
-						entManager->getCar(0)->physicsObject->setWorldTransform(cTrans);
-
+						btQuaternion q = btQuaternion(btVector3(0,1,0), trans.getRotation().getAngle() + SIMD_PI);
+						trans.setRotation(q);
+						entManager->resetCar(0, trans);
 					}
 					else
-					//if(entManager->numCars() > 0)
 					{
-						entManager->resetCarOrientation(0);
+						entManager->resetCar(0, btVector3(0, 3, 0));
 					}
 				}
+
+			}
+			if(controller1.isYDown())
+			{
+				int index = getClosestWaypoint();
+				if (entManager->getWaypointList()->size() > 0 && index != -1)
+				{
+					Waypoint *w = entManager->getWaypoint(index);
+					btTransform trans = w->getTransform();
+					
+					btMatrix3x3 basis = trans.getBasis();
+
+					btTransform cTrans = entManager->getCar(0)->physicsObject->getWorldTransform();
+					cTrans.setBasis(basis);
+					entManager->getCar(0)->physicsObject->setWorldTransform(cTrans);
+
+				}
+				else
+				{
+					entManager->resetCarOrientation(0);
+				}
+
 			}
 			if(controller1.isButtonDown(controller1.R_Bump))
 			{
-				if(state == 0)
-				{
 
-				}
-				else if(state == 1)
-				{
-
-				}
 			}
-			if(controller1.isButtonDown(controller1.L_Bump)){
-				if(state == 0)
-				{
+			if(controller1.isButtonDown(controller1.L_Bump))
+			{
 
-				}
-				else if(state == 1)
-				{
 				//printf("Trying to use a speed boost...\n");
-					entManager->getCar(0)->UsePowerUp(0);
-				}
+				entManager->getCar(0)->UsePowerUp(0);
+
 			}
 
 			if (controller1.isButtonDown(controller1.Start_button))
 			{
-				if(state == 0)
-				{
-					readWaypoints("waypoints.w");
-					
-					startTimer.start();
+				readWaypoints("waypoints.w");
 
-					LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
-					LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+				LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
+				LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
-					state = 1;
-				}
-				else if(state == 1)
-				{
-				//	ren->quitSDL();
-				}
 			}
 			if (controller1.isButtonDown(controller1.Back_button))
 			{
 				ren->quitSDL();
 			}
-			/*
-			if (controller1.isButtonDown(controller1.L_Bump))
-			{
-				if(state == 0)
-				{
-
-				}
-				else if(state == 1)
-				{
-					addWaypointInbetween();
-				}
-			}
-			*/
 
 			break;
 		case SDL_JOYBUTTONUP:
@@ -695,7 +628,7 @@ int main(int argc, char** argv)
 	
 	
 #if SANDBOX
-	entManager->createTrack("model/groundBox.lwo", groundT);
+	entManager->createTrack("model/groundBoxTri.lwo", groundT);
 #else
 	entManager->createTrack("model/Track1tri.lwo", groundT);
 #endif
@@ -744,8 +677,7 @@ int main(int argc, char** argv)
 	// game loop
 	while(running)
 	{		
-		if(state == 0)
-		{
+/*
 			process_events();
 			//controller1.emitTriggers();
 			//controller1.emitButtons();
@@ -763,221 +695,174 @@ int main(int argc, char** argv)
 
 			ren->glDisable2D();
 			ren->updateGL();
-		}
-		else
+*/
+		loops = 0;
+			
+		while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAMESKIP)
 		{
-			if(startTimer.get_ticks() >5000)
-			{
-				startAI = true;
-				startTimer.stop();
-			}
+			// Calculate engine's change in pitch
+			EngineModifier = (entManager->getCar(0)->GetSpeed() / (-1 * entManager->getCar(0)->GetForwardForceModifier()));
+
+			// If going in reverse, we still want engine to rev up
+			if(EngineModifier < 0)
+				EngineModifier *= -1;
+
+			// Change pitch of engine sound
+			alSourcef(EngineSource, AL_PITCH, 1.0f + EngineModifier );
 			
-			loops = 0;
+			//// Physics
+			ph->step();
+
+			//// Inputs
+			process_events();
 			
-			while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAMESKIP)
+			controller1.emitTriggers();
+			controller1.emitButtons();
+			controller1.emitLeftAnalog();
+			controller1.emitRightAnalog();
+
+			// AI
+			ai->generateNextMove();
+			
+
+			// Calculate current lap for player's car
+			WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
+			if( WaypointIndex != CurrentWaypointIndex )
 			{
-				// Calculate engine's change in pitch
-				EngineModifier = (entManager->getCar(0)->GetSpeed() / (-1 * entManager->getCar(0)->GetForwardForceModifier()));
-
-				// If going in reverse, we still want engine to rev up
-				if(EngineModifier < 0)
-					EngineModifier *= -1;
-
-				// Change pitch of engine sound
-				alSourcef(EngineSource, AL_PITCH, 1.0f + EngineModifier );
-				
-				//// Physics
-				ph->step();
-
-				//// Inputs
-				process_events();
-				
-				if(startAI)
+				CurrentWaypointIndex = WaypointIndex;
+				if( CurrentWaypointIndex == 0 )
 				{
-					controller1.emitTriggers();
-					controller1.emitButtons();
-					controller1.emitLeftAnalog();
-					controller1.emitRightAnalog();
-				}
-
-				if(startAI)
-				{
-					// AI
-					ai->generateNextMove();
-				}
-
-				// Calculate current lap for player's car
-				WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
-				if( WaypointIndex != CurrentWaypointIndex )
-				{
-					CurrentWaypointIndex = WaypointIndex;
-					if( CurrentWaypointIndex == 0 )
-					{
-						LapNumber++;
-						LapMinutes = 0;
-						LapSeconds = 0;
-						LapMilliseconds = 0;
-					}
-				}
-
-				next_game_tick += SKIP_TICKS;
-				loops++;
-				instantFrameCount++;
-			}
-
-			interpolation = float(SDL_GetTicks() + SKIP_TICKS - next_game_tick/ float(SKIP_TICKS));
-
-			// Render
-			ren->clearGL();	// clear the screen
-
-			ren->glDisableLighting();
-			ph->debugDraw();
-			ren->glEnableLighting();
-
-			ren->shadowMapPass();
-			
-			
-			ren->clearGL();
-
-			//ren->drawTexture("depth2l1");
-			
-			camLookAt = entManager->getCar(0)->getPosition();
-			camera1.setUpCamera(camLookAt);
-			//camera1.updateCamera(camLookAt, entManager->getCar(0)->getBinormal());
-			
-			ren->setCamera(camera1);
-			//ren->draw();
-
-			//ren->clearGL();		
-			//ren->setCamera(camera1);
-			ren->drawAll();
-
-			ren->glEnable2D();
-
-			// if 2 seconds have passed since the start of the game
-			int timeSinceStart = startTimer.get_ticks();
-			if(timeSinceStart >= 2000 && startIndex == 3)
-			{
-				ren->changeFontSize(50);
-				ren->outputText("3", 255, 255, 255, 640-25, 500);
-				startIndex--;
-			}
-			else if(timeSinceStart >= 3000 && startIndex == 2)
-			{
-				ren->changeFontSize(50);
-				ren->outputText("2", 255, 255, 255, 640-25, 500);
-				startIndex--;
-			}
-			else if(timeSinceStart >= 4000 && startIndex == 1)
-			{
-				ren->changeFontSize(50);
-				ren->outputText("1", 255, 255, 255, 640-25, 500);
-				startIndex--;
-			}
-			else if(startIndex <= 0 && startIndex >= -120)
-			{
-				ren->changeFontSize(50);
-				ren->outputText("GO", 255, 255, 255, 640-25*2, 500);
-				startIndex--;
-			}
-		
-
-			ren->changeFontSize(20);
-			ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
-
-			int TimeDifference = currentTime - oldTime;
-			if((TimeDifference) > 1000){
-				std::stringstream ssInstant;
-				//sprintf_s(frames, "%d FPS", frameCount);				
-				ssInstant << instantFrameCount << " Instant FPS";
-				//ren->outputText(frames, 0, 255, 0, 10, 700);
-				//std::cout << frameCount << "\n";
-				//frameCount = 0;
-				instantFrameCount = 0;
-				instantFrameString = ssInstant.str();			
-				counter++;
-				oldTime = currentTime;		
-				
-				if(startAI)
-				{
-					LapSeconds++;
-				}
-			}		
-			currentTime = SDL_GetTicks();
-
-			ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
-	/*
-			frameCount++;
-			instantFrameCount++;
-
-			int TimeDifference = currentTime - oldTime;
-
-			// Calculate the frames per second 
-			if((TimeDifference) > 1000){
-				std::stringstream ssInstant;
-				//sprintf_s(frames, "%d FPS", frameCount);				
-				ssInstant << instantFrameCount << " Instant FPS";
-				//ren->outputText(frames, 0, 255, 0, 10, 700);
-				//std::cout << frameCount << "\n";
-				//frameCount = 0;
-				instantFrameCount = 0;
-				instantFrameString = ssInstant.str();			
-				counter++;
-				oldTime = currentTime;		
-				LapSeconds++;
-			}		
-			currentTime = SDL_GetTicks();
-			
-			std::stringstream ss;
-			ss << frameCount/counter;
-
-			
-			ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
-			ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
-
-			//printf("NP: %d\n", entManager->getCar(0)->GetNumberPowerUps());
-			//entManager->getCarList()->at(0)->outputPowerups();
-	*/
-
-			
-			std::stringstream ssLapTime;
-			std::stringstream ssLap;
-			ssLap << LapNumber;
-
-			if(startAI)
-			{
-				// Calculate the current lap time
-				if( LapMinutes < 10 )
-					ssLapTime << "0";
-				ssLapTime << LapMinutes << ":";
-
-				if( LapSeconds >= 60 )
-				{
+					LapNumber++;
+					LapMinutes = 0;
 					LapSeconds = 0;
-					LapMinutes++;
+					LapMilliseconds = 0;
 				}
-				else if( LapSeconds < 10 )
-					ssLapTime << "0";
-				ssLapTime << LapSeconds << ":";
-
-				if( TimeDifference < 100 )
-					ssLapTime << "0";
-				else if( TimeDifference >= 1000 )
-					TimeDifference = 999;
-				
-				LapMilliseconds = TimeDifference / 10;
-				ssLapTime << LapMilliseconds;
 			}
-			// Display the current lap time
-			ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);
-			ren->outputText("Lap: " + ssLap.str(), 255, 0, 0, 0, 640);
-			
-			ren->glDisable2D();
 
-			ren->updateGL();	// update the screen
-
-			resetCars();
+			next_game_tick += SKIP_TICKS;
+			loops++;
+			instantFrameCount++;
 		}
+
+		interpolation = float(SDL_GetTicks() + SKIP_TICKS - next_game_tick/ float(SKIP_TICKS));
+
+		// Render
+		ren->clearGL();	// clear the screen
+/*
+		ren->glDisableLighting();
+		ph->debugDraw();
+		ren->glEnableLighting();
+*/
+		ren->shadowMapPass();
+		
+		ren->clearGL();
+
+		//ren->drawTexture("depth2l1");
+		
+		camLookAt = entManager->getCar(0)->getPosition();
+		camera1.setUpCamera(camLookAt);
+		//camera1.updateCamera(camLookAt, entManager->getCar(0)->getBinormal());
+		
+		ren->setCamera(camera1);
+		//ren->draw();
+
+		//ren->clearGL();		
+		//ren->setCamera(camera1);
+		ren->drawAll();
+
+		ren->glEnable2D();
+	
+		ren->changeFontSize(20);
+		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
+
+		int TimeDifference = currentTime - oldTime;
+		if((TimeDifference) > 1000){
+			std::stringstream ssInstant;
+			//sprintf_s(frames, "%d FPS", frameCount);				
+			ssInstant << instantFrameCount << " Instant FPS";
+			//ren->outputText(frames, 0, 255, 0, 10, 700);
+			//std::cout << frameCount << "\n";
+			//frameCount = 0;
+			instantFrameCount = 0;
+			instantFrameString = ssInstant.str();			
+			counter++;
+			oldTime = currentTime;		
+			
+			LapSeconds++;
+		}		
+		currentTime = SDL_GetTicks();
+
+		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
+/*
+		frameCount++;
+		instantFrameCount++;
+
+		int TimeDifference = currentTime - oldTime;
+
+		// Calculate the frames per second 
+		if((TimeDifference) > 1000){
+			std::stringstream ssInstant;
+			//sprintf_s(frames, "%d FPS", frameCount);				
+			ssInstant << instantFrameCount << " Instant FPS";
+			//ren->outputText(frames, 0, 255, 0, 10, 700);
+			//std::cout << frameCount << "\n";
+			//frameCount = 0;
+			instantFrameCount = 0;
+			instantFrameString = ssInstant.str();			
+			counter++;
+			oldTime = currentTime;		
+			LapSeconds++;
+		}		
+		currentTime = SDL_GetTicks();
+		
+		std::stringstream ss;
+		ss << frameCount/counter;
+
+		
+		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
+		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
+
+		//printf("NP: %d\n", entManager->getCar(0)->GetNumberPowerUps());
+		//entManager->getCarList()->at(0)->outputPowerups();
+*/
+
+		
+		std::stringstream ssLapTime;
+		std::stringstream ssLap;
+		ssLap << LapNumber;
+
+		// Calculate the current lap time
+		if( LapMinutes < 10 )
+			ssLapTime << "0";
+		ssLapTime << LapMinutes << ":";
+
+		if( LapSeconds >= 60 )
+		{
+			LapSeconds = 0;
+			LapMinutes++;
+		}
+		else if( LapSeconds < 10 )
+			ssLapTime << "0";
+		ssLapTime << LapSeconds << ":";
+
+		if( TimeDifference < 100 )
+			ssLapTime << "0";
+		else if( TimeDifference >= 1000 )
+			TimeDifference = 999;
+		
+		LapMilliseconds = TimeDifference / 10;
+		ssLapTime << LapMilliseconds;
+
+		// Display the current lap time
+		ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);
+		ren->outputText("Lap: " + ssLap.str(), 255, 0, 0, 0, 640);
+		
+		ren->glDisable2D();
+
+		ren->updateGL();	// update the screen
+
+		resetCars();
+		
 	}
 
 	return 0;

@@ -130,7 +130,7 @@ bool Entity::initRenderObject(char* filename)
 			aiProcess_CalcTangentSpace       |
 			aiProcess_Triangulate            |
 			//aiProcess_JoinIdenticalVertices  |
-			//aiProcess_GenSmoothNormals |
+			aiProcess_GenSmoothNormals |
 			aiProcess_ImproveCacheLocality |
 			aiProcess_GenUVCoords |
 			aiProcess_TransformUVCoords |
