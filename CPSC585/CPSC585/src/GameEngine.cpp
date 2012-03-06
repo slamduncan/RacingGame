@@ -25,7 +25,7 @@
 #include "Timer.h"
 
 #include "Sound.h"
-#define SANDBOX 0
+#define SANDBOX 1
 using namespace std;
 
 // FPS LIMITING DATA
@@ -842,8 +842,8 @@ int main(int argc, char** argv)
 			//ren->drawTexture("depth2l1");
 			
 			camLookAt = entManager->getCar(0)->getPosition();
-			camera1.setUpCamera(camLookAt);
-			//camera1.updateCamera(camLookAt, entManager->getCar(0)->getBinormal());
+			//camera1.setUpCamera(camLookAt);
+			camera1.updateCamera(camLookAt, entManager->getCar(0)->getBinormal());
 			
 			ren->setCamera(camera1);
 			//ren->draw();

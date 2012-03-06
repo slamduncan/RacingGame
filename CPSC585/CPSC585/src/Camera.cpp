@@ -55,7 +55,7 @@ Camera::Camera(btVector3 &cameraPositionIn, btVector3 &lookAtPointIn, btScalar d
 
 void Camera::updateCamera(btVector3 &lookAtPointIn, btVector3 &alignVector)
 {
-/*
+
 	lookAtPoint = lookAtPointIn;
 
 	btScalar offsetLength = offset.length();
@@ -69,7 +69,7 @@ void Camera::updateCamera(btVector3 &lookAtPointIn, btVector3 &alignVector)
 	cameraPosition = lookAtPoint + offset;
 
 	cameraPosition += offsetVector;
-*/
+
 }
 
 void Camera::computeCameraPosition()
