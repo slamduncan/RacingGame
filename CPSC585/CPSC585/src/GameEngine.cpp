@@ -79,6 +79,18 @@ void createWaypoint(){
 	newWay->setThrottle(controller1.getTriggers());
 }
 
+void floatingWaypoint(){
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	Car* c = entManager->getCar(0);
+	btTransform wayPointT1 = c->physicsObject->getWorldTransform();	
+	entManager->createWaypoint("model/waypoint.obj", wayPointT1);	
+	Waypoint* newWay = wayList->at(wayList->size()-1);
+	newWay->setThrottle(controller1.getTriggers());
+	Waypoint* prevWay = wayList->at(waypointIndex1);
+	prevWay->addNextWaypoint(newWay);
+	waypointIndex1 = newWay->getIndex();
+}
+
 int getClosestWaypoint(Car* car = entManager->getCar(0)){
 	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
 	//Car* car = entManager->getCar(0);
@@ -225,6 +237,7 @@ void savedWaypointIndex2(){
 void markConverge(){
 	//entManager->getWaypoint(getClosestWaypoint())->converge = true;
 	entManager->getWaypoint(waypointIndex1)->converge = true;
+	entManager->getWaypoint(waypointIndex1)->getWaypointList().clear();
 	entManager->getWaypoint(waypointIndex1)->addNextWaypoint(entManager->getWaypoint(waypointIndex2));
 
 }
@@ -342,7 +355,8 @@ void readWaypoints(const char* fileName){
 				{
 					convergeList.at(i)->addNextWaypoint(convergeWaypoint);
 				}
-
+				convergeList.clear();
+				splitList.clear();
 			}
 		}
 		for (int i = 0; i < wayList->size()-1; i++)
@@ -420,8 +434,44 @@ void handle_key_down( SDL_keysym* keysym )
 #if SANDBOX
 				readWaypoints("sandboxWaypoints.w");				
 #else
-				readWaypoints("newWaypoint.w");
+				readWaypoints("waypoints.w");
 #endif
+				break;
+			}
+
+		case SDLK_c:
+			{
+				markConverge();
+				break;
+			}
+		case SDLK_s:
+			{
+				markWaypointSplit();
+				break;
+			}
+		case SDLK_1:
+			{
+				saveWaypointIndex1();
+				break;
+			}
+		case SDLK_2:
+			{
+				savedWaypointIndex2();
+				break;
+			}
+		case SDLK_COMMA:
+			{
+				connectWaypointsAddition();
+				break;
+			}
+		case SDLK_PERIOD:
+			{
+				connectWaypointsTruncate();
+				break;
+			}
+		case SDLK_f:
+			{
+				floatingWaypoint();
 				break;
 			}
 		default:
@@ -466,7 +516,7 @@ void process_events()
 
 			if (controller1.isBDown())
 			{
-				//createWaypoint();
+				createWaypoint();
 
 			}
 			if(controller1.isADown())
@@ -474,7 +524,7 @@ void process_events()
 				//deleteWaypoint();
 				//int i;
 				//cin >> i;
-				//moveWaypoint();
+				moveWaypoint();
 
 			}
 			if(controller1.isXDown())
@@ -522,7 +572,7 @@ void process_events()
 			}
 			if(controller1.isButtonDown(controller1.R_Bump))
 			{
-
+				floatingWaypoint();
 			}
 			if(controller1.isButtonDown(controller1.L_Bump))
 			{
@@ -537,7 +587,7 @@ void process_events()
 #if SANDBOX
 				readWaypoints("sandboxWaypoints.w");
 #else 				
-				readWaypoints("newWaypoint.w");
+				readWaypoints("waypoints.w");
 #endif
 				LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
 				LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
