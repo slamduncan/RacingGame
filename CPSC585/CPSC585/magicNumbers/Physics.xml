@@ -10,4 +10,11 @@
   <forwardFrictionModifier value ="4.5"/>
   <turningForceModifier value ="9.0" />
   <springForceModifier value="3.0"/>
+  
+  <speedBoostModifier value ="1.0"/>
+  <slowFieldModifier value ="1.0"/>
+  <rocketModifier value ="1.0"/>
+  <tractionBoostModifier value ="1.0"/>
+  <shieldModifier value ="1.0"/>
+  <forceBubbleModifier value ="1.0" />  
 </Physics>

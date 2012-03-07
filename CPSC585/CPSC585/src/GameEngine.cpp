@@ -25,7 +25,7 @@
 #include "Timer.h"
 
 #include "Sound.h"
-#define SANDBOX 1
+#define SANDBOX 0
 using namespace std;
 
 // FPS LIMITING DATA
@@ -162,18 +162,27 @@ void writeWaypoints(const char* fileName){
 			std::string temp = nextWaypoint->toString();
 			file << temp;
 			if (nextWaypoint->getWaypointList().size() > 0)
-			/*	if (nextWaypoint->split)
+				if (nextWaypoint->split)
 				{
-					std::string temp = nextWaypoint->toString();
-					file << temp;
+					//std::string temp = nextWaypoint->toString();
+					//file << temp;
 					Waypoint* partOfPath = nextWaypoint;
-					for(int count = 0; count < nextWaypoint->getWaypointList().size();;)
+					for(int count = 0; count < nextWaypoint->getWaypointList().size(); count++)
 					{
-						partOfPath = partOfPath->getWaypointList(0);
-						if (
+						/*Note: issue here if you have multi-path in multi-path */
+						partOfPath = nextWaypoint->getWaypointList().at(count);
+						while(!partOfPath->converge)
+						{
+							temp = partOfPath->toString();
+							file << temp;
+							partOfPath = partOfPath->getWaypointList().at(0);
+						}
+						temp = partOfPath->toString();
+						file << temp;
 					}
+					nextWaypoint = partOfPath->getWaypointList().at(0);
 				}
-				else*/
+				else
 					nextWaypoint = nextWaypoint->getWaypointList().at(0);
 			else
 				break;			
@@ -214,7 +223,10 @@ void savedWaypointIndex2(){
 }
 
 void markConverge(){
-	entManager->getWaypoint(getClosestWaypoint())->converge = true;
+	//entManager->getWaypoint(getClosestWaypoint())->converge = true;
+	entManager->getWaypoint(waypointIndex1)->converge = true;
+	entManager->getWaypoint(waypointIndex1)->addNextWaypoint(entManager->getWaypoint(waypointIndex2));
+
 }
 
 void connectWaypointsTruncate(){
@@ -263,6 +275,7 @@ void readWaypoints(const char* fileName){
 					if (line.compare("CONVERGE") == 0)
 					{						
 						addSplitWaypoint = true;
+						lastWaypoint->converge = true;
 						convergeList.push_back(lastWaypoint);
 						splitCount++;
 						continue;					
@@ -398,7 +411,7 @@ void handle_key_down( SDL_keysym* keysym )
 #if SANDBOX
 				writeWaypoints("sandboxWaypoints.w");
 #else
-				//writeWaypoints("waypoints.w");
+				writeWaypoints("waypoints.w");
 #endif
 				break;
 			}
@@ -407,7 +420,7 @@ void handle_key_down( SDL_keysym* keysym )
 #if SANDBOX
 				readWaypoints("sandboxWaypoints.w");				
 #else
-				readWaypoints("waypoints.w");
+				readWaypoints("newWaypoint.w");
 #endif
 				break;
 			}
@@ -524,7 +537,7 @@ void process_events()
 #if SANDBOX
 				readWaypoints("sandboxWaypoints.w");
 #else 				
-				readWaypoints("waypoints.w");
+				readWaypoints("newWaypoint.w");
 #endif
 				LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
 				LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
@@ -567,6 +580,29 @@ void resetCars(){
 				entManager->resetCar(i, btVector3(0, 3, 0));
 			}
 		}
+		if (c->getNormal().dot(btVector3(0,1,0)) < 0.03)
+		{
+			c->resetCounter++;
+			if (c->resetCounter > 300)
+			{
+				int index = getClosestWaypoint(c);
+				if (entManager->getWaypointList()->size() > 0 && index != -1)
+				{
+					Waypoint *w = entManager->getWaypoint(index);						
+					btTransform trans = w->getTransform();
+					btQuaternion q = btQuaternion(btVector3(0,1,0), trans.getRotation().getAngle() + SIMD_PI);
+					trans.setRotation(q);
+					entManager->resetCar(i, trans);
+				}
+				else
+				{
+					entManager->resetCar(i, btVector3(0, 3, 0));
+				}
+				c->resetCounter = 0;
+			}
+		}
+		else
+			c->resetCounter = 0;
 	}
 }
 

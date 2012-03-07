@@ -44,7 +44,14 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	nextWaypoint = -1;
 	turningForceModifier = 1.0;
 	springForceModifier = 1.0;
-	lastAngleForce = 0.0;	
+	lastAngleForce = 0.0;
+	resetCounter = 0;
+	speedBoostModifier = 1; 
+    slowFieldModifier = 1;
+    rocketModifier = 1;
+    tractionBoostModifier = 1;
+    shieldModifier = 1;
+    forceBubbleModifier = 1;
 
 	PowerUp p1 = PowerUp();
 	PowerUp p2 = PowerUp();
@@ -250,6 +257,13 @@ void Car::observeVariables(ReloadEvent *e){
 	forwardFrictionModifier = e->numberHolder.physicsInfo.forwardFrictionModifier;
 	turningForceModifier = e->numberHolder.physicsInfo.turningForceModifier;
 	springForceModifier = e->numberHolder.physicsInfo.springForceModifier;
+
+	speedBoostModifier = e->numberHolder.physicsInfo.speedBoostModifier;
+	slowFieldModifier = e->numberHolder.physicsInfo.slowFieldModifier;
+	rocketModifier = e->numberHolder.physicsInfo.rocketModifier;
+	tractionBoostModifier = e->numberHolder.physicsInfo.tractionBoostModifier;
+	shieldModifier = e->numberHolder.physicsInfo.shieldModifier;
+	forceBubbleModifier = e->numberHolder.physicsInfo.forceBubbleModifier;
 }
 
 PowerUp Car::GetPowerUpAt( int index )
