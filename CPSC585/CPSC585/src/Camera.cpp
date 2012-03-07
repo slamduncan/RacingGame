@@ -29,7 +29,45 @@ Camera::Camera(btVector3 &lookAtPointIn, btVector3& offset) : analogObserver(thi
 }
 
 void Camera::rotateCamera(RightAnalogEvent *e){
+
+	//printf("(%f, 0, %f)\n", e->getNormX(), e->getNormY());
 	
+	btVector3 target = btVector3(e->getNormX(), 0, e->getNormY());
+
+	if(!target.isZero())
+	{
+		
+		
+		
+		btVector3 projOffset = offset;
+		projOffset.setY(btScalar(0.f));
+
+		btScalar length = projOffset.length();
+
+		target = target.normalized() * length;
+
+		//target = target.rotate(UPVECTOR, 90);
+
+		cameraPosition = target + lookAtPoint;
+
+		lookAtVector = lookAtPoint - cameraPosition;
+
+		normal = lookAtVector.cross(UPVECTOR);
+
+		normal = normal.cross(lookAtVector).normalized();
+		
+	}
+	
+/*
+	cameraPosition = cameraPosition.lerp(target, 0.05f);
+
+	lookAtVector = lookAtPoint - cameraPosition;
+
+	normal = lookAtVector.cross(UPVECTOR);
+
+	normal = normal.cross(lookAtVector).normalized();
+*/	
+/*	
 	// cap the angle
 	if(angle > SIMD_2_PI)
 	{
@@ -43,13 +81,29 @@ void Camera::rotateCamera(RightAnalogEvent *e){
 	angle = (float)e->getNormX() * SIMD_RADS_PER_DEG * 3.0f;
 
 	computeCameraPosition();
-	
+*/	
 }
 
 Camera::Camera(btVector3 &cameraPositionIn, btVector3 &lookAtPointIn, btScalar distance, btScalar height) : analogObserver(this, & Camera::rotateCamera)
 {
 	cameraPosition = cameraPositionIn;
 	lookAtPoint = lookAtPointIn;
+
+}
+
+void Camera::updateCamera(btTransform &transform)
+{
+	btVector3 target = transform * offset;
+
+	lookAtPoint = transform.getOrigin();
+
+	cameraPosition = cameraPosition.lerp(target, 0.05f);
+
+	lookAtVector = lookAtPoint - cameraPosition;
+
+	normal = lookAtVector.cross(UPVECTOR);
+
+	normal = normal.cross(lookAtVector).normalized();
 
 }
 
@@ -71,11 +125,51 @@ void Camera::updateCamera(btVector3 &lookAtPointIn, btVector3 &alignVector)
 	cameraPosition += offsetVector;
 */
 
+	lookAtPoint = lookAtPointIn;	// car position
+	
+	btVector3 offNormaled = offset.normalized();
+
+	btScalar offsetAmount = offNormaled.dot(-alignVector);
+
+	btScalar offsetY = offset.getY();
+
+	if(offsetAmount < btScalar(0.f))
+	{
+		//btVector offsetVector = UPVECTOR.cross(alignVector);
+
+		btVector3 alignment = offset + alignVector;
+
+		//btScalar angle = offset.angle(alignment);
+
+		//alignment.setY(offsetY);
+
+		alignment = alignment.normalized()*offset.length();
+
+		offset = alignment;
+
+		//offset.setY(10);
+
+		offset = offset.normalized() * offset.length();
+
+		cameraPosition = offset + lookAtPoint;
+
+	}
+
+
+
+	/*
 	lookAtPoint = lookAtPointIn;
 	btVector3 forwordVector = alignVector.cross(UPVECTOR);
 	btVector3 oldCameraPostion = cameraPosition;
-	btVector3 PostionToBeAt = lookAtPointIn + (forwordVector * offset.x()) + UPVECTOR * offset.y();
+
+	
+	btScalar offsetAmount = offset.length();
+
+	offset.setY(0.0f);
+
+	btVector3 PostionToBeAt = lookAtPointIn + (-forwordVector * offset.length()) + UPVECTOR * 10;
 	cameraPosition = PostionToBeAt;
+	*/
 /*
 	btVector3 currentVector = cameraPosition - lookAtPointIn;
 	btVector3 moveVector = currentVector.dot(alignVector) * alignVector;

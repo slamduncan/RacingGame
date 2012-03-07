@@ -728,7 +728,7 @@ int main(int argc, char** argv)
 
 	//Initialize camera settings.
 	btVector3 car1N = entManager->getCar(0)->getNormal()*10;
-	btVector3 car1T = entManager->getCar(0)->getTangent()*30;
+	btVector3 car1T = entManager->getCar(0)->getBinormal()*30;
 	
 	btVector3 camOffset = car1N + car1T;
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
@@ -845,9 +845,8 @@ int main(int argc, char** argv)
 		
 		ren->clearGL();
 		
-		camLookAt = entManager->getCar(0)->getPosition();
-		//camera1.setUpCamera(camLookAt);
-		camera1.updateCamera(camLookAt, entManager->getCar(0)->getBinormal());
+
+		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
 
 		//ren->drawTexture("depth2l1");
 
