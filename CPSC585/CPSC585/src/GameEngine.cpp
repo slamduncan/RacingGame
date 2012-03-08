@@ -846,18 +846,22 @@ int main(int argc, char** argv)
 		ph->debugDraw();
 		ren->glEnableLighting();
 */
-		ren->shadowMapPass();
-		
+		// done in light space
+		ren->depthMapPass();
 		ren->clearGL();
-		
 
+		// set camera to eye space
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
+		ren->setCamera(camera1);
 
-		//ren->drawTexture("depth2l1");
+		ren->normalMapPass();
+		ren->drawTexture("nd");
+//		ren->ssaoPass();
+//		ren->clearGL();
+		
 
 		ren->setCamera(camera1);
 		ren->draw(camera1);
-
 		ren->clearGL();		
 		ren->setCamera(camera1);
 		ren->drawAll();

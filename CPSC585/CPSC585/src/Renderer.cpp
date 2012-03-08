@@ -229,6 +229,7 @@ int Renderer::initTexs()
 	tm->genTexture(width, height, "smap");		// shadow maps
 	tm->genTexture(width, height, "nd");		// create a texture for ssao pass 1
 	tm->genTexture(width, height, "ssao");		// create a texture for ssao pass 2
+	tm->genTexture("texture/noise.png", "noise");
 	tm->genTexture(width, height, "rblur");		// radial blur
 
 	fb.init(width, height);
@@ -240,14 +241,21 @@ int Renderer::initTexs()
 }
 int Renderer::initShaders()
 {
+	// generates a depth and depth2 in rg channels
 	depth2pass = Shader("shader/basic.vert", "shader/d2.frag");
 	depth2pass.debug();
+	
+	// shadow map shader
 	shadowPass = Shader("shader/smap.vert", "shader/smap.frag");
 	shadowPass.debug();
 
-
-	//ndpass = Shader("shader/basic.vert", "shader/nd.frag");
-	//ndpass.debug();
+	// normal depth shader, RGB is the screen space normal, alpha for depth
+	ndpass = Shader("shader/basic.vert", "shader/nd.frag");
+	ndpass.debug();
+	
+	ssao = Shader("shader/basic.vert", "shader/ssao.frag");
+	ssao.debug();
+	
 	return 0;
 }
 
@@ -387,7 +395,7 @@ void Renderer::draw(Shader &s)
 //
 // generates a moment texture for shadow mapping
 //
-void Renderer::shadowMapPass()
+void Renderer::depthMapPass()
 {
 	// for each light source in our world, generate a depth map for the first car
 	for(int i = 0; i < lights.size(); i++)
@@ -448,9 +456,45 @@ void Renderer::shadowMapPass()
 
 }
 
+void Renderer::normalMapPass()
+{
+	fb.turnOn();
+	fb.attachTexture(tm->getTexture("nd"), GL_COLOR_ATTACHMENT0);
+	clearGL();
+	ndpass.turnShadersOn();
+	drawAll();
+	ndpass.turnShadersOff();
+	fb.deattachTexture();
+	fb.turnOff();
+}
+
 void Renderer::ssaoPass()
 {
+	clearGL();
+	ssao.turnShadersOn();
+	GLuint ranNMapUniform = 0;
+	ranNMapUniform = ssao.getUniform("ranNMap");	
+	
+	GLuint ndMapUniform = 0;
+	ndMapUniform = ssao.getUniform("normalMap");
 
+	GLuint testUniform = 0;
+	testUniform = ssao.getUniform("test");
+
+	glActiveTexture(GL_TEXTURE0);
+	//textureOff();
+	textureOn(tm->getTexture("noise"));
+	glUniform1i(ranNMapUniform,0);
+
+	glActiveTexture(GL_TEXTURE1);
+	//textureOff();
+	textureOn(tm->getTexture("nd"));
+	glUniform1i(ndMapUniform,1);
+
+
+	drawAll();
+	ssao.turnShadersOff();
+	textureOff();
 }
 
 void Renderer::abtexPass()
@@ -500,7 +544,7 @@ void Renderer::drawAll()
 	// draw obstacles
 
 	// debug draw waypoints
-#if 1
+#if 0
 	for(int i = 0; i < em->numWaypoints(); i++)
 	{
 		drawEntity(*(em->getWaypoint(i)));

@@ -42,6 +42,7 @@ private:
 	Shader depth2pass;
 	Shader shadowPass;
 	Shader ndpass;
+	Shader ssao;
 	Shader gaussian;
 	Shader radblur;
 
@@ -87,10 +88,10 @@ public:
 	void shaderOn(Shader &s);
 	void shaderOff(Shader &s);
 
-	void shadowMapPass();
+	void depthMapPass();
 	void ssaoPass();
 	void abtexPass();
-
+	void normalMapPass();
 
 	bool init();
 	int initSDL();
