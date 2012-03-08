@@ -855,10 +855,10 @@ int main(int argc, char** argv)
 
 		//ren->drawTexture("depth2l1");
 
-		//ren->setCamera(camera1);
-		//ren->draw(camera1);
+		ren->setCamera(camera1);
+		ren->draw(camera1);
 
-		//ren->clearGL();		
+		ren->clearGL();		
 		ren->setCamera(camera1);
 		ren->drawAll();
 
