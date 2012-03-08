@@ -169,10 +169,11 @@ void writeWaypoints(const char* fileName){
 	if (file.is_open())
 	{
 		Waypoint* nextWaypoint = wayList->at(0);
-		for (int i = 0; i < wayList->size(); i++)
+		for (int i = 0; i < wayList->size();)
 		{
 			std::string temp = nextWaypoint->toString();
 			file << temp;
+			i++; //Wrote One Waypoint
 			if (nextWaypoint->getWaypointList().size() > 0)
 				if (nextWaypoint->split)
 				{
@@ -187,10 +188,12 @@ void writeWaypoints(const char* fileName){
 						{
 							temp = partOfPath->toString();
 							file << temp;
+							i++; //Wrote one waypoint
 							partOfPath = partOfPath->getWaypointList().at(0);
 						}
 						temp = partOfPath->toString();
 						file << temp;
+						i++; //Wrote one waypoint
 					}
 					nextWaypoint = partOfPath->getWaypointList().at(0);
 				}
@@ -268,6 +271,8 @@ void readWaypoints(const char* fileName){
 	{
 		while (file.good()){
 			getline(file, line);
+			if(line.compare("\n") == 0 || line.empty())
+				continue;
 			if (line.compare("SPLIT") == 0)
 			{
 				getline(file, line);
