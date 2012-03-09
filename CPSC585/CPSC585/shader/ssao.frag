@@ -5,13 +5,13 @@ uniform sampler2D normalMap;
 
 varying vec2 uv;	// uv coord from vertex shader
 
-float totalStr = 1.38;	// how strong we want the SSAO to appear
-float str = 0.07;	// strength
-float offset = 18.0;
+float totalStr = 2.0;	// how strong we want the SSAO to appear
+float str = 1.0;	// strength
+float offset = 50.0;
 float fallOff = 0.000002;
 float radius = 0.006;
 
-// we want 16 samples per pixel
+// we want 10 samples per pixel
 #define SAMPLES 10
 
 // inverse of num samples as float
@@ -19,7 +19,7 @@ float invSamples = 1.0/10.0;
 
 void main()
 {
-	// precomputed vectors of a sphere
+	// precomputed vectors of a unit sphere
 	vec3 pSphere[10] = vec3[](vec3(-0.010735935, 0.01647018, 0.0062425877),
 							  vec3(-0.06533369, 0.3647007, -0.13746321),
 							  vec3(-0.6539235, -0.016726388, -0.53000957),
@@ -31,18 +31,22 @@ void main()
 							  vec3(0.8765323, 0.011236004, 0.28265962),
 							  vec3(0.29264435, -0.40794238, 0.15964167));
 	
+	vec2 screenCoord = gl_FragCoord.xy;
+	screenCoord.x = screenCoord.x/1280.0;
+	screenCoord.y = screenCoord.y/720.0;
+	
 	// grab a random normal from our random normal map
 	// used to sample the space
-	vec3 rNormal = normalize((texture2D(ranNMap, uv*offset).xyz*2.0) - vec3(1.0));
+	vec3 rNormal = normalize((texture2D(ranNMap, screenCoord*offset).xyz*2.0) - vec3(1.0));
 	
 	// get the color of the current pixel
-	vec4 currentPixelSample = texture2D(normalMap, uv);
+	vec4 currentPixelSample = texture2D(normalMap, screenCoord);
 	
 	// get the depth of the current pixel
 	float currentPixelDepth = currentPixelSample.a;
 	
 	// current pixels coordinates in screen space
-	vec3 ep = vec3(uv.xy,currentPixelDepth);
+	vec3 ep = vec3(screenCoord.xy,currentPixelDepth);
 	
 	// current normal of the pixel in screen space
 	vec3 norm = currentPixelSample.xyz;
@@ -76,6 +80,6 @@ void main()
 	}
 	
 	float ao = 1.0-totalStr*bl*invSamples;
-	gl_FragColor = currentPixelSample;
-	//gl_FragColor = vec4(vec3(ao), 1.0);
+	//gl_FragColor = currentPixelSample;
+	gl_FragColor = vec4(vec3(ao), 1.0);
 }

@@ -855,9 +855,9 @@ int main(int argc, char** argv)
 		ren->setCamera(camera1);
 
 		ren->normalMapPass();
-		ren->drawTexture("nd");
-//		ren->ssaoPass();
-//		ren->clearGL();
+		//ren->drawTexture("nd");
+		ren->ssaoPass();
+		ren->clearGL();
 		
 
 		ren->setCamera(camera1);
