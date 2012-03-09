@@ -106,7 +106,7 @@ int getClosestWaypoint(Car* car = entManager->getCar(0)){
 			index = wayList->at(i)->getIndex();
 		}
 	}
-	return index;
+	return index; //491
 }
 
 
@@ -635,10 +635,10 @@ void resetCars(){
 				entManager->resetCar(i, btVector3(0, 3, 0));
 			}
 		}
-		if (c->getNormal().dot(btVector3(0,1,0)) < 0.03)
+		if (c->getNormal().dot(btVector3(0,1,0)) < 0.1)
 		{
 			c->resetCounter++;
-			if (c->resetCounter > 300)
+			if (c->resetCounter > 100)
 			{
 				int index = getClosestWaypoint(c);
 				if (entManager->getWaypointList()->size() > 0 && index != -1)

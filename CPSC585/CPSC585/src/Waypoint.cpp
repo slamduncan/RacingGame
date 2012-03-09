@@ -86,7 +86,7 @@ void Waypoint::positionCheck(Car* car){
 			}
 			else
 			{
-				nextIndex = nextWaypoints.at(1)->getIndex();
+				nextIndex = nextWaypoints.at(direction % nextWaypoints.size())->getIndex();
 				printf("%d\n", nextIndex);
 				direction = id % nextWaypoints.size();
 			}

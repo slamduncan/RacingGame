@@ -98,6 +98,7 @@ void Camera::updateCamera(btTransform &transform)
 	lookAtPoint = transform.getOrigin();
 
 	int interpelationCount = 0;
+	cameraPosition = cameraPosition.lerp(target, 0.01f);
 	while((cameraPosition - lookAtPoint).length() > 50 && interpelationCount < 20)
 	{
 		cameraPosition = cameraPosition.lerp(target, 0.01f);
