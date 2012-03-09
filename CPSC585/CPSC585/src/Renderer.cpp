@@ -253,7 +253,7 @@ int Renderer::initShaders()
 	ndpass = Shader("shader/basic.vert", "shader/nd.frag");
 	ndpass.debug();
 	
-	ssao = Shader("shader/basic.vert", "shader/ssao.frag");
+	ssao = Shader("shader/ssao.vert", "shader/ssao.frag");
 	ssao.debug();
 	
 	return 0;
@@ -491,8 +491,25 @@ void Renderer::ssaoPass()
 	textureOn(tm->getTexture("nd"));
 	glUniform1i(ndMapUniform,1);
 
+	glEnable2D();
 
-	drawAll();
+	//textureOn(getTexture(texName));
+    glBegin (GL_QUADS); 
+	glTexCoord2f(0.0f, 0.0f); 
+	glVertex2i (0, 0); 
+	glTexCoord2f(0.0f, 1.0f); 
+	glVertex2i (0,height); 
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2i (width, height); 
+	glTexCoord2f(1.0f, 0.0f); 
+	glVertex2i (width, 0); 
+	glEnd();
+    //textureOff();
+
+	glDisable2D();
+
+
+
 	ssao.turnShadersOff();
 	textureOff();
 }
@@ -578,17 +595,6 @@ void Renderer::draw(Camera &cam)
 void Renderer::drawTexture(std::string texName)
 {
 	glEnable2D();
-/*
-	glTexCoord2f(0.0f, 1.0f); 
-	glVertex2i(position.x, position.y);
-	glTexCoord2f(0.0f, 0.0f); 
-	glVertex2i(position.x, position.y + ht);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex2i(position.x + wt, position.y + ht);
-	glTexCoord2f(1.0f, 1.0f); 
-	glVertex2i(position.x + wt, position.y);
-
-*/
 
 	textureOn(getTexture(texName));
     glBegin (GL_QUADS); 

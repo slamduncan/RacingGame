@@ -2,29 +2,38 @@
 
 char* Shader::textFileRead(const char* fn)
 {
-	FILE *fp;
-	char *content = NULL;
+	std::ifstream infile(fn);
+	
+	if(infile)
+	{
+		FILE *fp;
+		char *content = NULL;
 
-	int count=0;
+		int count=0;
 
-	if (fn != NULL) {
-		fp = fopen(fn,"rt");
+		if (fn != NULL) {
+			fp = fopen(fn,"rt");
 
-		if (fp != NULL) {
+			if (fp != NULL) {
 
-			fseek(fp, 0, SEEK_END);
-			count = ftell(fp);
-			rewind(fp);
+				fseek(fp, 0, SEEK_END);
+				count = ftell(fp);
+				rewind(fp);
 
-			if (count > 0) {
-				content = (char *)malloc(sizeof(char) * (count+1));
-				count = fread(content,sizeof(char),count,fp);
-				content[count] = '\0';
+				if (count > 0) {
+					content = (char *)malloc(sizeof(char) * (count+1));
+					count = fread(content,sizeof(char),count,fp);
+					content[count] = '\0';
+				}
+				fclose(fp);
 			}
-			fclose(fp);
 		}
+		return content;
 	}
-	return content;
+	else
+	{
+		return NULL;
+	}
 }
 
 int Shader::textFileWrite(char* fn, char* s) 
@@ -58,20 +67,26 @@ Shader::Shader(const char* vert,const char* frag)
 	const char* vSource = textFileRead(vert);
 	const char* fSource = textFileRead(frag);
 
-	v = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(v, 1, &vSource, NULL);
-	glCompileShader(v); 
+	if(vSource != NULL && fSource != NULL)
+	{
+		v = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(v, 1, &vSource, NULL);
+		glCompileShader(v); 
 
-	f = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(f, 1, &fSource, NULL);
-	glCompileShader(f); 
+		f = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(f, 1, &fSource, NULL);
+		glCompileShader(f); 
 
-	p = glCreateProgram();
-	glAttachShader(p, v);
-	glAttachShader(p, f);
+		p = glCreateProgram();
+		glAttachShader(p, v);
+		glAttachShader(p, f);
 
-	glLinkProgram(p);
-
+		glLinkProgram(p);
+	}
+	else
+	{
+		printf("Error: Unable to load shader\n");
+	}
 }
 
 Shader::~Shader()
