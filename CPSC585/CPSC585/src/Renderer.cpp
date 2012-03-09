@@ -253,7 +253,7 @@ int Renderer::initShaders()
 	ndpass = Shader("shader/basic.vert", "shader/nd.frag");
 	ndpass.debug();
 	
-	ssao = Shader("shader/basic.vert", "shader/ssao.frag");
+	ssao = Shader("shader/ssao.vert", "shader/ssao.frag");
 	ssao.debug();
 	
 	return 0;
