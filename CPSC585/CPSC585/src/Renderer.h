@@ -45,6 +45,7 @@ private:
 	Shader ssao;
 	Shader gaussian;
 	Shader radblur;
+	Shader celshader;
 
 	Renderer();	
 	
@@ -92,6 +93,7 @@ public:
 	void ssaoPass();
 	void abtexPass();
 	void normalMapPass();
+	void celPass();
 
 	bool init();
 	int initSDL();
