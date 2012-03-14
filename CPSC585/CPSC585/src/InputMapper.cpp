@@ -11,14 +11,16 @@ void InputMapper::updateRotation(LeftAnalogEvent *e){
 //	rotation = btQuaternion(e->getXVal(), e->getYVal(), 0, 0);	
 	if (lastTriggerEvent){
 		//if (goingForward)
-		if(entManager->getCar(0)->GetSpeed() > 0.0)
+		if(entManager->getCar(0)->GetSpeed() > 0.001)
 			rotation = btQuaternion(0, (float)(e->getXVal()), 0, 0);	
 		else
 			rotation = btQuaternion(0, -(float)(e->getXVal()), 0, 0);	
 	}
 	//rotation.normalize();
 	rotation /= rotationModifier;
-	EventSystemHandler::getInstance()->emitEvent(new RotationEvent(rotation));
+	RotationEvent* ev = new RotationEvent(rotation);
+	EventSystemHandler::getInstance()->emitEvent(ev);
+	delete ev;
 }
 
 void InputMapper::updateForwardForce(TriggerEvent *e){
@@ -30,7 +32,9 @@ void InputMapper::updateForwardForce(TriggerEvent *e){
 	if (e->getValue() < 0){
 		goingForward = false;
 	}
-	EventSystemHandler::getInstance()->emitEvent(new ForwardForceEvent(btScalar(e->getValue()), btScalar(e->getNormValue())));
+	ForwardForceEvent* ev =  new ForwardForceEvent(btScalar(e->getValue()), btScalar(e->getNormValue()));
+	EventSystemHandler::getInstance()->emitEvent(ev);
+	delete ev;
 }
 
 btQuaternion InputMapper::getRotaion(){return rotation;}

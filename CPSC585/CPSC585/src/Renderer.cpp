@@ -13,7 +13,7 @@ Renderer::Renderer()
 	height = 720;
 	bpp = 0;
 
-	Light light0 = Light(btVector3(50, 50, 0));
+	Light light0 = Light(btVector3(-100, 100, 0));
 
 	lights.push_back(light0);
 
@@ -126,17 +126,17 @@ int Renderer::initGL()
 	
 	//glShadeModel(GL_FLAT);
 	glShadeModel(GL_SMOOTH);	// smooth shading
-    glCullFace(GL_BACK);	// remove back facing surfaces
-    //glFrontFace(GL_CCW);	// set front face objects to be in CCW direction
+    glFrontFace(GL_CW);	// set front face objects to be in CCW direction
     glEnable( GL_CULL_FACE );	// allow removing culled surfaces
 	glBlendFunc(GL_ONE, GL_ONE);	
 	//glEnable(GL_BLEND);
 
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	GLfloat diff[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 	GLfloat spec[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	GLfloat amb[4] = {0.2f, 0.2f, 0.2f, 0.2f};
-	GLfloat lightPos[4] = {5.0f, 5.0f, 0.0f, 0.0f};
+	//GLfloat lightPos[4] = {5.0f, 5.0f, 0.0f, 0.0f};
 
 	// enable lighting
 	glEnable(GL_LIGHTING);
@@ -172,7 +172,12 @@ int Renderer::initGL()
 		//printf("Incomplete frame buffer object\n");
 		counter--;
 	}
-	std::cout << "FBO initialized" << std::endl;
+	int colorBufferCount = 0;
+    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT, &colorBufferCount);
+
+	printf("Number of color attachment points: %d\n", colorBufferCount);
+
+	std::cout << "FBO supported" << std::endl;
 
 
 
@@ -224,7 +229,9 @@ int Renderer::initTexs()
 	tm->genTexture(width, height, "smap");		// shadow maps
 	tm->genTexture(width, height, "nd");		// create a texture for ssao pass 1
 	tm->genTexture(width, height, "ssao");		// create a texture for ssao pass 2
+	tm->genTexture("texture/noise.png", "noise");
 	tm->genTexture(width, height, "rblur");		// radial blur
+	tm->genTexture("texture/celgray.png", "cel");
 
 	fb.init(width, height);
 	
@@ -235,10 +242,24 @@ int Renderer::initTexs()
 }
 int Renderer::initShaders()
 {
+	// generates a depth and depth2 in rg channels
 	depth2pass = Shader("shader/basic.vert", "shader/d2.frag");
 	depth2pass.debug();
+	
+	// shadow map shader
+	shadowPass = Shader("shader/smap.vert", "shader/smap.frag");
+	shadowPass.debug();
+
+	// normal depth shader, RGB is the screen space normal, alpha for depth
 	ndpass = Shader("shader/basic.vert", "shader/nd.frag");
 	ndpass.debug();
+	
+	ssao = Shader("shader/ssao.vert", "shader/ssao.frag");
+	ssao.debug();
+	
+	celshader = Shader("shader/cell.vert", "shader/cell.frag");
+	celshader.debug();
+
 	return 0;
 }
 
@@ -254,6 +275,37 @@ void Renderer::quitSDL()
 
 	exit(0);
 }
+
+void Renderer::changeFontSize(int size)
+{
+	int counter = 0;
+	/*
+	if(TTF_Init())
+	{
+		fprintf(stderr, "Font failed to initialize: %s\n", TTF_GetError());
+        //quitSDL();
+		counter--;
+	}
+	*/
+
+	if(debugFont != NULL)
+	{
+		TTF_CloseFont(debugFont);
+		debugFont = TTF_OpenFont("font/ARIAL.TTF", size);
+	}
+	else
+	{
+		//printf("Error: Font has yet to be initialized\n");
+		debugFont = TTF_OpenFont("font/ARIAL.TTF", size);
+	}
+}
+
+void Renderer::changeFont(std::string fontpath)
+{
+
+}
+
+
 
 SDL_Surface* Renderer::loadIMG(string filename)
 {
@@ -345,38 +397,148 @@ void Renderer::draw(Shader &s)
 }
 
 //
-// update this funciton so it does a pass per player
+// generates a moment texture for shadow mapping
 //
-void Renderer::shadowMapPass()
+void Renderer::depthMapPass()
 {
-	// for each light source in our scene
+	// for each light source in our world, generate a depth map for the first car
 	for(int i = 0; i < lights.size(); i++)
 	{
+		fb.turnOn();
+		glViewport(0, 0, width, height);
+		fb.attachTexture(getTexture("depth2l1"), GL_COLOR_ATTACHMENT0_EXT);
+		clearGL();
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
-		fb.attachTexture(getTexture("depth2l1"), GL_COLOR_ATTACHMENT0_EXT);
+		depth2pass.turnShadersOn();
 
-		fb.turnOn();
+		//glCullFace(GL_FRONT);
+		//glDisable(GL_CULL_FACE);
 		
-		shaderOn(depth2pass);
-
 		drawAll();
 
-		shaderOff(depth2pass);
-		fb.turnOff();
-		fb.deattachTexture();
+		//glEnable(GL_CULL_FACE);
+		static double modelView[16];
+		static double projection[16];
 
+		const GLdouble bias[16] = {	0.5, 0.0, 0.0, 0.0, 
+									0.0, 0.5, 0.0, 0.0,
+									0.0, 0.0, 0.5, 0.0,
+									0.5, 0.5, 0.5, 1.0 };
+
+		glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
+		glGetDoublev(GL_PROJECTION_MATRIX, projection);
+
+		glMatrixMode(GL_TEXTURE);
+		glActiveTexture(GL_TEXTURE7);
+
+		glLoadIdentity();	
+		glLoadMatrixd(bias);
+		
+		// concatating all matrice into one.
+		glMultMatrixd(projection);
+		glMultMatrixd(modelView);
+		
+		// Go back to normal matrix mode
+		glMatrixMode(GL_MODELVIEW);
+
+
+		//shaderOff(depth2pass);
+		depth2pass.turnShadersOff();
+
+		fb.deattachTexture();
+		
+		fb.deattachTexture();
+		fb.turnOff();
 	}
+
+	// bind and active the texture
+	// draw using the depth map
+
+	
+
+
+}
+
+void Renderer::normalMapPass()
+{
+	fb.turnOn();
+	fb.attachTexture(tm->getTexture("nd"), GL_COLOR_ATTACHMENT0);
+	clearGL();
+	ndpass.turnShadersOn();
+	drawAll();
+	ndpass.turnShadersOff();
+	fb.deattachTexture();
+	fb.turnOff();
 }
 
 void Renderer::ssaoPass()
 {
+	clearGL();
+	ssao.turnShadersOn();
+	GLuint ranNMapUniform = 0;
+	ranNMapUniform = ssao.getUniform("ranNMap");	
+	
+	GLuint ndMapUniform = 0;
+	ndMapUniform = ssao.getUniform("normalMap");
 
+	GLuint testUniform = 0;
+	testUniform = ssao.getUniform("test");
+
+	glActiveTexture(GL_TEXTURE0);
+	//textureOff();
+	textureOn(tm->getTexture("noise"));
+	glUniform1i(ranNMapUniform,0);
+
+	glActiveTexture(GL_TEXTURE1);
+	//textureOff();
+	textureOn(tm->getTexture("nd"));
+	glUniform1i(ndMapUniform,1);
+
+	glEnable2D();
+
+	//textureOn(getTexture(texName));
+    glBegin (GL_QUADS); 
+	glTexCoord2f(0.0f, 0.0f); 
+	glVertex2i (0, 0); 
+	glTexCoord2f(0.0f, 1.0f); 
+	glVertex2i (0,height); 
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2i (width, height); 
+	glTexCoord2f(1.0f, 0.0f); 
+	glVertex2i (width, 0); 
+	glEnd();
+    //textureOff();
+
+	glDisable2D();
+
+
+
+	ssao.turnShadersOff();
+	textureOff();
 }
 
 void Renderer::abtexPass()
 {
 
+}
+
+void Renderer::celPass()
+{
+	clearGL();
+	celshader.turnShadersOn();
+	
+	GLuint celUniform = celshader.getUniform("cel");	// get the location of the cel sampler2D
+
+	// set and bind the cel texture to state GL_TEXTURE0
+	glActiveTexture(GL_TEXTURE0);
+	//textureOff();
+	textureOn(tm->getTexture("cel"));
+	glUniform1i(celUniform,0);	// pass the texture to the GPU
+	
+	drawAll();
+
+	celshader.turnShadersOff();
 }
 
 void Renderer::drawAll()
@@ -389,11 +551,12 @@ void Renderer::drawAll()
 	{
 		
 		Car* temp = em->getCar(i);
-
-		textureOn(getTexture("car1"));
+		//glActiveTexture(GL_TEXTURE0);
+		//textureOn(getTexture("car1"));
 		drawEntity(*temp);
-		textureOff();
+		//textureOff();
 
+/*		
 		// for each wheel we need to draw a line
 		for(int j = 0; j < 4; j++)
 		{
@@ -407,6 +570,7 @@ void Renderer::drawAll()
 			drawLine(springPos, springLength, 0, 0, 255, 3.0f);
 
 		}
+		*/
 	}
 
 
@@ -429,30 +593,45 @@ void Renderer::drawAll()
 #endif
 }
 
+void Renderer::draw(Camera &cam)
+{
+	shadowPass.turnShadersOn();
+	GLuint momentMapUniform = shadowPass.getUniform("ShadowMap");
+	glUniform1i(momentMapUniform,7);
+	
+	glActiveTexture(GL_TEXTURE7);
+	textureOn(tm->getTexture("depth2l1"));
+
+	// i need to set the camera back here
+	setCamera(cam);
+
+	glCullFace(GL_BACK);
+	drawAll();
+
+	//setTextureMatrix();
+
+	textureOff();
+	shadowPass.turnShadersOff();
+}
+
 void Renderer::drawTexture(std::string texName)
 {
-    glMatrixMode (GL_MODELVIEW); 
-	glPushMatrix (); 
-	glLoadIdentity (); 
-	glMatrixMode (GL_PROJECTION); 
-	glPushMatrix (); 
-	glLoadIdentity ();
+	glEnable2D();
 
 	textureOn(getTexture(texName));
     glBegin (GL_QUADS); 
-	glTexCoord2f(0.0f, 1.0f); 
-	glVertex3i (-1, -1, -1); 
-	glTexCoord2f(1.0f, 1.0f); 
-	glVertex3i (1, -1, -1); 
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3i (1, 1, -1); 
 	glTexCoord2f(0.0f, 0.0f); 
-	glVertex3i (-1, 1, -1); 
-	glEnd ();
+	glVertex2i (0, 0); 
+	glTexCoord2f(0.0f, 1.0f); 
+	glVertex2i (0,height); 
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2i (width, height); 
+	glTexCoord2f(1.0f, 0.0f); 
+	glVertex2i (width, 0); 
+	glEnd();
     textureOff();
-	glPopMatrix (); 
-	glMatrixMode (GL_MODELVIEW); 
-	glPopMatrix ();
+
+	glDisable2D();
 
 }
 
@@ -561,12 +740,12 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 
 	glTexCoord2f(0.0f, 1.0f); 
 	glVertex2i(position.x, position.y);
-	glTexCoord2f(1.0f, 1.0f); 
-	glVertex2i(position.x + wt, position.y);
-	glTexCoord2f(1.0f, 0.0f); 
-	glVertex2i(position.x + wt, position.y + ht);
 	glTexCoord2f(0.0f, 0.0f); 
 	glVertex2i(position.x, position.y + ht);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex2i(position.x + wt, position.y + ht);
+	glTexCoord2f(1.0f, 1.0f); 
+	glVertex2i(position.x + wt, position.y);
 	glEnd();
 
 	glFinish();
@@ -606,42 +785,11 @@ void Renderer::setCamera(const Camera& cam){
 		cam.normal.getX(), cam.normal.getY(), cam.normal.getZ());
 }
 
-
-/*
-*	draws a white box centered on the screen
-*/
-/*
-void Renderer::draw()
-{
-	glPushMatrix();
-    glLoadIdentity();
-
-	gluLookAt(0, 0, -5,	// camera position
-		      0, 0, 0,	// look at point
-			  0, 1, 0);	// up vector
-		      
-	glColor4f(1, 0, 0, 1);
-	glBegin(GL_QUADS);
-	glVertex3f(-1, -1, 0);
-	glVertex3f(-1, 1, 0);
-	glVertex3f(1, 1, 0);
-	glVertex3f(1, -1, 0);
-	glEnd();
-	glPopMatrix();
-
-	// go into HUD mode
-	glEnable2D();
-
-	outputText("This is a multi\nline test to see if \nnewlines are working correctly", 255, 255, 255, width/3, height/2);
-
-	glDisable2D();
-}
-*/
 void Renderer::drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width)
 {
 	assert(width >= 1);
 	
-	glPushMatrix();
+	//glPushMatrix();
 	glLineWidth(width);
 
 	glBegin(GL_LINES);
@@ -650,15 +798,11 @@ void Renderer::drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, f
 	
 	glVertex3fv(start);
 	glVertex3fv(end);
-	//glVertex3f(start.getX(), start.getY(), start.getZ());
-	//glVertex3f(end.getX(), end.getY(), end.getZ());
-
-	//end.m_floats
-
+	
 	glEnd();
 
 	glLineWidth(1);	// we need to reset the line width back to default as to not effect other things
-	glPopMatrix();
+
 }
 
 
@@ -673,8 +817,6 @@ void Renderer::drawEntity(Entity &entity)
 	glPushMatrix();
 	
 	btScalar* matrix = entity.getGLMatrix();
-
-	//printf("(%f, %f, %f)\n", matrix[0], matrix[1]
 
 	glMultMatrixf(matrix);
 
@@ -714,6 +856,39 @@ void Renderer::drawEntity(Entity &entity)
 			}
 		}
 
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
+
+		if(mesh->HasTextureCoords(0))
+		{
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+
+		//aiVector3D
+
+		glVertexPointer(3, GL_FLOAT, sizeof(aiVector3D), mesh->mVertices);
+		glNormalPointer(GL_FLOAT, sizeof(aiVector3D), mesh->mNormals);
+		
+		if(mesh->HasTextureCoords(0))
+		{
+			glTexCoordPointer(2, GL_FLOAT, sizeof(aiVector3D), mesh->mTextureCoords[0]);
+		}
+
+		glDrawArrays(GL_TRIANGLES, 0, mesh->mNumVertices);
+		//glDrawElements(GL_TRIANGLE, mesh->mNumVertices, GL_FLOAT, indices);
+		//glDrawElements(GL_TRIANGLES, mesh->mNumVertices, GL_FLOAT, mesh->mVertices);
+
+		if(mesh->HasTextureCoords(0))
+		{
+			//glTexCoord2f(mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+
+		glDisableClientState(GL_NORMAL_ARRAY);
+		glDisableClientState(GL_VERTEX_ARRAY);
+		//
+	
+		/*
 		for(int j = 0; j < (int)mesh->mNumFaces; j++)
 		{
 			const aiFace* face = &mesh->mFaces[j];	// get a face
@@ -733,32 +908,10 @@ void Renderer::drawEntity(Entity &entity)
 			for(unsigned int k = 0; k < face->mNumIndices; k++)
 			{
 				int index = face->mIndices[k];
-				
-				/*
-				// the model has a color
-				// need to check this as i don't think we ever get into this if statement
-				if(mesh->mColors[0] != NULL)
-				{
-					const aiColor4D *color = &mesh->mColors[0][index];
-					
-					glColor4f(color->r, color->g, color->b, color->a);
-				}
-
-				*/
-				//Color4f(&mesh->mColors[0][index]);
 
 				if(mesh->HasTextureCoords(0))
 				{
-					//glTexCoord2f(&mesh->mTextureCoords[index]->x, &mesh->mTextureCoords[index]->y);
-
-					//mesh->mTextureCoords[0][index].x;
-
-
-					//printf("(%f, %f)\n", mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
-
 					glTexCoord2f(mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
-
-					//printf("I HAS TEXTURES\n");
 				}
 
 				// the model has normal
@@ -771,14 +924,14 @@ void Renderer::drawEntity(Entity &entity)
 
 			glEnd();
 		}
-
+		*/
 
 	}
 
 	glPopMatrix();	
-	drawLine(entity.getPosition(),entity.getPosition()+ entity.getTangent(), 256, 0, 0, 10);
-	drawLine(entity.getPosition(),entity.getPosition()+ entity.getNormal(), 0, 256, 0, 10);
-	drawLine(entity.getPosition(), entity.getPosition()+entity.getBinormal(), 0, 0, 256, 10);
+	//drawLine(entity.getPosition(),entity.getPosition()+ entity.getTangent(), 256, 0, 0, 10);
+	//drawLine(entity.getPosition(),entity.getPosition()+ entity.getNormal(), 0, 256, 0, 10);
+	//drawLine(entity.getPosition(), entity.getPosition()+entity.getBinormal(), 0, 0, 256, 10);
 }
 
 void Renderer::drawPlane(float height)
@@ -824,7 +977,8 @@ void Renderer::glEnable2D()
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-
+	
+	glActiveTexture(GL_TEXTURE0);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
 	glEnable(GL_BLEND);

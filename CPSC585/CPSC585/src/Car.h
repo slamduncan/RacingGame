@@ -24,6 +24,7 @@ public:
 	
 	btScalar kVal;
 	
+	int resetCounter;
 	//Variable added to test the new spring system.
 	btScalar kValue;
 	btScalar critDampingValue;
@@ -80,6 +81,13 @@ private:
 	float forwardFrictionModifier;
 	float turningForceModifier;
 	float springForceModifier;
+	
+	float speedBoostModifier; 
+    float slowFieldModifier;
+    float rocketModifier;
+    float tractionBoostModifier;
+    float shieldModifier;
+    float forceBubbleModifier ;
 
 	// 3 power up slots, circular array of powerups?
 	//btAlignedObjectArray<PowerUp*> m_CarPowerUps;

@@ -44,14 +44,11 @@ Physics::~Physics(void)
     delete broadphase;
 }
 
-void Physics::step()
+void Physics::step(btScalar &timeStep)
 {	
-	dynamicsWorld->stepSimulation(1/60.f,10);
+	dynamicsWorld->stepSimulation(timeStep, 10);//1/60.f,10);
 
-	for (int i = 0; i < entityManager->getCarList()->size(); i++){
-		//update springs
-		entityManager->getCarList()->at(i)->updateWheels();	
-	}
+	updateCarSprings();
 
 	for (int i=0; i< entityManager->getPowerUpList()->size(); i++){
 		//btCollisionObject* toDelObject = entityManager->getPowerup(i)->physicsObject;
@@ -63,30 +60,26 @@ void Physics::step()
 			int index = entityManager->getCarIndexViaPointer(carMaybe);
 			if(index != -1)
 			{
-				//printf("I'm adding the powerup I thought?\n");
 				
 				Car* carTemp = entityManager->getCar(j);
 
-//				printf("carTemp %d\n", carTemp);
-				
 				int added = carTemp->AddPowerUp(entityManager->getPowerup(i)->GetType());
-				PowerUp * toDelete = entityManager->getPowerup(i);
 				
-				
+				dynamicsWorld->removeCollisionObject(entityManager->getPowerup(i)->physicsObject);
+				PowerUp* toDelete = entityManager->getPowerup(i);
 				entityManager->getPowerUpList()->remove(toDelete);
-				//Currently crashes code; cleanup powerups later
-				//Or set respawn timer for existing powerups?
-				
-				//dynamicsWorld->removeCollisionObject(entityManager->getPowerup(i)->physicsObject);
-				
-				//delete toDelete;
-				
-
-
 				i--;
 				break;
 			}
 		}
+	}
+}
+
+void Physics::updateCarSprings()
+{
+	for (int i = 0; i < entityManager->getCarList()->size(); i++){
+		//update springs
+		entityManager->getCarList()->at(i)->updateWheels();	
 	}
 }
 

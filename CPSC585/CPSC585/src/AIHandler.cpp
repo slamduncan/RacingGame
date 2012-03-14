@@ -56,7 +56,7 @@ void AIHandler::generateNextMove(){
 			forwardForce = maxMovementForce;
 		else if (forwardForce < -maxMovementForce)
 			forwardForce = -maxMovementForce;
-		ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0);
+		ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0f);
 		c->observeForwardForce(ffe);
 		delete ffe;
 		//printf("Car: %d, Forward = %f, Turn = %f\n", i, forwardForce, roationForce);

@@ -22,10 +22,19 @@
 #include "InputMapper.h"
 #include "Camera.h"
 #include "AIHandler.h"
+#include "Timer.h"
 
 #include "Sound.h"
 #define SANDBOX 0
 using namespace std;
+
+// FPS LIMITING DATA
+const int TICKS_PER_SECONDS = 60;
+const int SKIP_TICKS = 1000/TICKS_PER_SECONDS;
+const int MAX_FRAMESKIP = 5;
+
+ALuint EngineSource = 2;
+
 
 // Other init
 // ie. Physics, AI, Renderer, Sound, Container for ents?
@@ -43,8 +52,7 @@ EventSystemHandler* evSys = EventSystemHandler::getInstance();
 EntityManager* entManager = EntityManager::getInstance();
 
 // TESTING AREA
-bool depthShader = false;
-int waypointIndex1 = 0, waypointIndex2 = 0 ;
+int waypointIndex1 = 0, waypointIndex2 = 0;
 
 //Dynamic creation of waypoints
 void createWaypoint(){
@@ -71,6 +79,18 @@ void createWaypoint(){
 	newWay->setThrottle(controller1.getTriggers());
 }
 
+void floatingWaypoint(){
+	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
+	Car* c = entManager->getCar(0);
+	btTransform wayPointT1 = c->physicsObject->getWorldTransform();	
+	entManager->createWaypoint("model/waypoint.obj", wayPointT1);	
+	Waypoint* newWay = wayList->at(wayList->size()-1);
+	newWay->setThrottle(controller1.getTriggers());
+	Waypoint* prevWay = wayList->at(waypointIndex1);
+	prevWay->addNextWaypoint(newWay);
+	waypointIndex1 = newWay->getIndex();
+}
+
 int getClosestWaypoint(Car* car = entManager->getCar(0)){
 	btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
 	//Car* car = entManager->getCar(0);
@@ -86,7 +106,7 @@ int getClosestWaypoint(Car* car = entManager->getCar(0)){
 			index = wayList->at(i)->getIndex();
 		}
 	}
-	return index;
+	return index; //491
 }
 
 
@@ -149,23 +169,35 @@ void writeWaypoints(const char* fileName){
 	if (file.is_open())
 	{
 		Waypoint* nextWaypoint = wayList->at(0);
-		for (int i = 0; i < wayList->size(); i++)
+		for (int i = 0; i < wayList->size();)
 		{
 			std::string temp = nextWaypoint->toString();
 			file << temp;
+			i++; //Wrote One Waypoint
 			if (nextWaypoint->getWaypointList().size() > 0)
-			/*	if (nextWaypoint->split)
+				if (nextWaypoint->split)
 				{
-					std::string temp = nextWaypoint->toString();
-					file << temp;
+					//std::string temp = nextWaypoint->toString();
+					//file << temp;
 					Waypoint* partOfPath = nextWaypoint;
-					for(int count = 0; count < nextWaypoint->getWaypointList().size();;)
+					for(int count = 0; count < nextWaypoint->getWaypointList().size(); count++)
 					{
-						partOfPath = partOfPath->getWaypointList(0);
-						if (
+						/*Note: issue here if you have multi-path in multi-path */
+						partOfPath = nextWaypoint->getWaypointList().at(count);
+						while(!partOfPath->converge)
+						{
+							temp = partOfPath->toString();
+							file << temp;
+							i++; //Wrote one waypoint
+							partOfPath = partOfPath->getWaypointList().at(0);
+						}
+						temp = partOfPath->toString();
+						file << temp;
+						i++; //Wrote one waypoint
 					}
+					nextWaypoint = partOfPath->getWaypointList().at(0);
 				}
-				else*/
+				else
 					nextWaypoint = nextWaypoint->getWaypointList().at(0);
 			else
 				break;			
@@ -206,7 +238,11 @@ void savedWaypointIndex2(){
 }
 
 void markConverge(){
-	entManager->getWaypoint(getClosestWaypoint())->converge = true;
+	//entManager->getWaypoint(getClosestWaypoint())->converge = true;
+	entManager->getWaypoint(waypointIndex1)->converge = true;
+	entManager->getWaypoint(waypointIndex1)->getWaypointList().clear();
+	entManager->getWaypoint(waypointIndex1)->addNextWaypoint(entManager->getWaypoint(waypointIndex2));
+
 }
 
 void connectWaypointsTruncate(){
@@ -235,6 +271,8 @@ void readWaypoints(const char* fileName){
 	{
 		while (file.good()){
 			getline(file, line);
+			if(line.compare("\n") == 0 || line.empty())
+				continue;
 			if (line.compare("SPLIT") == 0)
 			{
 				getline(file, line);
@@ -255,6 +293,7 @@ void readWaypoints(const char* fileName){
 					if (line.compare("CONVERGE") == 0)
 					{						
 						addSplitWaypoint = true;
+						lastWaypoint->converge = true;
 						convergeList.push_back(lastWaypoint);
 						splitCount++;
 						continue;					
@@ -321,7 +360,8 @@ void readWaypoints(const char* fileName){
 				{
 					convergeList.at(i)->addNextWaypoint(convergeWaypoint);
 				}
-
+				convergeList.clear();
+				splitList.clear();
 			}
 		}
 		for (int i = 0; i < wayList->size()-1; i++)
@@ -354,7 +394,9 @@ void readWaypoints(const char* fileName){
 		for (int i = 0; i < entManager->getCarList()->size(); i++)
 			entManager->getCar(i)->setNextWaypointIndex(0);
 		//Update the waypoint variables.
-		evSys->emitEvent(new ReloadEvent());
+		ReloadEvent* e = new ReloadEvent();
+		evSys->emitEvent(e);
+		delete e;
 	}
 	else
 		printf("Unable to open Waypoint File - Read\n");
@@ -378,7 +420,9 @@ void handle_key_down( SDL_keysym* keysym )
 		//Reload the variables on r.
 		case SDLK_r:
 			{
-				evSys->emitEvent(new ReloadEvent());
+				ReloadEvent* e = new ReloadEvent();
+				evSys->emitEvent(e);
+				delete e;
 				break;
 			}
 		case SDLK_w:
@@ -397,6 +441,42 @@ void handle_key_down( SDL_keysym* keysym )
 #else
 				readWaypoints("waypoints.w");
 #endif
+				break;
+			}
+
+		case SDLK_c:
+			{
+				markConverge();
+				break;
+			}
+		case SDLK_s:
+			{
+				markWaypointSplit();
+				break;
+			}
+		case SDLK_1:
+			{
+				saveWaypointIndex1();
+				break;
+			}
+		case SDLK_2:
+			{
+				savedWaypointIndex2();
+				break;
+			}
+		case SDLK_COMMA:
+			{
+				connectWaypointsAddition();
+				break;
+			}
+		case SDLK_PERIOD:
+			{
+				connectWaypointsTruncate();
+				break;
+			}
+		case SDLK_f:
+			{
+				floatingWaypoint();
 				break;
 			}
 		default:
@@ -436,12 +516,13 @@ void process_events()
 		}
 		break;
 		case SDL_JOYBUTTONDOWN:
-			fprintf(stderr, "BUTTONS HOW DO THEY WORK\n");
+			//fprintf(stderr, "BUTTONS HOW DO THEY WORK\n");
 			controller1.update(event);
 
 			if (controller1.isBDown())
 			{
 				createWaypoint();
+
 			}
 			if(controller1.isADown())
 			{				
@@ -449,9 +530,11 @@ void process_events()
 				//int i;
 				//cin >> i;
 				moveWaypoint();
+
 			}
 			if(controller1.isXDown())
 			{
+				
 				if(entManager->numCars() > 0)
 				{
 					// resetCar(index of car, position we want to reset to)
@@ -468,29 +551,38 @@ void process_events()
 					{
 						entManager->resetCar(0, btVector3(0, 3, 0));
 					}
-
 				}
+
 			}
 			if(controller1.isYDown())
 			{
-				if(entManager->numCars() > 0)
+				int index = getClosestWaypoint();
+				if (entManager->getWaypointList()->size() > 0 && index != -1)
 				{
-					entManager->resetCarOrientation(0);
-				}
-			}
-			if(controller1.isButtonDown(controller1.R_Bump))
-			{
-				if(depthShader)
-				{
-					depthShader = false;
+					Waypoint *w = entManager->getWaypoint(index);
+					btTransform trans = w->getTransform();
+					
+					btMatrix3x3 basis = trans.getBasis();
+
+					btTransform cTrans = entManager->getCar(0)->physicsObject->getWorldTransform();
+					cTrans.setBasis(basis);
+					entManager->getCar(0)->physicsObject->setWorldTransform(cTrans);
+
 				}
 				else
 				{
-					depthShader = true;
+					entManager->resetCarOrientation(0);
 				}
+
 			}
-			if(controller1.isButtonDown(controller1.L_Bump)){
-				printf("Trying to use a speed boost...\n");
+			if(controller1.isButtonDown(controller1.R_Bump))
+			{
+				floatingWaypoint();
+			}
+			if(controller1.isButtonDown(controller1.L_Bump))
+			{
+
+				//printf("Trying to use a speed boost...\n");
 				if(entManager->getCar(0)->GetPowerUpAt(0).GetType() != 0){
 					entManager->getCar(0)->UsePowerUp(0);
 				}else if(entManager->getCar(0)->GetPowerUpAt(1).GetType() != 0){
@@ -498,11 +590,18 @@ void process_events()
 				}else if(entManager->getCar(0)->GetPowerUpAt(2).GetType() != 0){
 					entManager->getCar(0)->UsePowerUp(2);
 				}
+
 			}
 
 			if (controller1.isButtonDown(controller1.Start_button))
 			{
-				ren->quitSDL();
+#if SANDBOX
+				readWaypoints("sandboxWaypoints.w");
+#else 				
+				readWaypoints("waypoints.w");
+#endif
+				LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
+				LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 			}
 			//if (controller1.isButtonDown(controller1.L_Bump))
 			//{
@@ -521,6 +620,52 @@ void process_events()
 }
 
 
+void resetCars(){
+	for (int i = 0; i < entManager->getCarList()->size(); i ++)
+	{
+		Car* c = entManager->getCar(i);
+		if (c->getPosition().y() < -300.0)
+		{
+			// resetCar(index of car, position we want to reset to)
+			int index = getClosestWaypoint(c);
+			if (entManager->getWaypointList()->size() > 0 && index != -1)
+			{
+				Waypoint *w = entManager->getWaypoint(index);						
+				btTransform trans = w->getTransform();
+				btQuaternion q = btQuaternion(btVector3(0,1,0), trans.getRotation().getAngle() + SIMD_PI);
+				trans.setRotation(q);
+				entManager->resetCar(i, trans);
+			}
+			else
+			{
+				entManager->resetCar(i, btVector3(0, 3, 0));
+			}
+		}
+		if (c->getNormal().dot(btVector3(0,1,0)) < 0.1)
+		{
+			c->resetCounter++;
+			if (c->resetCounter > 100)
+			{
+				int index = getClosestWaypoint(c);
+				if (entManager->getWaypointList()->size() > 0 && index != -1)
+				{
+					Waypoint *w = entManager->getWaypoint(index);						
+					btTransform trans = w->getTransform();
+					btQuaternion q = btQuaternion(btVector3(0,1,0), trans.getRotation().getAngle() + SIMD_PI);
+					trans.setRotation(q);
+					entManager->resetCar(i, trans);
+				}
+				else
+				{
+					entManager->resetCar(i, btVector3(0, 3, 0));
+				}
+				c->resetCounter = 0;
+			}
+		}
+		else
+			c->resetCounter = 0;
+	}
+}
 
 // Engine Main
 int main(int argc, char** argv)
@@ -562,22 +707,22 @@ int main(int argc, char** argv)
 
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
-	btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, -2));
-	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(25, 3.5, 0));
-	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 3.5, 3.5));
+	btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 3.5f, -2.f));
+	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(25.f, 3.5f, 0.f));
+	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 3.5f, 3.5f));
 	
 	for(int i = 1; i < 5; i++){
-		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 7.5, 50*i));
+		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 7.5f, 50.f*i));
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
 	}
 
-	entManager->createCar("model/box.3ds", carMass, carT1);	
-	entManager->createCar("model/box.3ds", carMass, carT2);	
+	entManager->createCar("model/ship1.lwo", carMass, carT1);	
+	entManager->createCar("model/ship1.lwo", carMass, carT2);	
 	for(int i = 1; i < 2; i++){
-		btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, -i*30));	
-		entManager->createCar("model/box.3ds", carMass, carT2);	
-		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30, 3, -i*30));	
-		entManager->createCar("model/box.3ds", carMass, carT3);	
+		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
+		entManager->createCar("model/ship1.lwo", carMass, carT3);	
+		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
+		entManager->createCar("model/ship1.lwo", carMass, carT4);	
 	}
 	
 	
@@ -587,32 +732,6 @@ int main(int argc, char** argv)
 	entManager->createTrack("model/Track1tri.lwo", groundT);
 #endif
 
-	
-	//entManager->createWaypoint("model/waypoint.obj", wayPointT1);
-	//entManager->createWaypoint("model/waypoint.obj", wayPointT2);
-	//btAlignedObjectArray<Waypoint*>* wayList = entManager->getWaypointList();
-	//for (int i = 0; i < wayList->size()-1; i++)
-	//{
-	//	Waypoint* w1 = wayList->at(i);
-	//	Waypoint* w2 = wayList->at(i+1);
-	//	w1->addNextWaypoint(w2);
-	//}
-	//Waypoint* w1 = wayList->at(0);
-	//Waypoint* w2 = wayList->at(wayList->size()-1);
-	//w2->addNextWaypoint(w1);
-
-	//entManager->createWaypoint("model/waypoint.obj", wayPointT3);
-	//entManager->createPowerup("model/powerup.lwo", powerupT1);
-
-	//Set inital game time
-	Uint32 currentTime = SDL_GetTicks();
-	Uint32 oldTime = SDL_GetTicks();
-	int frameCount = 0;
-	int counter = 1;
-	int instantFrameCount = 0;
-	stringstream instantFrameCountBuffer;
-	string instantFrameString = "";
-
 	// Variables for lap time
 	int LapMinutes = 0;
 	int LapSeconds = 0;
@@ -620,18 +739,19 @@ int main(int argc, char** argv)
 
 	//Initialize camera settings.
 	btVector3 car1N = entManager->getCar(0)->getNormal()*10;
-	btVector3 car1T = entManager->getCar(0)->getTangent()*30;
+	btVector3 car1T = entManager->getCar(0)->getBinormal()*30;
 	
 	btVector3 camOffset = car1N + car1T;
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
 
-	ALuint EngineSource = 2;
-	LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
-	LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+	//LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
+	//LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	//Load variables from the xml file.
-	evSys->emitEvent(new ReloadEvent());	
+	ReloadEvent* e = new ReloadEvent();
+	evSys->emitEvent(e);
+	delete e;
 
 	float EngineModifier = 0;
 
@@ -639,120 +759,161 @@ int main(int argc, char** argv)
 	int WaypointIndex = -1;
 	int CurrentWaypointIndex = 0;
 
+	//Set inital game time
+	Uint32 currentTime = SDL_GetTicks();
+	Uint32 oldTime = SDL_GetTicks();
+	Uint32 physicsCurrentTime = SDL_GetTicks();
+	Uint32 physicsOldTime = SDL_GetTicks();
+	int frameCount = 0;
+	int counter = 1;
+	int instantFrameCount = 0;
+	stringstream instantFrameCountBuffer;
+	string instantFrameString = "";
+
+	int loops;
+	float interpolation;
+	bool running = true;
+
+	Uint32 next_game_tick = SDL_GetTicks();
 	// game loop
-	while(1)
+	while(running)
 	{		
-		// Calculate engine's change in pitch
-		EngineModifier = (entManager->getCar(0)->GetSpeed() / (-1 * entManager->getCar(0)->GetForwardForceModifier()));
+/*
+			process_events();
+			//controller1.emitTriggers();
+			//controller1.emitButtons();
+			//controller1.emitLeftAnalog();
+			//controller1.emitRightAnalog();
+			
+			ren->clearGL();
 
-		// If going in reverse, we still want engine to rev up
-		if(EngineModifier < 0)
-			EngineModifier *= -1;
+			ren->glEnable2D();
+			ren->changeFontSize(100);
+			ren->outputText("Varios", 255, 255, 255, 500, 500);
 
-		// Change pitch of engine sound
-		alSourcef(EngineSource, AL_PITCH, 1.0f + EngineModifier );
+			ren->changeFontSize(20);
+			ren->outputText("Press start", 255, 255, 255, 600, 200);
 
-		camLookAt = entManager->getCar(0)->getPosition();
-	
-		camera1.setUpCamera(camLookAt);
-		
-		//// Physics
-		ph->step();
-
-		//// Inputs
-		process_events();
-		
-		controller1.emitTriggers();
-		controller1.emitButtons();
-		controller1.emitLeftAnalog();
-		controller1.emitRightAnalog();
-
-		// AI
-		ai->generateNextMove();
-
-		// Calculate current lap for player's car
-		WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
-		if( WaypointIndex != CurrentWaypointIndex )
+			ren->glDisable2D();
+			ren->updateGL();
+*/
+		loops = 0;
+			
+		while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAMESKIP)
 		{
-			CurrentWaypointIndex = WaypointIndex;
-			if( CurrentWaypointIndex == 0 )
+			// Calculate engine's change in pitch
+			EngineModifier = (entManager->getCar(0)->GetSpeed() / (-1 * entManager->getCar(0)->GetForwardForceModifier()));
+
+			// If going in reverse, we still want engine to rev up
+			if(EngineModifier < 0)
+				EngineModifier *= -1;
+
+			// Change pitch of engine sound
+			alSourcef(EngineSource, AL_PITCH, 1.0f + EngineModifier );
+			
+			//// Physics
+			physicsCurrentTime = SDL_GetTicks();
+			btScalar dif = physicsCurrentTime - physicsOldTime;
+			printf("DIFF = %f\n" , dif);
+			//btScalar phyTS(1.f/(float)(physicsCurrentTime-physicsOldTime));
+			btScalar phyTS(1.f/60.f);
+			ph->step(phyTS);
+			physicsOldTime = physicsCurrentTime;
+
+			//// Inputs
+			process_events();
+			
+			controller1.emitTriggers();
+			controller1.emitButtons();
+			controller1.emitLeftAnalog();
+			controller1.emitRightAnalog();
+
+			// AI
+			ai->generateNextMove();
+			
+
+			// Calculate current lap for player's car
+			WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
+			if( WaypointIndex != CurrentWaypointIndex )
 			{
-				LapNumber++;
-				LapMinutes = 0;
-				LapSeconds = 0;
-				LapMilliseconds = 0;
+				CurrentWaypointIndex = WaypointIndex;
+				if( CurrentWaypointIndex == 0 )
+				{
+					LapNumber++;
+					LapMinutes = 0;
+					LapSeconds = 0;
+					LapMilliseconds = 0;
+				}
 			}
+
+			next_game_tick += SKIP_TICKS;
+			loops++;
+			instantFrameCount++;
 		}
+
+		interpolation = float(SDL_GetTicks() + SKIP_TICKS - next_game_tick/ float(SKIP_TICKS));
 
 		// Render
 		ren->clearGL();	// clear the screen
-
+/*
 		ren->glDisableLighting();
 		ph->debugDraw();
 		ren->glEnableLighting();
-/*
-		if(depthShader)
-		{
-			ren->draw(ssao1);
-		}
-		else
-		{
-			ren->drawAll();
-		}
 */
-		//ren->draw(test);
+		// done in light space
+		ren->depthMapPass();
+		ren->clearGL();
 
-		ren->shadowMapPass();
+		// set camera to eye space
+		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
+		ren->setCamera(camera1);
+
+		ren->normalMapPass();
+		//ren->drawTexture("nd");
+		ren->ssaoPass();
+		ren->clearGL();
 
 		ren->setCamera(camera1);
-		//ren->drawTexture("depth2l1");
-
-		ren->drawAll();
+		ren->draw(camera1);
 /*
-		//Following draws the springs for the car
-		for(int i = 0; i < entManager->numCars(); i++)
-		{
-			Car* temp = entManager->getCarList()->at(i);
-			
-			ren->textureOn(ren->getTexture("car1"));
-			ren->drawEntity(*temp);
-			ren->textureOff();
-			
-			// for each wheel we need to draw a line
-			for(int j = 0; j < 4; j++)
-			{
-				//Spring aWheel = temp->wheels[j];
-				Wheel aWheel = temp->newWheels[j];
-
-				btVector3 springPos = aWheel.getAttachedToCarPosition();
-
-				btVector3 springLength = aWheel.getBottomSpringPosition();
-
-				ren->drawLine(springPos, springLength, 0, 0, 255, 3.0f);
-
-			}
-		}
-		
-		//Draw the waypoints.
-		for(int i = 0; i < entManager->numWaypoints(); i++)
-		{
-			ren->drawEntity(*(entManager->getWaypointList()->at(i)));
-		}
-
-		// Draw the track.
-		if(entManager->getTrack())
-		{
-			ren->drawEntity(*(entManager->getTrack()));
-		}
-*/		
+		ren->clearGL();		
+		ren->setCamera(camera1);
+		ren->celPass();
+*/
+		ren->clearGL();		
+		ren->setCamera(camera1);
+		ren->drawAll();
 
 		ren->glEnable2D();
+	
+		ren->changeFontSize(20);
+		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
+
+		int TimeDifference = currentTime - oldTime;
+		if((TimeDifference) > 1000){
+			std::stringstream ssInstant;
+			//sprintf_s(frames, "%d FPS", frameCount);				
+			ssInstant << instantFrameCount << " Instant FPS";
+			//ren->outputText(frames, 0, 255, 0, 10, 700);
+			//std::cout << frameCount << "\n";
+			//frameCount = 0;
+			instantFrameCount = 0;
+			instantFrameString = ssInstant.str();			
+			counter++;
+			oldTime = currentTime;		
+			
+			LapSeconds++;
+		}		
+		currentTime = SDL_GetTicks();
+
+		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
+/*
 		frameCount++;
 		instantFrameCount++;
 
 		int TimeDifference = currentTime - oldTime;
 
-		/* Calculate the frames per second */
+		// Calculate the frames per second 
 		if((TimeDifference) > 1000){
 			std::stringstream ssInstant;
 			//sprintf_s(frames, "%d FPS", frameCount);				
@@ -771,13 +932,15 @@ int main(int argc, char** argv)
 		std::stringstream ss;
 		ss << frameCount/counter;
 
-		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
+		
 		ren->outputText("FPS: " + ss.str(), 0, 255, 0, 0, 700);
 		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
 
 		//printf("NP: %d\n", entManager->getCar(0)->GetNumberPowerUps());
 		//entManager->getCarList()->at(0)->outputPowerups();
+*/
 
+		
 		std::stringstream ssLapTime;
 		std::stringstream ssLap;
 		ssLap << LapNumber;
@@ -800,9 +963,10 @@ int main(int argc, char** argv)
 			ssLapTime << "0";
 		else if( TimeDifference >= 1000 )
 			TimeDifference = 999;
-
+		
 		LapMilliseconds = TimeDifference / 10;
 		ssLapTime << LapMilliseconds;
+
 		// Display the current lap time
 		ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);
 		ren->outputText("Lap: " + ssLap.str(), 255, 0, 0, 0, 640);
@@ -810,6 +974,10 @@ int main(int argc, char** argv)
 		ren->glDisable2D();
 
 		ren->updateGL();	// update the screen
+
+		// Resets any cars which have fallen off the track.
+		resetCars();
+		
 	}
 
 	return 0;

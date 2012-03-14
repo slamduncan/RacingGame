@@ -27,6 +27,12 @@ public:
 		float forwardFrictionModifier; //Car
 		float turningForceModifier; //Car
 		float springForceModifier; //Car
+		float speedBoostModifier;  //Car
+		float slowFieldModifier; //Car
+		float rocketModifier; //Car
+		float tractionBoostModifier; //Car
+		float shieldModifier; //Car
+		float forceBubbleModifier ; //Car
 	} physicsInfo;
 
 	struct AI{

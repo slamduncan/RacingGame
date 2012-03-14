@@ -14,7 +14,7 @@ public:
 	~Physics(void);
 	static Physics* Inst();
 
-	void step();
+	void step(btScalar &timeStep);
 	void setGravity(const btVector3 &gravity);
 	void addEntity(const Entity &ent);
 	void removeEntity(const Entity &ent);
@@ -28,6 +28,7 @@ public:
 	btDiscreteDynamicsWorld* getDiscreteDynamicsWorld();
 	btVector3 getGravity();
 	void updateVariables(ReloadEvent *e);
+	void updateCarSprings();
 
 	
 protected:

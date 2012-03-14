@@ -161,7 +161,7 @@ GLuint TextureManager::genTexture(unsigned int width, unsigned int height, std::
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	//glTexParameterf(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_UNSIGNED_INT, NULL);	// generate 32bit precision floats for each channel
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);	// generate 32bit precision floats for each channel
 	glBindTexture(GL_TEXTURE_2D, 0);  // unbind out texture
 
 	texman.insert(pair<string, GLuint>(key, texID));

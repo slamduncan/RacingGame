@@ -173,6 +173,42 @@ void ProjectNumbers::readPhysics(){
 					pElem->QueryFloatAttribute("value", &physicsInfo.springForceModifier);
 			}
 
+			//Physics: speedBoostModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(10).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.speedBoostModifier);
+			}
+			//Physics: slowFieldModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(11).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.slowFieldModifier);
+			}
+			//Physics: rocketModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(12).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.rocketModifier);
+			}
+			//Physics: tractionBoostModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(13).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.tractionBoostModifier);
+			}
+			//Physics: shieldModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(14).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.shieldModifier);
+			}
+			//Physics: forceBubbleModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(15).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.forceBubbleModifier);
+			}
 		}
 		else
 		{

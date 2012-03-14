@@ -126,7 +126,34 @@ bool Entity::initRenderObject(char* filename)
 		}
 		
 		// load the file
-		renderObject = aiImportFile(filename, aiProcessPreset_TargetRealtime_Quality | aiProcess_FlipUVs );
+		renderObject = aiImportFile(filename, 
+			aiProcess_CalcTangentSpace       |
+			aiProcess_Triangulate            |
+			//aiProcess_JoinIdenticalVertices  |
+			aiProcess_GenSmoothNormals |
+			aiProcess_ImproveCacheLocality |
+			aiProcess_GenUVCoords |
+			aiProcess_TransformUVCoords |
+			aiProcess_OptimizeMeshes |
+			aiProcess_SortByPType |
+			aiProcess_FlipUVs
+			/*aiProcessPreset_TargetRealtime_Quality | aiProcess_FlipUVs*/ );
+/*
+aiProcessPreset_TargetRealtime_Quality ( \
+	aiProcess_CalcTangentSpace				|  \
+	aiProcess_GenSmoothNormals				|  \
+	aiProcess_JoinIdenticalVertices			|  \
+	aiProcess_ImproveCacheLocality			|  \
+	aiProcess_LimitBoneWeights				|  \
+	aiProcess_RemoveRedundantMaterials      |  \
+	aiProcess_SplitLargeMeshes				|  \
+	aiProcess_Triangulate					|  \
+	aiProcess_GenUVCoords                   |  \
+	aiProcess_SortByPType                   |  \
+	aiProcess_FindDegenerates               |  \
+	aiProcess_FindInvalidData               |  \
+	0 )
+	*/
 
 		return true;
 	}

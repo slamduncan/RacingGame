@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <stdio.h>
+#include <fstream>
 #include <iostream>
 
 struct Param
@@ -51,7 +52,6 @@ public:
 	void initParam(std::vector<std::string> paramName, std::vector<float> paramValues); 
 
 	void debug();
-
 };
 
 #endif

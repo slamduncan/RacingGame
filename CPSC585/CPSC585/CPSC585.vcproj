@@ -136,7 +136,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/LTCG"
-				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath.lib lib\BulletDynamics.lib lib\BulletCollision.lib lib\assimp.lib lib\tinyXML.lib lib\OpenAL32.lib"
+				AdditionalDependencies="lib\SDL.lib lib\SDLmain.lib lib\SDL_ttf.lib lib\SDL_image.lib opengl32.lib glu32.lib lib\glew32.lib lib\LinearMath.lib lib\BulletDynamics.lib lib\BulletCollision.lib lib\assimp.lib lib\tinyXML.lib lib\OpenAL32.lib lib\alut.lib"
 				AdditionalLibraryDirectories="CPSC585\lib"
 				IgnoreDefaultLibraryNames="LIBCMT"
 				GenerateDebugInformation="true"
@@ -286,6 +286,10 @@
 			</File>
 			<File
 				RelativePath=".\src\TextureManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Timer.cpp"
 				>
 			</File>
 			<File
@@ -448,6 +452,10 @@
 			</File>
 			<File
 				RelativePath=".\src\TextureManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Timer.h"
 				>
 			</File>
 			<File

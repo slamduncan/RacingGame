@@ -3,7 +3,10 @@
 
 #include "MethodObserver.h"
 #include "RightAnalogEvent.h"
+#include "LinearMath/btScalar.h"
 #include "LinearMath/btVector3.h"
+#include "LinearMath/btTransform.h"
+#include "LinearMath/btMatrix3x3.h"
 
 class Camera {
 public:
@@ -20,7 +23,9 @@ public:
 	void setUpCamera(btVector3 &lookAtPointIn, btVector3 &offset);
 
 	void setUpCamera(btVector3 &lookAtPointIn, btVector3 &cameraPosition, btVector3 &upIn);
-
+	
+	void updateCamera(btTransform &transform);
+	void updateCamera(btVector3 &lookAtPointIn, btVector3 &alignVector);
 
 	btVector3 offset;
 
@@ -32,6 +37,7 @@ private:
 	MethodObserver<RightAnalogEvent, Camera> analogObserver;
 	void rotateCamera(RightAnalogEvent *e);
 
+	btVector3 lastLookatPoint;
 	void computeCameraPosition();
 
 	btVector3 UPVECTOR;

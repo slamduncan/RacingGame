@@ -44,7 +44,14 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	nextWaypoint = -1;
 	turningForceModifier = 1.0;
 	springForceModifier = 1.0;
-	lastAngleForce = 0.0;	
+	lastAngleForce = 0.0;
+	resetCounter = 0;
+	speedBoostModifier = 1; 
+    slowFieldModifier = 1;
+    rocketModifier = 1;
+    tractionBoostModifier = 1;
+    shieldModifier = 1;
+    forceBubbleModifier = 1;
 
 	PowerUp p1 = PowerUp();
 	PowerUp p2 = PowerUp();
@@ -84,8 +91,8 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 
 	// Calculate the artificial speed of the car to be used
 	// for engine sound
-	float NewSpeed = GetSpeed() + (engineForce * -0.0005);
-		if( NewSpeed < (engineForce * -1.0) )
+	float NewSpeed = GetSpeed() + (engineForce * -0.0005f);
+		if( NewSpeed < (engineForce * -1.0f) )
 			SetSpeed(NewSpeed);
 
 	if(engineForce < 0)
@@ -250,6 +257,13 @@ void Car::observeVariables(ReloadEvent *e){
 	forwardFrictionModifier = e->numberHolder.physicsInfo.forwardFrictionModifier;
 	turningForceModifier = e->numberHolder.physicsInfo.turningForceModifier;
 	springForceModifier = e->numberHolder.physicsInfo.springForceModifier;
+
+	speedBoostModifier = e->numberHolder.physicsInfo.speedBoostModifier;
+	slowFieldModifier = e->numberHolder.physicsInfo.slowFieldModifier;
+	rocketModifier = e->numberHolder.physicsInfo.rocketModifier;
+	tractionBoostModifier = e->numberHolder.physicsInfo.tractionBoostModifier;
+	shieldModifier = e->numberHolder.physicsInfo.shieldModifier;
+	forceBubbleModifier = e->numberHolder.physicsInfo.forceBubbleModifier;
 }
 
 PowerUp Car::GetPowerUpAt( int index )
@@ -293,7 +307,7 @@ void Car::UsePowerUp( int index )
 		int pUpType = m_CarPowerUps[index].GetType();
 		m_CarPowerUps[index].SetType( EMPTY );
 
-		printf("Activating powerup with type %i!\n",pUpType);
+		//printf("Activating powerup with type %i!\n",pUpType);
 		switch(pUpType){
 			case 1:
 				//SPEED POWERUP
@@ -337,24 +351,22 @@ std::string Car::toString()
 {
 
 	std::string st = Entity::toString();
-/*
+
 	std::stringstream stream;
 
 	stream << "\nPowerup: ";
-//
 
 	for(int i = 0; i < MAX_POWERUPS; i++)
 	{
-		int type = GetPowerUpAt(i).GetType();
+		//int type = GetPowerUpAt(i).GetType();
 		//printf("Type %d\n", type);
 		
-		//ss << GetPowerUpAt(i).GetType() << ", ";
+		//stream << GetPowerUpAt(i).GetType() << ", ";
 	}
 
-	//ss << "\n";
-	std::string output = stream.str();
-*/
-	return st;
+	std::string output = st/* + stream.str() */;
+
+	return output;
 }
 
 void Car::outputPowerups()

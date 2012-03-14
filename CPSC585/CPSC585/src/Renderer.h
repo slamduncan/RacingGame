@@ -40,9 +40,12 @@ private:
 	FBO fb;
 
 	Shader depth2pass;
+	Shader shadowPass;
 	Shader ndpass;
+	Shader ssao;
 	Shader gaussian;
 	Shader radblur;
+	Shader celshader;
 
 	Renderer();	
 	
@@ -86,10 +89,11 @@ public:
 	void shaderOn(Shader &s);
 	void shaderOff(Shader &s);
 
-	void shadowMapPass();
+	void depthMapPass();
 	void ssaoPass();
 	void abtexPass();
-
+	void normalMapPass();
+	void celPass();
 
 	bool init();
 	int initSDL();
@@ -97,6 +101,9 @@ public:
 	int initFont();
 	int initTexs();
 	int initShaders();
+
+	void changeFontSize(int size);
+	void changeFont(std::string fontpath);
 
 	void outputText(std::string text, int r, int g, int b, int x, int y);
 
@@ -112,6 +119,7 @@ public:
 	
 	void drawTexture(std::string texName);
 
+	void draw(Camera &cam);
 
 	void glEnable2D();
 	void glDisable2D();

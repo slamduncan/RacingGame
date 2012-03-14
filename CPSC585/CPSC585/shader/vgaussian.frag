@@ -17,16 +17,16 @@ void main()
 	if (gl_TexCoord[0].x<(vx_offset-0.01))
 	{
 		vec2 uv = gl_TexCoord[0].xy;
-		tc = texture2D(sceneTex, uv).rgb * weight[0];
+		tc = texture2D(sceneTexture, uv).rgb * weight[0];
 		for (int i=1; i<3; i++)
 		{
-			tc += texture2D(sceneTex, uv + vec2(0.0, offset[i])/rt_h).rgb \* weight[i];
-			tc += texture2D(sceneTex, uv - vec2(0.0, offset[i])/rt_h).rgb \* weight[i];
+			tc += texture2D(sceneTexture, uv + vec2(0.0, offset[i])/rt_h).rgb \* weight[i];
+			tc += texture2D(sceneTexture, uv - vec2(0.0, offset[i])/rt_h).rgb \* weight[i];
 		}
 	}
 	else if (gl_TexCoord[0].x>=(vx_offset+0.01))
 	{
-		tc = texture2D(sceneTex, gl_TexCoord[0].xy).rgb;
+		tc = texture2D(sceneTexture, gl_TexCoord[0].xy).rgb;
 	}
 	gl_FragColor = vec4(tc, 1.0);
 }

@@ -3,11 +3,16 @@ Hey, This is the README for our project. Please don't neglect me!
 Controls for the car:
 	Triggers - Apply force forward or backwards.
 
+	Start - Use to start the game at the start menu.
+
+	Back - Exits the game.
+
 	Buttons:
-		A - Exits the program.
+		A - Nothing.
 		B - Nothing.
-		X - Resets the car and forces on the car to inital values.
+		X - Resets the car and forces on the car, places the car at the closest waypoint. (Or the start if there is no waypoints.)
 		Y - Resets the orientation but not the position of the car.
+		Left Bumper - Gives speed boost if you have a power-up.
 
 	Left Analog - Turns the car.
 
@@ -15,14 +20,41 @@ Controls for the car:
 	
 	r - reload the variables.
 	
+	l - reload the waypoints from the file.
+
 	esc - quit the program.
 
 Current Features:
+
+Map:
+	Able to drive around the map.
+	AI can follow waypoints around the map. 
+		- Includes one multipath at the first split in the map.
+		- Currently cannot reset themselves if they get flipped. (which can sometimes happen right now if they get hit, or on a few sharp turns).
+	Power-ups are able to be grabed, and used.
+	Jumps are avaliable.
+
+Sandbox:
 	Able to drive around the map.
 	There are also some jumps (a 10, 15, 30, 45, and 60 degree jumps).
-	Rough spring implementation.
+	Ai drive in a circle
+
+For All:  
+	Sound is working. (Including sound for the player car)
+	Springs implemented.
 	Textures are loading.
 	Dynamic loading of variables. (Using XML)
+
+Know Issues:
+	- Currently you can only ever use the power-up once after grabing it.
+	- Cars are not reset if they flip themselves.
+	- Some issues with hitting jumps and bouncing off.
+	- Car sometimes flies when going off a jump when only two wheels are hitting the ground.
+	- Camera is still being controlled manually, and no option to invert control.
+	- FPS limitation before the game starts is not working properly.
+	- Currently no shadows, as the framebuffer was not working until recently. 
+	- Really simple GUI.
+
 
 Tool being used on this project:
 SDL_opengl - drawing to the screen
