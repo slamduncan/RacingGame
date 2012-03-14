@@ -7,7 +7,7 @@
 #include "ReloadEvent.h"
 #include "MethodObserver.h"
 #include "EventTypes.h"
-
+static void myTickCallback(btDynamicsWorld *world, btScalar timeStep);
 class Physics
 {
 public:
@@ -28,7 +28,7 @@ public:
 	btDiscreteDynamicsWorld* getDiscreteDynamicsWorld();
 	btVector3 getGravity();
 	void updateVariables(ReloadEvent *e);
-	void updateCarSprings();
+	void updateCarSprings(btScalar timeStep);
 
 	
 protected:
@@ -47,5 +47,12 @@ private:
 
 	MethodObserver<ReloadEvent, Physics> variableObserver;
 };
+
+void myTickCallback(btDynamicsWorld *world, btScalar timeStep) {
+    Physics *w = static_cast<Physics *>(world->getWorldUserInfo());
+    
+	printf("WHAT HAS SCIENCE DONE!\n");
+	w->updateCarSprings(timeStep);
+}
 
 #endif
