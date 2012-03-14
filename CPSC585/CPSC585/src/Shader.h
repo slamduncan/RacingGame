@@ -52,7 +52,6 @@ public:
 	void initParam(std::vector<std::string> paramName, std::vector<float> paramValues); 
 
 	void debug();
-
 };
 
 #endif

@@ -858,10 +858,14 @@ int main(int argc, char** argv)
 		//ren->drawTexture("nd");
 		ren->ssaoPass();
 		ren->clearGL();
-		
 
 		ren->setCamera(camera1);
 		ren->draw(camera1);
+/*
+		ren->clearGL();		
+		ren->setCamera(camera1);
+		ren->celPass();
+*/
 		ren->clearGL();		
 		ren->setCamera(camera1);
 		ren->drawAll();

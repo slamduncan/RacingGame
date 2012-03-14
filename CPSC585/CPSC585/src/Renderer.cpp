@@ -231,6 +231,7 @@ int Renderer::initTexs()
 	tm->genTexture(width, height, "ssao");		// create a texture for ssao pass 2
 	tm->genTexture("texture/noise.png", "noise");
 	tm->genTexture(width, height, "rblur");		// radial blur
+	tm->genTexture("texture/celgray.png", "cel");
 
 	fb.init(width, height);
 	
@@ -256,6 +257,9 @@ int Renderer::initShaders()
 	ssao = Shader("shader/ssao.vert", "shader/ssao.frag");
 	ssao.debug();
 	
+	celshader = Shader("shader/cell.vert", "shader/cell.frag");
+	celshader.debug();
+
 	return 0;
 }
 
@@ -517,6 +521,24 @@ void Renderer::ssaoPass()
 void Renderer::abtexPass()
 {
 
+}
+
+void Renderer::celPass()
+{
+	clearGL();
+	celshader.turnShadersOn();
+	
+	GLuint celUniform = celshader.getUniform("cel");	// get the location of the cel sampler2D
+
+	// set and bind the cel texture to state GL_TEXTURE0
+	glActiveTexture(GL_TEXTURE0);
+	//textureOff();
+	textureOn(tm->getTexture("cel"));
+	glUniform1i(celUniform,0);	// pass the texture to the GPU
+	
+	drawAll();
+
+	celshader.turnShadersOff();
 }
 
 void Renderer::drawAll()
