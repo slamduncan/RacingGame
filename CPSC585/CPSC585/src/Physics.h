@@ -28,6 +28,7 @@ public:
 	btDiscreteDynamicsWorld* getDiscreteDynamicsWorld();
 	btVector3 getGravity();
 	void updateVariables(ReloadEvent *e);
+	void updateCarSprings();
 
 	
 protected:
