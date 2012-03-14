@@ -48,10 +48,7 @@ void Physics::step()
 {	
 	dynamicsWorld->stepSimulation(1/60.f,10);
 
-	for (int i = 0; i < entityManager->getCarList()->size(); i++){
-		//update springs
-		entityManager->getCarList()->at(i)->updateWheels();	
-	}
+	updateCarSprings();
 
 	for (int i=0; i< entityManager->getPowerUpList()->size(); i++){
 		//btCollisionObject* toDelObject = entityManager->getPowerup(i)->physicsObject;
@@ -63,12 +60,9 @@ void Physics::step()
 			int index = entityManager->getCarIndexViaPointer(carMaybe);
 			if(index != -1)
 			{
-				//printf("I'm adding the powerup I thought?\n");
 				
 				Car* carTemp = entityManager->getCar(j);
 
-//				printf("carTemp %d\n", carTemp);
-				
 				int added = carTemp->AddPowerUp(entityManager->getPowerup(i)->GetType());
 				
 				dynamicsWorld->removeCollisionObject(entityManager->getPowerup(i)->physicsObject);
@@ -78,6 +72,14 @@ void Physics::step()
 				break;
 			}
 		}
+	}
+}
+
+void Physics::updateCarSprings()
+{
+	for (int i = 0; i < entityManager->getCarList()->size(); i++){
+		//update springs
+		entityManager->getCarList()->at(i)->updateWheels();	
 	}
 }
 
