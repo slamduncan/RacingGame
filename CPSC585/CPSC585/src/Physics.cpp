@@ -44,9 +44,9 @@ Physics::~Physics(void)
     delete broadphase;
 }
 
-void Physics::step()
+void Physics::step(btScalar &timeStep)
 {	
-	dynamicsWorld->stepSimulation(1/60.f,10);
+	dynamicsWorld->stepSimulation(timeStep, 10);//1/60.f,10);
 
 	updateCarSprings();
 

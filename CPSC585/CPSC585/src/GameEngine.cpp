@@ -756,6 +756,8 @@ int main(int argc, char** argv)
 	//Set inital game time
 	Uint32 currentTime = SDL_GetTicks();
 	Uint32 oldTime = SDL_GetTicks();
+	Uint32 physicsCurrentTime = SDL_GetTicks();
+	Uint32 physicsOldTime = SDL_GetTicks();
 	int frameCount = 0;
 	int counter = 1;
 	int instantFrameCount = 0;
@@ -804,7 +806,13 @@ int main(int argc, char** argv)
 			alSourcef(EngineSource, AL_PITCH, 1.0f + EngineModifier );
 			
 			//// Physics
-			ph->step();
+			physicsCurrentTime = SDL_GetTicks();
+			btScalar dif = physicsCurrentTime - physicsOldTime;
+			printf("DIFF = %f\n" , dif);
+			//btScalar phyTS(1.f/(float)(physicsCurrentTime-physicsOldTime));
+			btScalar phyTS(1.f/60.f);
+			ph->step(phyTS);
+			physicsOldTime = physicsCurrentTime;
 
 			//// Inputs
 			process_events();
