@@ -59,9 +59,10 @@ void InputController::emitTriggers(){
 void InputController::emitButtons(){
 	
 	if (A){
-		ButtonEvent* e = new ButtonEvent(A_button);
-		evSys->emitEvent(e);
-		delete e;
+		//ButtonEvent* e = new ButtonEvent(A_button);
+		ButtonEvent e(A_button);
+		evSys->emitEvent(&e);
+		//delete e;
 	}	
 	
 	if (X){
