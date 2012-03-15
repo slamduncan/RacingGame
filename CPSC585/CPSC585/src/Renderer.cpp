@@ -179,7 +179,9 @@ int Renderer::initGL()
 
 	std::cout << "FBO supported" << std::endl;
 
+	char* glslVersion = (char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
 
+	printf("GLSL Version %s\n", glslVersion);
 
 	glClearColor( 0, 0, 0, 0 );	// clear screen to black
 

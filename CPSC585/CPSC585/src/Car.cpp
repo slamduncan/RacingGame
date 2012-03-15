@@ -348,7 +348,7 @@ void Car::UsePowerUp( int index )
 						Car* carTemp = ent->getCar(index);
 						if(carTemp != this){
 							//APPLY NOVA FORCE TO THE CAR! BAM!
-							btScalar modifier = 400.0 -(carTemp->getPosition().distance(getPosition()));
+							btScalar modifier = 400.f -(carTemp->getPosition().distance(getPosition()));
 							printf("Modifier: %f\n",modifier);
 							
 							btVector3 between = carTemp->getPosition()-getPosition();
