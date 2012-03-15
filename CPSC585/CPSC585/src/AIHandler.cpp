@@ -12,8 +12,13 @@ AIHandler::AIHandler() : reloadObserver(this, &AIHandler::reloadVariables){
 }
 
 void AIHandler::generateNextMove(){
-	for(int i = 0; i < cars->size(); i++){
+	for(int i = 1; i < cars->size(); i++){
 		Car* c = cars->at(i);
+		Car* closeC = c->getClosestCar(true);
+
+		btScalar forwardForce, turningScalar, rateOfChange, roationForce, distance;
+		btVector3 carPos, wayPos, tan, toWaypoint, angleRot;
+
 		int waypointIndex = c->getNextWaypointIndex();
 		if (waypointIndex == -1){
 			return;
@@ -30,19 +35,22 @@ void AIHandler::generateNextMove(){
 		if( i == 0 )
 			continue;
 
-		btVector3 carPos =  c->getPosition();
-		btVector3 wayPos = w->getPosition();
-		btVector3 tan = c->getTangent();
-		btVector3 toWaypoint = wayPos - carPos;		
-		btVector3 angleRot = toWaypoint -  tan.normalized();
-		btScalar turningScalar = angleRot.dot(c->getBinormal());
-		btScalar rateOfChange = c->lastAngleForce - turningScalar;
+		carPos =  c->getPosition();
+		if(closeC != NULL)
+			wayPos = closeC->getPosition();
+		else
+			wayPos = w->getPosition();
+		tan = c->getTangent();
+		toWaypoint = wayPos - carPos;		
+		angleRot = toWaypoint -  tan.normalized();
+		turningScalar = angleRot.dot(c->getBinormal());
+		rateOfChange = c->lastAngleForce - turningScalar;
 
-		btScalar roationForce = turningScalar*turningModifier - rateOfChange*rateOfChangeModifier;
+		roationForce = turningScalar*turningModifier - rateOfChange*rateOfChangeModifier;
 		c->lastAngleForce = turningScalar;
 
-		btScalar distance = toWaypoint.length();
-		btScalar forwardForce = btScalar(-distance*forwardModifier);
+		distance = toWaypoint.length();
+		forwardForce = btScalar(-distance*forwardModifier);
 		//btScalar forwardForce = btScalar(w->getThrottle());
 		if(roationForce > maxMovementForce)
 			roationForce = maxMovementForce;
@@ -52,6 +60,7 @@ void AIHandler::generateNextMove(){
 		RotationEvent* re = new RotationEvent(btQuaternion(0, roationForce,0,0));
 		c->observeRotation(re);		
 		delete re;
+		
 		if (forwardForce > maxMovementForce)
 			forwardForce = maxMovementForce;
 		else if (forwardForce < -maxMovementForce)

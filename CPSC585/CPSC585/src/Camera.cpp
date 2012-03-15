@@ -37,8 +37,6 @@ void Camera::rotateCamera(RightAnalogEvent *e){
 	if(!target.isZero())
 	{
 		
-		
-		
 		btVector3 projOffset = offset;
 		projOffset.setY(btScalar(0.f));
 

@@ -72,6 +72,10 @@ public:
 
 	void outputPowerups();
 
+	//Pass in true if the closest car found must be infront of the other car.
+	//Returns NULL if no car is found in range.
+	Car* getClosestCar(bool inFront);
+
 private:
 	btScalar width, length, height;
 	int nextWaypoint;
@@ -87,7 +91,8 @@ private:
     float rocketModifier;
     float tractionBoostModifier;
     float shieldModifier;
-    float forceBubbleModifier ;
+    float forceBubbleModifier;
+	float detectionRange;
 
 	// 3 power up slots, circular array of powerups?
 	//btAlignedObjectArray<PowerUp*> m_CarPowerUps;

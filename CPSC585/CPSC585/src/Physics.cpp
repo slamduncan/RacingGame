@@ -29,6 +29,9 @@ Physics::Physics(void) : variableObserver(this, &Physics::updateVariables)
 	variableObserver.init(EventTypes::RELOAD_VARIABLES);
 
 	dynamicsWorld->getPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
+
+	//btInternalTickCallback cb = updateCarSprings;
+	dynamicsWorld->setInternalTickCallback(myTickCallback, static_cast<void *>(this));
 }
 
 Physics::~Physics(void)
@@ -48,7 +51,7 @@ void Physics::step(btScalar &timeStep)
 {	
 	dynamicsWorld->stepSimulation(timeStep, 10);//1/60.f,10);
 
-	updateCarSprings();
+	updateCarSprings(timeStep);
 
 	//Check Powerups for car collisions
 	for (int i=0; i< entityManager->getPowerUpList()->size(); i++){\
@@ -76,7 +79,7 @@ void Physics::step(btScalar &timeStep)
 	}
 }
 
-void Physics::updateCarSprings()
+void Physics::updateCarSprings(btScalar timeStep)
 {
 	for (int i = 0; i < entityManager->getCarList()->size(); i++){
 		//update springs

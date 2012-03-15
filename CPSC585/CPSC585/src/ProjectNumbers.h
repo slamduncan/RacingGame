@@ -42,6 +42,7 @@ public:
 		float goToNextWaypointDistanceBefore; //AiHandler
 		float goToNextWaypointDistanceAfter; //AiHandler
 		float rateOfChangeModifier; //AiHandler
+		float carDetectionRange; //Car
 	} aiInfo;
 
 	ProjectNumbers(){}//readVariablesIn();}
