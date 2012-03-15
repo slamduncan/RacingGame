@@ -80,6 +80,12 @@ void ProjectNumbers::readAI(){
 				if (pElem)
 					pElem->QueryFloatAttribute("value", &aiInfo.rateOfChangeModifier);
 			}
+			//AI car detection range
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(5).Element();
+				if (pElem)
+					pElem->QueryFloatAttribute("value", &aiInfo.carDetectionRange);
+			}
 		}
 		else
 		{

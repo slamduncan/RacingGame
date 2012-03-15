@@ -1,5 +1,6 @@
 #include "Car.h"
 #include "EventSystemHandler.h"
+#include "EntityManager.h"
 
 #ifndef M_PI
 #define M_PI           3.14159265358979323846
@@ -52,6 +53,7 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
     tractionBoostModifier = 1;
     shieldModifier = 1;
     forceBubbleModifier = 1;
+	detectionRange = 10.0;
 
 	PowerUp p1 = PowerUp();
 	PowerUp p2 = PowerUp();
@@ -264,6 +266,7 @@ void Car::observeVariables(ReloadEvent *e){
 	tractionBoostModifier = e->numberHolder.physicsInfo.tractionBoostModifier;
 	shieldModifier = e->numberHolder.physicsInfo.shieldModifier;
 	forceBubbleModifier = e->numberHolder.physicsInfo.forceBubbleModifier;
+	detectionRange = e->numberHolder.aiInfo.carDetectionRange;
 }
 
 PowerUp Car::GetPowerUpAt( int index )
@@ -380,4 +383,33 @@ void Car::outputPowerups()
 		//ss << GetPowerUpAt(i).GetType() << ", ";
 	}
 	printf("\n");
+}
+
+//Right now possible issue with cars above each other.
+Car* Car::getClosestCar(bool inFront)
+{
+	btScalar distance(detectionRange);
+	int index = -1;
+	btAlignedObjectArray<Car*>* cList = EntityManager::getInstance()->getCarList();
+	for(int i = 0; i < cList->size(); i++)
+	{
+		if (i == id)
+			continue;
+		Car* c = cList->at(i);
+		btVector3 directionVect = getPosition() - c->getPosition();
+		btScalar tempDist(directionVect.length());
+		if (inFront)
+		{
+			if (directionVect.dot(getTangent()) < 0.03)
+				continue;
+		}
+		if (tempDist < distance)
+		{
+			distance = tempDist;
+			index = i;
+		}
+	}
+	if (index != -1)
+		return cList->at(index);
+	return NULL;
 }
