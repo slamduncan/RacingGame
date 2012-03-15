@@ -137,7 +137,7 @@ void EntityManager::createPowerup(char* path, btTransform &trans)
 	btScalar mass = btScalar(0.f);
 	
 	PowerUp* pup = new PowerUp();
-	pup->SetType(3);
+	pup->SetType(1);
 
 	pup->initRenderObject(path);
 	

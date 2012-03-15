@@ -312,10 +312,13 @@ void Car::UsePowerUp( int index )
 
 		//printf("Activating powerup with type %i!\n",pUpType);
 		switch(pUpType){
-			case 1:
+			case 1:{
 				//SPEED POWERUP
-				chassis->applyCentralForce(-10000.0*getTangent());
+				btVector3 forward = getTangent();
+				forward.setY(0);
+				chassis->applyCentralForce(-10000.0*forward);
 				break;
+				   }
 			case 2:
 				//TODO: ROCKET POWERUP
 				break;
@@ -361,8 +364,8 @@ void Car::UsePowerUp( int index )
 				}
 
 				phys->removeGhost(explosionShell);
-				}
 				break;
+				   }
 
 			case 4:
 				//TODO: SLOW POWERUP
