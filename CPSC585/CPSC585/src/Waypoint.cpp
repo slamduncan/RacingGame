@@ -76,18 +76,18 @@ void Waypoint::positionCheck(Car* car){
 	if (amount < goToNextWaypointDistanceBefore && amount > goToNextWaypointDistanceAfter){
 		int id = car->id;
 		int nextIndex = 0;
-		printf("%d\n", direction);
+		//printf("%d\n", direction);
 		if (!nextWaypoints.empty()){			
 			if (direction % nextWaypoints.size() == 0)
 			{
 				nextIndex = nextWaypoints.at(0)->getIndex();
-				printf("%d\n", nextIndex);
+				//printf("%d\n", nextIndex);
 				direction = id % nextWaypoints.size();
 			}
 			else
 			{
 				nextIndex = nextWaypoints.at(direction % nextWaypoints.size())->getIndex();
-				printf("%d\n", nextIndex);
+				//printf("%d\n", nextIndex);
 				direction = id % nextWaypoints.size();
 			}
 				//Do stuff to find the next waypoint!

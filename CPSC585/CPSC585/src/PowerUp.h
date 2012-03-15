@@ -7,8 +7,12 @@ enum PowerUpType
 {
 	EMPTY = 0,
 	SPEED,
-	PROJECTILE,
+	ROCKET,
+	NOVA,
+	SLOW,
 	TRACTION,
+	SHIELD
+	//Landmine?
 };
 
 class PowerUp : public Entity

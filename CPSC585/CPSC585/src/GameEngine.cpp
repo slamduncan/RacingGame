@@ -583,11 +583,11 @@ void process_events()
 			{
 
 				//printf("Trying to use a speed boost...\n");
-				if(entManager->getCar(0)->GetPowerUpAt(0).GetType() != 0){
+				if(entManager->getCar(0)->GetPowerUpAt(0)->GetType() != 0){
 					entManager->getCar(0)->UsePowerUp(0);
-				}else if(entManager->getCar(0)->GetPowerUpAt(1).GetType() != 0){
+				}else if(entManager->getCar(0)->GetPowerUpAt(1)->GetType() != 0){
 					entManager->getCar(0)->UsePowerUp(1);
-				}else if(entManager->getCar(0)->GetPowerUpAt(2).GetType() != 0){
+				}else if((entManager->getCar(0)->GetPowerUpAt(2))->GetType() != 0){
 					entManager->getCar(0)->UsePowerUp(2);
 				}
 
@@ -678,8 +678,8 @@ int main(int argc, char** argv)
 
 	// DEBUG DRAW SETUP
 	ph->setDebugDrawer(ren);
-	//ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
-	ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
+	ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
+	//ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
 
 	/* Added by Kent */
 	
@@ -814,7 +814,7 @@ int main(int argc, char** argv)
 			//// Physics
 			physicsCurrentTime = SDL_GetTicks();
 			btScalar dif = physicsCurrentTime - physicsOldTime;
-			printf("DIFF = %f\n" , dif);
+			//printf("DIFF = %f\n" , dif);
 			//btScalar phyTS(1.f/(float)(physicsCurrentTime-physicsOldTime));
 			btScalar phyTS(1.f/60.f);
 			ph->step(phyTS);
@@ -855,11 +855,7 @@ int main(int argc, char** argv)
 
 		// Render
 		ren->clearGL();	// clear the screen
-/*
-		ren->glDisableLighting();
-		ph->debugDraw();
-		ren->glEnableLighting();
-*/
+
 		// done in light space
 		ren->depthMapPass();
 		ren->clearGL();
@@ -883,6 +879,10 @@ int main(int argc, char** argv)
 		ren->clearGL();		
 		ren->setCamera(camera1);
 		ren->drawAll();
+
+		ren->glDisableLighting();
+		ph->debugDraw();
+		ren->glEnableLighting();
 
 		ren->glEnable2D();
 	

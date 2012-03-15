@@ -1,5 +1,6 @@
 #include "Car.h"
 #include "EventSystemHandler.h"
+#include "EntityManager.h"
 
 #ifndef M_PI
 #define M_PI           3.14159265358979323846
@@ -266,11 +267,11 @@ void Car::observeVariables(ReloadEvent *e){
 	forceBubbleModifier = e->numberHolder.physicsInfo.forceBubbleModifier;
 }
 
-PowerUp Car::GetPowerUpAt( int index )
+PowerUp * Car::GetPowerUpAt( int index )
 {
 	assert(index >= 0 && index < MAX_POWERUPS);
 	
-	return m_CarPowerUps[index];
+	return & m_CarPowerUps[index];
 }
 
 int Car::AddPowerUp( int type )
@@ -314,10 +315,61 @@ void Car::UsePowerUp( int index )
 				chassis->applyCentralForce(-10000.0*getTangent());
 				break;
 			case 2:
-				//TODO: PROJECTILE POWERUP
+				//TODO: ROCKET POWERUP
 				break;
-			case 3:
-				//TODO: TRACTION POWERUP
+			case 3:{
+				//TODO: NOVA POWERUP
+				printf("USING NOVA WHAAAT\n");
+				btGhostObject * explosionShell;
+				explosionShell = new btGhostObject();
+				btCollisionShape* sphereShape;
+				sphereShape = new btSphereShape(btScalar(forceBubbleModifier));
+				explosionShell->setCollisionShape(sphereShape);
+				explosionShell->setWorldTransform(physicsObject->getWorldTransform());
+				explosionShell->setCollisionFlags(physicsObject->CF_NO_CONTACT_RESPONSE);
+				
+				Physics * phys = Physics::Inst();
+				EntityManager * ent = EntityManager::getInstance();
+				phys->addGhost(explosionShell);
+
+				btAlignedObjectArray<btCollisionObject*> oa = explosionShell->getOverlappingPairs();
+				printf("I hit %i things!\n",oa.size());
+
+				for(int i=0; i< oa.size(); i++){
+					btCollisionObject * carMaybe = oa.at(i);
+					
+					int index = ent->getCarIndexViaPointer(carMaybe);
+					if(index != -1){
+						Car* carTemp = ent->getCar(index);
+						if(carTemp != this){
+							//APPLY NOVA FORCE TO THE CAR! BAM!
+							btScalar modifier = 400.0 -(carTemp->getPosition().distance(getPosition()));
+							printf("Modifier: %f\n",modifier);
+							
+							btVector3 between = carTemp->getPosition()-getPosition();
+							btVector3 force = between.normalized();
+
+							force = force*forceBubbleModifier;
+							force = force - between;
+							force = modifier*force;
+
+							carTemp->chassis->applyCentralForce(force);
+						}
+					}
+				}
+
+				phys->removeGhost(explosionShell);
+				}
+				break;
+
+			case 4:
+				//TODO: SLOW POWERUP
+				break;
+			case 5:
+				//TODO: TRACTION/MINE POWERUP
+				break;
+			case 6:
+				//TODO: SHIELD
 				break;
 		}
 	}
@@ -374,7 +426,7 @@ void Car::outputPowerups()
 	printf("Powerups: ");
 	for(int i = 0; i < MAX_POWERUPS; i++)
 	{
-		int type = GetPowerUpAt(i).GetType();
+		int type = GetPowerUpAt(i)->GetType();
 		//printf("Type %d\n", type);
 		printf("%d, ",type); 
 		//ss << GetPowerUpAt(i).GetType() << ", ";

@@ -44,10 +44,6 @@ bool PowerUp::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTran
 	return false;
 }
 
-btCollisionObject* PowerUp::getPhysicsObject(){
-	return physicsObject;
-}
-
 void PowerUp::hitPowerup(){
 	collected = true;
 }

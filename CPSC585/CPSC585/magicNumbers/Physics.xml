@@ -16,5 +16,5 @@
   <rocketModifier value ="1.0"/>
   <tractionBoostModifier value ="1.0"/>
   <shieldModifier value ="1.0"/>
-  <forceBubbleModifier value ="1.0" />  
+  <forceBubbleModifier value ="100.0" />  
 </Physics>

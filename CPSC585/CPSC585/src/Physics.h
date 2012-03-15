@@ -29,7 +29,8 @@ public:
 	btVector3 getGravity();
 	void updateVariables(ReloadEvent *e);
 	void updateCarSprings();
-
+	void addGhost(btGhostObject * ghost);
+	void removeGhost(btGhostObject * ghost);
 	
 protected:
 	Physics(void);	//constructor is protected as it's a singleton

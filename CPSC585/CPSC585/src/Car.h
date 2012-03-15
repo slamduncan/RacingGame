@@ -56,7 +56,7 @@ public:
 	int getNextWaypointIndex();
 	void setNextWaypointIndex(int in);
 
-	PowerUp GetPowerUpAt( int index );
+	PowerUp * GetPowerUpAt( int index );
 	
 	int AddPowerUp( int type );
 	int GetNumberPowerUps();

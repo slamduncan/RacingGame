@@ -50,7 +50,8 @@ void Physics::step(btScalar &timeStep)
 
 	updateCarSprings();
 
-	for (int i=0; i< entityManager->getPowerUpList()->size(); i++){
+	//Check Powerups for car collisions
+	for (int i=0; i< entityManager->getPowerUpList()->size(); i++){\
 		//btCollisionObject* toDelObject = entityManager->getPowerup(i)->physicsObject;
 		btGhostObject* go = btGhostObject::upcast(entityManager->getPowerup(i)->physicsObject);
 		btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
@@ -61,7 +62,7 @@ void Physics::step(btScalar &timeStep)
 			if(index != -1)
 			{
 				
-				Car* carTemp = entityManager->getCar(j);
+				Car* carTemp = entityManager->getCar(index);
 
 				int added = carTemp->AddPowerUp(entityManager->getPowerup(i)->GetType());
 				
@@ -93,6 +94,16 @@ void Physics::addEntity(const Entity &ent)
 {
 	//dynamicsWorld->addRigidBody(btRigidBody::upcast(ent.physicsObject));
 	dynamicsWorld->addCollisionObject(ent.physicsObject);
+}
+
+void Physics::addGhost(btGhostObject * ghost)
+{
+	dynamicsWorld->addCollisionObject(ghost);
+}
+
+void Physics::removeGhost(btGhostObject * ghost)
+{
+	dynamicsWorld->removeCollisionObject(ghost);
 }
 
 void Physics::removeEntity(const Entity &ent)
