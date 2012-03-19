@@ -62,7 +62,6 @@ Car* EntityManager::getCar(int index)
 	assert(index >= 0 && index < numCars());
 
 	return carList[index];
-
 }
 
 Waypoint* EntityManager::getWaypoint(int index)
@@ -188,6 +187,9 @@ void EntityManager::createSpawnable(char* path, btTransform &trans)
 
 	sp->initPhysicsObject(sphereMesh, mass, trans);
 
+	addSpawnable(sp);
+
+	Physics::Inst()->addEntity(*sp);
 }
 
 
