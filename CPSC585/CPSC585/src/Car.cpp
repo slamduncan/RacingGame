@@ -348,7 +348,7 @@ void Car::UsePowerUp( int index )
 						Car* carTemp = ent->getCar(index);
 						if(carTemp != this){
 							//APPLY NOVA FORCE TO THE CAR! BAM!
-							btScalar modifier = 400.0 -(carTemp->getPosition().distance(getPosition()));
+							btScalar modifier = 400.f -(carTemp->getPosition().distance(getPosition()));
 							printf("Modifier: %f\n",modifier);
 							
 							btVector3 between = carTemp->getPosition()-getPosition();
@@ -466,4 +466,22 @@ Car* Car::getClosestCar(bool inFront)
 	if (index != -1)
 		return cList->at(index);
 	return NULL;
+}
+
+void Car::RotatePowerups( bool RotateLeft )
+{
+	if( RotateLeft )
+	{
+		int temp = m_CarPowerUps[0].GetType();
+		m_CarPowerUps[0].SetType( m_CarPowerUps[1].GetType() );
+		m_CarPowerUps[1].SetType( m_CarPowerUps[2].GetType() );
+		m_CarPowerUps[2].SetType( temp );
+	}
+	else
+	{
+		int temp = m_CarPowerUps[0].GetType();
+		m_CarPowerUps[0].SetType( m_CarPowerUps[2].GetType() );
+		m_CarPowerUps[2].SetType( m_CarPowerUps[1].GetType() );
+		m_CarPowerUps[1].SetType( temp );
+	}
 }

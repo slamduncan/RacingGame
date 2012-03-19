@@ -180,7 +180,7 @@ void writeWaypoints(const char* fileName){
 					//std::string temp = nextWaypoint->toString();
 					//file << temp;
 					Waypoint* partOfPath = nextWaypoint;
-					for(int count = 0; count < nextWaypoint->getWaypointList().size(); count++)
+					for(unsigned int count = 0; count < nextWaypoint->getWaypointList().size(); count++)
 					{
 						/*Note: issue here if you have multi-path in multi-path */
 						partOfPath = nextWaypoint->getWaypointList().at(count);
@@ -521,41 +521,36 @@ void process_events()
 
 			if (controller1.isBDown())
 			{
-				createWaypoint();
-
+				//createWaypoint();
+				entManager->getCar(0)->RotatePowerups( false );
 			}
 			if(controller1.isADown())
 			{				
 				//deleteWaypoint();
 				//int i;
 				//cin >> i;
-				moveWaypoint();
+
+				//printf("Trying to use a speed boost...\n");
+				if(entManager->getCar(0)->GetPowerUpAt(0)->GetType() != 0)
+				{
+					entManager->getCar(0)->UsePowerUp(0);
+					entManager->getCar(0)->RotatePowerups( true );
+				}
+				//moveWaypoint();
 
 			}
 			if(controller1.isXDown())
 			{
-				
-				if(entManager->numCars() > 0)
-				{
-					// resetCar(index of car, position we want to reset to)
-					int index = getClosestWaypoint();
-					if (entManager->getWaypointList()->size() > 0 && index != -1)
-					{
-						Waypoint *w = entManager->getWaypoint(index);						
-						btTransform trans = w->getTransform();
-						btQuaternion q = btQuaternion(btVector3(0,1,0), trans.getRotation().getAngle() + SIMD_PI);
-						trans.setRotation(q);
-						entManager->resetCar(0, trans);
-					}
-					else
-					{
-						entManager->resetCar(0, btVector3(0, 3, 0));
-					}
-				}
-
+				entManager->getCar(0)->RotatePowerups( true );
 			}
 			if(controller1.isYDown())
 			{
+
+			}
+			if(controller1.isButtonDown(controller1.R_Bump))
+			{
+				//floatingWaypoint();
+
 				int index = getClosestWaypoint();
 				if (entManager->getWaypointList()->size() > 0 && index != -1)
 				{
@@ -573,24 +568,26 @@ void process_events()
 				{
 					entManager->resetCarOrientation(0);
 				}
-
-			}
-			if(controller1.isButtonDown(controller1.R_Bump))
-			{
-				floatingWaypoint();
 			}
 			if(controller1.isButtonDown(controller1.L_Bump))
 			{
-
-				//printf("Trying to use a speed boost...\n");
-				if(entManager->getCar(0)->GetPowerUpAt(0)->GetType() != 0){
-					entManager->getCar(0)->UsePowerUp(0);
-				}else if(entManager->getCar(0)->GetPowerUpAt(1)->GetType() != 0){
-					entManager->getCar(0)->UsePowerUp(1);
-				}else if((entManager->getCar(0)->GetPowerUpAt(2))->GetType() != 0){
-					entManager->getCar(0)->UsePowerUp(2);
+				if(entManager->numCars() > 0)
+				{
+					// resetCar(index of car, position we want to reset to)
+					int index = getClosestWaypoint();
+					if (entManager->getWaypointList()->size() > 0 && index != -1)
+					{
+						Waypoint *w = entManager->getWaypoint(index);						
+						btTransform trans = w->getTransform();
+						btQuaternion q = btQuaternion(btVector3(0,1,0), trans.getRotation().getAngle() + SIMD_PI);
+						trans.setRotation(q);
+						entManager->resetCar(0, trans);
+					}
+					else
+					{
+						entManager->resetCar(0, btVector3(0, 3, 0));
+					}
 				}
-
 			}
 
 			if (controller1.isButtonDown(controller1.Start_button))
@@ -813,7 +810,7 @@ int main(int argc, char** argv)
 			
 			//// Physics
 			physicsCurrentTime = SDL_GetTicks();
-			btScalar dif = physicsCurrentTime - physicsOldTime;
+			btScalar dif = btScalar(physicsCurrentTime - physicsOldTime);
 			//printf("DIFF = %f\n" , dif);
 			//btScalar phyTS(1.f/(float)(physicsCurrentTime-physicsOldTime));
 			btScalar phyTS(1.f/60.f);
@@ -970,6 +967,27 @@ int main(int argc, char** argv)
 		// Display the current lap time
 		ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);
 		ren->outputText("Lap: " + ssLap.str(), 255, 0, 0, 0, 640);
+
+		std::stringstream ssPowerUps;
+		for( int i = 0; i < 3; i++ )
+		{
+			if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 0 )
+				ssPowerUps << "Empty ";
+			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 1 )
+				ssPowerUps << "Speed ";
+			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 2 )
+				ssPowerUps << "Rocket ";
+			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 3 )
+				ssPowerUps << "Nova ";
+			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 4 )
+				ssPowerUps << "Slow ";
+			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 5 )
+				ssPowerUps << "Traction ";
+			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 6 )
+				ssPowerUps << "Shield ";
+		}
+
+		ren->outputText("Powerups: " + ssPowerUps.str(), 255, 0, 0, 300, 700);
 		
 		ren->glDisable2D();
 

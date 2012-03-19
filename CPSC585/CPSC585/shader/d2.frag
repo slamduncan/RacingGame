@@ -14,6 +14,6 @@ void main()
 	float dy = dFdy(depth1);
 	moment2 += 0.25*(dx*dx+dy*dy) ;
 
-	gl_FragColor = vec4( moment1,moment2, 0.0, 0.0 );
+	gl_FragColor = vec4( moment1,moment2, 0.0, 1.0 );
 	//gl_FragColor = vec4( 1.0, 1.0, 0.25, 1.0);
 }

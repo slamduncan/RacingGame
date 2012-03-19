@@ -179,7 +179,9 @@ int Renderer::initGL()
 
 	std::cout << "FBO supported" << std::endl;
 
+	char* glslVersion = (char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
 
+	printf("GLSL Version %s\n", glslVersion);
 
 	glClearColor( 0, 0, 0, 0 );	// clear screen to black
 
@@ -591,6 +593,11 @@ void Renderer::drawAll()
 			drawLine(em->getWaypoint(i)->getPosition(), em->getWaypoint(i)->getWaypointList().at(j)->getPosition(), 256, 0, 0 );
 	}
 #endif
+
+	for(int i = 0; i < em->numSpawnable(); i++)
+	{
+		
+	}
 }
 
 void Renderer::draw(Camera &cam)

@@ -62,6 +62,8 @@ public:
 	int GetNumberPowerUps();
 	void UsePowerUp( int index );
 
+	void RotatePowerups( bool RotateLeft );
+
 	float GetSpeed();
 	void SetSpeed( float speed );
 	btCollisionObject* getPhysicsObject();
