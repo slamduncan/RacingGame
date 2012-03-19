@@ -596,7 +596,7 @@ void Renderer::drawAll()
 
 	for(int i = 0; i < em->numSpawnable(); i++)
 	{
-		
+		drawEntity(*(em->getSpawnable(i)));
 	}
 }
 
