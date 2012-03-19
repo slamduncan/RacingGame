@@ -324,7 +324,7 @@ void Car::UsePowerUp( int index )
 				break;
 			case 3:{
 				//TODO: NOVA POWERUP
-				printf("USING NOVA WHAAAT\n");
+				//printf("USING NOVA WHAAAT\n");
 				btGhostObject * explosionShell;
 				explosionShell = new btGhostObject();
 				btCollisionShape* sphereShape;
