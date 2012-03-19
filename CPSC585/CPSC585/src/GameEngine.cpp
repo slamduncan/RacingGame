@@ -180,7 +180,7 @@ void writeWaypoints(const char* fileName){
 					//std::string temp = nextWaypoint->toString();
 					//file << temp;
 					Waypoint* partOfPath = nextWaypoint;
-					for(int count = 0; count < nextWaypoint->getWaypointList().size(); count++)
+					for(unsigned int count = 0; count < nextWaypoint->getWaypointList().size(); count++)
 					{
 						/*Note: issue here if you have multi-path in multi-path */
 						partOfPath = nextWaypoint->getWaypointList().at(count);
@@ -810,7 +810,7 @@ int main(int argc, char** argv)
 			
 			//// Physics
 			physicsCurrentTime = SDL_GetTicks();
-			btScalar dif = physicsCurrentTime - physicsOldTime;
+			btScalar dif = btScalar(physicsCurrentTime - physicsOldTime);
 			//printf("DIFF = %f\n" , dif);
 			//btScalar phyTS(1.f/(float)(physicsCurrentTime-physicsOldTime));
 			btScalar phyTS(1.f/60.f);

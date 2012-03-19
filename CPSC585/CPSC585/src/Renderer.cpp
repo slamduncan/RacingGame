@@ -593,6 +593,11 @@ void Renderer::drawAll()
 			drawLine(em->getWaypoint(i)->getPosition(), em->getWaypoint(i)->getWaypointList().at(j)->getPosition(), 256, 0, 0 );
 	}
 #endif
+
+	for(int i = 0; i < em->numSpawnable(); i++)
+	{
+		
+	}
 }
 
 void Renderer::draw(Camera &cam)
