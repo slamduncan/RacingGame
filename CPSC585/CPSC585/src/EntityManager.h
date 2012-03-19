@@ -59,7 +59,7 @@ public:
 	Car* getCar(int index);
 	Waypoint* getWaypoint(int index);
 	PowerUp* getPowerup(int index);
-
+	Spawnable* getSpawnable(int index);
 
 	void createCar(char* path, btScalar &mass, btTransform &trans);
 	void createTrack(char* path, btTransform &trans);
