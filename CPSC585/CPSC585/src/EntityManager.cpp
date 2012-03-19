@@ -79,6 +79,14 @@ PowerUp* EntityManager::getPowerup(int index)
 	return powerUpList[index];
 }
 
+Spawnable* EntityManager::getSpawnable(int index)
+{
+	assert(index >=0 && index < numSpawnable());
+
+	return spawnList[index];
+}
+
+
 void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
 {
 	btScalar width = btScalar(10.0f);
