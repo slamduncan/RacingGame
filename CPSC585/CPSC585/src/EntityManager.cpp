@@ -192,7 +192,28 @@ void EntityManager::createSpawnable(char* path, btTransform &trans)
 	Physics::Inst()->addEntity(*sp);
 }
 
+void EntityManager::createSlowFieldSpawnable(Car * car){
 
+
+
+/*
+	btScalar mass = btScalar(0.f);
+	Spawnable* sp = new Spawnable();
+
+	sp->initRenderObject(path);
+
+	btScalar radius = 7.5f;
+	btCollisionShape* sphereMesh = sFactory.createSphere(radius);
+
+	sp->initPhysicsObject(sphereMesh, mass, trans);
+
+	addSpawnable(sp);
+
+	sp->setSelfDestructTime(10);
+
+	Physics::Inst()->addEntity(*sp);
+*/
+}
 
 
 void EntityManager::addCar(Car* car)
@@ -251,9 +272,11 @@ void EntityManager::removeWaypoint()
 	
 }
 
-void EntityManager::removeSpawnable()
+void EntityManager::removeSpawnable(Spawnable * spawnable)
 {
-
+	Physics::Inst()->removeEntity(*spawnable);
+	spawnList.remove(spawnable);
+	spawnable->~Spawnable();
 }
 
 int EntityManager::numCars()

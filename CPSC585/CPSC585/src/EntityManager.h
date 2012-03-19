@@ -67,6 +67,7 @@ public:
 	void createPowerup(char* path, btTransform &trans);
 	void createObstacle(char* path, btScalar &mass, btTransform &trans);
 	void createSpawnable(char* path, btTransform &trans);
+	void createSlowFieldSpawnable(Car * car);
 
 	void addCar(Car* car);
 	void addTrack(Track* track);
@@ -80,7 +81,7 @@ public:
 	void removePowerUp();
 	void removeObstacle();
 	void removeWaypoint();
-	void removeSpawnable();
+	void removeSpawnable(Spawnable * spawnable);
 
 	int numCars();
 	int numPowerUps();

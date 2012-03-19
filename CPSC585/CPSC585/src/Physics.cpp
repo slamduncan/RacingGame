@@ -2,6 +2,7 @@
 #include "EntityManager.h"
 #include "Renderer.h"
 #include "PowerUp.h"
+#include "Time.h"
 
 Physics* Physics::physInstance = 0;
 EntityManager* entityManager;
@@ -54,7 +55,7 @@ void Physics::step(btScalar &timeStep)
 	updateCarSprings(timeStep);
 
 	//Check Powerups for car collisions
-	for (int i=0; i< entityManager->getPowerUpList()->size(); i++){\
+	for (int i=0; i< entityManager->getPowerUpList()->size(); i++){
 		//btCollisionObject* toDelObject = entityManager->getPowerup(i)->physicsObject;
 		btGhostObject* go = btGhostObject::upcast(entityManager->getPowerup(i)->physicsObject);
 		btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
@@ -75,6 +76,15 @@ void Physics::step(btScalar &timeStep)
 				i--;
 				break;
 			}
+		}
+	}
+
+	//Check spawnables to see if they're removed or not
+	for(int i=0; i< entityManager->getSpawnableList()->size(); i++){
+		Spawnable * s = entityManager->getSpawnable(i);
+		if(s->timeToSelfDestruct < clock() && s->timeToSelfDestruct != 0){
+			entityManager->removeSpawnable(s);
+			i--;
 		}
 	}
 }
