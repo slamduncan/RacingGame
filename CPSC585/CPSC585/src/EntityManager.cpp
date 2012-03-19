@@ -31,7 +31,8 @@ EntityManager::~EntityManager()
 
 	for(int i = 0; i < powerUpList.size(); i++)
 	{
-		delete powerUpList[i];
+		if(powerUpList[i])
+			delete powerUpList[i];
 	}
 	powerUpList.clear();
 
@@ -42,6 +43,14 @@ EntityManager::~EntityManager()
 	}
 	obstacleList.clear();
 */
+
+	for(int i = 0; i < spawnList.size(); i++)
+	{
+		if(spawnList[i])
+			delete spawnList[i];
+	}
+	spawnList.clear();
+
 	if(track != NULL)
 	{
 		delete track;
@@ -158,6 +167,24 @@ void EntityManager::createObstacle(char* path, btScalar &mass, btTransform &tran
 
 }
 
+void EntityManager::createSpawnable(char* path, btTransform &trans)
+{
+	btScalar mass = btScalar(0.f);
+	
+	Spawnable* sp = new Spawnable();
+
+	sp->initRenderObject(path);
+
+	btScalar radius = 2.5f;
+	btCollisionShape* sphereMesh = sFactory.createSphere(radius);
+
+	sp->initPhysicsObject(sphereMesh, mass, trans);
+
+}
+
+
+
+
 void EntityManager::addCar(Car* car)
 {
 	carList.push_back(car);
@@ -182,6 +209,17 @@ void EntityManager::addWaypoint(Waypoint* waypoint)
 	waypoint->setIndex(waypointList.size());
 	waypointList.push_back(waypoint);	
 }
+
+void EntityManager::addSpawnable(Spawnable* spawn)
+{
+	spawnList.push_back(spawn);
+}
+
+
+
+
+
+
 void EntityManager::removeCar()
 {
 
@@ -203,6 +241,11 @@ void EntityManager::removeWaypoint()
 	
 }
 
+void EntityManager::removeSpawnable()
+{
+
+}
+
 int EntityManager::numCars()
 {
 	return carList.size();
@@ -218,6 +261,11 @@ int EntityManager::numObstacles()
 int EntityManager::numWaypoints()
 {
 	return waypointList.size();
+}
+
+int EntityManager::numSpawnable()
+{
+	return spawnList.size();
 }
 
 void EntityManager::resetCarPosition(int index, btVector3 &position)
@@ -283,6 +331,12 @@ btAlignedObjectArray<PowerUp*>* EntityManager::getPowerUpList()
 {
 	return &powerUpList;
 }
+
+btAlignedObjectArray<Spawnable*>* EntityManager::getSpawnableList()
+{
+	return &spawnList;
+}
+
 
 int EntityManager::getCarIndexViaPointer(btCollisionObject* p){
 	for(int i=0; i < carList.size(); i++){
