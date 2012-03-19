@@ -52,7 +52,7 @@ private:
 void myTickCallback(btDynamicsWorld *world, btScalar timeStep) {
     Physics *w = static_cast<Physics *>(world->getWorldUserInfo());
     
-	printf("WHAT HAS SCIENCE DONE!\n");
+	//printf("WHAT HAS SCIENCE DONE!\n");
 	w->updateCarSprings(timeStep);
 }
 
