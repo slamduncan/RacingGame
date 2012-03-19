@@ -3,6 +3,7 @@
 
 #include "Entity.h"
 #include "Car.h"
+//#include "Rocket.h"
 
 class Waypoint : public Entity {
 	btTransform transform;
@@ -30,6 +31,7 @@ public:
 
 	void observeVariables(ReloadEvent *e);
 	void positionCheck(Car* car);
+	//void positionCheckRocket(Rocket* rocket);
 	void addNextWaypoint(Waypoint* waypoint);
 	int getIndex();
 	void setIndex(int in);

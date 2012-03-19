@@ -261,6 +261,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Rocket.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\RotationEvent.cpp"
 				>
 			</File>
@@ -424,6 +428,10 @@
 			</File>
 			<File
 				RelativePath=".\src\RightAnalogEvent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Rocket.h"
 				>
 			</File>
 			<File

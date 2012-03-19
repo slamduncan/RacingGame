@@ -2,6 +2,7 @@
 #include "EntityManager.h"
 #include "Renderer.h"
 #include "PowerUp.h"
+#include "Rocket.h"
 
 Physics* Physics::physInstance = 0;
 EntityManager* entityManager;
@@ -77,13 +78,20 @@ void Physics::step(btScalar &timeStep)
 			}
 		}
 	}
+
+	for (int i = 0; i < entityManager->getSpawnableList()->size(); i++)
+	{
+		Rocket* r = dynamic_cast<Rocket*>(entityManager->getSpawnableList()->at(i));
+		if (r == NULL)
+			continue;		
+	}
 }
 
 void Physics::updateCarSprings(btScalar timeStep)
 {
 	for (int i = 0; i < entityManager->getCarList()->size(); i++){
 		//update springs
-		entityManager->getCarList()->at(i)->updateWheels();	
+		entityManager->getCarList()->at(i)->updateWheels();		
 	}
 }
 
