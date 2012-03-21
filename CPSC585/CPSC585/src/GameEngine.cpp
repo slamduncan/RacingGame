@@ -713,6 +713,12 @@ int main(int argc, char** argv)
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
 	}
 
+	for(int i = 1; i < 10; i++)
+	{
+		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(-50.f*i, 7.5f, 450.f));
+		entManager->createPowerup("model/powerup.lwo", powerupT1);
+	}
+
 	entManager->createCar("model/ship1.lwo", carMass, carT1);	
 	entManager->createCar("model/ship1.lwo", carMass, carT2);	
 	for(int i = 1; i < 2; i++){

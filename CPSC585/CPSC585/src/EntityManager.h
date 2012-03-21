@@ -4,7 +4,7 @@
 //#define NDEBUG
 #include <assert.h>
 
-
+#include "ModelManager.h"
 #include "ShapeFactory.h"
 #include "Physics.h"
 #include "Entity.h"

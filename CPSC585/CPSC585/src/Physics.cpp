@@ -81,10 +81,12 @@ void Physics::step(btScalar &timeStep)
 
 	for (int i = 0; i < entityManager->getSpawnableList()->size(); i++)
 	{
+		/*
 		Rocket* r = dynamic_cast<Rocket*>(entityManager->getSpawnableList()->at(i));
 		if (r == NULL)
-			continue;		
+			continue;
 		//r->applyNextMove();
+		*/
 	}
 }
 
