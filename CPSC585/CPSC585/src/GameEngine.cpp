@@ -106,7 +106,7 @@ int getClosestWaypoint(Car* car = entManager->getCar(0)){
 			index = wayList->at(i)->getIndex();
 		}
 	}
-	return index; //491
+	return index;
 }
 
 

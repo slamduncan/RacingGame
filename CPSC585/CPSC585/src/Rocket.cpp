@@ -38,6 +38,7 @@ void Rocket::applyNextMove()
 	tan = getTangent();
 	toWaypoint = wayPos - rocketPos;		
 	angleRot = toWaypoint -  tan.normalized();
+
 	turningScalar = angleRot.dot(getBinormal());
 	rateOfChange = lastAngleForce - turningScalar;
 
@@ -52,18 +53,22 @@ void Rocket::applyNextMove()
 	else if(roationForce < -maxMovementForce)
 		roationForce = - maxMovementForce;
 
-	RotationEvent* re = new RotationEvent(btQuaternion(0, roationForce,0,0));
-	//c->observeRotation(re);	
-	
-	delete re;
-	
-	if (forwardForce > maxMovementForce)
-		forwardForce = maxMovementForce;
-	else if (forwardForce < -maxMovementForce)
-		forwardForce = -maxMovementForce;
-	ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0f);
-	//c->observeForwardForce(ffe);
-	delete ffe;
+	btVector3 mov = getPosition() + toWaypoint * .1;	
+	this->physicsObject->getWorldTransform().getOrigin().setValue(mov.x(), mov.y(), mov.z());
+
+
+	//RotationEvent* re = new RotationEvent(btQuaternion(0, roationForce,0,0));
+	////c->observeRotation(re);	
+	//
+	//delete re;
+	//
+	//if (forwardForce > maxMovementForce)
+	//	forwardForce = maxMovementForce;
+	//else if (forwardForce < -maxMovementForce)
+	//	forwardForce = -maxMovementForce;
+	//ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0f);
+	////c->observeForwardForce(ffe);
+	//delete ffe;
 }
 
 
