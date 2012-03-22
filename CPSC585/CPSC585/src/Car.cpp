@@ -371,7 +371,7 @@ void Car::UsePowerUp( int index )
 				//TODO: SLOW POWERUP
 				EntityManager * ent;
 				ent = EntityManager::getInstance();
-				ent->createSlowFieldSpawnable(this);
+				ent->createSlowField(this);
 				break;
 			case 5:
 				//TODO: TRACTION/MINE POWERUP

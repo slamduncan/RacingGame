@@ -85,6 +85,11 @@ Spawnable* EntityManager::getSpawnable(int index)
 	return spawnList[index];
 }
 
+SlowField* EntityManager::getSlowField(int index)
+{
+	return slowFieldList[index];
+}
+
 
 void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
 {
@@ -153,7 +158,7 @@ void EntityManager::createPowerup(char* path, btTransform &trans)
 	btScalar mass = btScalar(0.f);
 	
 	PowerUp* pup = new PowerUp();
-	pup->SetType(3);
+	pup->SetType(4);
 
 	pup->initRenderObject(path);
 	
@@ -192,27 +197,82 @@ void EntityManager::createSpawnable(char* path, btTransform &trans)
 	Physics::Inst()->addEntity(*sp);
 }
 
-void EntityManager::createSlowFieldSpawnable(Car * car){
+void EntityManager::createSlowField(Car* c)
+{
+	SlowField* sf = new SlowField(c);
+	
+	sf->initRenderObject("model/powerup.lwo");
+	
+	btCompoundShape* blobContainer = new btCompoundShape();
 
-
-
-/*
 	btScalar mass = btScalar(0.f);
-	Spawnable* sp = new Spawnable();
 
-	sp->initRenderObject(path);
+	sf->initPhysicsObject(blobContainer, mass, c->physicsObject->getWorldTransform());
+
+	btScalar radius = btScalar(7.5f);
+
+	btCollisionShape* sphere = sFactory.createSphere(radius);
+
+	btTransform cT = c->physicsObject->getWorldTransform();
+
+	cT.setOrigin(btVector3(0, 0, 0));
+	//cT.setRotation(c->physicsObject->getWorldTransform().getRotation());
+
+	sf->blobContainer->addChildShape(cT, sphere); 
+
+	addSlowField(sf);
+
+	Physics::Inst()->addGhost(btGhostObject::upcast(sf->physicsObject));
+}
+
+void EntityManager::createSlowFieldSpawnable(char* path, SlowField* sf)
+{
+
+	//btScalar mass = btScalar(0.f);
+	
+	
+//	Spawnable* sp = new Spawnable();
+
+//	sp->initRenderObject(path);
 
 	btScalar radius = 7.5f;
 	btCollisionShape* sphereMesh = sFactory.createSphere(radius);
+	
+	btVector3 containerPos = sf->physicsObject->getWorldTransform().getOrigin();
+	
+	btTransform carT = sf->getCar()->chassis->getWorldTransform();
+	btVector3 carPos = carT.getOrigin();
 
-	sp->initPhysicsObject(sphereMesh, mass, trans);
+	btVector3 diff = carPos - containerPos;
+	printf("DIFF: (%f, %f, %f)\n", diff.x(), diff.y(), diff.z());
+	
+	carT.setIdentity();
+	carT.setOrigin(diff);
+	
+	//btMatrix3x3 or = carT.getBasis();
+	//printf("(%f, %f, %f)\n (%f, %f, %f)\n (%f, %f, %f)\n", or[0][0], or[0][1], or[0][2], or[1][0], or[1][1], or[1][2], or[2][0], or[2][1], or[2][2]);
 
-	addSpawnable(sp);
+	sf->blobContainer->addChildShape(carT, sphereMesh);
 
-	sp->setSelfDestructTime(10);
+//	btTransform trans = sf->getCar()->chassis->getWorldTransform();
 
-	Physics::Inst()->addEntity(*sp);
-*/
+	//sp->initPhysicsObject(sphereMesh, mass, trans);
+
+//	addSpawnable(sp);
+
+//	sp->setSelfDestructTime(5);
+//	btVector3 containerPos = sf->slowBlobContainer->getWorldTransform().getOrigin();
+	
+//	btTransform carT = sf->getCar()->chassis->getWorldTransform();
+//	btVector3 carPos = carT.getOrigin();
+
+//	btVector3 diff = carPos - containerPos;
+//	carT.setOrigin(diff);
+
+	//sf->blobContainer->addChildShape(carT, sphereMesh);
+
+	//Physics::Inst()->addEntity(*sp);
+
 }
 
 
@@ -246,7 +306,9 @@ void EntityManager::addSpawnable(Spawnable* spawn)
 	spawnList.push_back(spawn);
 }
 
-
+void EntityManager::addSlowField(SlowField* slow){
+	slowFieldList.push_back(slow);
+}
 
 
 
@@ -279,6 +341,14 @@ void EntityManager::removeSpawnable(Spawnable * spawnable)
 	spawnable->~Spawnable();
 }
 
+void EntityManager::removeSlowField(SlowField * sf)
+{
+	Physics::Inst()->removeEntity(*sf);
+	slowFieldList.remove(sf);
+	//Just in case
+	sf->~SlowField();
+}
+
 int EntityManager::numCars()
 {
 	return carList.size();
@@ -299,6 +369,11 @@ int EntityManager::numWaypoints()
 int EntityManager::numSpawnable()
 {
 	return spawnList.size();
+}
+
+int EntityManager::numSlowField()
+{
+	return slowFieldList.size();
 }
 
 void EntityManager::resetCarPosition(int index, btVector3 &position)
@@ -370,6 +445,10 @@ btAlignedObjectArray<Spawnable*>* EntityManager::getSpawnableList()
 	return &spawnList;
 }
 
+btAlignedObjectArray<SlowField*>* EntityManager::getSlowFieldList()
+{
+	return &slowFieldList;
+}
 
 int EntityManager::getCarIndexViaPointer(btCollisionObject* p){
 	for(int i=0; i < carList.size(); i++){
