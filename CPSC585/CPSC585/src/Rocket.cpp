@@ -9,12 +9,15 @@ Rocket::Rocket(int startingWaypoint) : reloadObserver(this, &Rocket::reloadVaria
 	forwardModifier = 1.0;
 	maxMovementForce = 1.0;
 	reloadObserver.init(EventTypes::RELOAD_VARIABLES);
+	//ReloadEvent r = new ReloadEvent();	
+	rocketSpeed = 5.0;
+	detectionRange = 100;
 }
 
 
 void Rocket::applyNextMove()
 {
-	btScalar detectionRng(100);
+	btScalar detectionRng(detectionRange);
 	Car* closeC = getClosestCar(true, detectionRng);
 	btScalar forwardForce, turningScalar, rateOfChange, roationForce, distance;
 	btVector3 rocketPos, wayPos, tan, toWaypoint, angleRot;
@@ -25,17 +28,17 @@ void Rocket::applyNextMove()
 	Waypoint* w = waypoints->at(waypointIndex);
 	positionCheck(w);
 	while (waypointIndex != getNextWaypointIndex())
-	{			
-		Waypoint* w = waypoints->at(waypointIndex);
-		positionCheck(w);
+	{	
 		waypointIndex = getNextWaypointIndex();
+		Waypoint* w = waypoints->at(waypointIndex);
+		positionCheck(w);		
 	}
 	rocketPos = getPosition();
 	if(closeC != NULL)
 		wayPos = closeC->getPosition();
 	else
 		wayPos = w->getPosition();
-	tan = getTangent();
+	tan = getTangent();	
 	toWaypoint = wayPos - rocketPos;		
 	angleRot = toWaypoint -  tan.normalized();
 
@@ -47,13 +50,8 @@ void Rocket::applyNextMove()
 
 	distance = toWaypoint.length();
 	forwardForce = btScalar(-distance*forwardModifier);
-	//btScalar forwardForce = btScalar(w->getThrottle());
-	if(roationForce > maxMovementForce)
-		roationForce = maxMovementForce;
-	else if(roationForce < -maxMovementForce)
-		roationForce = - maxMovementForce;
 
-	btVector3 mov = getPosition() + toWaypoint * .1;	
+	btVector3 mov = getPosition() + toWaypoint.normalize()* rocketSpeed;	
 	this->physicsObject->getWorldTransform().getOrigin().setValue(mov.x(), mov.y(), mov.z());
 
 
@@ -72,9 +70,9 @@ void Rocket::applyNextMove()
 }
 
 
-Car* Rocket::getClosestCar(bool inFront, btScalar &detectionRange)
+Car* Rocket::getClosestCar(bool inFront, btScalar &detectionRng)
 {
-	btScalar distance(detectionRange);
+	btScalar distance(detectionRng);
 	int index = -1;
 	btAlignedObjectArray<Car*>* cList = EntityManager::getInstance()->getCarList();
 	for(int i = 0; i < cList->size(); i++)
@@ -120,4 +118,6 @@ void Rocket::reloadVariables(ReloadEvent *e){
 	forwardModifier = e->numberHolder.aiInfo.drivingModifier;
 	maxMovementForce = e->numberHolder.aiInfo.maxMovementForce;
 	rateOfChangeModifier = e->numberHolder.aiInfo.rateOfChangeModifier;
+	rocketSpeed = e->numberHolder.aiInfo.rocketSpeed;
+	detectionRange = e->numberHolder.aiInfo.rocketDetectionRange;
 }

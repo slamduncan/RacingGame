@@ -25,6 +25,8 @@ private:
 	float forwardModifier;
 	float maxMovementForce;
 	float rateOfChangeModifier;
+	float rocketSpeed;
+	float detectionRange;
 	MethodObserver<ReloadEvent, Rocket> reloadObserver;
 };
 

@@ -833,6 +833,7 @@ int main(int argc, char** argv)
 
 			// AI
 			ai->generateNextMove();
+			entManager->getCar(0)->setNextWaypointIndex(getClosestWaypoint());
 			
 
 			// Calculate current lap for player's car

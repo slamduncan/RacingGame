@@ -324,7 +324,7 @@ void Car::UsePowerUp( int index )
 				//TODO: ROCKET POWERUP
 				btTransform rocketT= physicsObject->getWorldTransform();				
 				rocketT.setOrigin( rocketT.getOrigin() - getTangent()*8.0);
-				ent->createRocket(0, rocketT);
+				ent->createRocket(this->getNextWaypointIndex(), rocketT);
 				//ent->createCar("model/ship1.lwo", carMass, rocketT);
 				break;
 				}
