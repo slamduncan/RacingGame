@@ -93,21 +93,69 @@ void Physics::step(btScalar &timeStep)
 	//Check SlowFields to see if they're removed or if they need to spawn anything
 	for(int i=0; i< entityManager->getSlowFieldList()->size(); i++){
 		SlowField * sf = entityManager->getSlowField(i);
-		if(sf->timeToSelfDestruct < clock()){
-			entityManager->removeSlowField(sf);
-			i--;
-		}else if(sf->timeToDrop < clock()){
+		//printf("%d", sf->blobContainer->getNumChildShapes());
+		
+		if(sf->timeToDrop < clock()){
 			//TODO: DROP ONE
 			entityManager->createSlowFieldSpawnable("model/powerup.lwo", sf);
 
 			sf->numSpawned++;
-			if(sf->numSpawned > 5){
+			if(sf->numSpawned > 9){
 				//Set time to drop next way after the time the SlowField will self destruct
 				sf->timeToDrop += 1000*CLOCKS_PER_SEC;
 			}else{
-				sf->timeToDrop += 1*CLOCKS_PER_SEC;
+				//Magic number! Set this as an XML variable later
+				sf->timeToDrop += 0.10*CLOCKS_PER_SEC;
 			}
+			
 		}
+		
+		if(sf->timeToDelete < clock()){
+			//Magic number! Set this as an XML variable later
+			sf->timeToDelete += 0.10*CLOCKS_PER_SEC;
+
+			//If ^ that is a magic number, then this is a whole bloody show.
+			//Bad code to fix bullet's bad code. DON'T LOOK AT ME LIKE THAT
+			switch(sf->numDeleted){
+				case 0:
+					sf->blobContainer->removeChildShapeByIndex(0);
+					break;
+				case 1:
+					sf->blobContainer->removeChildShapeByIndex(1);
+					break;
+				case 2:
+					sf->blobContainer->removeChildShapeByIndex(2);
+					break;
+				case 3:
+					sf->blobContainer->removeChildShapeByIndex(3);
+					break;
+				case 4:
+					sf->blobContainer->removeChildShapeByIndex(4);
+					break;
+				case 5:
+					sf->blobContainer->removeChildShapeByIndex(5);
+					break;
+				case 6:
+					sf->blobContainer->removeChildShapeByIndex(4);
+					break;
+				case 7:
+					sf->blobContainer->removeChildShapeByIndex(3);
+					break;
+				case 8:
+					sf->blobContainer->removeChildShapeByIndex(2);
+					break;
+				case 9:
+					sf->blobContainer->removeChildShapeByIndex(1);
+					break;
+				case 10:
+					entityManager->removeSlowField(sf);
+					i--;
+					break;
+			}
+			sf->numDeleted++;
+		}
+
+
 	}
 
 	//Check spawnables to see if they're removed or not

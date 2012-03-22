@@ -12,7 +12,8 @@ public:
 	~SlowField(void);
 	clock_t timeToSelfDestruct;
 	clock_t timeToDrop;
-	int numSpawned;
+	clock_t timeToDelete;
+	int numSpawned, numDeleted;
 
 	Car* getCar();
 

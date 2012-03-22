@@ -158,7 +158,7 @@ void EntityManager::createPowerup(char* path, btTransform &trans)
 	btScalar mass = btScalar(0.f);
 	
 	PowerUp* pup = new PowerUp();
-	pup->SetType(2);
+	pup->SetType(4);
 
 	pup->initRenderObject(path);
 	
@@ -227,7 +227,12 @@ void EntityManager::createSlowField(Car* c)
 
 	btScalar mass = btScalar(0.f);
 
-	sf->initPhysicsObject(blobContainer, mass, c->physicsObject->getWorldTransform());
+	btTransform carTr = c->physicsObject->getWorldTransform();
+	btVector3 carOr = carTr.getOrigin();
+	carOr = carOr + c->getTangent() * 13.0f;
+	carTr.setOrigin(carOr);
+
+	sf->initPhysicsObject(blobContainer, mass, carTr);
 
 	btScalar radius = btScalar(7.5f);
 
@@ -236,7 +241,7 @@ void EntityManager::createSlowField(Car* c)
 	btTransform cT = c->physicsObject->getWorldTransform();
 
 	cT.setOrigin(btVector3(0, 0, 0));
-	//cT.setRotation(c->physicsObject->getWorldTransform().getRotation());
+	cT.setRotation(c->physicsObject->getWorldTransform().getRotation());
 
 	sf->blobContainer->addChildShape(cT, sphere); 
 
@@ -247,14 +252,7 @@ void EntityManager::createSlowField(Car* c)
 
 void EntityManager::createSlowFieldSpawnable(char* path, SlowField* sf)
 {
-
-	//btScalar mass = btScalar(0.f);
-	
-	
-//	Spawnable* sp = new Spawnable();
-
-//	sp->initRenderObject(path);
-
+	//MAGIC NUMBER! UH OHHH! :D!
 	btScalar radius = 7.5f;
 	btCollisionShape* sphereMesh = sFactory.createSphere(radius);
 	
@@ -263,35 +261,15 @@ void EntityManager::createSlowFieldSpawnable(char* path, SlowField* sf)
 	btTransform carT = sf->getCar()->chassis->getWorldTransform();
 	btVector3 carPos = carT.getOrigin();
 
-	btVector3 diff = carPos - containerPos;
-	printf("DIFF: (%f, %f, %f)\n", diff.x(), diff.y(), diff.z());
-	
-	carT.setIdentity();
-	carT.setOrigin(diff);
-	
-	//btMatrix3x3 or = carT.getBasis();
-	//printf("(%f, %f, %f)\n (%f, %f, %f)\n (%f, %f, %f)\n", or[0][0], or[0][1], or[0][2], or[1][0], or[1][1], or[1][2], or[2][0], or[2][1], or[2][2]);
+	btVector3 diff = carPos - containerPos + sf->getCar()->getTangent() * 13.0f;
+	//printf("DIFF: (%f, %f, %f)\n", diff.x(), diff.y(), diff.z());
+
+	btMatrix3x3 parentOrientation = sf->physicsObject->getWorldTransform().getBasis();
+	parentOrientation = parentOrientation.inverse();
+	carT.setOrigin(parentOrientation*diff);
+
 
 	sf->blobContainer->addChildShape(carT, sphereMesh);
-
-//	btTransform trans = sf->getCar()->chassis->getWorldTransform();
-
-	//sp->initPhysicsObject(sphereMesh, mass, trans);
-
-//	addSpawnable(sp);
-
-//	sp->setSelfDestructTime(5);
-//	btVector3 containerPos = sf->slowBlobContainer->getWorldTransform().getOrigin();
-	
-//	btTransform carT = sf->getCar()->chassis->getWorldTransform();
-//	btVector3 carPos = carT.getOrigin();
-
-//	btVector3 diff = carPos - containerPos;
-//	carT.setOrigin(diff);
-
-	//sf->blobContainer->addChildShape(carT, sphereMesh);
-
-	//Physics::Inst()->addEntity(*sp);
 
 }
 
