@@ -8,9 +8,18 @@ Physics* Physics::physInstance = 0;
 EntityManager* entityManager;
 Renderer* physRender;
 
+void fnExit2 (void)
+{
+  int i = 3;
+  i += 1;
+}
+
+
+
 Physics* Physics::Inst(void){	
 	if(physInstance == 0){
-		physInstance = new Physics();
+		atexit(fnExit2);
+		physInstance = new Physics();		
 	}
 	return physInstance;
 }
@@ -86,6 +95,7 @@ void Physics::step(btScalar &timeStep)
 		if (r == NULL)
 			continue;
 		r->applyNextMove();
+		printf("RocketInd = %d\n", r->getNextWaypointIndex());
 		
 	}
 }

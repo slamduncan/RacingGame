@@ -204,11 +204,11 @@ void EntityManager::createRocket(int startingWaypoint, btTransform &trans)
 	btCollisionShape* sphereMesh = sFactory.createSphere(radius);
 
 	// I think our problem is here!
-	//sp->initPhysicsObject(sphereMesh, mass, trans);
+	sp->initPhysicsObject(sphereMesh, mass, trans);
 
-	//addSpawnable(sp);
+	addSpawnable(sp);
 
-	//Physics::Inst()->addEntity(*sp);
+	Physics::Inst()->addEntity(*sp);
 }
 
 

@@ -27,6 +27,7 @@ private:
 	float rateOfChangeModifier;
 	float rocketSpeed;
 	float detectionRange;
+	clock_t selfDestructTime;
 	MethodObserver<ReloadEvent, Rocket> reloadObserver;
 };
 

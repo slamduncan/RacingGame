@@ -23,6 +23,7 @@
 #include "Camera.h"
 #include "AIHandler.h"
 #include "Timer.h"
+#include "Rocket.h"
 
 #include "Sound.h"
 #define SANDBOX 0
@@ -34,6 +35,13 @@ const int SKIP_TICKS = 1000/TICKS_PER_SECONDS;
 const int MAX_FRAMESKIP = 5;
 
 ALuint EngineSource = 2;
+
+
+void fnExit1 (void)
+{
+  int i = 3;
+  i += 1;
+}
 
 
 // Other init
@@ -664,11 +672,14 @@ void resetCars(){
 	}
 }
 
+
+
+
 // Engine Main
 int main(int argc, char** argv)
 {	
 	// INITIALIZATIONS
-
+	
 	
 	//Initialize the renderer
 	bool renInit = ren->init();
@@ -757,7 +768,7 @@ int main(int argc, char** argv)
 	delete e;
 
 	float EngineModifier = 0;
-
+	
 	int LapNumber = 1;
 	int WaypointIndex = -1;
 	int CurrentWaypointIndex = 0;
@@ -779,6 +790,7 @@ int main(int argc, char** argv)
 
 	Uint32 next_game_tick = SDL_GetTicks();
 	// game loop
+	atexit (fnExit1);
 	while(running)
 	{		
 /*
@@ -911,6 +923,16 @@ int main(int argc, char** argv)
 		currentTime = SDL_GetTicks();
 
 		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
+
+		//for (int i = 0; i < entManager->getSpawnableList()->size(); i++)
+		//{
+		//	Rocket* r = dynamic_cast<Rocket*>(entManager->getSpawnableList()->at(i));
+		//	if (r == NULL)
+		//		continue;
+		//	r->applyNextMove();
+		//	printf(r->toString().c_str());
+		//}
+		
 /*
 		frameCount++;
 		instantFrameCount++;

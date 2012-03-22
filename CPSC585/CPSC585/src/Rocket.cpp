@@ -1,4 +1,5 @@
 #include "Rocket.h"
+#include "time.h"
 
 Rocket::Rocket(int startingWaypoint) : reloadObserver(this, &Rocket::reloadVariables)
 {
@@ -11,7 +12,8 @@ Rocket::Rocket(int startingWaypoint) : reloadObserver(this, &Rocket::reloadVaria
 	reloadObserver.init(EventTypes::RELOAD_VARIABLES);
 	//ReloadEvent r = new ReloadEvent();	
 	rocketSpeed = 5.0;
-	detectionRange = 100;
+	detectionRange = 100;	
+	selfDestructTime = clock() + 5 * CLOCKS_PER_SEC;
 }
 
 
@@ -32,10 +34,13 @@ void Rocket::applyNextMove()
 		waypointIndex = getNextWaypointIndex();
 		Waypoint* w = waypoints->at(waypointIndex);
 		positionCheck(w);		
-	}
+	}	
 	rocketPos = getPosition();
 	if(closeC != NULL)
+	{
 		wayPos = closeC->getPosition();
+		nextWaypoint = closeC->getNextWaypointIndex();
+	}
 	else
 		wayPos = w->getPosition();
 	tan = getTangent();	
