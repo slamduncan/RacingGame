@@ -78,6 +78,8 @@ public:
 	//Returns NULL if no car is found in range.
 	Car* getClosestCar(bool inFront);
 
+	btCompoundShape * slowBlobContainer;
+
 private:
 	btScalar width, length, height;
 	int nextWaypoint;

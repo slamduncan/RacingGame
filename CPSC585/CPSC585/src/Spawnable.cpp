@@ -2,6 +2,7 @@
 
 Spawnable::Spawnable()
 {
+	timeToSelfDestruct = 0;
 }
 
 Spawnable::~Spawnable()
@@ -10,7 +11,7 @@ Spawnable::~Spawnable()
 
 void Spawnable::initObservers()
 {
-
+	
 }
 
 bool Spawnable::initPhysicsObject( btCollisionShape* cShape, btScalar &mass, btTransform &trans )
@@ -35,4 +36,9 @@ bool Spawnable::initPhysicsObject( btCollisionShape* cShape, btScalar &mass, btT
 	}
 	
 	return false;
+}
+
+void Spawnable::setSelfDestructTime(int secondsFromNow)
+{
+	timeToSelfDestruct = clock() + secondsFromNow*CLOCKS_PER_SEC;
 }

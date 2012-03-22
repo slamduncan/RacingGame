@@ -330,7 +330,7 @@ void Car::UsePowerUp( int index )
 				}
 			case 3:{
 				//TODO: NOVA POWERUP
-				printf("USING NOVA WHAAAT\n");
+				//printf("USING NOVA WHAAAT\n");
 				btGhostObject * explosionShell;
 				explosionShell = new btGhostObject();
 				btCollisionShape* sphereShape;
@@ -374,6 +374,9 @@ void Car::UsePowerUp( int index )
 
 			case 4:
 				//TODO: SLOW POWERUP
+				EntityManager * ent;
+				ent = EntityManager::getInstance();
+				ent->createSlowField(this);
 				break;
 			case 5:
 				//TODO: TRACTION/MINE POWERUP

@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "PowerUp.h"
 #include "Rocket.h"
+#include "Time.h"
 
 Physics* Physics::physInstance = 0;
 EntityManager* entityManager;
@@ -64,7 +65,7 @@ void Physics::step(btScalar &timeStep)
 	updateCarSprings(timeStep);
 
 	//Check Powerups for car collisions
-	for (int i=0; i< entityManager->getPowerUpList()->size(); i++){\
+	for (int i=0; i< entityManager->getPowerUpList()->size(); i++){
 		//btCollisionObject* toDelObject = entityManager->getPowerup(i)->physicsObject;
 		btGhostObject* go = btGhostObject::upcast(entityManager->getPowerup(i)->physicsObject);
 		btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
@@ -97,6 +98,35 @@ void Physics::step(btScalar &timeStep)
 		r->applyNextMove();
 		printf("RocketInd = %d\n", r->getNextWaypointIndex());
 		
+	}
+
+	//Check SlowFields to see if they're removed or if they need to spawn anything
+	for(int i=0; i< entityManager->getSlowFieldList()->size(); i++){
+		SlowField * sf = entityManager->getSlowField(i);
+		if(sf->timeToSelfDestruct < clock()){
+			entityManager->removeSlowField(sf);
+			i--;
+		}else if(sf->timeToDrop < clock()){
+			//TODO: DROP ONE
+			entityManager->createSlowFieldSpawnable("model/powerup.lwo", sf);
+
+			sf->numSpawned++;
+			if(sf->numSpawned > 5){
+				//Set time to drop next way after the time the SlowField will self destruct
+				sf->timeToDrop += 1000*CLOCKS_PER_SEC;
+			}else{
+				sf->timeToDrop += 1*CLOCKS_PER_SEC;
+			}
+		}
+	}
+
+	//Check spawnables to see if they're removed or not
+	for(int i=0; i< entityManager->getSpawnableList()->size(); i++){
+		Spawnable * s = entityManager->getSpawnable(i);
+		if(s->timeToSelfDestruct < clock() && s->timeToSelfDestruct != 0){
+			entityManager->removeSpawnable(s);
+			i--;
+		}
 	}
 }
 
