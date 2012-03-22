@@ -4,7 +4,7 @@
 //#define NDEBUG
 #include <assert.h>
 
-
+#include "ModelManager.h"
 #include "ShapeFactory.h"
 #include "Physics.h"
 #include "Entity.h"
@@ -13,6 +13,7 @@
 #include "Waypoint.h"
 #include "PowerUp.h"
 #include "Spawnable.h"
+#include "Rocket.h"
 #include "LinearMath\btAlignedObjectArray.h"
 #include "Slowfield.h"
 
@@ -70,6 +71,7 @@ public:
 	void createPowerup(char* path, btTransform &trans);
 	void createObstacle(char* path, btScalar &mass, btTransform &trans);
 	void createSpawnable(char* path, btTransform &trans);
+	void createRocket(int startingWaypoint, btTransform &trans);
 	void createSlowField(Car* c);
 	void createSlowFieldSpawnable(char* path, SlowField* sf);
 

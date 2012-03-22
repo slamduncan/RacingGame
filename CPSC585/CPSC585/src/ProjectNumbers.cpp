@@ -86,6 +86,20 @@ void ProjectNumbers::readAI(){
 				if (pElem)
 					pElem->QueryFloatAttribute("value", &aiInfo.carDetectionRange);
 			}
+
+			//AI Rocket Speed
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(6).Element();
+				if (pElem)
+					pElem->QueryFloatAttribute("value", &aiInfo.rocketSpeed);
+			}
+
+			//AI Rocket detection range
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(7).Element();
+				if (pElem)
+					pElem->QueryFloatAttribute("value", &aiInfo.rocketDetectionRange);
+			}
 		}
 		else
 		{

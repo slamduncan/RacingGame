@@ -61,7 +61,7 @@ public:
 	Entity();
 	//Entity(char* filename);
 	//Entity(char* filename, btScalar &mass, btTransform &trans);
-	~Entity();
+	virtual ~Entity();
 
 	void move(float x, float y, float z);
 	void move(const btVector3 &newPos);

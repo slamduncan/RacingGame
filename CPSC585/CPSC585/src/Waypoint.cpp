@@ -119,6 +119,7 @@ void Waypoint::positionCheck(Car* car){
 	//	car->setNextWaypointIndex(closerPointIndex);
 }
 
+
 void Waypoint::addNextWaypoint(Waypoint *waypoint){
 	int size = nextWaypoints.size();
 	for (int i = 0; i < size; i++)

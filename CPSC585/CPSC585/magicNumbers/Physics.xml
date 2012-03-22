@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <Physics>
-  <kModifer value ="2.25" />
-  <cModifier value ="0.2" />
+  <kModifer value ="1.25" />
+  <cModifier value ="0.4" />
   <gravity xComponent = "0.0" yComponent ="-105.0" zComponent ="0.0"/>
   <staticFrictionModifier value ="1.0" />
   <dynamicFrictionModifier value = "1.0"/>

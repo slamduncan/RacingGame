@@ -2,6 +2,7 @@
 #include "EntityManager.h"
 #include "Renderer.h"
 #include "PowerUp.h"
+#include "Rocket.h"
 #include "Time.h"
 
 Physics* Physics::physInstance = 0;
@@ -79,6 +80,16 @@ void Physics::step(btScalar &timeStep)
 		}
 	}
 
+	for (int i = 0; i < entityManager->getSpawnableList()->size(); i++)
+	{
+		
+		Rocket* r = dynamic_cast<Rocket*>(entityManager->getSpawnableList()->at(i));
+		if (r == NULL)
+			continue;
+		r->applyNextMove();
+		
+	}
+
 	//Check SlowFields to see if they're removed or if they need to spawn anything
 	for(int i=0; i< entityManager->getSlowFieldList()->size(); i++){
 		SlowField * sf = entityManager->getSlowField(i);
@@ -113,7 +124,7 @@ void Physics::updateCarSprings(btScalar timeStep)
 {
 	for (int i = 0; i < entityManager->getCarList()->size(); i++){
 		//update springs
-		entityManager->getCarList()->at(i)->updateWheels();	
+		entityManager->getCarList()->at(i)->updateWheels();		
 	}
 }
 

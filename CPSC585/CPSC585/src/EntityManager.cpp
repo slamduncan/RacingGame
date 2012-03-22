@@ -158,7 +158,7 @@ void EntityManager::createPowerup(char* path, btTransform &trans)
 	btScalar mass = btScalar(0.f);
 	
 	PowerUp* pup = new PowerUp();
-	pup->SetType(4);
+	pup->SetType(2);
 
 	pup->initRenderObject(path);
 	
@@ -196,6 +196,26 @@ void EntityManager::createSpawnable(char* path, btTransform &trans)
 
 	Physics::Inst()->addEntity(*sp);
 }
+
+void EntityManager::createRocket(int startingWaypoint, btTransform &trans)
+{
+	btScalar mass = btScalar(0.f);
+	
+	Spawnable* sp = new Rocket(startingWaypoint);
+
+	sp->initRenderObject("model/Rocket.dae");
+
+	btScalar radius = 2.5f;
+	btCollisionShape* sphereMesh = sFactory.createSphere(radius);
+
+	// I think our problem is here!
+	//sp->initPhysicsObject(sphereMesh, mass, trans);
+
+	//addSpawnable(sp);
+
+	//Physics::Inst()->addEntity(*sp);
+}
+
 
 void EntityManager::createSlowField(Car* c)
 {

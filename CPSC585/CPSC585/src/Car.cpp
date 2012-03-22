@@ -309,7 +309,7 @@ void Car::UsePowerUp( int index )
 	if( index >= 0 && index < MAX_POWERUPS ){
 		int pUpType = m_CarPowerUps[index].GetType();
 		m_CarPowerUps[index].SetType( EMPTY );
-
+		EntityManager * ent = EntityManager::getInstance();
 		//printf("Activating powerup with type %i!\n",pUpType);
 		switch(pUpType){
 			case 1:{
@@ -320,8 +320,14 @@ void Car::UsePowerUp( int index )
 				break;
 				   }
 			case 2:
+				{
 				//TODO: ROCKET POWERUP
+				btTransform rocketT= physicsObject->getWorldTransform();				
+				rocketT.setOrigin( rocketT.getOrigin() - getTangent()*8.0);
+				ent->createRocket(this->getNextWaypointIndex(), rocketT);
+				//ent->createCar("model/ship1.lwo", carMass, rocketT);
 				break;
+				}
 			case 3:{
 				//TODO: NOVA POWERUP
 				//printf("USING NOVA WHAAAT\n");
@@ -333,8 +339,7 @@ void Car::UsePowerUp( int index )
 				explosionShell->setWorldTransform(physicsObject->getWorldTransform());
 				explosionShell->setCollisionFlags(physicsObject->CF_NO_CONTACT_RESPONSE);
 				
-				Physics * phys = Physics::Inst();
-				EntityManager * ent = EntityManager::getInstance();
+				Physics * phys = Physics::Inst();				
 				phys->addGhost(explosionShell);
 
 				btAlignedObjectArray<btCollisionObject*> oa = explosionShell->getOverlappingPairs();

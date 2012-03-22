@@ -241,6 +241,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ModelManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\ObservingList.cpp"
 				>
 			</File>
@@ -258,6 +262,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Renderer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Rocket.cpp"
 				>
 			</File>
 			<File
@@ -395,6 +403,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ModelManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Observer.h"
 				>
 			</File>
@@ -428,6 +440,10 @@
 			</File>
 			<File
 				RelativePath=".\src\RightAnalogEvent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Rocket.h"
 				>
 			</File>
 			<File

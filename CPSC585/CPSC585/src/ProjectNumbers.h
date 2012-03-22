@@ -43,7 +43,9 @@ public:
 		float goToNextWaypointDistanceAfter; //AiHandler
 		float rateOfChangeModifier; //AiHandler
 		float carDetectionRange; //Car
-	} aiInfo;
+		float rocketSpeed; //Rocket
+		float rocketDetectionRange; //Rocket
+	} aiInfo;	
 
 	ProjectNumbers(){}//readVariablesIn();}
 
@@ -51,7 +53,7 @@ public:
 	void readVariablesIn(){
 		readPhysics();
 		readController();
-		readAI();
+		readAI();		
 	}
 
 	void readPhysics();
