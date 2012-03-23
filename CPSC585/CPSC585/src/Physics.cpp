@@ -96,7 +96,7 @@ void Physics::step(btScalar &timeStep)
 		if (r == NULL)
 			continue;
 		r->applyNextMove();
-		printf("RocketInd = %d\n", r->getNextWaypointIndex());
+		//printf("RocketInd = %d\n", r->getNextWaypointIndex());
 		
 	}
 

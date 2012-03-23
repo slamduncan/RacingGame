@@ -172,6 +172,8 @@ void Car::updateWheels()
 {
 	updateSpringLocations();
 
+
+
 	// simulate suspension
 	btVector3 forces[4];
 	btScalar sideFriction[4] = {btScalar(0.f),btScalar(0.f),btScalar(0.f),btScalar(0.f)}; 
@@ -181,21 +183,32 @@ void Car::updateWheels()
 	}
 
 	// simulate side friction, forward friction
+	//printf("LINEAR = %f, %f, %f\n" , chassis->getLinearVelocity().x(), chassis->getLinearVelocity().y(), chassis->getLinearVelocity().z());
+	//printf("DeltaLinear = %f, %f, %f\n" , chassis->getDeltaLinearVelocity().x(), chassis->getDeltaLinearVelocity().y(), chassis->getDeltaLinearVelocity().z());
+	btVector3 sideFricMag = -(this->chassis->getAngularVelocity());
+	//printf("Angular = %f, %f, %f\n" , chassis->getAngularVelocity().x(), chassis->getAngularVelocity().y(), chassis->getAngularVelocity().z());
+	//printf("DeltatAngle = %f, %f, %f\n" , chassis->getDeltaAngularVelocity().x(), chassis->getDeltaAngularVelocity().y(), chassis->getDeltaAngularVelocity().z());
+	
+	btVector3 forwardFricMag = -(this->chassis->getLinearVelocity());
 	for(int i = 0; i < 4; i++)
 	{
 		if(newWheels[i].hitObject)
-		{
+		{			
 			btVector3 contact = newWheels[i].getBottomSpringPosition();
 			
 			btRigidBody* groundObject = (class btRigidBody*) newWheels[i].hitObject;
 			
-			resolveSingleBilateral(*chassis, contact, *groundObject, contact, btScalar(0.),getBinormal(), sideFriction[i], 1/60.0f);
-			sideFriction[i] *=sideFrictionModifier;
+			//resolveSingleBilateral(*chassis, contact, *groundObject, contact, btScalar(0.),getBinormal(), sideFriction[i], 1/60.0f);
+			//sideFriction[i] = -sideFricMag/4 * sideFrictionModifier *0.05 ;
+			//printf("%f\t", sideFriction[i]);
+			//sideFriction[i] *=sideFrictionModifier;
 
-			resolveSingleBilateral(*chassis, contact, *groundObject, contact, btScalar(0.),getTangent(), forwardFriction[i], 1/60.0f);
-			forwardFriction[i] *=forwardFrictionModifier;
+			//resolveSingleBilateral(*chassis, contact, *groundObject, contact, btScalar(0.),getTangent(), forwardFriction[i], 1/60.0f);
+			//forwardFriction[i] = -forwardFricMag * forwardFrictionModifier * 0.1;
+			//forwardFriction[i] *=forwardFrictionModifier;
 		}
 	}
+	printf("\n");
 	
 
 	for (int i = 0; i < 4; i++){
@@ -204,6 +217,7 @@ void Car::updateWheels()
 		
 		if(sideFriction[i] != btScalar(1.) && newWheels[i].hitObject)
 		{
+			/*
 			btVector3 carNormal = getNormal();
 			
 			btVector3 relpos = contact - chassis->getCenterOfMassPosition();
@@ -211,10 +225,13 @@ void Car::updateWheels()
 			relpos -= carNormal * (carNormal.dot(relpos));
 
 			chassis->applyForce(getBinormal() * sideFriction[i]*0.1f * sideFrictionModifier,relpos);
+			*/
+			chassis->applyTorque(sideFricMag/4.0f * sideFrictionModifier);
 		}
 	
 		if(forwardFriction[i] != btScalar(1.) && newWheels[i].hitObject)
 		{
+			/*
 			btVector3 carNormal = getNormal();
 			
 			btVector3 relpos = contact - chassis->getCenterOfMassPosition();
@@ -222,6 +239,8 @@ void Car::updateWheels()
 			relpos -= carNormal * (carNormal.dot(relpos));
 
 			chassis->applyForce(getTangent() * forwardFriction[i]*0.1f * forwardFrictionModifier,relpos);
+			*/
+			chassis->applyCentralForce(forwardFricMag * forwardFrictionModifier);
 		}
 		
 	}
@@ -308,7 +327,7 @@ void Car::UsePowerUp( int index )
 {
 	if( index >= 0 && index < MAX_POWERUPS ){
 		int pUpType = m_CarPowerUps[index].GetType();
-		m_CarPowerUps[index].SetType( EMPTY );
+		//m_CarPowerUps[index].SetType( EMPTY );
 		EntityManager * ent = EntityManager::getInstance();
 		//printf("Activating powerup with type %i!\n",pUpType);
 		switch(pUpType){
