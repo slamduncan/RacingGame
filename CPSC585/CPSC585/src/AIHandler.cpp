@@ -87,13 +87,22 @@ void AIHandler::PowerUpCheck(Car* c)
 			{
 				if (carInFront)
 					c->UsePowerUp(i, true);
+				else 
+				{
+					btAlignedObjectArray<Spawnable*>* spawnList = EntityManager::getInstance()->getSpawnableList();
+					for (int j = 0; j < spawnList->size(); j++)
+					{
+						if ((spawnList->at(j)->getPosition() - c->getPosition()).length() < 20.0)
+							c->UsePowerUp(i, false);
+					}
+				}
 			}
 		case(SPEED_SLOW):
 			{
 				if (carBehind)
 				{
 					c->UsePowerUp(i, true);
-				}
+				}				
 			}
 		}
 		
