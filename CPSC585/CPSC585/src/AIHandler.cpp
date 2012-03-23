@@ -72,6 +72,32 @@ void AIHandler::generateNextMove(){
 	}
 }
 
+void AIHandler::PowerUpCheck(Car* c)
+{
+	for (int i= 0; i < 3; i++)
+	{
+		PowerUp* p = c->GetPowerUpAt(i);	
+		bool carInFront = c->getClosestCar(true) != NULL;
+		bool carBehind = c->getClosestCar(false) != NULL && carInFront == false;
+		switch(p->GetType())
+		{
+		case(ROCKET_SHIELD):
+			{
+				if (carInFront)
+					c->UsePowerUp(i, true);
+			}
+		case(SPEED_SLOW):
+			{
+				if (carBehind)
+				{
+					c->UsePowerUp(i, true);
+				}
+			}
+		}
+		
+	}
+}
+
 void AIHandler::reloadVariables(ReloadEvent *e){
 	turningModifier = e->numberHolder.aiInfo.rotateModifier;
 	forwardModifier = e->numberHolder.aiInfo.drivingModifier;

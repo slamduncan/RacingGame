@@ -21,6 +21,7 @@ private:
 	float forwardModifier;
 	float maxMovementForce;
 	float rateOfChangeModifier;		
+	void PowerUpCheck(Car* c);
 
 public:
 	void reloadVariables(ReloadEvent *e);

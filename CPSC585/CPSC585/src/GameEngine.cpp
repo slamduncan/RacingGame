@@ -530,7 +530,11 @@ void process_events()
 			if (controller1.isBDown())
 			{
 				//createWaypoint();
-				entManager->getCar(0)->RotatePowerups( false );
+				if(entManager->getCar(0)->GetPowerUpAt(0)->GetType() != 0)
+				{
+					entManager->getCar(0)->UsePowerUp(0, false);
+					entManager->getCar(0)->RotatePowerups( true );
+				}				
 			}
 			if(controller1.isADown())
 			{				
@@ -541,7 +545,7 @@ void process_events()
 				//printf("Trying to use a speed boost...\n");
 				if(entManager->getCar(0)->GetPowerUpAt(0)->GetType() != 0)
 				{
-					entManager->getCar(0)->UsePowerUp(0);
+					entManager->getCar(0)->UsePowerUp(0, true);
 					entManager->getCar(0)->RotatePowerups( true );
 				}
 				//moveWaypoint();
@@ -553,7 +557,7 @@ void process_events()
 			}
 			if(controller1.isYDown())
 			{
-
+				entManager->getCar(0)->RotatePowerups( false );
 			}
 			if(controller1.isButtonDown(controller1.R_Bump))
 			{

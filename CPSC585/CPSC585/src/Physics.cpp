@@ -96,6 +96,26 @@ void Physics::step(btScalar &timeStep)
 		if (r == NULL)
 			continue;
 		r->applyNextMove();
+		btGhostObject* go = btGhostObject::upcast(r->physicsObject);
+		btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
+
+		for(int j=0; j< oa.size(); j++){
+			btCollisionObject * carMaybe = oa.at(j);
+			//Todo: check this pointer against all car pointers in carList
+			int index = entityManager->getCarIndexViaPointer(carMaybe);
+			if(index != -1 && index != r->carId)
+			{
+				
+				Car* carTemp = entityManager->getCar(index);
+				carTemp->chassis->applyTorque(r->getNormal()*500000.0);
+				
+				
+				dynamicsWorld->removeCollisionObject(r->physicsObject);
+				entityManager->removeSpawnable(r);				
+				i--;
+				break;
+			}
+		}
 		//printf("RocketInd = %d\n", r->getNextWaypointIndex());
 		
 	}

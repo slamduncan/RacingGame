@@ -12,7 +12,7 @@ public:
 	void initObservers();
 	void setSelfDestructTime(int secondsFromNow);
 	bool initPhysicsObject( btCollisionShape* cShape, btScalar &mass, btTransform &trans );
-
+	int carId;
 	clock_t timeToSelfDestruct;
 };
 

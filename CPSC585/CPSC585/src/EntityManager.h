@@ -16,6 +16,7 @@
 #include "Rocket.h"
 #include "LinearMath\btAlignedObjectArray.h"
 #include "Slowfield.h"
+#include "Shield.h"
 
 class EntityManager
 {
@@ -71,9 +72,10 @@ public:
 	void createPowerup(char* path, btTransform &trans);
 	void createObstacle(char* path, btScalar &mass, btTransform &trans);
 	void createSpawnable(char* path, btTransform &trans);
-	void createRocket(int startingWaypoint, btTransform &trans);
+	void createRocket(int startingWaypoint, btTransform &trans, int carId);
 	void createSlowField(Car* c);
 	void createSlowFieldSpawnable(char* path, SlowField* sf);
+	void createShield(Car* c);
 
 	void addCar(Car* car);
 	void addTrack(Track* track);

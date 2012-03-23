@@ -285,6 +285,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Shield.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\SlowField.cpp"
 				>
 			</File>
@@ -460,6 +464,10 @@
 			</File>
 			<File
 				RelativePath=".\src\ShapeFactory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Shield.h"
 				>
 			</File>
 			<File

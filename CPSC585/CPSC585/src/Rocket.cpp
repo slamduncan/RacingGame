@@ -1,7 +1,7 @@
 #include "Rocket.h"
 #include "time.h"
 
-Rocket::Rocket(int startingWaypoint) : reloadObserver(this, &Rocket::reloadVariables)
+Rocket::Rocket(int startingWaypoint, int spawnedBy) : reloadObserver(this, &Rocket::reloadVariables)
 {
 	nextWaypoint = startingWaypoint;
 	waypoints = EntityManager::getInstance()->getWaypointList();
@@ -13,7 +13,8 @@ Rocket::Rocket(int startingWaypoint) : reloadObserver(this, &Rocket::reloadVaria
 	//ReloadEvent r = new ReloadEvent();	
 	rocketSpeed = 5.0;
 	detectionRange = 100;	
-	selfDestructTime = clock() + 5 * CLOCKS_PER_SEC;
+	this->timeToSelfDestruct = clock() + 5 * CLOCKS_PER_SEC;
+	this->carId = spawnedBy;
 }
 
 
@@ -36,7 +37,7 @@ void Rocket::applyNextMove()
 		positionCheck(w);		
 	}	
 	rocketPos = getPosition();
-	if(closeC != NULL)
+	if(closeC != NULL && closeC ->id != carId)
 	{
 		wayPos = closeC->getPosition();
 		nextWaypoint = closeC->getNextWaypointIndex();
@@ -56,7 +57,7 @@ void Rocket::applyNextMove()
 	distance = toWaypoint.length();
 	forwardForce = btScalar(-distance*forwardModifier);
 
-	btVector3 mov = getPosition() + toWaypoint.normalize()* rocketSpeed;	
+	btVector3 mov = getPosition() + toWaypoint.normalize()* rocketSpeed;
 	this->physicsObject->getWorldTransform().getOrigin().setValue(mov.x(), mov.y(), mov.z());
 
 
