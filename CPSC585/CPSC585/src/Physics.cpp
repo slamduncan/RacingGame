@@ -91,30 +91,36 @@ void Physics::step(btScalar &timeStep)
 
 	for (int i = 0; i < entityManager->getSpawnableList()->size(); i++)
 	{
-		
+		/* Deal with it if it's a rocket */
 		Rocket* r = dynamic_cast<Rocket*>(entityManager->getSpawnableList()->at(i));
-		if (r == NULL)
-			continue;
-		r->applyNextMove();
-		btGhostObject* go = btGhostObject::upcast(r->physicsObject);
-		btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
+		if (r != NULL)
+		{
+			r->applyNextMove();
+			btGhostObject* go = btGhostObject::upcast(r->physicsObject);
+			btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
 
-		for(int j=0; j< oa.size(); j++){
-			btCollisionObject * carMaybe = oa.at(j);
-			//Todo: check this pointer against all car pointers in carList
-			int index = entityManager->getCarIndexViaPointer(carMaybe);
-			if(index != -1 && index != r->carId)
-			{
-				
-				Car* carTemp = entityManager->getCar(index);
-				carTemp->chassis->applyTorque(r->getNormal()*500000.0);
-				
-				
-				dynamicsWorld->removeCollisionObject(r->physicsObject);
-				entityManager->removeSpawnable(r);				
-				i--;
-				break;
+			for(int j=0; j< oa.size(); j++){
+				btCollisionObject * carMaybe = oa.at(j);
+				//Todo: check this pointer against all car pointers in carList
+				int index = entityManager->getCarIndexViaPointer(carMaybe);
+				if(index != -1 && index != r->carId)
+				{				
+					Car* carTemp = entityManager->getCar(index);
+					if (!carTemp->shieldActive)
+						carTemp->chassis->applyTorque(r->getNormal()*500000.0);				
+					
+					dynamicsWorld->removeCollisionObject(r->physicsObject);
+					entityManager->removeSpawnable(r);				
+					i--;
+					break;
+				}			
 			}
+		}
+		/* Deal with it if it's a shield */
+		Shield* s = dynamic_cast<Shield*>(entityManager->getSpawnableList()->at(i));
+		if (s != NULL)
+		{
+			s->updateLocation();
 		}
 		//printf("RocketInd = %d\n", r->getNextWaypointIndex());
 		
