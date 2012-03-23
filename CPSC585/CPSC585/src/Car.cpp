@@ -328,7 +328,7 @@ void Car::UsePowerUp( int index , bool offensive)
 {
 	if( index >= 0 && index < MAX_POWERUPS ){
 		int pUpType = m_CarPowerUps[index].GetType();
-		//m_CarPowerUps[index].SetType( EMPTY );
+		m_CarPowerUps[index].SetType( EMPTY );
 		EntityManager * ent = EntityManager::getInstance();
 		//printf("Activating powerup with type %i!\n",pUpType);
 		switch(pUpType){

@@ -115,12 +115,14 @@ void Physics::step(btScalar &timeStep)
 					break;
 				}			
 			}
+			continue;
 		}
-		/* Deal with it if it's a shield */
+		/* Deal with it if it's a shield */		
 		Shield* s = dynamic_cast<Shield*>(entityManager->getSpawnableList()->at(i));
 		if (s != NULL)
 		{
 			s->updateLocation();
+			continue;
 		}
 		//printf("RocketInd = %d\n", r->getNextWaypointIndex());
 		

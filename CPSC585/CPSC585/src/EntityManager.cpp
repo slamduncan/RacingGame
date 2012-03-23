@@ -222,7 +222,7 @@ void EntityManager::createShield(Car *c)
 	
 	Spawnable* sp = new Shield(c);
 
-	sp->initRenderObject("model/shield.dae");
+	bool temp = sp->initRenderObject("model/shield.dae");
 
 	btScalar radius = 2.5f;
 	btCollisionShape* sphereMesh = sFactory.createSphere(radius);

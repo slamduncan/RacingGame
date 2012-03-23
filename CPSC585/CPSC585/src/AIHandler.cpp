@@ -68,6 +68,8 @@ void AIHandler::generateNextMove(){
 		ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0f);
 		c->observeForwardForce(ffe);
 		delete ffe;
+
+		PowerUpCheck(c);
 		//printf("Car: %d, Forward = %f, Turn = %f\n", i, forwardForce, roationForce);
 	}
 }
