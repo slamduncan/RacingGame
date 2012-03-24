@@ -158,7 +158,7 @@ void EntityManager::createPowerup(char* path, btTransform &trans)
 	btScalar mass = btScalar(0.f);
 	
 	PowerUp* pup = new PowerUp();
-	pup->SetType(4);
+	pup->SetType(1);
 
 	pup->initRenderObject(path);
 	
@@ -248,7 +248,7 @@ void EntityManager::createSlowField(Car* c)
 
 	btTransform carTr = c->physicsObject->getWorldTransform();
 	btVector3 carOr = carTr.getOrigin();
-	carOr = carOr + c->getTangent() * 13.0f;
+	carOr = carOr + c->getTangent() * 15.0f;
 	carTr.setOrigin(carOr);
 
 	sf->initPhysicsObject(blobContainer, mass, carTr);
@@ -261,6 +261,8 @@ void EntityManager::createSlowField(Car* c)
 
 	cT.setOrigin(btVector3(0, 0, 0));
 	cT.setRotation(c->physicsObject->getWorldTransform().getRotation());
+
+	sf->blobContainer->getAngularMotionDisc();
 
 	sf->blobContainer->addChildShape(cT, sphere); 
 
@@ -280,7 +282,7 @@ void EntityManager::createSlowFieldSpawnable(char* path, SlowField* sf)
 	btTransform carT = sf->getCar()->chassis->getWorldTransform();
 	btVector3 carPos = carT.getOrigin();
 
-	btVector3 diff = carPos - containerPos + sf->getCar()->getTangent() * 13.0f;
+	btVector3 diff = carPos - containerPos + sf->getCar()->getTangent() * 15.0f;
 	//printf("DIFF: (%f, %f, %f)\n", diff.x(), diff.y(), diff.z());
 
 	btMatrix3x3 parentOrientation = sf->physicsObject->getWorldTransform().getBasis();

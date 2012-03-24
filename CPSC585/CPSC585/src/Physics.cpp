@@ -60,6 +60,8 @@ Physics::~Physics(void)
 
 void Physics::step(btScalar &timeStep)
 {	
+	//printf("Velocity: %f\n",entityManager->getCar(0)->chassis->getLinearVelocity().length());
+
 	dynamicsWorld->stepSimulation(timeStep, 10);//1/60.f,10);
 
 	updateCarSprings(timeStep);
@@ -125,7 +127,7 @@ void Physics::step(btScalar &timeStep)
 			continue;
 		}
 		//printf("RocketInd = %d\n", r->getNextWaypointIndex());
-		
+
 	}
 
 	//Check SlowFields to see if they're removed or if they need to spawn anything
@@ -191,9 +193,25 @@ void Physics::step(btScalar &timeStep)
 					break;
 			}
 			sf->numDeleted++;
+			
 		}
+	}
 
-
+	//Check slowfields to see if they need to slow cars or not
+	for(int i=0; i < entityManager->getSlowFieldList()->size(); i++){
+		btGhostObject* go = btGhostObject::upcast(entityManager->getSlowField(i)->physicsObject);
+		btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
+		for(int j=0; j< oa.size(); j++){
+			btCollisionObject * carMaybe = oa.at(j);
+			//Todo: check this pointer against all car pointers in carList
+			int index = entityManager->getCarIndexViaPointer(carMaybe);
+			if(index != -1)
+			{
+				//printf("YOU GOT ME A CAR!! OMG!!! OMG!!! \n");
+				printf("!");
+				entityManager->getCar(index)->setBeingSlowed();
+			}
+		}
 	}
 
 	//Check spawnables to see if they're removed or not

@@ -12,7 +12,7 @@
   <springForceModifier value="3.0"/>
   
   <speedBoostModifier value ="1.0"/>
-  <slowFieldModifier value ="1.0"/>
+  <slowFieldModifier value ="80.0"/>
   <rocketModifier value ="1.0"/>
   <tractionBoostModifier value ="1.0"/>
   <shieldModifier value ="1.0"/>

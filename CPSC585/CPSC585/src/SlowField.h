@@ -6,7 +6,7 @@
 class SlowField:public Spawnable
 {
 public:
-	btGhostObject * slowBlobContainer;
+	//btGhostObject * slowBlobContainer;
 	btCompoundShape* blobContainer;
 	SlowField(Car* car);
 	~SlowField(void);

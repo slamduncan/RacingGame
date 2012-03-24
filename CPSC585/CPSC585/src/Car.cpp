@@ -64,6 +64,7 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	m_CarPowerUps[1] = p2;
 	m_CarPowerUps[2] = p3;
 
+	beingSlowed = false;
 }
 
 void Car::initObservers()
@@ -95,16 +96,21 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 	// Calculate the artificial speed of the car to be used
 	// for engine sound
 	float NewSpeed = GetSpeed() + (engineForce * -0.0005f);
-		if( NewSpeed < (engineForce * -1.0f) )
-			SetSpeed(NewSpeed);
+	if( NewSpeed < (engineForce * -1.0f) )
+		SetSpeed(NewSpeed);
 
 	if(engineForce < 0)
 	{
-		// player is accelerating, we apply rear wheel force
-		if(newWheels[2].onGround || newWheels[3].onGround)
-		{
-			chassis->applyForce(tan, wheelOffsets[2]);
-			chassis->applyForce(tan, wheelOffsets[3]);
+		//if car is in a slow field, we cap linear velocity at 100
+		if(beingSlowed == false || chassis->getLinearVelocity().length() < slowFieldModifier){
+			// player is accelerating, we apply rear wheel force
+			if(newWheels[2].onGround || newWheels[3].onGround)
+			{
+				chassis->applyForce(tan, wheelOffsets[2]);
+				chassis->applyForce(tan, wheelOffsets[3]);
+			}
+		}else{
+			beingSlowed = false;
 		}
 	}
 	// player is decelerating
@@ -209,7 +215,7 @@ void Car::updateWheels()
 			//forwardFriction[i] *=forwardFrictionModifier;
 		}
 	}
-	printf("\n");
+	//printf("\n");
 	
 
 	for (int i = 0; i < 4; i++){
@@ -364,52 +370,53 @@ void Car::UsePowerUp( int index , bool offensive)
 					//TODO: add SHIELD
 				break;
 				}
-			case NOVA_MINE:{
-				//NOVA POWERUP
-				if (!offensive)
+			case NOVA_MINE:
 				{
-					btGhostObject * explosionShell;
-					explosionShell = new btGhostObject();
-					btCollisionShape* sphereShape;
-					sphereShape = new btSphereShape(btScalar(forceBubbleModifier));
-					explosionShell->setCollisionShape(sphereShape);
-					explosionShell->setWorldTransform(physicsObject->getWorldTransform());
-					explosionShell->setCollisionFlags(physicsObject->CF_NO_CONTACT_RESPONSE);
-					
-					Physics * phys = Physics::Inst();				
-					phys->addGhost(explosionShell);
+					//NOVA POWERUP
+					if (!offensive)
+					{
+						btGhostObject * explosionShell;
+						explosionShell = new btGhostObject();
+						btCollisionShape* sphereShape;
+						sphereShape = new btSphereShape(btScalar(forceBubbleModifier));
+						explosionShell->setCollisionShape(sphereShape);
+						explosionShell->setWorldTransform(physicsObject->getWorldTransform());
+						explosionShell->setCollisionFlags(physicsObject->CF_NO_CONTACT_RESPONSE);
 
-					btAlignedObjectArray<btCollisionObject*> oa = explosionShell->getOverlappingPairs();
-					printf("I hit %i things!\n",oa.size());
+						Physics * phys = Physics::Inst();				
+						phys->addGhost(explosionShell);
 
-					for(int i=0; i< oa.size(); i++){
-						btCollisionObject * carMaybe = oa.at(i);
-						
-						int index = ent->getCarIndexViaPointer(carMaybe);
-						if(index != -1){
-							Car* carTemp = ent->getCar(index);
-							if(carTemp != this){
-								//APPLY NOVA FORCE TO THE CAR! BAM!
-								btScalar modifier = 400.f -(carTemp->getPosition().distance(getPosition()));
-								printf("Modifier: %f\n",modifier);
-								
-								btVector3 between = carTemp->getPosition()-getPosition();
-								btVector3 force = between.normalized();
+						btAlignedObjectArray<btCollisionObject*> oa = explosionShell->getOverlappingPairs();
+						//printf("I hit %i things!\n",oa.size());
 
-								force = force*forceBubbleModifier;
-								force = force - between;
-								force = modifier*force;
+						for(int i=0; i< oa.size(); i++){
+							btCollisionObject * carMaybe = oa.at(i);
 
-								carTemp->chassis->applyCentralForce(force);
+							int index = ent->getCarIndexViaPointer(carMaybe);
+							if(index != -1){
+								Car* carTemp = ent->getCar(index);
+								if(carTemp != this){
+									//APPLY NOVA FORCE TO THE CAR! BAM!
+									btScalar modifier = 400.f -(carTemp->getPosition().distance(getPosition()));
+									//printf("Modifier: %f\n",modifier);
+
+									btVector3 between = carTemp->getPosition()-getPosition();
+									btVector3 force = between.normalized();
+
+									force = force*forceBubbleModifier;
+									force = force - between;
+									force = modifier*force;
+
+									carTemp->chassis->applyCentralForce(force);
+								}
 							}
-						}
-					}				
-					phys->removeGhost(explosionShell);
-				}
+						}				
+						phys->removeGhost(explosionShell);
+					}
 				//TODO: MINE POWERUP
 				else {}
 				break;
-				   }			
+				}
 		}
 	}
 }
@@ -518,4 +525,8 @@ void Car::RotatePowerups( bool RotateLeft )
 		m_CarPowerUps[2].SetType( m_CarPowerUps[1].GetType() );
 		m_CarPowerUps[1].SetType( temp );
 	}
+}
+
+void Car::setBeingSlowed(){
+	beingSlowed = true;
 }

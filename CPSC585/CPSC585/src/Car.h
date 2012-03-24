@@ -77,6 +77,7 @@ public:
 	//Pass in true if the closest car found must be infront of the other car.
 	//Returns NULL if no car is found in range.
 	Car* getClosestCar(bool inFront);
+	void setBeingSlowed();
 
 	btCompoundShape * slowBlobContainer;
 	bool shieldActive;
@@ -98,6 +99,8 @@ private:
     float shieldModifier;
     float forceBubbleModifier;
 	float detectionRange;
+
+	bool beingSlowed;
 
 	// 3 power up slots, circular array of powerups?
 	//btAlignedObjectArray<PowerUp*> m_CarPowerUps;
