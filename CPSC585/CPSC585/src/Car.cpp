@@ -58,6 +58,7 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	PowerUp p1 = PowerUp();
 	PowerUp p2 = PowerUp();
 	PowerUp p3 = PowerUp();
+	shieldActive = false;
 
 	m_CarPowerUps[0] = p1;
 	m_CarPowerUps[1] = p2;
@@ -172,6 +173,8 @@ void Car::updateWheels()
 {
 	updateSpringLocations();
 
+
+
 	// simulate suspension
 	btVector3 forces[4];
 	btScalar sideFriction[4] = {btScalar(0.f),btScalar(0.f),btScalar(0.f),btScalar(0.f)}; 
@@ -181,21 +184,32 @@ void Car::updateWheels()
 	}
 
 	// simulate side friction, forward friction
+	//printf("LINEAR = %f, %f, %f\n" , chassis->getLinearVelocity().x(), chassis->getLinearVelocity().y(), chassis->getLinearVelocity().z());
+	//printf("DeltaLinear = %f, %f, %f\n" , chassis->getDeltaLinearVelocity().x(), chassis->getDeltaLinearVelocity().y(), chassis->getDeltaLinearVelocity().z());
+	btVector3 sideFricMag = -(this->chassis->getAngularVelocity());
+	//printf("Angular = %f, %f, %f\n" , chassis->getAngularVelocity().x(), chassis->getAngularVelocity().y(), chassis->getAngularVelocity().z());
+	//printf("DeltatAngle = %f, %f, %f\n" , chassis->getDeltaAngularVelocity().x(), chassis->getDeltaAngularVelocity().y(), chassis->getDeltaAngularVelocity().z());
+	
+	btVector3 forwardFricMag = -(this->chassis->getLinearVelocity());
 	for(int i = 0; i < 4; i++)
 	{
 		if(newWheels[i].hitObject)
-		{
+		{			
 			btVector3 contact = newWheels[i].getBottomSpringPosition();
 			
 			btRigidBody* groundObject = (class btRigidBody*) newWheels[i].hitObject;
 			
-			resolveSingleBilateral(*chassis, contact, *groundObject, contact, btScalar(0.),getBinormal(), sideFriction[i], 1/60.0f);
-			sideFriction[i] *=sideFrictionModifier;
+			//resolveSingleBilateral(*chassis, contact, *groundObject, contact, btScalar(0.),getBinormal(), sideFriction[i], 1/60.0f);
+			//sideFriction[i] = -sideFricMag/4 * sideFrictionModifier *0.05 ;
+			//printf("%f\t", sideFriction[i]);
+			//sideFriction[i] *=sideFrictionModifier;
 
-			resolveSingleBilateral(*chassis, contact, *groundObject, contact, btScalar(0.),getTangent(), forwardFriction[i], 1/60.0f);
-			forwardFriction[i] *=forwardFrictionModifier;
+			//resolveSingleBilateral(*chassis, contact, *groundObject, contact, btScalar(0.),getTangent(), forwardFriction[i], 1/60.0f);
+			//forwardFriction[i] = -forwardFricMag * forwardFrictionModifier * 0.1;
+			//forwardFriction[i] *=forwardFrictionModifier;
 		}
 	}
+	printf("\n");
 	
 
 	for (int i = 0; i < 4; i++){
@@ -204,6 +218,7 @@ void Car::updateWheels()
 		
 		if(sideFriction[i] != btScalar(1.) && newWheels[i].hitObject)
 		{
+			/*
 			btVector3 carNormal = getNormal();
 			
 			btVector3 relpos = contact - chassis->getCenterOfMassPosition();
@@ -211,10 +226,13 @@ void Car::updateWheels()
 			relpos -= carNormal * (carNormal.dot(relpos));
 
 			chassis->applyForce(getBinormal() * sideFriction[i]*0.1f * sideFrictionModifier,relpos);
+			*/
+			chassis->applyTorque(sideFricMag/4.0f * sideFrictionModifier);
 		}
 	
 		if(forwardFriction[i] != btScalar(1.) && newWheels[i].hitObject)
 		{
+			/*
 			btVector3 carNormal = getNormal();
 			
 			btVector3 relpos = contact - chassis->getCenterOfMassPosition();
@@ -222,6 +240,8 @@ void Car::updateWheels()
 			relpos -= carNormal * (carNormal.dot(relpos));
 
 			chassis->applyForce(getTangent() * forwardFriction[i]*0.1f * forwardFrictionModifier,relpos);
+			*/
+			chassis->applyCentralForce(forwardFricMag * forwardFrictionModifier);
 		}
 		
 	}
@@ -304,7 +324,7 @@ int Car::GetNumberPowerUps(){
 	return count;
 }
 
-void Car::UsePowerUp( int index )
+void Car::UsePowerUp( int index , bool offensive)
 {
 	if( index >= 0 && index < MAX_POWERUPS ){
 		int pUpType = m_CarPowerUps[index].GetType();
@@ -312,78 +332,84 @@ void Car::UsePowerUp( int index )
 		EntityManager * ent = EntityManager::getInstance();
 		//printf("Activating powerup with type %i!\n",pUpType);
 		switch(pUpType){
-			case 1:{
+			case SPEED_SLOW:{
 				//SPEED POWERUP
-				btVector3 forward = getTangent();
-				forward.setY(0);
-				chassis->applyCentralForce(-10000.0*forward);
-				break;
-				   }
-			case 2:
+				if (!offensive)
 				{
-				//TODO: ROCKET POWERUP
-				btTransform rocketT= physicsObject->getWorldTransform();				
-				rocketT.setOrigin( rocketT.getOrigin() - getTangent()*8.0);
-				ent->createRocket(this->getNextWaypointIndex(), rocketT);
-				//ent->createCar("model/ship1.lwo", carMass, rocketT);
-				break;
+					btVector3 forward = getTangent();
+					forward.setY(0);
+					chassis->applyCentralForce(-10000.0*forward);
 				}
-			case 3:{
-				//TODO: NOVA POWERUP
-				//printf("USING NOVA WHAAAT\n");
-				btGhostObject * explosionShell;
-				explosionShell = new btGhostObject();
-				btCollisionShape* sphereShape;
-				sphereShape = new btSphereShape(btScalar(forceBubbleModifier));
-				explosionShell->setCollisionShape(sphereShape);
-				explosionShell->setWorldTransform(physicsObject->getWorldTransform());
-				explosionShell->setCollisionFlags(physicsObject->CF_NO_CONTACT_RESPONSE);
-				
-				Physics * phys = Physics::Inst();				
-				phys->addGhost(explosionShell);
-
-				btAlignedObjectArray<btCollisionObject*> oa = explosionShell->getOverlappingPairs();
-				printf("I hit %i things!\n",oa.size());
-
-				for(int i=0; i< oa.size(); i++){
-					btCollisionObject * carMaybe = oa.at(i);
-					
-					int index = ent->getCarIndexViaPointer(carMaybe);
-					if(index != -1){
-						Car* carTemp = ent->getCar(index);
-						if(carTemp != this){
-							//APPLY NOVA FORCE TO THE CAR! BAM!
-							btScalar modifier = 400.f -(carTemp->getPosition().distance(getPosition()));
-							printf("Modifier: %f\n",modifier);
-							
-							btVector3 between = carTemp->getPosition()-getPosition();
-							btVector3 force = between.normalized();
-
-							force = force*forceBubbleModifier;
-							force = force - between;
-							force = modifier*force;
-
-							carTemp->chassis->applyCentralForce(force);
-						}
+				//SLOW POWERUP
+				else {
+					EntityManager * ent;
+					ent = EntityManager::getInstance();
+					ent->createSlowField(this);				
+				}
+				break;
+			   }
+			case ROCKET_SHIELD:
+				{
+				//ROCKET POWERUP
+					if (offensive)
+					{
+						btTransform rocketT= physicsObject->getWorldTransform();				
+						rocketT.setOrigin( rocketT.getOrigin() - getTangent()*8.0);
+						ent->createRocket(this->getNextWaypointIndex(), rocketT, id);
+						//ent->createCar("model/ship1.lwo", carMass, rocketT);
 					}
+					else{
+						ent->createShield(this);
+					}
+					//TODO: add SHIELD
+				break;
 				}
+			case NOVA_MINE:{
+				//NOVA POWERUP
+				if (!offensive)
+				{
+					btGhostObject * explosionShell;
+					explosionShell = new btGhostObject();
+					btCollisionShape* sphereShape;
+					sphereShape = new btSphereShape(btScalar(forceBubbleModifier));
+					explosionShell->setCollisionShape(sphereShape);
+					explosionShell->setWorldTransform(physicsObject->getWorldTransform());
+					explosionShell->setCollisionFlags(physicsObject->CF_NO_CONTACT_RESPONSE);
+					
+					Physics * phys = Physics::Inst();				
+					phys->addGhost(explosionShell);
 
-				phys->removeGhost(explosionShell);
-				break;
-				   }
+					btAlignedObjectArray<btCollisionObject*> oa = explosionShell->getOverlappingPairs();
+					printf("I hit %i things!\n",oa.size());
 
-			case 4:
-				//TODO: SLOW POWERUP
-				EntityManager * ent;
-				ent = EntityManager::getInstance();
-				ent->createSlowField(this);
+					for(int i=0; i< oa.size(); i++){
+						btCollisionObject * carMaybe = oa.at(i);
+						
+						int index = ent->getCarIndexViaPointer(carMaybe);
+						if(index != -1){
+							Car* carTemp = ent->getCar(index);
+							if(carTemp != this){
+								//APPLY NOVA FORCE TO THE CAR! BAM!
+								btScalar modifier = 400.f -(carTemp->getPosition().distance(getPosition()));
+								printf("Modifier: %f\n",modifier);
+								
+								btVector3 between = carTemp->getPosition()-getPosition();
+								btVector3 force = between.normalized();
+
+								force = force*forceBubbleModifier;
+								force = force - between;
+								force = modifier*force;
+
+								carTemp->chassis->applyCentralForce(force);
+							}
+						}
+					}				
+					phys->removeGhost(explosionShell);
+				}
+				//TODO: MINE POWERUP
+				else {}
 				break;
-			case 5:
-				//TODO: TRACTION/MINE POWERUP
-				break;
-			case 6:
-				//TODO: SHIELD
-				break;
+				   }			
 		}
 	}
 }

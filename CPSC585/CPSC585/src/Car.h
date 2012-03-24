@@ -60,7 +60,7 @@ public:
 	
 	int AddPowerUp( int type );
 	int GetNumberPowerUps();
-	void UsePowerUp( int index );
+	void UsePowerUp( int index, bool offensive );
 
 	void RotatePowerups( bool RotateLeft );
 
@@ -79,6 +79,7 @@ public:
 	Car* getClosestCar(bool inFront);
 
 	btCompoundShape * slowBlobContainer;
+	bool shieldActive;
 
 private:
 	btScalar width, length, height;

@@ -68,7 +68,44 @@ void AIHandler::generateNextMove(){
 		ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0f);
 		c->observeForwardForce(ffe);
 		delete ffe;
+
+		PowerUpCheck(c);
 		//printf("Car: %d, Forward = %f, Turn = %f\n", i, forwardForce, roationForce);
+	}
+}
+
+void AIHandler::PowerUpCheck(Car* c)
+{
+	for (int i= 0; i < 3; i++)
+	{
+		PowerUp* p = c->GetPowerUpAt(i);	
+		bool carInFront = c->getClosestCar(true) != NULL;
+		bool carBehind = c->getClosestCar(false) != NULL && carInFront == false;
+		switch(p->GetType())
+		{
+		case(ROCKET_SHIELD):
+			{
+				if (carInFront)
+					c->UsePowerUp(i, true);
+				else 
+				{
+					btAlignedObjectArray<Spawnable*>* spawnList = EntityManager::getInstance()->getSpawnableList();
+					for (int j = 0; j < spawnList->size(); j++)
+					{
+						if ((spawnList->at(j)->getPosition() - c->getPosition()).length() < 20.0)
+							c->UsePowerUp(i, false);
+					}
+				}
+			}
+		case(SPEED_SLOW):
+			{
+				if (carBehind)
+				{
+					c->UsePowerUp(i, true);
+				}				
+			}
+		}
+		
 	}
 }
 

@@ -6,12 +6,9 @@
 enum PowerUpType
 {
 	EMPTY = 0,
-	SPEED,
-	ROCKET,
-	NOVA,
-	SLOW,
-	TRACTION,
-	SHIELD
+	SPEED_SLOW,
+	ROCKET_SHIELD,
+	NOVA_MINE,		
 	//Landmine?
 };
 

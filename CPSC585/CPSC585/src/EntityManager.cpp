@@ -197,11 +197,11 @@ void EntityManager::createSpawnable(char* path, btTransform &trans)
 	Physics::Inst()->addEntity(*sp);
 }
 
-void EntityManager::createRocket(int startingWaypoint, btTransform &trans)
+void EntityManager::createRocket(int startingWaypoint, btTransform &trans, int carId)
 {
 	btScalar mass = btScalar(0.f);
 	
-	Spawnable* sp = new Rocket(startingWaypoint);
+	Spawnable* sp = new Rocket(startingWaypoint, carId);
 
 	sp->initRenderObject("model/Rocket.dae");
 
@@ -209,11 +209,30 @@ void EntityManager::createRocket(int startingWaypoint, btTransform &trans)
 	btCollisionShape* sphereMesh = sFactory.createSphere(radius);
 
 	// I think our problem is here!
-	//sp->initPhysicsObject(sphereMesh, mass, trans);
+	sp->initPhysicsObject(sphereMesh, mass, trans);
 
-	//addSpawnable(sp);
+	addSpawnable(sp);
 
-	//Physics::Inst()->addEntity(*sp);
+	Physics::Inst()->addEntity(*sp);
+}
+
+void EntityManager::createShield(Car *c)
+{
+	btScalar mass = btScalar(0.f);
+	
+	Spawnable* sp = new Shield(c);
+
+	bool temp = sp->initRenderObject("model/shield.dae");
+
+	btScalar radius = 2.5f;
+	btCollisionShape* sphereMesh = sFactory.createSphere(radius);
+
+	
+	sp->initPhysicsObject(sphereMesh, mass, c->getPhysicsObject()->getWorldTransform());
+
+	addSpawnable(sp);
+
+	Physics::Inst()->addEntity(*sp);
 }
 
 

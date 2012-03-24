@@ -23,6 +23,7 @@
 #include "Camera.h"
 #include "AIHandler.h"
 #include "Timer.h"
+#include "Rocket.h"
 
 #include "Sound.h"
 #define SANDBOX 0
@@ -34,6 +35,13 @@ const int SKIP_TICKS = 1000/TICKS_PER_SECONDS;
 const int MAX_FRAMESKIP = 5;
 
 ALuint EngineSource = 2;
+
+
+void fnExit1 (void)
+{
+  int i = 3;
+  i += 1;
+}
 
 
 // Other init
@@ -522,7 +530,11 @@ void process_events()
 			if (controller1.isBDown())
 			{
 				//createWaypoint();
-				entManager->getCar(0)->RotatePowerups( false );
+				if(entManager->getCar(0)->GetPowerUpAt(0)->GetType() != 0)
+				{
+					entManager->getCar(0)->UsePowerUp(0, false);
+					entManager->getCar(0)->RotatePowerups( true );
+				}				
 			}
 			if(controller1.isADown())
 			{				
@@ -533,7 +545,7 @@ void process_events()
 				//printf("Trying to use a speed boost...\n");
 				if(entManager->getCar(0)->GetPowerUpAt(0)->GetType() != 0)
 				{
-					entManager->getCar(0)->UsePowerUp(0);
+					entManager->getCar(0)->UsePowerUp(0, true);
 					entManager->getCar(0)->RotatePowerups( true );
 				}
 				//moveWaypoint();
@@ -545,7 +557,7 @@ void process_events()
 			}
 			if(controller1.isYDown())
 			{
-
+				entManager->getCar(0)->RotatePowerups( false );
 			}
 			if(controller1.isButtonDown(controller1.R_Bump))
 			{
@@ -664,11 +676,14 @@ void resetCars(){
 	}
 }
 
+
+
+
 // Engine Main
 int main(int argc, char** argv)
 {	
 	// INITIALIZATIONS
-
+	
 	
 	//Initialize the renderer
 	bool renInit = ren->init();
@@ -721,12 +736,13 @@ int main(int argc, char** argv)
 
 	entManager->createCar("model/ship1.lwo", carMass, carT1);	
 	entManager->createCar("model/ship1.lwo", carMass, carT2);	
+	/*
 	for(int i = 1; i < 2; i++){
 		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
 		entManager->createCar("model/ship1.lwo", carMass, carT3);	
 		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
 		entManager->createCar("model/ship1.lwo", carMass, carT4);	
-	}
+	}*/
 	
 	
 #if SANDBOX
@@ -757,7 +773,7 @@ int main(int argc, char** argv)
 	delete e;
 
 	float EngineModifier = 0;
-
+	
 	int LapNumber = 1;
 	int WaypointIndex = -1;
 	int CurrentWaypointIndex = 0;
@@ -779,6 +795,7 @@ int main(int argc, char** argv)
 
 	Uint32 next_game_tick = SDL_GetTicks();
 	// game loop
+	atexit (fnExit1);
 	while(running)
 	{		
 /*
@@ -911,6 +928,16 @@ int main(int argc, char** argv)
 		currentTime = SDL_GetTicks();
 
 		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
+
+		//for (int i = 0; i < entManager->getSpawnableList()->size(); i++)
+		//{
+		//	Rocket* r = dynamic_cast<Rocket*>(entManager->getSpawnableList()->at(i));
+		//	if (r == NULL)
+		//		continue;
+		//	r->applyNextMove();
+		//	printf(r->toString().c_str());
+		//}
+		
 /*
 		frameCount++;
 		instantFrameCount++;

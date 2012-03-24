@@ -1,6 +1,7 @@
 #include "Rocket.h"
+#include "time.h"
 
-Rocket::Rocket(int startingWaypoint) : reloadObserver(this, &Rocket::reloadVariables)
+Rocket::Rocket(int startingWaypoint, int spawnedBy) : reloadObserver(this, &Rocket::reloadVariables)
 {
 	nextWaypoint = startingWaypoint;
 	waypoints = EntityManager::getInstance()->getWaypointList();
@@ -11,7 +12,9 @@ Rocket::Rocket(int startingWaypoint) : reloadObserver(this, &Rocket::reloadVaria
 	reloadObserver.init(EventTypes::RELOAD_VARIABLES);
 	//ReloadEvent r = new ReloadEvent();	
 	rocketSpeed = 5.0;
-	detectionRange = 100;
+	detectionRange = 100;	
+	this->timeToSelfDestruct = clock() + 5 * CLOCKS_PER_SEC;
+	this->carId = spawnedBy;
 }
 
 
@@ -32,10 +35,13 @@ void Rocket::applyNextMove()
 		waypointIndex = getNextWaypointIndex();
 		Waypoint* w = waypoints->at(waypointIndex);
 		positionCheck(w);		
-	}
+	}	
 	rocketPos = getPosition();
-	if(closeC != NULL)
+	if(closeC != NULL && closeC ->id != carId)
+	{
 		wayPos = closeC->getPosition();
+		nextWaypoint = closeC->getNextWaypointIndex();
+	}
 	else
 		wayPos = w->getPosition();
 	tan = getTangent();	
@@ -51,7 +57,7 @@ void Rocket::applyNextMove()
 	distance = toWaypoint.length();
 	forwardForce = btScalar(-distance*forwardModifier);
 
-	btVector3 mov = getPosition() + toWaypoint.normalize()* rocketSpeed;	
+	btVector3 mov = getPosition() + toWaypoint.normalize()* rocketSpeed;
 	this->physicsObject->getWorldTransform().getOrigin().setValue(mov.x(), mov.y(), mov.z());
 
 

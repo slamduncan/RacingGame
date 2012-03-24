@@ -12,7 +12,7 @@ class Rocket : public Spawnable {
 public:	
 	void applyNextMove();
 	int getNextWaypointIndex();
-	Rocket(int startingWaypointIndex);
+	Rocket(int startingWaypointIndex, int spawnedBy);
 	void setNextWaypointIndex(int index);
 	void reloadVariables(ReloadEvent *e);
 private:
@@ -26,7 +26,7 @@ private:
 	float maxMovementForce;
 	float rateOfChangeModifier;
 	float rocketSpeed;
-	float detectionRange;
+	float detectionRange;	
 	MethodObserver<ReloadEvent, Rocket> reloadObserver;
 };
 
