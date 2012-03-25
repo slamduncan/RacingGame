@@ -84,6 +84,7 @@ public:
 	bool shieldActive;
 	bool halfWayAround; //For lap counts.
 	int lapCount;
+	bool usedPowerUpRecently;
 
 private:
 	btScalar width, length, height;

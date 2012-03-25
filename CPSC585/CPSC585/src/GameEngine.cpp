@@ -651,10 +651,10 @@ void resetCars(){
 				entManager->resetCar(i, btVector3(0, 3, 0));
 			}
 		}
-		if (c->getNormal().dot(btVector3(0,1,0)) < 0.1 || c->AIresetCounter > 1000)
+		if (c->getNormal().dot(btVector3(0,1,0)) < 0.1 || c->AIresetCounter > 120)
 		{
 			c->resetCounter++;
-			if (c->resetCounter > 40 || c->AIresetCounter > 1000)
+			if (c->resetCounter > 40 || c->AIresetCounter > 120)
 			{
 				int index = getClosestWaypoint(c);
 				if (entManager->getWaypointList()->size() > 0 && index != -1)
@@ -664,6 +664,7 @@ void resetCars(){
 					btQuaternion q = btQuaternion(btVector3(0,1,0), trans.getRotation().getAngle() + SIMD_PI);
 					trans.setRotation(q);
 					entManager->resetCar(i, trans);
+					c->setNextWaypointIndex(w->getIndex());
 				}
 				else
 				{
@@ -785,6 +786,7 @@ int main(int argc, char** argv)
 	Uint32 physicsCurrentTime = SDL_GetTicks();
 	Uint32 physicsOldTime = SDL_GetTicks();
 	int frameCount = 0;
+	int AIpowerUPDelayCounter = 0;
 	int counter = 1;
 	int instantFrameCount = 0;
 	stringstream instantFrameCountBuffer;
@@ -850,7 +852,13 @@ int main(int argc, char** argv)
 			controller1.emitRightAnalog();
 
 			// AI
+			AIpowerUPDelayCounter++;
 			ai->generateNextMove();
+			if (AIpowerUPDelayCounter > 240)
+			{
+				for(int i = 0; i < entManager->numCars(); i++)			
+					entManager->getCar(i)->usedPowerUpRecently = false;
+			}
 			entManager->getCar(0)->setNextWaypointIndex(getClosestWaypoint());
 			
 

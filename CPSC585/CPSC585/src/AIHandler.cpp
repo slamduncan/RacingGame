@@ -82,19 +82,28 @@ void AIHandler::generateNextMove(){
 
 void AIHandler::PowerUpCheck(Car* c)
 {
+	if (c->usedPowerUpRecently)
+		return;
 	for (int i= 0; i < 3; i++)
 	{
 		PowerUp* p = c->GetPowerUpAt(i);	
-		bool carInFront = c->getClosestCar(true) != NULL;
-		bool carBehind = c->getClosestCar(false) != NULL && carInFront == false;
+		Car* closestFrontCar = c->getClosestCar(true);
+		Car* closestBackCar = c->getClosestCar(false);
+		bool carInFront = closestFrontCar != NULL;
+		bool carBehind = closestBackCar != NULL && carInFront == false;
 		switch(p->GetType())
 		{
 		case(ROCKET_SHIELD):
 			{
+				//Rocket
 				if (carInFront)
-					c->UsePowerUp(i, true);
+				{
+					if ((closestFrontCar->getPosition() - c->getPosition()).length() >10.0)
+						c->UsePowerUp(i, true);
+				}
 				else 
 				{
+					//Shield
 					btAlignedObjectArray<Spawnable*>* spawnList = EntityManager::getInstance()->getSpawnableList();
 					for (int j = 0; j < spawnList->size(); j++)
 					{
@@ -102,13 +111,27 @@ void AIHandler::PowerUpCheck(Car* c)
 							c->UsePowerUp(i, false);
 					}
 				}
+				break;
 			}
 		case(SPEED_SLOW):
 			{
+				//Slow
 				if (carBehind)
 				{
 					c->UsePowerUp(i, true);
-				}				
+				}
+				break;
+			}
+		case(NOVA_MINE):
+			{
+				//Nova
+				if ((carInFront || carBehind) && ((closestBackCar->getPosition() - c->getPosition()).length() < 10.0))
+				{
+					c->UsePowerUp(i, false);
+				}
+				else if (carBehind)
+					c->UsePowerUp(i, true);
+				break;
 			}
 		}
 		

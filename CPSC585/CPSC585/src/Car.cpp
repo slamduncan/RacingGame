@@ -60,6 +60,7 @@ updateVariableObserver(this, &Car::observeVariables)
 	PowerUp p2 = PowerUp();
 	PowerUp p3 = PowerUp();
 	shieldActive = false;
+	usedPowerUpRecently = false;
 
 	m_CarPowerUps[0] = p1;
 	m_CarPowerUps[1] = p2;
@@ -352,6 +353,7 @@ void Car::UsePowerUp( int index , bool offensive)
 	if( index >= 0 && index < MAX_POWERUPS ){
 		int pUpType = m_CarPowerUps[index].GetType();
 		m_CarPowerUps[index].SetType( EMPTY );
+		usedPowerUpRecently = true;
 		EntityManager * ent = EntityManager::getInstance();
 		//printf("Activating powerup with type %i!\n",pUpType);
 		switch(pUpType){
