@@ -61,6 +61,8 @@ void Physics::step(btScalar &timeStep)
 	//Check Powerups for car collisions
 	for (int i=0; i< entityManager->getPowerUpList()->size(); i++){
 		PowerUp* p = entityManager->getPowerup(i);
+
+		//Respawn the powerup if it is time
 		if(p->timeToRespawn < clock() && p->timeToRespawn != 0){
 			p->timeToRespawn = 0;
 			p->setCollected(false);
@@ -213,7 +215,7 @@ void Physics::step(btScalar &timeStep)
 			if(index != -1 && index != sf->carId)
 			{
 				//printf("YOU GOT ME A CAR!! OMG!!! OMG!!! \n");
-				printf("!");
+				//printf("!");
 				if (!entityManager->getCar(index)->shieldActive)
 					entityManager->getCar(index)->setBeingSlowed();
 			}
