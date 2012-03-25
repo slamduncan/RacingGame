@@ -5,9 +5,9 @@
   <gravity xComponent = "0.0" yComponent ="-105.0" zComponent ="0.0"/>
   <staticFrictionModifier value ="1.0" />
   <dynamicFrictionModifier value = "1.0"/>
-  <forwardForceModifier value ="600.0"/>
+  <forwardForceModifier value ="500.0"/>
   <sideFrictionModifier value ="100.0"/>
-  <forwardFrictionModifier value ="0.5"/>
+  <forwardFrictionModifier value ="0.3"/>
   <turningForceModifier value ="9.0" />
   <springForceModifier value="3.0"/>
   
@@ -16,5 +16,6 @@
   <rocketModifier value ="1.0"/>
   <tractionBoostModifier value ="1.0"/>
   <shieldModifier value ="1.0"/>
-  <forceBubbleModifier value ="100.0" />  
+  <forceBubbleModifier value ="100.0" />
+  <slidingFrictionModifier value="100.0"/>
 </Physics>

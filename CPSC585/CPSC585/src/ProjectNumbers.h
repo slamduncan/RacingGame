@@ -33,6 +33,7 @@ public:
 		float tractionBoostModifier; //Car
 		float shieldModifier; //Car
 		float forceBubbleModifier ; //Car
+		float slidingFrictionModifier;//Car
 	} physicsInfo;
 
 	struct AI{

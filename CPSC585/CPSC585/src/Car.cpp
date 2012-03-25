@@ -54,6 +54,7 @@ updateVariableObserver(this, &Car::observeVariables)
 	shieldModifier = 1;
 	forceBubbleModifier = 1;
 	detectionRange = 10.0;
+	slidingFrictionModifier = 1.0;
 
 	PowerUp p1 = PowerUp();
 	PowerUp p2 = PowerUp();
@@ -117,12 +118,16 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 	}
 	// player is decelerating
 	else
-	{
+	{				
 		// apply to all the wheels
 		for(int i = 0; i < 4; i++)
 		{
+			
 			if(newWheels[i].onGround)
 			{
+				//Apply Reverse Cap
+				if (tan.length() > 100)
+					tan = tan.normalize() * 100.0;
 				chassis->applyForce(tan, wheelOffsets[i]);
 			}
 		}
@@ -250,6 +255,15 @@ void Car::updateWheels()
 			chassis->applyForce(getTangent() * forwardFriction[i]*0.1f * forwardFrictionModifier,relpos);
 			*/
 			chassis->applyCentralForce(forwardFricMag * forwardFrictionModifier);
+
+			/* Apply sideways friction so it less like ice driving... */
+			float amountOnBi = forwardFricMag.dot(getBinormal());
+			btScalar forceAmount(0);
+			if (amountOnBi < 0)
+				forceAmount = -sqrt(abs(forwardFricMag.dot(getBinormal()))) * slidingFrictionModifier;
+			else
+				forceAmount = sqrt(abs(forwardFricMag.dot(getBinormal()))) * slidingFrictionModifier;
+			chassis->applyCentralForce(getBinormal() * forceAmount);
 		}
 
 	}
@@ -295,6 +309,7 @@ void Car::observeVariables(ReloadEvent *e){
 	shieldModifier = e->numberHolder.physicsInfo.shieldModifier;
 	forceBubbleModifier = e->numberHolder.physicsInfo.forceBubbleModifier;
 	detectionRange = e->numberHolder.aiInfo.carDetectionRange;
+	slidingFrictionModifier = e->numberHolder.physicsInfo.slidingFrictionModifier;
 }
 
 PowerUp * Car::GetPowerUpAt( int index )

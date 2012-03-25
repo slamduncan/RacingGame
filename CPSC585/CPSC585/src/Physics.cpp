@@ -202,7 +202,8 @@ void Physics::step(btScalar &timeStep)
 			{
 				//printf("YOU GOT ME A CAR!! OMG!!! OMG!!! \n");
 				printf("!");
-				entityManager->getCar(index)->setBeingSlowed();
+				if (!entityManager->getCar(index)->shieldActive)
+					entityManager->getCar(index)->setBeingSlowed();
 			}
 		}
 	}

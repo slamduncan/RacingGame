@@ -97,7 +97,7 @@ void Camera::updateCamera(btTransform &transform)
 
 	int interpelationCount = 0;
 	cameraPosition = cameraPosition.lerp(target, 0.01f);
-	while((cameraPosition - lookAtPoint).length() > 50 && interpelationCount < 20)
+	while((cameraPosition - lookAtPoint).length() > 50 && interpelationCount < 70)
 	{
 		cameraPosition = cameraPosition.lerp(target, 0.01f);
 		interpelationCount++;
