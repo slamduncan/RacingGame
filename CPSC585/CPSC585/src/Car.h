@@ -81,6 +81,8 @@ public:
 
 	btCompoundShape * slowBlobContainer;
 	bool shieldActive;
+	bool halfWayAround; //For lap counts.
+	int lapCount;
 
 private:
 	btScalar width, length, height;

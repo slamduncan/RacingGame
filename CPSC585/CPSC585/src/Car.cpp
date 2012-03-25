@@ -28,8 +28,8 @@
 //     wheel1 |                        | wheel 0
 //            |------------------------|
 Car::Car() : rotationObserver(this, &Car::observeRotation), 
-			forwardForceObserver(this, &Car::observeForwardForce),
-			updateVariableObserver(this, &Car::observeVariables)
+forwardForceObserver(this, &Car::observeForwardForce),
+updateVariableObserver(this, &Car::observeVariables)
 {		
 	Car::width = btScalar(5.0f);
 	Car::height = btScalar(5.0f);
@@ -48,11 +48,11 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	lastAngleForce = 0.0;
 	resetCounter = 0;
 	speedBoostModifier = 1; 
-    slowFieldModifier = 1;
-    rocketModifier = 1;
-    tractionBoostModifier = 1;
-    shieldModifier = 1;
-    forceBubbleModifier = 1;
+	slowFieldModifier = 1;
+	rocketModifier = 1;
+	tractionBoostModifier = 1;
+	shieldModifier = 1;
+	forceBubbleModifier = 1;
 	detectionRange = 10.0;
 
 	PowerUp p1 = PowerUp();
@@ -65,6 +65,8 @@ Car::Car() : rotationObserver(this, &Car::observeRotation),
 	m_CarPowerUps[2] = p3;
 
 	beingSlowed = false;
+	halfWayAround = false;
+	lapCount = 1;
 }
 
 void Car::initObservers()
@@ -78,17 +80,17 @@ void Car::observeRotation(RotationEvent *e){
 
 	btVector3 temp = chassis->getAngularVelocity();
 	//btVector3 temp = physicsObject->getAngularVelocity();
-	
+
 	if (temp.length() < 5)
-	//physicsObject->setAngularVelocity(test);
+		//physicsObject->setAngularVelocity(test);
 		//physicsObject->applyTorque(test);
 		chassis->applyTorque(test);	
 }
 
 void Car::observeForwardForce(ForwardForceEvent *e){
-	
+
 	btScalar engineForce = e->getNormForce();
-	
+
 	btVector3 tan = getTangent() * engineForce * forwardForceModifier;
 	tan.setY(0);	// project to the xz plane
 	tan /= 4.0f;
@@ -138,9 +140,9 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 	if(cShape != NULL)
 	{
 		btVector3 inertia;
-		
+
 		cShape->calculateLocalInertia(mass, inertia);
-		
+
 		btDefaultMotionState* entMotionState = new btDefaultMotionState(trans);
 
 		btRigidBody::btRigidBodyConstructionInfo entRigidBodyCI(mass,entMotionState,cShape,inertia);
@@ -155,7 +157,7 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 		updateSpringLocations();
 		setUpWheelStuff();
 		btScalar wheelLength(4.0f);
-	
+
 		newWheels[0] = Wheel(hoverValue, wheelLength, btScalar(3),
 			kValue, critDampingValue, (gravity),(getPosition() + wheelOffsets[0]),
 			(getPosition() + wheelOffsets[0] - getNormal()*3.0f), chassis);
@@ -195,16 +197,16 @@ void Car::updateWheels()
 	btVector3 sideFricMag = -(this->chassis->getAngularVelocity());
 	//printf("Angular = %f, %f, %f\n" , chassis->getAngularVelocity().x(), chassis->getAngularVelocity().y(), chassis->getAngularVelocity().z());
 	//printf("DeltatAngle = %f, %f, %f\n" , chassis->getDeltaAngularVelocity().x(), chassis->getDeltaAngularVelocity().y(), chassis->getDeltaAngularVelocity().z());
-	
+
 	btVector3 forwardFricMag = -(this->chassis->getLinearVelocity());
 	for(int i = 0; i < 4; i++)
 	{
 		if(newWheels[i].hitObject)
 		{			
 			btVector3 contact = newWheels[i].getBottomSpringPosition();
-			
+
 			btRigidBody* groundObject = (class btRigidBody*) newWheels[i].hitObject;
-			
+
 			//resolveSingleBilateral(*chassis, contact, *groundObject, contact, btScalar(0.),getBinormal(), sideFriction[i], 1/60.0f);
 			//sideFriction[i] = -sideFricMag/4 * sideFrictionModifier *0.05 ;
 			//printf("%f\t", sideFriction[i]);
@@ -216,17 +218,17 @@ void Car::updateWheels()
 		}
 	}
 	//printf("\n");
-	
+
 
 	for (int i = 0; i < 4; i++){
 		btVector3 contact = newWheels[i].getBottomSpringPosition();
 		chassis->applyForce(forces[i]*springForceModifier,contact - chassis->getCenterOfMassPosition()/*wheelOffsets[i]*/);
-		
+
 		if(sideFriction[i] != btScalar(1.) && newWheels[i].hitObject)
 		{
 			/*
 			btVector3 carNormal = getNormal();
-			
+
 			btVector3 relpos = contact - chassis->getCenterOfMassPosition();
 
 			relpos -= carNormal * (carNormal.dot(relpos));
@@ -235,12 +237,12 @@ void Car::updateWheels()
 			*/
 			chassis->applyTorque(sideFricMag/4.0f * sideFrictionModifier);
 		}
-	
+
 		if(forwardFriction[i] != btScalar(1.) && newWheels[i].hitObject)
 		{
 			/*
 			btVector3 carNormal = getNormal();
-			
+
 			btVector3 relpos = contact - chassis->getCenterOfMassPosition();
 
 			relpos -= carNormal * (carNormal.dot(relpos));
@@ -249,7 +251,7 @@ void Car::updateWheels()
 			*/
 			chassis->applyCentralForce(forwardFricMag * forwardFrictionModifier);
 		}
-		
+
 	}
 }
 
@@ -298,13 +300,13 @@ void Car::observeVariables(ReloadEvent *e){
 PowerUp * Car::GetPowerUpAt( int index )
 {
 	assert(index >= 0 && index < MAX_POWERUPS);
-	
+
 	return & m_CarPowerUps[index];
 }
 
 int Car::AddPowerUp( int type )
 {
-//	printf("NP Before: %d\n", GetNumberPowerUps());
+	//	printf("NP Before: %d\n", GetNumberPowerUps());
 
 	for( int i = 0; i < MAX_POWERUPS; i++ )
 	{
@@ -312,15 +314,15 @@ int Car::AddPowerUp( int type )
 		{
 			//printf("Adding powerup at location %d with type %d\n",i,type);
 			m_CarPowerUps[i].SetType( type );
-//			printf("NP After: %d\n", GetNumberPowerUps());
+			//			printf("NP After: %d\n", GetNumberPowerUps());
 			return 1;
 		}
 	}
 	return 0;
- }
+}
 
 int Car::GetNumberPowerUps(){
-	
+
 	int count = 0;
 	for(int i = 0; i < MAX_POWERUPS; i++){
 		if(m_CarPowerUps[i].GetType() != EMPTY){
@@ -353,10 +355,10 @@ void Car::UsePowerUp( int index , bool offensive)
 					ent->createSlowField(this);				
 				}
 				break;
-			   }
+							}
 			case ROCKET_SHIELD:
 				{
-				//ROCKET POWERUP
+					//ROCKET POWERUP
 					if (offensive)
 					{
 						btTransform rocketT= physicsObject->getWorldTransform();				
@@ -364,11 +366,11 @@ void Car::UsePowerUp( int index , bool offensive)
 						ent->createRocket(this->getNextWaypointIndex(), rocketT, id);
 						//ent->createCar("model/ship1.lwo", carMass, rocketT);
 					}
+					//Shield PowerUP
 					else{
 						ent->createShield(this);
-					}
-					//TODO: add SHIELD
-				break;
+					}					
+					break;
 				}
 			case NOVA_MINE:
 				{
@@ -413,14 +415,14 @@ void Car::UsePowerUp( int index , bool offensive)
 						}				
 						phys->removeGhost(explosionShell);
 					}
-				//MINE POWERUP
-				else 
-				{
-					EntityManager * ent;
-					ent = EntityManager::getInstance();
-					ent->createMine(this,"model/waypoint.obj");
-				}
-				break;
+					//MINE POWERUP
+					else 
+					{
+						EntityManager * ent;
+						ent = EntityManager::getInstance();
+						ent->createMine(this,"model/waypoint.obj");
+					}
+					break;
 				}
 		}
 	}
@@ -463,7 +465,7 @@ std::string Car::toString()
 	{
 		//int type = GetPowerUpAt(i).GetType();
 		//printf("Type %d\n", type);
-		
+
 		//stream << GetPowerUpAt(i).GetType() << ", ";
 	}
 

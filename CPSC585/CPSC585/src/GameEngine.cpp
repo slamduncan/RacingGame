@@ -736,13 +736,13 @@ int main(int argc, char** argv)
 
 	entManager->createCar("model/ship1.lwo", carMass, carT1);	
 	entManager->createCar("model/ship1.lwo", carMass, carT2);	
-	/*
+	
 	for(int i = 1; i < 2; i++){
 		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
 		entManager->createCar("model/ship1.lwo", carMass, carT3);	
 		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
 		entManager->createCar("model/ship1.lwo", carMass, carT4);	
-	}*/
+	}
 	
 	
 #if SANDBOX
@@ -854,18 +854,36 @@ int main(int argc, char** argv)
 			
 
 			// Calculate current lap for player's car
-			WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
-			if( WaypointIndex != CurrentWaypointIndex )
+			for (int i = 0 ; i < entManager->getCarList()->size(); i++)
 			{
-				CurrentWaypointIndex = WaypointIndex;
-				if( CurrentWaypointIndex == 0 )
+				Car* tempCarPtr = entManager->getCar(i);
+				int currentWPIndex = tempCarPtr->getNextWaypointIndex();
+				if (currentWPIndex > entManager->getWaypointList()->size()/2)
 				{
-					LapNumber++;
+					tempCarPtr->halfWayAround = true;
+				}
+				if (tempCarPtr->halfWayAround && currentWPIndex < 10)
+				{
+					tempCarPtr->halfWayAround = false;
+					tempCarPtr->lapCount++;
 					LapMinutes = 0;
 					LapSeconds = 0;
 					LapMilliseconds = 0;
 				}
 			}
+
+			//WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
+			//if( WaypointIndex != CurrentWaypointIndex )
+			//{
+			//	CurrentWaypointIndex = WaypointIndex;
+			//	if( CurrentWaypointIndex == 0 )
+			//	{
+			//		LapNumber++;
+			//		LapMinutes = 0;
+			//		LapSeconds = 0;
+			//		LapMilliseconds = 0;
+			//	}
+			//}
 
 			next_game_tick += SKIP_TICKS;
 			loops++;
@@ -974,7 +992,7 @@ int main(int argc, char** argv)
 		
 		std::stringstream ssLapTime;
 		std::stringstream ssLap;
-		ssLap << LapNumber;
+		ssLap << entManager->getCar(0)->lapCount;
 
 		// Calculate the current lap time
 		if( LapMinutes < 10 )

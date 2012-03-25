@@ -3,23 +3,15 @@
 #include "Renderer.h"
 #include "PowerUp.h"
 #include "Rocket.h"
+#include "SlowField.h"
 #include "Time.h"
 
 Physics* Physics::physInstance = 0;
 EntityManager* entityManager;
 Renderer* physRender;
 
-void fnExit2 (void)
-{
-  int i = 3;
-  i += 1;
-}
-
-
-
 Physics* Physics::Inst(void){	
 	if(physInstance == 0){
-		atexit(fnExit2);
 		physInstance = new Physics();		
 	}
 	return physInstance;
@@ -199,13 +191,14 @@ void Physics::step(btScalar &timeStep)
 
 	//Check slowfields to see if they need to slow cars or not
 	for(int i=0; i < entityManager->getSlowFieldList()->size(); i++){
-		btGhostObject* go = btGhostObject::upcast(entityManager->getSlowField(i)->physicsObject);
+		SlowField* sf = entityManager->getSlowField(i);
+		btGhostObject* go = btGhostObject::upcast(sf->physicsObject);
 		btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
 		for(int j=0; j< oa.size(); j++){
 			btCollisionObject * carMaybe = oa.at(j);
 			//Todo: check this pointer against all car pointers in carList
 			int index = entityManager->getCarIndexViaPointer(carMaybe);
-			if(index != -1)
+			if(index != -1 && index != sf->carId)
 			{
 				//printf("YOU GOT ME A CAR!! OMG!!! OMG!!! \n");
 				printf("!");
@@ -216,14 +209,15 @@ void Physics::step(btScalar &timeStep)
 
 	//Check mines to see if they blow or not
 	for(int i=0; i < entityManager->getMineList()->size(); i++){
-		btGhostObject* go = btGhostObject::upcast(entityManager->getMine(i)->physicsObject);
+		Mine* mine = entityManager->getMine(i);
+		btGhostObject* go = btGhostObject::upcast(mine->physicsObject);
 		btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
 		////--------------
 		for(int j=0; j< oa.size(); j++){
 			btCollisionObject * carMaybe = oa.at(j);
 			//Todo: check this pointer against all car pointers in carList
 			int index = entityManager->getCarIndexViaPointer(carMaybe);
-			if(index != -1)
+			if(index != -1 && mine->carId != index)
 			{
 				entityManager->getCar(index)->chassis->applyCentralForce(btVector3(0,15000.0,0));
 
