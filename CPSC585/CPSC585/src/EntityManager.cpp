@@ -162,7 +162,7 @@ void EntityManager::createPowerup(char* path, btTransform &trans)
 	btScalar mass = btScalar(0.f);
 	
 	PowerUp* pup = new PowerUp();
-	pup->SetType(3);
+	pup->SetType(2);
 
 	pup->initRenderObject(path);
 	
@@ -227,7 +227,7 @@ void EntityManager::createShield(Car *c)
 	Spawnable* sp = new Shield(c);
 	sp->carId = c->id;
 
-	bool temp = sp->initRenderObject("model/shield.dae");
+	bool temp = sp->initRenderObject("model/shield.lwo");
 
 	btScalar radius = 2.5f;
 	btCollisionShape* sphereMesh = sFactory.createSphere(radius);
