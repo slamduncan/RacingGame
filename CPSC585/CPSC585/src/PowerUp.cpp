@@ -4,6 +4,7 @@ PowerUp::PowerUp()
 {
 	m_Type = EMPTY;
 	collected = false;
+	timeToRespawn = 0;
 }
 
 int PowerUp::GetType()
@@ -44,10 +45,10 @@ bool PowerUp::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTran
 	return false;
 }
 
-void PowerUp::hitPowerup(){
-	collected = true;
+void PowerUp::setCollected(bool is){
+	collected = is;
 }
 
-bool PowerUp::isHit(){
+bool PowerUp::isCollected(){
 	return collected;
 }

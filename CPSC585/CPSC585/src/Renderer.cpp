@@ -579,7 +579,8 @@ void Renderer::drawAll()
 	// draw powerups
 	for(int i = 0; i < em->numPowerUps(); i++)
 	{
-		drawEntity(*(em->getPowerup(i)));
+		if(em->getPowerup(i)->isCollected() == false)
+			drawEntity(*(em->getPowerup(i)));
 	}
 
 	// draw obstacles
