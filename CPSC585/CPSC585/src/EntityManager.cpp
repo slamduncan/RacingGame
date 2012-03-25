@@ -225,6 +225,7 @@ void EntityManager::createShield(Car *c)
 	btScalar mass = btScalar(0.f);
 	
 	Spawnable* sp = new Shield(c);
+	sp->carId = c->id;
 
 	bool temp = sp->initRenderObject("model/shield.dae");
 
@@ -245,6 +246,7 @@ void EntityManager::createSlowField(Car* c)
 	SlowField* sf = new SlowField(c);
 	
 	sf->initRenderObject("model/powerup.lwo");
+	sf->carId = c->id;
 	
 	btCompoundShape* blobContainer = new btCompoundShape();
 
@@ -303,6 +305,7 @@ void EntityManager::createMine(Car* c, char* path)
 	Mine* mine = new Mine(c);
 
 	mine->initRenderObject(path);
+	mine->carId = c->id;
 	
 	btScalar radius = 2.5f;
 	btCollisionShape* sphereMesh = sFactory.createSphere(radius);
