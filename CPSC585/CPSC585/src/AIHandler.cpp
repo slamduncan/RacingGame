@@ -25,15 +25,21 @@ void AIHandler::generateNextMove(){
 		}
 		Waypoint* w = waypoints->at(waypointIndex);
 		w->positionCheck(c);
+		bool changed = false;
 		while (waypointIndex != c->getNextWaypointIndex())
 		{			
 			Waypoint* w = waypoints->at(waypointIndex);
 			w->positionCheck(c);
 			waypointIndex = c->getNextWaypointIndex();
+			changed = true;			
 		}
 
 		if( i == 0 )
 			continue;
+		if (!changed)
+			c->AIresetCounter++;
+		else 
+			c->AIresetCounter = 0;
 
 		carPos =  c->getPosition();
 		if(closeC != NULL)
@@ -92,7 +98,7 @@ void AIHandler::PowerUpCheck(Car* c)
 					btAlignedObjectArray<Spawnable*>* spawnList = EntityManager::getInstance()->getSpawnableList();
 					for (int j = 0; j < spawnList->size(); j++)
 					{
-						if ((spawnList->at(j)->getPosition() - c->getPosition()).length() < 20.0)
+						if ((spawnList->at(j)->getPosition() - c->getPosition()).length() < 20.0 && spawnList->at(j)->carId != c->id)
 							c->UsePowerUp(i, false);
 					}
 				}

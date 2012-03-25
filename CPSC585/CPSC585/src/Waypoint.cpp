@@ -18,7 +18,7 @@ void Waypoint::setThrottle(int value){
 }
 
 bool Waypoint::initPhysicsObject(btCollisionShape *shape, btScalar &mass, btTransform &location){
-	
+
 	transform = location;
 
 	return true;
@@ -68,12 +68,12 @@ btVector3 Waypoint::getBinormal()
 void Waypoint::positionCheck(Car* car){
 	btVector3 toWaypoint = getPosition() - car->getPosition();
 	//btVector3 toDot = toWaypoint - car->getTangent().normalized();
-	
+
 	//If amount is less than 0, then car is past this.
 	btScalar amount = getTangent().dot(toWaypoint);
-	btScalar amount2 = toWaypoint.dot(getTangent());	
+	btScalar amount2 = abs(getPosition().y() - car->getPosition().y());
 
-	if (amount < goToNextWaypointDistanceBefore && amount > goToNextWaypointDistanceAfter){
+	if (amount < goToNextWaypointDistanceBefore && amount > goToNextWaypointDistanceAfter && amount2 < 10.0){
 		int id = car->id;
 		int nextIndex = 0;
 		//printf("%d\n", direction);
@@ -90,9 +90,9 @@ void Waypoint::positionCheck(Car* car){
 				//printf("%d\n", nextIndex);
 				direction = id % nextWaypoints.size();
 			}
-				//Do stuff to find the next waypoint!
-				if (!nextWaypoints.empty())
-					car->setNextWaypointIndex(nextIndex);
+			//Do stuff to find the next waypoint!
+			if (!nextWaypoints.empty())
+				car->setNextWaypointIndex(nextIndex);
 		}
 
 	}
@@ -178,7 +178,7 @@ std::string Waypoint::toString()
 	}
 	if (converge)
 		stream << "CONVERGE\n";
-	
+
 	return stream.str();
 }
 

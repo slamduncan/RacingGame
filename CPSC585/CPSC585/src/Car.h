@@ -25,6 +25,7 @@ public:
 	btScalar kVal;
 	
 	int resetCounter;
+	int AIresetCounter;
 	//Variable added to test the new spring system.
 	btScalar kValue;
 	btScalar critDampingValue;
@@ -93,6 +94,7 @@ private:
 	float forwardFrictionModifier;
 	float turningForceModifier;
 	float springForceModifier;
+	float slidingFrictionModifier;
 	
 	float speedBoostModifier; 
     float slowFieldModifier;

@@ -438,7 +438,7 @@ void handle_key_down( SDL_keysym* keysym )
 #if SANDBOX
 				writeWaypoints("sandboxWaypoints.w");
 #else
-				writeWaypoints("waypoints.w");
+				//writeWaypoints("waypoints.w");
 #endif
 				break;
 			}
@@ -451,7 +451,7 @@ void handle_key_down( SDL_keysym* keysym )
 #endif
 				break;
 			}
-
+/*
 		case SDLK_c:
 			{
 				markConverge();
@@ -486,7 +486,7 @@ void handle_key_down( SDL_keysym* keysym )
 			{
 				floatingWaypoint();
 				break;
-			}
+			}*/
 		default:
 			{
 				break;
@@ -644,16 +644,17 @@ void resetCars(){
 				btQuaternion q = btQuaternion(btVector3(0,1,0), trans.getRotation().getAngle() + SIMD_PI);
 				trans.setRotation(q);
 				entManager->resetCar(i, trans);
+				c->setNextWaypointIndex(index);
 			}
 			else
 			{
 				entManager->resetCar(i, btVector3(0, 3, 0));
 			}
 		}
-		if (c->getNormal().dot(btVector3(0,1,0)) < 0.1)
+		if (c->getNormal().dot(btVector3(0,1,0)) < 0.1 || c->AIresetCounter > 1000)
 		{
 			c->resetCounter++;
-			if (c->resetCounter > 100)
+			if (c->resetCounter > 40 || c->AIresetCounter > 1000)
 			{
 				int index = getClosestWaypoint(c);
 				if (entManager->getWaypointList()->size() > 0 && index != -1)

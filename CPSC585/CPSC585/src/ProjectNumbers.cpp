@@ -229,6 +229,12 @@ void ProjectNumbers::readPhysics(){
 				if(pElem)
 					pElem->QueryFloatAttribute("value", &physicsInfo.forceBubbleModifier);
 			}
+			//Physics: forceBubbleModifier
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(16).Element();
+				if(pElem)
+					pElem->QueryFloatAttribute("value", &physicsInfo.slidingFrictionModifier);
+			}
 		}
 		else
 		{

@@ -592,6 +592,11 @@ void Renderer::drawAll()
 		for(int j = 0; j < em->getWaypoint(i)->getWaypointList().size(); j++)
 			drawLine(em->getWaypoint(i)->getPosition(), em->getWaypoint(i)->getWaypointList().at(j)->getPosition(), 256, 0, 0 );
 	}
+	for (int i = 0; i < em->getCarList()->size(); i++)
+	{
+		if (em->getCar(i)->getNextWaypointIndex() != -1)
+			drawLine(em->getCar(i)->getPosition(), em->getWaypoint(em->getCar(i)->getNextWaypointIndex())->getPosition(), 256, 0,0);
+	}
 #endif
 
 	for(int i = 0; i < em->numSpawnable(); i++)
