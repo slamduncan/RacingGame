@@ -207,7 +207,7 @@ void EntityManager::createRocket(int startingWaypoint, btTransform &trans, int c
 	
 	Spawnable* sp = new Rocket(startingWaypoint, carId);
 
-	sp->initRenderObject("model/Rocket.dae");
+	sp->initRenderObject("model/rocket.lwo");
 
 	btScalar radius = 2.5f;
 	btCollisionShape* sphereMesh = sFactory.createSphere(radius);

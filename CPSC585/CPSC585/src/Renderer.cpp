@@ -190,7 +190,7 @@ int Renderer::initGL()
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity( );
     // horizontal fov, vertical fov, min view distance, max view distance
-	gluPerspective( 60.0, ratio, 1.0, 1024.0 );	// need to fix this to change fov on the fly
+	gluPerspective( 60.0, ratio, 1.0, 2048.0 );	// need to fix this to change fov on the fly
 	glMatrixMode(GL_MODELVIEW);	// switch back to model view
 
 	glDisable2D();
