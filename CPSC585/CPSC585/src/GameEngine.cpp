@@ -691,8 +691,8 @@ int main(int argc, char** argv)
 
 	// DEBUG DRAW SETUP
 	ph->setDebugDrawer(ren);
-	ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
-	//ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
+	//ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
+	ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
 
 	/* Added by Kent */
 	
@@ -1042,6 +1042,23 @@ int main(int argc, char** argv)
 
 		ren->outputText("Powerups: " + ssPowerUps.str(), 255, 0, 0, 300, 700);
 		
+		if(entManager->numWaypoints() > 0)
+		{
+			Car* player = entManager->getCar(0);
+			int wayPoint = player->getNextWaypointIndex();
+
+			Waypoint* wp = entManager->getWaypoint(wayPoint);
+			
+			btVector3 ptan = player->getTangent();
+			btVector3 wtan = wp->getTangent();
+
+			if(ptan.dot(wtan) > 0)
+			{
+				ren->changeFontSize(50);
+				ren->outputText("Wrong Way", 255, 0, 0, 500, 600);
+			}
+		}
+
 		ren->glDisable2D();
 
 		ren->updateGL();	// update the screen
