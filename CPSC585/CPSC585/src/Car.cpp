@@ -346,7 +346,7 @@ void Car::UsePowerUp( int index , bool offensive)
 				{
 					btVector3 forward = getTangent();
 					forward.setY(0);
-					chassis->applyCentralForce(-10000.0*forward);
+					chassis->applyCentralForce(-speedBoostModifier*forward);
 				}
 				//SLOW POWERUP
 				else {
