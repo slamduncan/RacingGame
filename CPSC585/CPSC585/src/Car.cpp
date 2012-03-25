@@ -65,6 +65,8 @@ updateVariableObserver(this, &Car::observeVariables)
 	m_CarPowerUps[2] = p3;
 
 	beingSlowed = false;
+	halfWayAround = false;
+	lapCount = 1;
 }
 
 void Car::initObservers()

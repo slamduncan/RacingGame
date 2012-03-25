@@ -854,18 +854,36 @@ int main(int argc, char** argv)
 			
 
 			// Calculate current lap for player's car
-			WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
-			if( WaypointIndex != CurrentWaypointIndex )
+			for (int i = 0 ; i < entManager->getCarList()->size(); i++)
 			{
-				CurrentWaypointIndex = WaypointIndex;
-				if( CurrentWaypointIndex == 0 )
+				Car* tempCarPtr = entManager->getCar(i);
+				int currentWPIndex = tempCarPtr->getNextWaypointIndex();
+				if (currentWPIndex > entManager->getWaypointList()->size()/2)
 				{
-					LapNumber++;
+					tempCarPtr->halfWayAround = true;
+				}
+				if (tempCarPtr->halfWayAround && currentWPIndex < 10)
+				{
+					tempCarPtr->halfWayAround = false;
+					tempCarPtr->lapCount++;
 					LapMinutes = 0;
 					LapSeconds = 0;
 					LapMilliseconds = 0;
 				}
 			}
+
+			//WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
+			//if( WaypointIndex != CurrentWaypointIndex )
+			//{
+			//	CurrentWaypointIndex = WaypointIndex;
+			//	if( CurrentWaypointIndex == 0 )
+			//	{
+			//		LapNumber++;
+			//		LapMinutes = 0;
+			//		LapSeconds = 0;
+			//		LapMilliseconds = 0;
+			//	}
+			//}
 
 			next_game_tick += SKIP_TICKS;
 			loops++;
@@ -882,7 +900,7 @@ int main(int argc, char** argv)
 		ren->clearGL();
 
 		// set camera to eye space
-		camera1.updateCamera(entManager->getCar(2)->physicsObject->getWorldTransform());
+		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
 		ren->setCamera(camera1);
 
 		ren->normalMapPass();
@@ -974,7 +992,7 @@ int main(int argc, char** argv)
 		
 		std::stringstream ssLapTime;
 		std::stringstream ssLap;
-		ssLap << LapNumber;
+		ssLap << entManager->getCar(0)->lapCount;
 
 		// Calculate the current lap time
 		if( LapMinutes < 10 )
