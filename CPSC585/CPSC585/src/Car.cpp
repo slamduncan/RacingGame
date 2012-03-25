@@ -413,8 +413,13 @@ void Car::UsePowerUp( int index , bool offensive)
 						}				
 						phys->removeGhost(explosionShell);
 					}
-				//TODO: MINE POWERUP
-				else {}
+				//MINE POWERUP
+				else 
+				{
+					EntityManager * ent;
+					ent = EntityManager::getInstance();
+					ent->createMine(this,"model/waypoint.obj");
+				}
 				break;
 				}
 		}

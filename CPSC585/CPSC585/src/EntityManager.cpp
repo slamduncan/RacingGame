@@ -90,6 +90,10 @@ SlowField* EntityManager::getSlowField(int index)
 	return slowFieldList[index];
 }
 
+Mine* EntityManager::getMine(int index)
+{
+	return mineList[index];
+}
 
 void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
 {
@@ -158,7 +162,7 @@ void EntityManager::createPowerup(char* path, btTransform &trans)
 	btScalar mass = btScalar(0.f);
 	
 	PowerUp* pup = new PowerUp();
-	pup->SetType(1);
+	pup->SetType(3);
 
 	pup->initRenderObject(path);
 	
@@ -294,6 +298,26 @@ void EntityManager::createSlowFieldSpawnable(char* path, SlowField* sf)
 
 }
 
+void EntityManager::createMine(Car* c, char* path)
+{
+	Mine* mine = new Mine(c);
+
+	mine->initRenderObject(path);
+	
+	btScalar radius = 2.5f;
+	btCollisionShape* sphereMesh = sFactory.createSphere(radius);
+
+	btTransform carT = c->chassis->getWorldTransform();
+	btVector3 carPos = carT.getOrigin();
+	carPos = carPos + c->getTangent() * 15.0f;
+	carT.setOrigin(carPos);
+
+	mine->initPhysicsObject(sphereMesh, carT);
+	addMine(mine);
+
+	Physics::Inst()->addEntity(*mine);
+}
+
 
 void EntityManager::addCar(Car* car)
 {
@@ -329,7 +353,9 @@ void EntityManager::addSlowField(SlowField* slow){
 	slowFieldList.push_back(slow);
 }
 
-
+void EntityManager::addMine(Mine* mine){
+	mineList.push_back(mine);
+}
 
 
 void EntityManager::removeCar()
@@ -366,6 +392,13 @@ void EntityManager::removeSlowField(SlowField * sf)
 	slowFieldList.remove(sf);
 	//Just in case
 	sf->~SlowField();
+}
+
+void EntityManager::removeMine(Mine* mine)
+{
+	Physics::Inst()->removeEntity(*mine);
+	mineList.remove(mine);
+	mine->~Mine();
 }
 
 int EntityManager::numCars()
@@ -467,6 +500,10 @@ btAlignedObjectArray<Spawnable*>* EntityManager::getSpawnableList()
 btAlignedObjectArray<SlowField*>* EntityManager::getSlowFieldList()
 {
 	return &slowFieldList;
+}
+
+btAlignedObjectArray<Mine*>* EntityManager::getMineList(){
+	return &mineList;
 }
 
 int EntityManager::getCarIndexViaPointer(btCollisionObject* p){

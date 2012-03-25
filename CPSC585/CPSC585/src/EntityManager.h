@@ -17,6 +17,7 @@
 #include "LinearMath\btAlignedObjectArray.h"
 #include "Slowfield.h"
 #include "Shield.h"
+#include "Mine.h"
 
 class EntityManager
 {
@@ -27,6 +28,7 @@ private:
 	btAlignedObjectArray<Waypoint*> waypointList;
 	btAlignedObjectArray<Spawnable*> spawnList;
 	btAlignedObjectArray<SlowField*> slowFieldList;
+	btAlignedObjectArray<Mine*> mineList;
 
 	Track* track;
 
@@ -65,6 +67,7 @@ public:
 	PowerUp* getPowerup(int index);
 	Spawnable* getSpawnable(int index);
 	SlowField* getSlowField(int index);
+	Mine* getMine(int index);
 
 	void createCar(char* path, btScalar &mass, btTransform &trans);
 	void createTrack(char* path, btTransform &trans);
@@ -76,6 +79,7 @@ public:
 	void createSlowField(Car* c);
 	void createSlowFieldSpawnable(char* path, SlowField* sf);
 	void createShield(Car* c);
+	void createMine(Car* c, char* path);
 
 	void addCar(Car* car);
 	void addTrack(Track* track);
@@ -84,6 +88,7 @@ public:
 	void addWaypoint(Waypoint* waypoint);
 	void addSpawnable(Spawnable* spawn);
 	void addSlowField(SlowField* slow);
+	void addMine(Mine* mine);
 	
 	void removeCar();
 	void removeTrack();
@@ -92,6 +97,7 @@ public:
 	void removeWaypoint();
 	void removeSpawnable(Spawnable * spawnable);
 	void removeSlowField(SlowField * sf);
+	void removeMine(Mine* mine);
 
 	int numCars();
 	int numPowerUps();
@@ -112,6 +118,7 @@ public:
 	// btAlignedObjectArray<Obstacle*>* getObstacleList();
 	btAlignedObjectArray<Spawnable*>* getSpawnableList();
 	btAlignedObjectArray<SlowField*>* getSlowFieldList();
+	btAlignedObjectArray<Mine*>* getMineList();
 
 	int getCarIndexViaPointer(btCollisionObject* p);
 };

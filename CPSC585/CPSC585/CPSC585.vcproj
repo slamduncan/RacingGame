@@ -241,6 +241,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Mine.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\ModelManager.cpp"
 				>
 			</File>
@@ -404,6 +408,10 @@
 			</File>
 			<File
 				RelativePath=".\src\MethodObserver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Mine.h"
 				>
 			</File>
 			<File

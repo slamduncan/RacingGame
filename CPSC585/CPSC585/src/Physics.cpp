@@ -214,6 +214,26 @@ void Physics::step(btScalar &timeStep)
 		}
 	}
 
+	//Check mines to see if they blow or not
+	for(int i=0; i < entityManager->getMineList()->size(); i++){
+		btGhostObject* go = btGhostObject::upcast(entityManager->getMine(i)->physicsObject);
+		btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
+		////--------------
+		for(int j=0; j< oa.size(); j++){
+			btCollisionObject * carMaybe = oa.at(j);
+			//Todo: check this pointer against all car pointers in carList
+			int index = entityManager->getCarIndexViaPointer(carMaybe);
+			if(index != -1)
+			{
+				entityManager->getCar(index)->chassis->applyCentralForce(btVector3(0,15000.0,0));
+
+				dynamicsWorld->removeCollisionObject(entityManager->getMine(i)->physicsObject);
+				entityManager->removeMine(entityManager->getMine(i));
+				i--;
+			}
+		}
+	}
+
 	//Check spawnables to see if they're removed or not
 	for(int i=0; i< entityManager->getSpawnableList()->size(); i++){
 		Spawnable * s = entityManager->getSpawnable(i);
