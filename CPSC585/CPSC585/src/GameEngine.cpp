@@ -1014,6 +1014,7 @@ int main(int argc, char** argv)
 			{
 				ren->outputText("GO!", 255, 255,0, 1280/2, 780/2);
 				CURRENT_STATE = GAME_RUNNING;
+				next_game_tick = SDL_GetTicks();
 			}
 		}
 
