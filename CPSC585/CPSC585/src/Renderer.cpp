@@ -190,7 +190,7 @@ int Renderer::initGL()
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity( );
     // horizontal fov, vertical fov, min view distance, max view distance
-	gluPerspective( 60.0, ratio, 1.0, 1024.0 );	// need to fix this to change fov on the fly
+	gluPerspective( 60.0, ratio, 1.0, 2048.0 );	// need to fix this to change fov on the fly
 	glMatrixMode(GL_MODELVIEW);	// switch back to model view
 
 	glDisable2D();
@@ -579,13 +579,14 @@ void Renderer::drawAll()
 	// draw powerups
 	for(int i = 0; i < em->numPowerUps(); i++)
 	{
-		drawEntity(*(em->getPowerup(i)));
+		if(em->getPowerup(i)->isCollected() == false)
+			drawEntity(*(em->getPowerup(i)));
 	}
 
 	// draw obstacles
 
 	// debug draw waypoints
-#if 0
+#if 1
 	for(int i = 0; i < em->numWaypoints(); i++)
 	{
 		drawEntity(*(em->getWaypoint(i)));
@@ -602,6 +603,11 @@ void Renderer::drawAll()
 	for(int i = 0; i < em->numSpawnable(); i++)
 	{
 		drawEntity(*(em->getSpawnable(i)));
+	}
+	
+	for(int i = 0; i <em->numMines(); i++)
+	{
+		drawEntity(*(em->getMine(i)));
 	}
 }
 

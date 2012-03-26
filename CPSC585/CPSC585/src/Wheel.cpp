@@ -62,8 +62,13 @@ btVector3 Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 	//If we have hit something 
 	if (RayCallback.hasHit())
 	{
-		onGround = true;
 
+		//btScalar dot = RayCallback.m_hitNormalWorld.dot(btVector3(0,1,0));
+		//dot = btAcos(dot)*SIMD_DEGS_PER_RAD;
+		//if(dot != 0.0f)
+		//printf("%f\n",dot);
+		onGround = true;
+		
 		hitObject = RayCallback.m_collisionObject;
 		
 		//Distance into the ground the ray went. (Currently assuming the ground is normal)

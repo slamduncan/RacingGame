@@ -60,6 +60,14 @@ void Physics::step(btScalar &timeStep)
 
 	//Check Powerups for car collisions
 	for (int i=0; i< entityManager->getPowerUpList()->size(); i++){
+		PowerUp* p = entityManager->getPowerup(i);
+
+		//Respawn the powerup if it is time
+		if(p->timeToRespawn < clock() && p->timeToRespawn != 0){
+			p->timeToRespawn = 0;
+			p->setCollected(false);
+		}
+
 		//btCollisionObject* toDelObject = entityManager->getPowerup(i)->physicsObject;
 		btGhostObject* go = btGhostObject::upcast(entityManager->getPowerup(i)->physicsObject);
 		btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
@@ -69,19 +77,25 @@ void Physics::step(btScalar &timeStep)
 			int index = entityManager->getCarIndexViaPointer(carMaybe);
 			if(index != -1)
 			{
-				
-				Car* carTemp = entityManager->getCar(index);
+				if(p->isCollected() == false){
+					p->setCollected(true);
+					p->timeToRespawn = clock() + 3*CLOCKS_PER_SEC;
 
-				int added = carTemp->AddPowerUp(entityManager->getPowerup(i)->GetType());
+					Car* carTemp = entityManager->getCar(index);
+					int added = carTemp->AddPowerUp(p->GetType());
 				
-				dynamicsWorld->removeCollisionObject(entityManager->getPowerup(i)->physicsObject);
-				PowerUp* toDelete = entityManager->getPowerup(i);
-				entityManager->getPowerUpList()->remove(toDelete);
-				i--;
-				break;
+					//dynamicsWorld->removeCollisionObject(entityManager->getPowerup(i)->physicsObject);
+					//PowerUp* toDelete = entityManager->getPowerup(i);
+					//entityManager->getPowerUpList()->remove(toDelete);
+					//i--;
+					
+					break;
+				}
 			}
 		}
 	}
+
+
 
 	for (int i = 0; i < entityManager->getSpawnableList()->size(); i++)
 	{
@@ -201,7 +215,7 @@ void Physics::step(btScalar &timeStep)
 			if(index != -1 && index != sf->carId)
 			{
 				//printf("YOU GOT ME A CAR!! OMG!!! OMG!!! \n");
-				printf("!");
+				//printf("!");
 				if (!entityManager->getCar(index)->shieldActive)
 					entityManager->getCar(index)->setBeingSlowed();
 			}

@@ -2,6 +2,7 @@
 #define POWERUP_H
 
 #include "Entity.h"
+#include "Time.h"
 
 enum PowerUpType
 {
@@ -22,8 +23,9 @@ public:
 	void initObservers();
 	bool initPhysicsObject( btCollisionShape* cShape, btScalar &mass, btTransform &trans );
 	btCollisionObject* getPhysicsObject();
-	bool isHit();
-	void hitPowerup();
+	bool isCollected();
+	void setCollected(bool is);
+	clock_t timeToRespawn;
 private:
 	int m_Type;
 	bool collected;

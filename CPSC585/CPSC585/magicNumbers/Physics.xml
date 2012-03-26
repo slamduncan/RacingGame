@@ -11,11 +11,11 @@
   <turningForceModifier value ="9.0" />
   <springForceModifier value="3.0"/>
   
-  <speedBoostModifier value ="1.0"/>
-  <slowFieldModifier value ="80.0"/>
+  <speedBoostModifier value ="10000.0"/> <!-- Forward force vector length -->
+  <slowFieldModifier value ="80.0"/> <!-- Max speed of a car influenced by the slow field -->
   <rocketModifier value ="1.0"/>
   <tractionBoostModifier value ="1.0"/>
   <shieldModifier value ="1.0"/>
-  <forceBubbleModifier value ="100.0" />
+  <forceBubbleModifier value ="100.0" /> <!-- Radius of the nova's sphere of influence -->
   <slidingFrictionModifier value="100.0"/>
 </Physics>
