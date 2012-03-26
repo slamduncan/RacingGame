@@ -237,6 +237,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Menu.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\MethodObserver.cpp"
 				>
 			</File>
@@ -404,6 +408,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Light.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Menu.h"
 				>
 			</File>
 			<File

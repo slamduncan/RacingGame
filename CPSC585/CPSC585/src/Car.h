@@ -85,6 +85,9 @@ public:
 	bool halfWayAround; //For lap counts.
 	int lapCount;
 	bool usedPowerUpRecently;
+	std::stringstream timeFinished;
+	bool finishedRacing;
+	int finalPosition;
 
 private:
 	btScalar width, length, height;

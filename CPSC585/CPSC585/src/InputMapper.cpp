@@ -11,7 +11,7 @@ void InputMapper::updateRotation(LeftAnalogEvent *e){
 //	rotation = btQuaternion(e->getXVal(), e->getYVal(), 0, 0);	
 	if (lastTriggerEvent){
 		//if (goingForward)
-		if(entManager->getCar(0)->GetSpeed() > 0.001)
+		if(entManager->getCar(0)->GetSpeed() > 0.01)
 			rotation = btQuaternion(0, (float)(e->getXVal()), 0, 0);	
 		else
 			rotation = btQuaternion(0, -(float)(e->getXVal()), 0, 0);	

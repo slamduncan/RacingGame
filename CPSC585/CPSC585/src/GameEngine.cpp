@@ -24,6 +24,7 @@
 #include "AIHandler.h"
 #include "Timer.h"
 #include "Rocket.h"
+#include "Menu.h"
 
 #include "Sound.h"
 #define SANDBOX 0
@@ -36,14 +37,8 @@ const int MAX_FRAMESKIP = 5;
 
 ALuint EngineSource = 2;
 
-
-void fnExit1 (void)
-{
-  int i = 3;
-  i += 1;
-}
-
-
+enum GameState {MAIN_MENU, LOADING_GAME, GAME_STARTING, GAME_RUNNING, GAME_FINISHED};
+GameState CURRENT_STATE = MAIN_MENU;
 // Other init
 // ie. Physics, AI, Renderer, Sound, Container for ents?
 Renderer* ren = Renderer::getInstance();
@@ -517,7 +512,7 @@ void process_events()
 			ren->quitSDL();
             break;
 		/* Handle controller Events ?  Does this lose the event?
-		- updated to not l ose the event, but now must pass in controller events*/
+		- updated to not lose the event, but now must pass in controller events*/
 		case SDL_JOYAXISMOTION:
 		{
 			controller1.update(event);	
@@ -665,6 +660,7 @@ void resetCars(){
 					trans.setRotation(q);
 					entManager->resetCar(i, trans);
 					c->setNextWaypointIndex(w->getIndex());
+					c->AIresetCounter = 0;
 				}
 				else
 				{
@@ -692,8 +688,8 @@ int main(int argc, char** argv)
 
 	// DEBUG DRAW SETUP
 	ph->setDebugDrawer(ren);
-	ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
-	//ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
+	//ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
+	ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
 
 	/* Added by Kent */
 	
@@ -709,8 +705,22 @@ int main(int argc, char** argv)
 
 		ren->quitSDL();
 
-	}				
-	
+	}		
+
+/* Menu Code */
+	Menu m = Menu();	
+	int selection = m.run(ren);
+
+
+	if (selection == m.QUIT)
+	{
+		exit(0);
+	}
+	if (selection == m.START)
+	{
+		CURRENT_STATE = LOADING_GAME;
+		m.loading(ren, "PowerUps");
+	}
 	// //RENDERER DEBUG TESTING
 	
 	// Create all the enitities.
@@ -730,21 +740,26 @@ int main(int argc, char** argv)
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
 	}
 
+	
+
 	for(int i = 1; i < 10; i++)
 	{
 		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(-50.f*i, 7.5f, 450.f));
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
 	}
+	m.loading(ren, "Cars");
 
 	entManager->createCar("model/ship1.lwo", carMass, carT1);	
 	entManager->createCar("model/ship1.lwo", carMass, carT2);	
 	
-	for(int i = 1; i < 2; i++){
+	for(int i = 1; i < 4; i++){
 		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
 		entManager->createCar("model/ship1.lwo", carMass, carT3);	
 		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
 		entManager->createCar("model/ship1.lwo", carMass, carT4);	
 	}
+	m.loading(ren, "Track");
+	
 	
 	
 #if SANDBOX
@@ -753,11 +768,15 @@ int main(int argc, char** argv)
 	entManager->createTrack("model/Track1tri.lwo", groundT);
 #endif
 
+	m.loading(ren, "Initializing Variables, almost done!");
 	// Variables for lap time
 	int LapMinutes = 0;
 	int LapSeconds = 0;
 	int LapMilliseconds = 0;
-
+	int totalMinutes = 0;
+	int totalLapSeconds = 0;
+	int totalLapMilliseconds = 0;
+	
 	//Initialize camera settings.
 	btVector3 car1N = entManager->getCar(0)->getNormal()*10;
 	btVector3 car1T = entManager->getCar(0)->getBinormal()*30;
@@ -765,7 +784,7 @@ int main(int argc, char** argv)
 	btVector3 camOffset = car1N + car1T;
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
-
+	
 	//LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
 	//LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
@@ -779,6 +798,7 @@ int main(int argc, char** argv)
 	int LapNumber = 1;
 	int WaypointIndex = -1;
 	int CurrentWaypointIndex = 0;
+	int finishingPosition = 0;
 
 	//Set inital game time
 	Uint32 currentTime = SDL_GetTicks();
@@ -797,8 +817,12 @@ int main(int argc, char** argv)
 	bool running = true;
 
 	Uint32 next_game_tick = SDL_GetTicks();
+	m.loading(ren, "AI Information");
+	readWaypoints("waypoints.w");
+
+	m.loading(ren, "Game Ready!");
 	// game loop
-	atexit (fnExit1);
+	CURRENT_STATE = GAME_STARTING;
 	while(running)
 	{		
 /*
@@ -821,8 +845,9 @@ int main(int argc, char** argv)
 			ren->updateGL();
 */
 		loops = 0;
+
 			
-		while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAMESKIP)
+		while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAMESKIP && CURRENT_STATE == GAME_RUNNING)
 		{
 			// Calculate engine's change in pitch
 			EngineModifier = (entManager->getCar(0)->GetSpeed() / (-1 * entManager->getCar(0)->GetForwardForceModifier()));
@@ -871,15 +896,53 @@ int main(int argc, char** argv)
 				{
 					tempCarPtr->halfWayAround = true;
 				}
-				if (tempCarPtr->halfWayAround && currentWPIndex < 10)
+				if (tempCarPtr->halfWayAround && currentWPIndex < 10 && !tempCarPtr->finishedRacing)
 				{
 					tempCarPtr->halfWayAround = false;
 					tempCarPtr->lapCount++;
+					if (tempCarPtr->lapCount == 3)
+					{
+						tempCarPtr->timeFinished << totalMinutes << ":" << totalMinutes << "\n";
+						tempCarPtr->finishedRacing = true;
+						finishingPosition++;
+						tempCarPtr->finalPosition = finishingPosition;
+						/*Modification to stop after first human player CHANGE FOR MULTIPLAYER IF ADDED*/
+						if (tempCarPtr->id == 0)
+							CURRENT_STATE = GAME_FINISHED;
+					}
+					else
+						tempCarPtr->timeFinished << LapMinutes << ":" << LapSeconds << "\n";
 					LapMinutes = 0;
 					LapSeconds = 0;
 					LapMilliseconds = 0;
 				}
 			}
+			//if (CURRENT_STATE == GAME_FINISHED)
+			//{
+			//	for (int i = 0; i < entManager->numCars(); i++)
+			//	{
+			//		Car* tempC = entManager->getCar(i);
+			//		if (!tempC->finishedRacing)
+			//		{
+			//			float percentDone = tempC->getNextWaypointIndex()/(float)entManager->numWaypoints() + tempC->lapCount;
+			//			int avgMin = totalMinutes / percentDone;
+			//			int avgSec = totalLapSeconds / percentDone;
+			//			int tempTotalMin = totalMinutes, tempTotalSec = totalLapSeconds;
+			//			for (int j = 3; j > tempC->lapCount; j--)
+			//			{
+			//				int secToWrite = avgSec + avgSec * (1-percentDone);
+			//				int minToWrite = avgMin;
+			//				if (secToWrite > 60)
+			//				{
+			//					minToWrite++;
+			//					secToWrite = secToWrite - 60;
+			//				}
+			//				tempTotalMin += 
+			//				tempC->timeFinished << minToWrite << ":" << 
+			//			}
+			//		}
+			//	}					
+			//}
 
 			//WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
 			//if( WaypointIndex != CurrentWaypointIndex )
@@ -908,6 +971,7 @@ int main(int argc, char** argv)
 		ren->depthMapPass();
 		ren->clearGL();
 
+		
 		// set camera to eye space
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
 		ren->setCamera(camera1);
@@ -933,7 +997,24 @@ int main(int argc, char** argv)
 		ren->glEnableLighting();
 
 		ren->glEnable2D();
-	
+
+		/* Starting CountDown */
+		if (CURRENT_STATE == GAME_STARTING)
+		{
+			ren->changeFontSize(56);
+			if (counter == 2)
+				ren->outputText("3", 255, 0,255, 1280/2, 780/2);
+			else if (counter == 3)
+				ren->outputText("2", 255, 0,255, 1280/2, 780/2);
+			else if (counter == 4)
+				ren->outputText("1", 255, 0,255, 1280/2, 780/2);
+			else if (counter == 5)
+			{
+				ren->outputText("GO!", 255, 255,0, 1280/2, 780/2);
+				CURRENT_STATE = GAME_RUNNING;
+			}
+		}
+
 		ren->changeFontSize(20);
 		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
 
@@ -951,6 +1032,7 @@ int main(int argc, char** argv)
 			oldTime = currentTime;		
 			
 			LapSeconds++;
+			totalLapSeconds++;
 		}		
 		currentTime = SDL_GetTicks();
 
@@ -1005,13 +1087,21 @@ int main(int argc, char** argv)
 
 		// Calculate the current lap time
 		if( LapMinutes < 10 )
-			ssLapTime << "0";
+		{
+			ssLapTime << "0";			
+		}
 		ssLapTime << LapMinutes << ":";
+
+		if (totalLapSeconds >= 60)
+		{
+			totalMinutes++;
+			totalLapSeconds = 0;
+		}
 
 		if( LapSeconds >= 60 )
 		{
 			LapSeconds = 0;
-			LapMinutes++;
+			LapMinutes++;			
 		}
 		else if( LapSeconds < 10 )
 			ssLapTime << "0";
