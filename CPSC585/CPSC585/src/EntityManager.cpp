@@ -51,6 +51,7 @@ EntityManager::~EntityManager()
 	}
 	spawnList.clear();
 
+
 	for(int i = 0; i < slowFieldList.size(); i++)
 	{
 		if(slowFieldList[i])
@@ -188,12 +189,12 @@ void EntityManager::createWaypoint(char* path, btTransform &trans, int carThrott
 	addWaypoint(wp);
 }
 
-void EntityManager::createPowerup(char* path, btTransform &trans)
+void EntityManager::createPowerup(char* path, btTransform &trans, int type)
 {
 	btScalar mass = btScalar(0.f);
 	
 	PowerUp* pup = new PowerUp();
-	pup->SetType(1);
+	pup->SetType(type);
 
 	pup->initRenderObject(path);
 	
