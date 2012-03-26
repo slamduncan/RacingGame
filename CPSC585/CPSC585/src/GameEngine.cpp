@@ -917,6 +917,7 @@ int main(int argc, char** argv)
 					LapMilliseconds = 0;
 				}
 			}
+			/*
 			if (CURRENT_STATE == GAME_FINISHED)
 			{
 				for (int i = 0; i < entManager->numCars(); i++)
@@ -943,6 +944,7 @@ int main(int argc, char** argv)
 					}
 				}					
 			}
+			*/
 
 			//WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
 			//if( WaypointIndex != CurrentWaypointIndex )
