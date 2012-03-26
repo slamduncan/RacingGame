@@ -67,7 +67,6 @@ void Rocket::applyNextMove()
 	physicsObject->setWorldTransform(wT);
 
 
-
 	//RotationEvent* re = new RotationEvent(btQuaternion(0, roationForce,0,0));
 	////c->observeRotation(re);	
 	//
