@@ -207,7 +207,7 @@ void EntityManager::createRocket(int startingWaypoint, btTransform &trans, int c
 	
 	Spawnable* sp = new Rocket(startingWaypoint, carId);
 
-	sp->initRenderObject("model/Rocket.dae");
+	sp->initRenderObject("model/rocket.lwo");
 
 	btScalar radius = 2.5f;
 	btCollisionShape* sphereMesh = sFactory.createSphere(radius);
@@ -304,7 +304,7 @@ void EntityManager::createMine(Car* c, char* path)
 {
 	Mine* mine = new Mine(c);
 
-	mine->initRenderObject(path);
+	mine->initRenderObject("model/mine.lwo");
 	mine->carId = c->id;
 	
 	btScalar radius = 2.5f;
@@ -429,6 +429,11 @@ int EntityManager::numSpawnable()
 int EntityManager::numSlowField()
 {
 	return slowFieldList.size();
+}
+
+int EntityManager::numMines()
+{
+	return mineList.size();
 }
 
 void EntityManager::resetCarPosition(int index, btVector3 &position)
