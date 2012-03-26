@@ -98,7 +98,7 @@ void AIHandler::PowerUpCheck(Car* c)
 				//Rocket
 				if (carInFront)
 				{
-					if ((closestFrontCar->getPosition() - c->getPosition()).length() >10.0)
+					if ((closestFrontCar->getPosition() - c->getPosition()).length() >1.0)
 						c->UsePowerUp(i, true);
 				}
 				else 
