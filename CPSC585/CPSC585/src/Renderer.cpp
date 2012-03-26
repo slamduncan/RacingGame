@@ -604,6 +604,11 @@ void Renderer::drawAll()
 	{
 		drawEntity(*(em->getSpawnable(i)));
 	}
+	
+	for(int i = 0; i <em->numMines(); i++)
+	{
+		drawEntity(*(em->getMine(i)));
+	}
 }
 
 void Renderer::draw(Camera &cam)

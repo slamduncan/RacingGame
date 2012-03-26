@@ -105,6 +105,7 @@ public:
 	int numWaypoints();
 	int numSpawnable();
 	int numSlowField();
+	int numMines();
 
 	void resetCarPosition(int index, btVector3 &position);
 	void resetCar(int index, btTransform &transform);

@@ -162,7 +162,7 @@ void EntityManager::createPowerup(char* path, btTransform &trans)
 	btScalar mass = btScalar(0.f);
 	
 	PowerUp* pup = new PowerUp();
-	pup->SetType(1);
+	pup->SetType(3);
 
 	pup->initRenderObject(path);
 	
@@ -304,7 +304,7 @@ void EntityManager::createMine(Car* c, char* path)
 {
 	Mine* mine = new Mine(c);
 
-	mine->initRenderObject(path);
+	mine->initRenderObject("model/mine.lwo");
 	mine->carId = c->id;
 	
 	btScalar radius = 2.5f;
@@ -429,6 +429,11 @@ int EntityManager::numSpawnable()
 int EntityManager::numSlowField()
 {
 	return slowFieldList.size();
+}
+
+int EntityManager::numMines()
+{
+	return mineList.size();
 }
 
 void EntityManager::resetCarPosition(int index, btVector3 &position)
