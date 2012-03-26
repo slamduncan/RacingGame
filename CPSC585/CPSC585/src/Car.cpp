@@ -227,8 +227,8 @@ void Car::updateWheels()
 
 	for (int i = 0; i < 4; i++){
 		btVector3 contact = newWheels[i].getBottomSpringPosition();
-		chassis->applyForce(forces[i]*springForceModifier,contact - chassis->getCenterOfMassPosition()/*wheelOffsets[i]*/);
 
+		chassis->applyForce(forces[i]*springForceModifier,contact - chassis->getCenterOfMassPosition()/*wheelOffsets[i]*/);
 		if(sideFriction[i] != btScalar(1.) && newWheels[i].hitObject)
 		{
 			/*
@@ -241,6 +241,7 @@ void Car::updateWheels()
 			chassis->applyForce(getBinormal() * sideFriction[i]*0.1f * sideFrictionModifier,relpos);
 			*/
 			chassis->applyTorque(sideFricMag/4.0f * sideFrictionModifier);
+			
 		}
 
 		if(forwardFriction[i] != btScalar(1.) && newWheels[i].hitObject)

@@ -73,7 +73,7 @@ void Waypoint::positionCheck(Car* car){
 	btScalar amount = getTangent().dot(toWaypoint);
 	btScalar amount2 = abs(getPosition().y() - car->getPosition().y());
 
-	if (amount < goToNextWaypointDistanceBefore && amount > goToNextWaypointDistanceAfter && amount2 < 10.0){
+	if (amount < goToNextWaypointDistanceBefore && amount > goToNextWaypointDistanceAfter && amount2 < 8.0){
 		int id = car->id;
 		int nextIndex = 0;
 		//printf("%d\n", direction);
