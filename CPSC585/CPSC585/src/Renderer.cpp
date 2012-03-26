@@ -190,7 +190,7 @@ int Renderer::initGL()
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity( );
     // horizontal fov, vertical fov, min view distance, max view distance
-	gluPerspective( 60.0, ratio, 1.0, 2048.0 );	// need to fix this to change fov on the fly
+	gluPerspective( 60.0, ratio, 1.0, 5120.0 );	// need to fix this to change fov on the fly
 	glMatrixMode(GL_MODELVIEW);	// switch back to model view
 
 	glDisable2D();
@@ -225,6 +225,7 @@ int Renderer::initFont()
 
 int Renderer::initTexs()
 {
+	tm->genTexture("texture/sky.png", "sky");
 	tm->genTexture("model/box.png", "car1");	// load the car texture into GPU memory
 	tm->genTexture(width, height, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
 	tm->genTexture(width, height, "gaussian");	// gaussian blur
@@ -545,6 +546,15 @@ void Renderer::celPass()
 
 void Renderer::drawAll()
 {
+	// draw the skydome/sphere
+	glDisableLighting();
+	glActiveTexture(GL_TEXTURE0);
+	textureOn(tm->getTexture("sky"));
+	drawEntity(*(em->getSky()));
+	textureOff();
+	glEnableLighting();
+
+	
 	// draw the track
 	drawEntity(*(em->getTrack()));
 

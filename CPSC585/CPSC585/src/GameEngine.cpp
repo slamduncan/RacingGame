@@ -772,6 +772,11 @@ int main(int argc, char** argv)
 	entManager->createTrack("model/Track1tri.lwo", groundT);
 #endif
 
+
+	m.loading(ren, "Sky");
+	btTransform skyT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0));
+	entManager->createSky("model/skydome2.lwo", skyT);
+
 	m.loading(ren, "Initializing Variables, almost done!");
 	// Variables for lap time
 	int LapMinutes = 0;

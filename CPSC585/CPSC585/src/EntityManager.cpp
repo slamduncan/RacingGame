@@ -55,6 +55,10 @@ EntityManager::~EntityManager()
 	{
 		delete track;
 	}
+	if(sky != NULL)
+	{
+		delete sky;
+	}
 }
 
 Car* EntityManager::getCar(int index)
@@ -136,6 +140,18 @@ void EntityManager::createTrack(char* path, btTransform &trans)
 	addTrack(trk);
 
 	Physics::Inst()->addEntity(*trk);
+}
+
+void EntityManager::createSky(char* path, btTransform &trans)
+{
+	btScalar mass = btScalar(0.f);
+
+	SkySphere* s = new SkySphere();
+	s->initRenderObject(path);
+
+	s->initPhysicsObject(NULL, mass, trans);
+
+	addSky(s);
 }
 
 void EntityManager::createWaypoint(char* path, btTransform &trans, int carThrottle)
@@ -331,8 +347,16 @@ void EntityManager::addCar(Car* car)
 // We need a way to remove the track from the physics world first before we delete it.
 void EntityManager::addTrack(Track* track)
 {
+	
 	this->track = track;	// will memleak if we try to create another track
 }
+
+void EntityManager::addSky(SkySphere* sky)
+{
+	this->sky = sky;
+}
+
+
 void EntityManager::addPowerUp(PowerUp* powerup)
 {
 	powerUpList.push_back(powerup);
@@ -366,6 +390,10 @@ void EntityManager::removeCar()
 
 }
 void EntityManager::removeTrack()
+{
+
+}
+void EntityManager::removeSky()
 {
 
 }
@@ -494,6 +522,12 @@ Track* EntityManager::getTrack()
 {
 	return track;
 }
+
+SkySphere* EntityManager::getSky()
+{
+	return sky;
+}
+
 
 btAlignedObjectArray<PowerUp*>* EntityManager::getPowerUpList()
 {
