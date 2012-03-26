@@ -51,6 +51,21 @@ EntityManager::~EntityManager()
 	}
 	spawnList.clear();
 
+	for(int i = 0; i < slowFieldList.size(); i++)
+	{
+		if(slowFieldList[i])
+			delete slowFieldList[i];
+	}
+	slowFieldList.clear();
+
+	for(int i = 0; i < mineList.size(); i++)
+	{
+		if(mineList[i])
+			delete mineList[i];
+	}
+	mineList.clear();
+	
+
 	if(track != NULL)
 	{
 		delete track;
@@ -178,7 +193,7 @@ void EntityManager::createPowerup(char* path, btTransform &trans)
 	btScalar mass = btScalar(0.f);
 	
 	PowerUp* pup = new PowerUp();
-	pup->SetType(2);
+	pup->SetType(1);
 
 	pup->initRenderObject(path);
 	
@@ -261,7 +276,7 @@ void EntityManager::createSlowField(Car* c)
 {
 	SlowField* sf = new SlowField(c);
 	
-	sf->initRenderObject("model/powerup.lwo");
+	sf->initRenderObject("model/slow.lwo");
 	sf->carId = c->id;
 	
 	btCompoundShape* blobContainer = new btCompoundShape();

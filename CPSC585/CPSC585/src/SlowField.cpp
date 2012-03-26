@@ -28,6 +28,23 @@ Car* SlowField::getCar(){
 	return car;
 }
 
+btScalar* SlowField::getChildGLMatrix(int index)
+{
+	btTransform childT = blobContainer->getChildTransform(index);	
+	btTransform containerT = physicsObject->getWorldTransform();
+
+	btVector3 containerPos = containerT.getOrigin();
+	btVector3 childPos = childT.getOrigin();
+
+	btVector3 pos = childPos+containerPos;
+
+	childT = containerT*childT;
+
+	childT.getOpenGLMatrix(glMatrix);
+
+	return glMatrix;
+}
+
 bool SlowField::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans)
 {
 	if(cShape != NULL)
