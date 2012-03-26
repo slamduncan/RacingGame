@@ -756,9 +756,6 @@ void resetCars(){
 	}
 }
 
-
-
-
 // Engine Main
 int main(int argc, char** argv)
 {	

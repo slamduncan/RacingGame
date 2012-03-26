@@ -76,6 +76,10 @@ int Menu::run(Renderer *ren)
 					if (eventIn.jbutton.button == 7){ //Start
 						InMenu = false;
 					}
+					if (eventIn.jbutton.button == 6)
+					{
+						currentSelection= (SELECTABLE) ((currentSelection - 1 + NUM_OF_OPTIONS) % NUM_OF_OPTIONS);
+					}
 				}
 				break;
 			}
