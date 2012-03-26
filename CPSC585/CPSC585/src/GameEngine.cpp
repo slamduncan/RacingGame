@@ -917,32 +917,32 @@ int main(int argc, char** argv)
 					LapMilliseconds = 0;
 				}
 			}
-			//if (CURRENT_STATE == GAME_FINISHED)
-			//{
-			//	for (int i = 0; i < entManager->numCars(); i++)
-			//	{
-			//		Car* tempC = entManager->getCar(i);
-			//		if (!tempC->finishedRacing)
-			//		{
-			//			float percentDone = tempC->getNextWaypointIndex()/(float)entManager->numWaypoints() + tempC->lapCount;
-			//			int avgMin = totalMinutes / percentDone;
-			//			int avgSec = totalLapSeconds / percentDone;
-			//			int tempTotalMin = totalMinutes, tempTotalSec = totalLapSeconds;
-			//			for (int j = 3; j > tempC->lapCount; j--)
-			//			{
-			//				int secToWrite = avgSec + avgSec * (1-percentDone);
-			//				int minToWrite = avgMin;
-			//				if (secToWrite > 60)
-			//				{
-			//					minToWrite++;
-			//					secToWrite = secToWrite - 60;
-			//				}
-			//				tempTotalMin += 
-			//				tempC->timeFinished << minToWrite << ":" << 
-			//			}
-			//		}
-			//	}					
-			//}
+			if (CURRENT_STATE == GAME_FINISHED)
+			{
+				for (int i = 0; i < entManager->numCars(); i++)
+				{
+					Car* tempC = entManager->getCar(i);
+					if (!tempC->finishedRacing)
+					{
+						float percentDone = tempC->getNextWaypointIndex()/(float)entManager->numWaypoints() + tempC->lapCount;
+						int avgMin = totalMinutes / percentDone;
+						int avgSec = totalLapSeconds / percentDone;
+						int tempTotalMin = totalMinutes, tempTotalSec = totalLapSeconds;
+						for (int j = 3; j > tempC->lapCount; j--)
+						{
+							int secToWrite = avgSec + avgSec * (1-percentDone);
+							int minToWrite = avgMin;
+							if (secToWrite > 60)
+							{
+								minToWrite++;
+								secToWrite = secToWrite - 60;
+							}
+							tempTotalMin += 
+							tempC->timeFinished << minToWrite << ":" << 
+						}
+					}
+				}					
+			}
 
 			//WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
 			//if( WaypointIndex != CurrentWaypointIndex )
