@@ -35,6 +35,8 @@ const int TICKS_PER_SECONDS = 60;
 const int SKIP_TICKS = 1000/TICKS_PER_SECONDS;
 const int MAX_FRAMESKIP = 5;
 
+bool stillWantsToPlay = true;
+
 ALuint EngineSource = 2;
 
 enum GameState {MAIN_MENU, LOADING_GAME, GAME_STARTING, GAME_RUNNING, GAME_FINISHED};
@@ -707,6 +709,8 @@ int main(int argc, char** argv)
 
 	}		
 
+	while (stillWantsToPlay)
+	{
 /* Menu Code */
 	Menu m = Menu();	
 	int selection = m.run(ren);
@@ -795,7 +799,7 @@ int main(int argc, char** argv)
 
 	float EngineModifier = 0;
 	
-	int LapNumber = 1;
+	int LapNumber = entManager->getCar(0)->lapCount;
 	int WaypointIndex = -1;
 	int CurrentWaypointIndex = 0;
 	int finishingPosition = 0;
@@ -892,7 +896,7 @@ int main(int argc, char** argv)
 			{
 				Car* tempCarPtr = entManager->getCar(i);
 				int currentWPIndex = tempCarPtr->getNextWaypointIndex();
-				if (currentWPIndex > entManager->getWaypointList()->size()/2)
+				if (currentWPIndex > entManager->getWaypointList()->size()/2 && currentWPIndex < entManager->getWaypointList()->size()/2 + 200)
 				{
 					tempCarPtr->halfWayAround = true;
 				}
@@ -902,7 +906,11 @@ int main(int argc, char** argv)
 					tempCarPtr->lapCount++;
 					if (tempCarPtr->lapCount == 3)
 					{
-						tempCarPtr->timeFinished << totalMinutes << ":" << totalMinutes << "\n";
+						tempCarPtr->timeFinished << "LAP " << tempCarPtr->lapCount<< ": ";
+						if (tempCarPtr->lapCount != LapNumber+1)
+							tempCarPtr->timeFinished << "+";
+						tempCarPtr->timeFinished << LapMinutes << ":" << LapSeconds << "\n";
+						tempCarPtr->timeFinished << "TOTAL TIME: " << totalMinutes << ":" << totalLapSeconds << "\n";
 						tempCarPtr->finishedRacing = true;
 						finishingPosition++;
 						tempCarPtr->finalPosition = finishingPosition;
@@ -911,14 +919,23 @@ int main(int argc, char** argv)
 							CURRENT_STATE = GAME_FINISHED;
 					}
 					else
-						tempCarPtr->timeFinished << LapMinutes << ":" << LapSeconds << "\n";
-					LapMinutes = 0;
-					LapSeconds = 0;
-					LapMilliseconds = 0;
+					{
+						tempCarPtr->timeFinished << "LAP " << tempCarPtr->lapCount<< ": ";
+						if (tempCarPtr->lapCount != LapNumber+1)
+							tempCarPtr->timeFinished << "+";						
+						tempCarPtr->timeFinished << LapMinutes << ":" << LapSeconds << "\n";				
+					}
+					if (tempCarPtr->lapCount == LapNumber+1)
+					{
+						LapMinutes = 0;
+						LapSeconds = 0;
+						LapMilliseconds = 0;
+						LapNumber++;
+					}
 				}
 			}
 			if (CURRENT_STATE == GAME_FINISHED)
-			{
+			{				
 				for (int i = 0; i < entManager->numCars(); i++)
 				{
 					Car* tempC = entManager->getCar(i);
@@ -937,13 +954,16 @@ int main(int argc, char** argv)
 								minToWrite++;
 								secToWrite = secToWrite - 60;
 							}
-							tempTotalMin += 
-							tempC->timeFinished << minToWrite << ":" << 
+//							tempTotalMin -= avgMin
+							tempC->timeFinished << minToWrite << ":" << secToWrite << "\n";
+							percentDone = 1;
 						}
-					}
-				}					
+						tempC->timeFinished << "DNF\n";						
+					}					
+				}
+				m.timeScreen(ren);
+				running = false;
 			}
-
 			//WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
 			//if( WaypointIndex != CurrentWaypointIndex )
 			//{
@@ -1165,6 +1185,7 @@ int main(int argc, char** argv)
 		resetCars();
 		
 	}
-
+	running = true;
+}
 	return 0;
 }

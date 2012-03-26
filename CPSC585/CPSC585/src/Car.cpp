@@ -68,7 +68,7 @@ updateVariableObserver(this, &Car::observeVariables)
 
 	beingSlowed = false;
 	halfWayAround = false;
-	lapCount = 1;
+	lapCount = 2;
 	timeFinished;
 	finishedRacing = false;
 	finalPosition = -1;

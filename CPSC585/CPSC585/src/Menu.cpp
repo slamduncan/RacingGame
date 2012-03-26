@@ -89,21 +89,76 @@ int Menu::timeScreen(Renderer *ren)
 	ren->glEnable2D();
 	ren->clearGL();
 	
+	int position = 1;
+	int offset = 10;
 	for (int i = 0; i < entMan->numCars(); i++)
 	{	
-		ren->changeFontSize(56);
-		std::stringstream name;
-		if (i == 0)
-			name << "You!\n";
-		else
-			name << "Computer " << i << "\n";
-		ren->outputText(name.str(), 0, 255, 255, 1280/3, 720/2);
-		ren->changeFontSize(26);
-		
-		ren->outputText("", 0, 255, 255, 1280/2, 720/3);				
+		for (int j = 0; j < entMan->numCars(); j++)
+		{	
+			Car* tempC = entMan->getCar(j);
+			if (tempC->finalPosition == position)
+			{
+				ren->changeFontSize(26);
+				std::stringstream name;
+				if (tempC->id == 0)
+					name << "You!\n";
+				else
+					name << "Computer " << tempC->id << "\n";				
+				if (name.str().length() > 20)
+					offset += name.str().length()*16 + 16;
+				else
+					offset += 20*16 + 16;
+				ren->outputText(name.str(), 0, 255, 255, offset, 720/2);
+				ren->changeFontSize(16);				
+				ren->outputText(tempC->timeFinished.str(), 0, 255, 150,offset, 720/3);
+				position++;
+			}
+		}		
 	}
-	ren->updateGL();
+//	for (int i = 0; i < entMan->numCars();i++)
+	{
+		for (int j = 0; j < entMan->numCars(); j++)
+		{
+			Car* tempC = entMan->getCar(j);
+			if (!tempC->finishedRacing)
+			{
+				
+				ren->changeFontSize(26);
+				std::stringstream name;
+				name << "Computer " << tempC->id << "\n";
+				if (name.str().length() > 20)
+					offset += name.str().length()*16 + 16;
+				else
+					offset += 20*16 + 16;
+				ren->outputText(name.str(), 0, 255, 255, offset, 720/2);
+				ren->changeFontSize(16);				
+				ren->outputText(tempC->timeFinished.str(), 0, 255, 150, offset, 720/3);
+				position++;
+			}
+		}
+	}
+
+	ren->outputText("Press Start To Go Back to Main Menu", 255, 0,0, 1280/3, 680);
 	ren->glDisable2D();
+	ren->updateGL();		
+	SDL_Event eventIn;	
+	bool goBack = false;
+	while(!goBack)
+	{
+	while(SDL_PollEvent( &eventIn )) {
+		
+		switch (eventIn.type)
+		{			
+		case SDL_JOYBUTTONDOWN:
+			{
+				if (eventIn.jbutton.button == 7){ //Start
+					goBack = true;
+				}
+			}
+			break;
+		}
+	}
+	}
 	return 0;
 }
 
