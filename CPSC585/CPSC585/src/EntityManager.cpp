@@ -51,6 +51,21 @@ EntityManager::~EntityManager()
 	}
 	spawnList.clear();
 
+	for (int i = 0; i < slowFieldList.size(); i++)
+	{
+		if (slowFieldList[i])
+			delete slowFieldList[i];
+	}
+	slowFieldList.clear();
+
+	for (int i =0;  i < mineList.size(); i++)
+	{
+		if (mineList[i])
+			delete mineList[i];
+	}
+	mineList.clear();
+
+
 	if(track != NULL)
 	{
 		delete track;

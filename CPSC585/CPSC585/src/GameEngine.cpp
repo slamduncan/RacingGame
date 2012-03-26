@@ -912,8 +912,10 @@ int main(int argc, char** argv)
 					if (tempCarPtr->lapCount == 3)
 					{
 						tempCarPtr->timeFinished << "LAP " << tempCarPtr->lapCount<< ": ";
-						if (tempCarPtr->lapCount != LapNumber+1)
-							tempCarPtr->timeFinished << "+";
+						if (tempCarPtr->lapCount != LapNumber+1 && tempCarPtr->id != 0)
+							tempCarPtr->timeFinished << "+";						
+						//else if (tempCarPtr->id !=0)
+							//tempCarPtr->timeFinished << "-";
 						tempCarPtr->timeFinished << LapMinutes << ":" << LapSeconds << "\n";
 						tempCarPtr->timeFinished << "TOTAL TIME: " << totalMinutes << ":" << totalLapSeconds << "\n";
 						tempCarPtr->finishedRacing = true;
@@ -926,11 +928,13 @@ int main(int argc, char** argv)
 					else
 					{
 						tempCarPtr->timeFinished << "LAP " << tempCarPtr->lapCount<< ": ";
-						if (tempCarPtr->lapCount != LapNumber+1)
+						if (tempCarPtr->lapCount != LapNumber+1 && tempCarPtr->id != 0)
 							tempCarPtr->timeFinished << "+";						
+						//else if (tempCarPtr->id !=0)
+						//	tempCarPtr->timeFinished << "-";
 						tempCarPtr->timeFinished << LapMinutes << ":" << LapSeconds << "\n";				
 					}
-					if (tempCarPtr->lapCount == LapNumber+1)
+					if (tempCarPtr->id == 0)
 					{
 						LapMinutes = 0;
 						LapSeconds = 0;
@@ -1193,6 +1197,11 @@ int main(int argc, char** argv)
 		
 	}
 	running = true;
+
+	//delete ph;
+	//ph = Physics::Inst();
+	//delete entManager;
+	//entManager = EntityManager::getInstance();
 }
 	return 0;
 }
