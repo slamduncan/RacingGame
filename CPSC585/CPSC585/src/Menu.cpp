@@ -18,6 +18,9 @@ int Menu::run(Renderer *ren)
 	while(InMenu)
 	{				
 		ren->clearGL();
+		ren->changeFontSize(72);
+		ren->outputText("Varios", 255, 255, 255,550, 600);
+		ren->changeFontSize(26);
 		switch(currentSelection)
 		{
 		case(QUIT):
