@@ -397,59 +397,65 @@ void Renderer::draw(Shader &s)
 	shaderOff(s);
 }
 
+void Renderer::setTextureMatrix()
+{
+	// this stores the light's view matrix
+	static double modelView[16];
+	// this stores the light's projection matrix
+	static double projection[16];
+
+	// this is a bias matrix which is used to convert the shadow map matrix from [-1, 1] to [0, 1]
+	const GLdouble bias[16] = {	0.5, 0.0, 0.0, 0.0, 
+								0.0, 0.5, 0.0, 0.0,
+								0.0, 0.0, 0.5, 0.0,
+								0.5, 0.5, 0.5, 1.0 };
+
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+
+	glMatrixMode(GL_TEXTURE);
+	glActiveTexture(GL_TEXTURE7);
+
+	glLoadIdentity();	
+	glLoadMatrixd(bias);
+	
+	// concatating all matrice into one.
+	glMultMatrixd(projection);
+	glMultMatrixd(modelView);
+	
+	// Go back to normal matrix mode
+	glMatrixMode(GL_MODELVIEW);
+}
+
 //
 // generates a moment texture for shadow mapping
 //
 void Renderer::depthMapPass()
 {
-	float ratio = (float) width / (float) height;	// compute FOV
-	
+	float ratio = (float) width / (float) height;	// compute aspect
 	
 	gluPerspective( 90.0, 1.0, 1.0, 5120.0 );
 	
 	// for each light source in our world, generate a depth map for the first car
 	for(int i = 0; i < lights.size(); i++)
 	{
+		std::stringstream ss;
+
+		ss << "depth2l" << (i+1);
+
 		fb.turnOn();
 		glViewport(0, 0, 2048, 2048);
-		fb.attachTexture(getTexture("depth2l1"), GL_COLOR_ATTACHMENT0_EXT);
+		fb.attachTexture(getTexture(ss.str()), GL_COLOR_ATTACHMENT0_EXT);
 		clearGL();
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
 		depth2pass.turnShadersOn();
 
-		//glCullFace(GL_FRONT);
+		glCullFace(GL_FRONT);
 		//glDisable(GL_CULL_FACE);
 		
 		drawAll();
-
-		//glEnable(GL_CULL_FACE);
-		static double modelView[16];
-		static double projection[16];
-
-		const GLdouble bias[16] = {	0.5, 0.0, 0.0, 0.0, 
-									0.0, 0.5, 0.0, 0.0,
-									0.0, 0.0, 0.5, 0.0,
-									0.5, 0.5, 0.5, 1.0 };
-
-		glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
-		
-		
-		
-		glGetDoublev(GL_PROJECTION_MATRIX, projection);
-		glMatrixMode(GL_TEXTURE);
-		glActiveTexture(GL_TEXTURE7);
-
-		glLoadIdentity();	
-		glLoadMatrixd(bias);
-		
-		// concatating all matrice into one.
-		glMultMatrixd(projection);
-		glMultMatrixd(modelView);
-		
-		// Go back to normal matrix mode
-		glMatrixMode(GL_MODELVIEW);
-
+		setTextureMatrix();
 
 		//shaderOff(depth2pass);
 		depth2pass.turnShadersOff();
@@ -462,6 +468,7 @@ void Renderer::depthMapPass()
 
 	gluPerspective( 60.0, ratio, 1.0, 5120.0 );
 	glViewport(0, 0, width, height);
+	glCullFace(GL_BACK);
 	// bind and active the texture
 	// draw using the depth map
 

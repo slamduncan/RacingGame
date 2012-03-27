@@ -1087,18 +1087,18 @@ int main(int argc, char** argv)
 		ren->depthMapPass();
 		ren->clearGL();
 
-		
 		// set camera to eye space
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
 		ren->setCamera(camera1);
 
+		ren->draw(camera1);
+		
+/*
 		ren->normalMapPass();
 		//ren->drawTexture("nd");
 		ren->ssaoPass();
 		ren->clearGL();
-
-		ren->setCamera(camera1);
-		ren->draw(camera1);
+*/
 /*
 		ren->clearGL();		
 		ren->setCamera(camera1);

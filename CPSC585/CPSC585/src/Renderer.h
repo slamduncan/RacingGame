@@ -89,6 +89,7 @@ public:
 	void shaderOn(Shader &s);
 	void shaderOff(Shader &s);
 
+	void setTextureMatrix();
 	void depthMapPass();
 	void ssaoPass();
 	void abtexPass();
