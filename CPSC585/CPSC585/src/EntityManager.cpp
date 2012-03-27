@@ -51,20 +51,21 @@ EntityManager::~EntityManager()
 	}
 	spawnList.clear();
 
-	for (int i = 0; i < slowFieldList.size(); i++)
+
+	for(int i = 0; i < slowFieldList.size(); i++)
 	{
-		if (slowFieldList[i])
+		if(slowFieldList[i])
 			delete slowFieldList[i];
 	}
 	slowFieldList.clear();
 
-	for (int i =0;  i < mineList.size(); i++)
+	for(int i = 0; i < mineList.size(); i++)
 	{
-		if (mineList[i])
+		if(mineList[i])
 			delete mineList[i];
 	}
 	mineList.clear();
-
+	
 
 	if(track != NULL)
 	{
@@ -188,12 +189,12 @@ void EntityManager::createWaypoint(char* path, btTransform &trans, int carThrott
 	addWaypoint(wp);
 }
 
-void EntityManager::createPowerup(char* path, btTransform &trans)
+void EntityManager::createPowerup(char* path, btTransform &trans, int type)
 {
 	btScalar mass = btScalar(0.f);
 	
 	PowerUp* pup = new PowerUp();
-	pup->SetType(2);
+	pup->SetType(type);
 
 	pup->initRenderObject(path);
 	
@@ -276,7 +277,7 @@ void EntityManager::createSlowField(Car* c)
 {
 	SlowField* sf = new SlowField(c);
 	
-	sf->initRenderObject("model/powerup.lwo");
+	sf->initRenderObject("model/slow.lwo");
 	sf->carId = c->id;
 	
 	btCompoundShape* blobContainer = new btCompoundShape();

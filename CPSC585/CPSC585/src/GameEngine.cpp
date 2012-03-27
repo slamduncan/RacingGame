@@ -407,6 +407,82 @@ void readWaypoints(const char* fileName){
 		printf("Unable to open Waypoint File - Read\n");
 }
 
+void loadPowerupLocation(char* fname)
+{
+	std::ifstream file(fname);
+
+	// if the file does exist.
+	if(file)
+	{
+		std::ofstream pfile;
+		pfile.open("poweruploc.p");
+		
+		const aiScene* ploc = aiImportFile(fname, 
+			aiProcess_CalcTangentSpace       |
+			aiProcess_Triangulate            |
+			//aiProcess_JoinIdenticalVertices  |
+			aiProcess_GenSmoothNormals |
+			aiProcess_ImproveCacheLocality |
+			aiProcess_GenUVCoords |
+			aiProcess_TransformUVCoords |
+			aiProcess_OptimizeMeshes |
+			aiProcess_SortByPType |
+			aiProcess_FlipUVs);
+
+		for(int i = 0; i < ploc->mNumMeshes; i++)
+		{
+			const aiMesh* mesh = ploc->mMeshes[i];
+
+			for(int vert = 0; vert < mesh->mNumVertices; vert++)
+			{
+				aiVector3D vertex = mesh->mVertices[vert];
+				pfile << vertex.x << " " << vertex.y << " " << vertex.z << " " << (vert % 3 +1) << "\n";
+				
+				//printf("(%f, %f, %f), ", vertex.x, vertex.y, vertex.z);
+			}
+			
+			//printf("\n");
+		}
+		pfile.close();
+		aiReleaseImport(ploc);
+	}
+	file.close();
+}
+
+void readPowerupfile(char* name)
+{
+	std::ifstream file;
+	file.open(name);
+
+	if(file.is_open())
+	{
+		while(!file.eof())
+		{
+			std::string line;
+			getline(file, line);
+
+			std::stringstream ss;
+
+			ss << line;
+
+			btScalar x;
+			btScalar y;
+			btScalar z;
+			int type;
+
+			ss >> x;
+			ss >> y;
+			ss >> z;
+			ss >> type;
+
+			btTransform pT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(x, y, z));
+
+			entManager->createPowerup("model/powerup.lwo", pT, type);
+		}
+	}
+	file.close();
+}
+
 
 /*
 *	Handles what to do when key has been pressed
@@ -682,9 +758,6 @@ void resetCars(){
 	}
 }
 
-
-
-
 // Engine Main
 int main(int argc, char** argv)
 {	
@@ -719,6 +792,7 @@ int main(int argc, char** argv)
 	{
 /* Menu Code */
 	Menu m = Menu();	
+	//loadPowerupLocation("model/poweruplocation.lwo");
 	int selection = m.run(ren);
 
 
@@ -730,6 +804,7 @@ int main(int argc, char** argv)
 	{
 		CURRENT_STATE = LOADING_GAME;
 		m.loading(ren, "PowerUps");
+		readPowerupfile("poweruploc.p");
 	}
 	// //RENDERER DEBUG TESTING
 	
@@ -745,6 +820,10 @@ int main(int argc, char** argv)
 	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(25.f, 3.5f, 0.f));
 	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 3.5f, 3.5f));
 	
+	
+	
+	
+	/*
 	for(int i = 1; i < 5; i++){
 		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 7.5f, 50.f*i));
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
@@ -757,6 +836,7 @@ int main(int argc, char** argv)
 		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(-50.f*i, 7.5f, 450.f));
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
 	}
+	*/
 	m.loading(ren, "Cars");
 
 	entManager->createCar("model/ship1.lwo", carMass, carT1);	
@@ -777,6 +857,8 @@ int main(int argc, char** argv)
 #else
 	entManager->createTrack("model/Track1tri.lwo", groundT);
 #endif
+
+	m.loading(ren, "Powerups");
 
 
 	m.loading(ren, "Sky");

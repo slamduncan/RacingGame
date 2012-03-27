@@ -18,6 +18,9 @@ int Menu::run(Renderer *ren)
 	while(InMenu)
 	{				
 		ren->clearGL();
+		ren->changeFontSize(72);
+		ren->outputText("Varios", 255, 255, 255,550, 600);
+		ren->changeFontSize(26);
 		switch(currentSelection)
 		{
 		case(QUIT):
@@ -72,6 +75,10 @@ int Menu::run(Renderer *ren)
 				{
 					if (eventIn.jbutton.button == 7){ //Start
 						InMenu = false;
+					}
+					if (eventIn.jbutton.button == 6)
+					{
+						currentSelection= (SELECTABLE) ((currentSelection - 1 + NUM_OF_OPTIONS) % NUM_OF_OPTIONS);
 					}
 				}
 				break;

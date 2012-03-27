@@ -19,6 +19,8 @@ public:
 
 	bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &tran);
 
+	btScalar* getChildGLMatrix(int index);
+
 private:
 	Car * car;
 };

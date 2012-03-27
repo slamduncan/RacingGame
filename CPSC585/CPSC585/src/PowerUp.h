@@ -10,7 +10,6 @@ enum PowerUpType
 	SPEED_SLOW,
 	ROCKET_SHIELD,
 	NOVA_MINE,		
-	//Landmine?
 };
 
 class PowerUp : public Entity

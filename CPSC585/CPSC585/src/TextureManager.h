@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include <utility>
+#include <vector>
 #include "glew.h"
 #define NO_SDL_GLEXT
 #include "SDL_opengl.h"
@@ -19,11 +20,10 @@ class TextureManager
 private:
 	static TextureManager* instance;
 
+	std::vector<std::string> keys;
+
 	TextureManager();
-
 	TextureMap texman;
-
-
 	int numTextures;
 
 public:
@@ -36,6 +36,8 @@ public:
 
 		return instance;
 	}
+
+	~TextureManager();
 
 	enum IDTYPE
 	{

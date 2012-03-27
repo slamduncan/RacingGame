@@ -28,16 +28,27 @@ Car* SlowField::getCar(){
 	return car;
 }
 
+btScalar* SlowField::getChildGLMatrix(int index)
+{
+	btTransform childT = blobContainer->getChildTransform(index);	
+	btTransform containerT = physicsObject->getWorldTransform();
+
+	btVector3 containerPos = containerT.getOrigin();
+	btVector3 childPos = childT.getOrigin();
+
+	btVector3 pos = childPos+containerPos;
+
+	childT = containerT*childT;
+
+	childT.getOpenGLMatrix(glMatrix);
+
+	return glMatrix;
+}
+
 bool SlowField::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans)
 {
 	if(cShape != NULL)
 	{
-		//btDefaultMotionState* entMotionState = new btDefaultMotionState(trans);
-
-		// entRigidBodyCI(mass, motion state, collision shape, inertia);
-		// need to update the mass to make it as a variable?
-		//btRigidBody::btRigidBodyConstructionInfo entRigidBodyCI(0,entMotionState,cShape,btVector3(0, 0, 0));
-
 		physicsObject = new btGhostObject();
 
 		physicsObject->setCollisionShape(cShape);
@@ -45,8 +56,6 @@ bool SlowField::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTr
 
 		blobContainer = (btCompoundShape*)cShape;
 
-		//printf("I have internal type value: %i\n",physicsObject->getInternalType());
-		//physicsObject->seta
 		physicsObject->setCollisionFlags(physicsObject->CF_NO_CONTACT_RESPONSE);
 		return true;
 	}

@@ -76,7 +76,7 @@ public:
 	void createTrack(char* path, btTransform &trans);
 	void createSky(char* path, btTransform &trans);
 	void createWaypoint(char* path, btTransform &trans, int carThrottle = -32767);
-	void createPowerup(char* path, btTransform &trans);
+	void createPowerup(char* path, btTransform &trans, int type);
 	void createObstacle(char* path, btScalar &mass, btTransform &trans);
 	void createSpawnable(char* path, btTransform &trans);
 	void createRocket(int startingWaypoint, btTransform &trans, int carId);

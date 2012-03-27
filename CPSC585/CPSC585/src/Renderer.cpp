@@ -225,6 +225,7 @@ int Renderer::initFont()
 
 int Renderer::initTexs()
 {
+	tm->genTexture("/Documentation/Art/Varios Logo.png", "logo");
 	tm->genTexture("texture/sky.png", "sky");
 	tm->genTexture("model/box.png", "car1");	// load the car texture into GPU memory
 	tm->genTexture(width, height, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
@@ -553,7 +554,6 @@ void Renderer::drawAll()
 	drawEntity(*(em->getSky()));
 	textureOff();
 	glEnableLighting();
-
 	
 	// draw the track
 	drawEntity(*(em->getTrack()));
@@ -618,6 +618,76 @@ void Renderer::drawAll()
 	for(int i = 0; i <em->numMines(); i++)
 	{
 		drawEntity(*(em->getMine(i)));
+	}
+
+	for(int i = 0; i < em->numSlowField();i++)
+	{
+		drawSlowField(*(em->getSlowField(i)));
+	}
+}
+
+void Renderer::drawSlowField(SlowField &slow)
+{
+	for(int i = 0; i < slow.blobContainer->getNumChildShapes(); i++)
+	{
+		glPushMatrix();
+		//slow.blobContainer->getChildTransform(i);
+		btScalar* cT = slow.getChildGLMatrix(i);	// get a child transform
+
+		glMultMatrixf(cT);
+
+		for(int i = 0; i < (int)slow.renderObject->mNumMeshes; i++)
+		{
+			const aiMesh* mesh = slow.renderObject->mMeshes[i];
+
+			if(slow.renderObject->HasMaterials())
+			{
+				const aiMaterial* mat = slow.renderObject->mMaterials[mesh->mMaterialIndex];
+				
+				float Kd[4];
+				aiColor4D diffuse;
+
+				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
+				{
+					Kd[0] = diffuse.r;
+					Kd[1] = diffuse.g;
+					Kd[2] = diffuse.b;
+					Kd[3] = diffuse.a;
+
+					glColor4fv(Kd);
+				}
+			}
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glEnableClientState(GL_NORMAL_ARRAY);
+
+			if(mesh->HasTextureCoords(0))
+			{
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			}
+
+			glVertexPointer(3, GL_FLOAT, sizeof(aiVector3D), mesh->mVertices);
+			glNormalPointer(GL_FLOAT, sizeof(aiVector3D), mesh->mNormals);
+			
+			if(mesh->HasTextureCoords(0))
+			{
+				glTexCoordPointer(2, GL_FLOAT, sizeof(aiVector3D), mesh->mTextureCoords[0]);
+			}
+
+			glDrawArrays(GL_TRIANGLES, 0, mesh->mNumVertices);
+
+			if(mesh->HasTextureCoords(0))
+			{
+				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+			}
+
+			glDisableClientState(GL_NORMAL_ARRAY);
+			glDisableClientState(GL_VERTEX_ARRAY);
+			
+		}
+
+		glPopMatrix();	
+
 	}
 }
 
