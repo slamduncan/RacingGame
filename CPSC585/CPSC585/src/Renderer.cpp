@@ -115,11 +115,7 @@ int Renderer::initGL()
 	{
 		fprintf( stderr, "Resolution not set properly, exiting...: %s\n", SDL_GetError() );
         counter--;//quitSDL();
-	}
-	
-	float ratio = (float) width / (float) height;	// compute FOV
-
-    
+	} 
 	//
 	//	GL options go here, ie glEnable, etc
 	//
@@ -190,6 +186,7 @@ int Renderer::initGL()
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity( );
     // horizontal fov, vertical fov, min view distance, max view distance
+	float ratio = (float) width / (float) height;	// compute FOV
 	gluPerspective( 60.0, ratio, 1.0, 5120.0 );	// need to fix this to change fov on the fly
 	glMatrixMode(GL_MODELVIEW);	// switch back to model view
 
@@ -228,7 +225,7 @@ int Renderer::initTexs()
 	tm->genTexture("/Documentation/Art/Varios Logo.png", "logo");
 	tm->genTexture("texture/sky.png", "sky");
 	tm->genTexture("model/box.png", "car1");	// load the car texture into GPU memory
-	tm->genTexture(width, height, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
+	tm->genTexture(2048, 2048, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
 	tm->genTexture(width, height, "gaussian");	// gaussian blur
 	tm->genTexture(width, height, "smap");		// shadow maps
 	tm->genTexture(width, height, "nd");		// create a texture for ssao pass 1
@@ -405,11 +402,16 @@ void Renderer::draw(Shader &s)
 //
 void Renderer::depthMapPass()
 {
+	float ratio = (float) width / (float) height;	// compute FOV
+	
+	
+	gluPerspective( 90.0, 1.0, 1.0, 5120.0 );
+	
 	// for each light source in our world, generate a depth map for the first car
 	for(int i = 0; i < lights.size(); i++)
 	{
 		fb.turnOn();
-		glViewport(0, 0, width, height);
+		glViewport(0, 0, 2048, 2048);
 		fb.attachTexture(getTexture("depth2l1"), GL_COLOR_ATTACHMENT0_EXT);
 		clearGL();
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
@@ -431,8 +433,10 @@ void Renderer::depthMapPass()
 									0.5, 0.5, 0.5, 1.0 };
 
 		glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
+		
+		
+		
 		glGetDoublev(GL_PROJECTION_MATRIX, projection);
-
 		glMatrixMode(GL_TEXTURE);
 		glActiveTexture(GL_TEXTURE7);
 
@@ -456,6 +460,8 @@ void Renderer::depthMapPass()
 		fb.turnOff();
 	}
 
+	gluPerspective( 60.0, ratio, 1.0, 5120.0 );
+	glViewport(0, 0, width, height);
 	// bind and active the texture
 	// draw using the depth map
 
@@ -547,6 +553,7 @@ void Renderer::celPass()
 
 void Renderer::drawAll()
 {
+/*
 	// draw the skydome/sphere
 	glDisableLighting();
 	glActiveTexture(GL_TEXTURE0);
@@ -554,7 +561,7 @@ void Renderer::drawAll()
 	drawEntity(*(em->getSky()));
 	textureOff();
 	glEnableLighting();
-	
+*/	
 	// draw the track
 	drawEntity(*(em->getTrack()));
 
@@ -568,7 +575,7 @@ void Renderer::drawAll()
 		drawEntity(*temp);
 		//textureOff();
 
-/*		
+		/*		
 		// for each wheel we need to draw a line
 		for(int j = 0; j < 4; j++)
 		{
@@ -625,6 +632,63 @@ void Renderer::drawAll()
 		drawSlowField(*(em->getSlowField(i)));
 	}
 }
+
+
+
+void Renderer::drawCars()
+{
+
+}
+void Renderer::drawPowerups()
+{
+
+}
+void Renderer::drawTrack()
+{
+
+}
+void Renderer::drawRockets()
+{
+
+}
+void Renderer::drawShields()
+{
+
+}
+void Renderer::drawMines()
+{
+
+}
+void Renderer::drawSlowFields()
+{
+
+}
+
+void Renderer::drawCar(Car &car)
+{
+
+}
+
+void Renderer::drawPowerup(PowerUp &power)
+{
+
+}
+
+void Renderer::drawRocket(Rocket &rocket)
+{
+
+}
+
+void Renderer::drawShield(Shield &shield)
+{
+
+}
+
+void Renderer::drawMine(Mine &mine)
+{
+
+}
+
 
 void Renderer::drawSlowField(SlowField &slow)
 {

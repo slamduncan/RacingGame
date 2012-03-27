@@ -1104,6 +1104,7 @@ int main(int argc, char** argv)
 		ren->setCamera(camera1);
 		ren->celPass();
 */
+
 		ren->clearGL();		
 		ren->setCamera(camera1);
 		ren->drawAll();
