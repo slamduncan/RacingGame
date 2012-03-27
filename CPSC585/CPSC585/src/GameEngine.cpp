@@ -554,16 +554,16 @@ void process_events()
 			}
 			if(controller1.isXDown())
 			{
-				entManager->getCar(0)->RotatePowerups( true );
+				//entManager->getCar(0)->RotatePowerups( true );
 			}
 			if(controller1.isYDown())
 			{
-				entManager->getCar(0)->RotatePowerups( false );
+				//entManager->getCar(0)->RotatePowerups( false );
 			}
 			if(controller1.isButtonDown(controller1.R_Bump))
 			{
 				//floatingWaypoint();
-
+/*
 				int index = getClosestWaypoint();
 				if (entManager->getWaypointList()->size() > 0 && index != -1)
 				{
@@ -580,10 +580,11 @@ void process_events()
 				else
 				{
 					entManager->resetCarOrientation(0);
-				}
+				}*/
+				entManager->getCar(0)->RotatePowerups( false );
 			}
 			if(controller1.isButtonDown(controller1.L_Bump))
-			{
+			{/*
 				if(entManager->numCars() > 0)
 				{
 					// resetCar(index of car, position we want to reset to)
@@ -600,7 +601,8 @@ void process_events()
 					{
 						entManager->resetCar(0, btVector3(0, 3, 0));
 					}
-				}
+				}*/
+				entManager->getCar(0)->RotatePowerups( true );
 			}
 
 			if (controller1.isButtonDown(controller1.Start_button))
@@ -1160,17 +1162,11 @@ int main(int argc, char** argv)
 			if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 0 )
 				ssPowerUps << "Empty ";
 			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 1 )
-				ssPowerUps << "Speed ";
+				ssPowerUps << "|| Slow / Speed ||";
 			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 2 )
-				ssPowerUps << "Rocket ";
+				ssPowerUps << "|| Rocket / Shield ||";
 			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 3 )
-				ssPowerUps << "Nova ";
-			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 4 )
-				ssPowerUps << "Slow ";
-			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 5 )
-				ssPowerUps << "Traction ";
-			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 6 )
-				ssPowerUps << "Shield ";
+				ssPowerUps << "|| Mine / Nova ||";			
 		}
 
 		ren->outputText("Powerups: " + ssPowerUps.str(), 255, 0, 0, 300, 700);
