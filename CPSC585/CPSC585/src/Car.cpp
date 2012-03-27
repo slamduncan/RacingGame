@@ -363,7 +363,7 @@ void Car::UsePowerUp( int index , bool offensive)
 		switch(pUpType){
 			case SPEED_SLOW:{
 				//SPEED POWERUP
-				if (offensive)
+				if (!offensive)
 				{
 					btVector3 forward = getTangent();
 					forward.setY(0);	// projects the tangent along the xz plane
@@ -396,7 +396,7 @@ void Car::UsePowerUp( int index , bool offensive)
 			case NOVA_MINE:
 				{
 					//NOVA POWERUP
-					if (offensive)
+					if (!offensive)
 					{
 						btGhostObject * explosionShell;
 						explosionShell = new btGhostObject();
