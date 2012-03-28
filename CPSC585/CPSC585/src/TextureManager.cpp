@@ -187,7 +187,7 @@ void TextureManager::freeTexture()
 
 void TextureManager::freeAll()
 {
-	for(int i = 0; i < keys.size(); i++)
+	for(unsigned int i = 0; i < keys.size(); i++)
 	{
 		GLuint id = getTexture(keys[i]);
 		glDeleteTextures(1, &id);

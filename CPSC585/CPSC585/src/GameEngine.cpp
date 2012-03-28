@@ -429,11 +429,11 @@ void loadPowerupLocation(char* fname)
 			aiProcess_SortByPType |
 			aiProcess_FlipUVs);
 
-		for(int i = 0; i < ploc->mNumMeshes; i++)
+		for(unsigned int i = 0; i < ploc->mNumMeshes; i++)
 		{
 			const aiMesh* mesh = ploc->mMeshes[i];
 
-			for(int vert = 0; vert < mesh->mNumVertices; vert++)
+			for(unsigned int vert = 0; vert < mesh->mNumVertices; vert++)
 			{
 				aiVector3D vertex = mesh->mVertices[vert];
 				pfile << vertex.x << " " << vertex.y << " " << vertex.z << " " << (vert % 3 +1) << "\n";
@@ -816,14 +816,7 @@ int main(int argc, char** argv)
 
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
-	btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 3.5f, -2.f));
-	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(25.f, 3.5f, 0.f));
-	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 3.5f, 3.5f));
-	
-	
-	
-	
-	/*
+		/*
 	for(int i = 1; i < 5; i++){
 		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 7.5f, 50.f*i));
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
@@ -837,17 +830,9 @@ int main(int argc, char** argv)
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
 	}
 	*/
-	m.loading(ren, "Cars");
-
-	entManager->createCar("model/ship1.lwo", carMass, carT1);	
-	entManager->createCar("model/ship1.lwo", carMass, carT2);	
 	
-	for(int i = 1; i < 4; i++){
-		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
-		entManager->createCar("model/ship1.lwo", carMass, carT3);	
-		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
-		entManager->createCar("model/ship1.lwo", carMass, carT4);	
-	}
+
+	
 	m.loading(ren, "Track");
 	
 	
@@ -857,6 +842,23 @@ int main(int argc, char** argv)
 #else
 	entManager->createTrack("model/Track1tri.lwo", groundT);
 #endif
+
+m.loading(ren, "AI Information");
+	readWaypoints("waypoints.w");
+
+m.loading(ren, "Cars");
+
+	//entManager->createCar("model/ship1.lwo", carMass, carT1);	
+	//entManager->createCar("model/ship1.lwo", carMass, carT2);	
+	
+	for(int i = 1; i < 4; i++){
+		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
+		entManager->createCar("model/ship1.lwo", carMass, carT3);	
+		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
+		entManager->createCar("model/ship1.lwo", carMass, carT4);	
+	}
+	for (int i = 0; i < entManager->getCarList()->size(); i++)
+			entManager->getCar(i)->setNextWaypointIndex(0);
 
 	m.loading(ren, "Powerups");
 
@@ -913,9 +915,7 @@ int main(int argc, char** argv)
 	float interpolation;
 	bool running = true;
 
-	Uint32 next_game_tick = SDL_GetTicks();
-	m.loading(ren, "AI Information");
-	readWaypoints("waypoints.w");
+	Uint32 next_game_tick = SDL_GetTicks();	
 
 	m.loading(ren, "Game Ready!");
 	// game loop
@@ -1030,6 +1030,8 @@ int main(int argc, char** argv)
 						LapNumber++;
 					}
 				}
+				// Resets any cars which have fallen off the track.
+				resetCars();
 			}
 
 			if (CURRENT_STATE == GAME_FINISHED)
@@ -1040,8 +1042,8 @@ int main(int argc, char** argv)
 					if (!tempC->finishedRacing)
 					{
 						float percentDone = tempC->getNextWaypointIndex()/(float)entManager->numWaypoints() + tempC->lapCount;
-						int avgMin = totalMinutes / percentDone;
-						int avgSec = totalLapSeconds / percentDone;
+						int avgMin =(int)( totalMinutes / percentDone);
+						int avgSec = (int) (totalLapSeconds / percentDone);
 						int tempTotalMin = totalMinutes, tempTotalSec = totalLapSeconds;
 						for (int j = 3; j > tempC->lapCount; j--)
 						{
@@ -1274,9 +1276,7 @@ int main(int argc, char** argv)
 
 		ren->updateGL();	// update the screen
 
-		// Resets any cars which have fallen off the track.
-		resetCars();
-		
+	
 	}
 	running = true;
 

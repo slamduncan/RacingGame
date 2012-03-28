@@ -14,8 +14,8 @@ SlowField::SlowField(Car* c)
 	//phys->addGhost(slowBlobContainer);
 
 	//timeToSelfDestruct = clock() + 9*CLOCKS_PER_SEC;
-	timeToDrop = clock() + 0.10*CLOCKS_PER_SEC;
-	timeToDelete = clock() + 4.5*CLOCKS_PER_SEC;
+	timeToDrop = clock() + 0.10f*CLOCKS_PER_SEC;
+	timeToDelete = clock() + 4.5f*CLOCKS_PER_SEC;
 	numSpawned = 0;
 	numDeleted = 0;
 }
