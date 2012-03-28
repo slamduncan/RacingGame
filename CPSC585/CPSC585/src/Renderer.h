@@ -89,6 +89,7 @@ public:
 	void shaderOn(Shader &s);
 	void shaderOff(Shader &s);
 
+	void setTextureMatrix();
 	void depthMapPass();
 	void ssaoPass();
 	void abtexPass();
@@ -113,7 +114,22 @@ public:
 	void draw(Shader &s);
 	void drawEntity(Entity &entity);
 	void drawAll();
+	
+	void drawCars();
+	void drawPowerups();
+	void drawTrack();
+	void drawRockets();
+	void drawShields();
+	void drawMines();
+	void drawSlowFields();
+
+	void drawCar(Car &car);
+	void drawPowerup(PowerUp &power);
+	void drawRocket(Rocket &rocket);
+	void drawShield(Shield &shield);
+	void drawMine(Mine &mine);
 	void drawSlowField(SlowField &slow);
+
 
 	void drawPlane(float height);
 	void drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width = 1.0);
