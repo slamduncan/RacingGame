@@ -55,6 +55,7 @@ private:
 	int height;
 	int bpp;
 	int vflags;
+	unsigned int currentSize;
 
 	TTF_Font *debugFont;
 

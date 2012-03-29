@@ -288,22 +288,32 @@ void Renderer::changeFontSize(int size)
 		counter--;
 	}
 	*/
+	currentSize = size;
 
 	if(debugFont != NULL)
 	{
 		TTF_CloseFont(debugFont);
-		debugFont = TTF_OpenFont("font/ARIAL.TTF", size);
+		debugFont = TTF_OpenFont("font/STARCRAFT.TTF", currentSize);
 	}
 	else
 	{
 		//printf("Error: Font has yet to be initialized\n");
-		debugFont = TTF_OpenFont("font/ARIAL.TTF", size);
+		debugFont = TTF_OpenFont("font/STARCRAFT.TTF", currentSize);
 	}
 }
 
 void Renderer::changeFont(std::string fontpath)
 {
-
+	if(debugFont != NULL)
+	{
+		TTF_CloseFont(debugFont);
+		debugFont = TTF_OpenFont(fontpath.c_str(), currentSize);
+	}
+	else
+	{
+		//printf("Error: Font has yet to be initialized\n");
+		debugFont = TTF_OpenFont(fontpath.c_str(), currentSize);
+	}
 }
 
 

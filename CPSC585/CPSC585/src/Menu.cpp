@@ -10,8 +10,7 @@ int Menu::run(Renderer *ren)
 {	
 	SELECTABLE currentSelection = START;
 	bool InMenu = true;
-	ren->glEnable2D();
-	ren->changeFontSize(26);
+	ren->glEnable2D();	
 	unsigned int delay = 120;
 	Uint32 lastTickCount = SDL_GetTicks();
 	bool moved = false;
@@ -25,14 +24,14 @@ int Menu::run(Renderer *ren)
 		{
 		case(QUIT):
 			{
-				ren->outputText("Start", 255, 0,0, 1280/2, 720/2);
-				ren->outputText("Quit", 0, 255,0, 1280/2, 720/3);
+				ren->outputText("S t a r t", 255, 0,0, 1280/2, 720/2);
+				ren->outputText("Q u i t", 0, 255,0, 1280/2, 720/3);
 				break;
 			}
 		case(START):
 			{
-				ren->outputText("Start", 0, 255,0, 1280/2, 720/2);
-				ren->outputText("Quit", 255, 0,0, 1280/2, 720/3);
+				ren->outputText("S t a r t", 0, 255,0, 1280/2, 720/2);
+				ren->outputText("Q u i t", 255, 0,0, 1280/2, 720/3);
 				break;
 			}
 		}
@@ -93,6 +92,8 @@ int Menu::run(Renderer *ren)
 int Menu::timeScreen(Renderer *ren)
 {
 	EntityManager* entMan = EntityManager::getInstance();
+	while(!goBack)
+	{
 	ren->glEnable2D();
 	ren->clearGL();
 	
@@ -146,12 +147,10 @@ int Menu::timeScreen(Renderer *ren)
 	}
 
 	ren->outputText("Press Start To Go Back to Main Menu", 255, 0,0, 1280/3, 680);
-	ren->glDisable2D();
-	ren->updateGL();		
+	ren->glDisable2D();		
 	SDL_Event eventIn;	
 	bool goBack = false;
-	while(!goBack)
-	{
+	
 	while(SDL_PollEvent( &eventIn )) {
 		
 		switch (eventIn.type)
