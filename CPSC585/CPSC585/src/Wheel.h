@@ -36,6 +36,7 @@ public:
 	void setKModifier(btScalar &inK);
 	void setCModifier(btScalar &inC);
 
+	btVector3 hitNormal;
 
 	btVector3 calcForce(btVector3 &springLocation, btVector3 &carNormal);
 

@@ -163,8 +163,9 @@ int Menu::timeScreen(Renderer *ren)
 				}
 			}
 			break;
-		}
+		}		
 	}
+	ren->updateGL();
 	}
 	return 0;
 }
@@ -178,4 +179,84 @@ void Menu::loading(Renderer *ren, std::string loadingWhat)
 	ren->outputText(loadingWhat, 0, 255, 255, 1280/2, 720/3);
 	ren->updateGL();
 	ren->glDisable2D();
+}
+int Menu::inGameMenu(Renderer *ren)
+{
+	IN_GAME_MENU_OPTIONS currentSelection = CONTINUE;
+	bool InGameMenu = true;
+	ren->glEnable2D();
+	ren->changeFontSize(26);
+	unsigned int delay = 120;
+	Uint32 lastTickCount = SDL_GetTicks();
+	bool moved = false;
+	while(InGameMenu)
+	{				
+		ren->clearGL();
+		switch(currentSelection)
+		{
+		case(QUIT_IN_GAME):
+			{
+				ren->outputText("Resume", 255, 0,0, 1280/2, 720/2);
+				ren->outputText("Quit", 0, 255,0, 1280/2, 720/3);
+				break;
+			}
+		case(CONTINUE):
+			{
+				ren->outputText("Resume", 0, 255,0, 1280/2, 720/2);
+				ren->outputText("Quit", 255, 0,0, 1280/2, 720/3);
+				break;
+			}
+		}
+
+		if (delay < SDL_GetTicks() - lastTickCount)
+		{
+			lastTickCount = SDL_GetTicks();
+			moved = false;			
+		}		
+		SDL_Event eventIn;		
+		while(SDL_PollEvent( &eventIn )) {
+			
+			switch (eventIn.type)
+			{			
+			case SDL_JOYAXISMOTION:
+				{
+					if (moved)
+					{						
+						break;
+					}
+					moved = true;
+					//Y-Axis of left joystick
+					if (eventIn.jaxis.axis == 1)
+					{
+						if (triggerInputLimit(eventIn.jaxis.value)){
+							if (eventIn.jaxis.value > 0)
+							{
+								currentSelection = (IN_GAME_MENU_OPTIONS) ((currentSelection + 1) % NUM_OF_IN_GAME_OPTIONS);
+							}
+							else
+							{
+								currentSelection= (IN_GAME_MENU_OPTIONS) ((currentSelection - 1 + NUM_OF_IN_GAME_OPTIONS) % NUM_OF_IN_GAME_OPTIONS);
+							}
+						}
+					}					
+				}
+				break;
+
+			case SDL_JOYBUTTONDOWN:
+				{
+					if (eventIn.jbutton.button == 7){ //Start
+						InGameMenu = false;
+					}
+					if (eventIn.jbutton.button == 6)
+					{
+						currentSelection= (IN_GAME_MENU_OPTIONS) ((currentSelection - 1 + NUM_OF_IN_GAME_OPTIONS) % NUM_OF_IN_GAME_OPTIONS);
+					}
+				}
+				break;
+			}
+		}
+		ren->updateGL();
+	}
+	ren->glDisable2D();
+	return currentSelection;
 }

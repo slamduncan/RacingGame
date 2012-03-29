@@ -39,7 +39,7 @@ bool stillWantsToPlay = true;
 
 ALuint EngineSource = 2;
 
-enum GameState {MAIN_MENU, LOADING_GAME, GAME_STARTING, GAME_RUNNING, GAME_FINISHED};
+enum GameState {MAIN_MENU, LOADING_GAME, GAME_STARTING, GAME_RUNNING, GAME_FINISHED, PAUSED_IN_GAME};
 GameState CURRENT_STATE = MAIN_MENU;
 // Other init
 // ie. Physics, AI, Renderer, Sound, Container for ents?
@@ -683,6 +683,7 @@ void process_events()
 
 			if (controller1.isButtonDown(controller1.Start_button))
 			{
+				/*
 #if SANDBOX
 				readWaypoints("sandboxWaypoints.w");
 #else 				
@@ -690,6 +691,8 @@ void process_events()
 #endif
 				LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
 				LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+				*/
+				CURRENT_STATE = PAUSED_IN_GAME;
 			}
 			//if (controller1.isButtonDown(controller1.L_Bump))
 			//{
@@ -730,7 +733,7 @@ void resetCars(){
 				entManager->resetCar(i, btVector3(0, 3, 0));
 			}
 		}
-		if (c->getNormal().dot(btVector3(0,1,0)) < 0.1 || c->AIresetCounter > 120)
+		if (c->getNormal().dot(btVector3(0,1,0)) < 0.3 || c->AIresetCounter > 120)
 		{
 			c->resetCounter++;
 			if (c->resetCounter > 40 || c->AIresetCounter > 120)
@@ -1135,6 +1138,17 @@ m.loading(ren, "Cars");
 				CURRENT_STATE = GAME_RUNNING;
 				next_game_tick = SDL_GetTicks();
 			}
+		}
+		if (CURRENT_STATE == PAUSED_IN_GAME)
+		{
+			int selection = m.inGameMenu(ren);
+			if (selection == m.CONTINUE)
+			{
+				CURRENT_STATE = GAME_RUNNING;
+				next_game_tick = SDL_GetTicks();
+			}
+			else if (selection = m.QUIT_IN_GAME)
+				running = false;
 		}
 
 		ren->changeFontSize(20);

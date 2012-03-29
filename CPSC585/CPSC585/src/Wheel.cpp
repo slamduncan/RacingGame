@@ -21,6 +21,7 @@ Wheel::Wheel(btScalar radius, btScalar lengthOfSpring, btScalar lengthOfSpringWi
 			dynamicsWorld = Physics::Inst()->getDiscreteDynamicsWorld();
 
 			hitObject = NULL;
+			hitNormal = btVector3(0,0,0);
 
 }
 
@@ -70,6 +71,7 @@ btVector3 Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 		onGround = true;
 		
 		hitObject = RayCallback.m_collisionObject;
+		hitNormal = RayCallback.m_hitNormalWorld;
 		
 		//Distance into the ground the ray went. (Currently assuming the ground is normal)
 		//CHANGE THIS CODE WHEN WE START ADDING BUMPS.
