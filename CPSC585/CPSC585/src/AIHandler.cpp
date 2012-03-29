@@ -116,7 +116,7 @@ void AIHandler::PowerUpCheck(Car* c)
 		case(SPEED_SLOW):
 			{
 				//Slow
-				if (carBehind)
+				if (carBehind || c->GetNumberPowerUps() == 3)
 				{
 					c->UsePowerUp(i, true);
 				}
@@ -129,7 +129,7 @@ void AIHandler::PowerUpCheck(Car* c)
 				{
 					c->UsePowerUp(i, false);
 				}
-				else if (carBehind)
+				else if (carInFront || carBehind || c->GetNumberPowerUps() == 3)
 					c->UsePowerUp(i, true);
 				break;
 			}

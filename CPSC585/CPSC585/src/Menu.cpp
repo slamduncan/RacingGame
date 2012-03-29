@@ -92,6 +92,7 @@ int Menu::run(Renderer *ren)
 int Menu::timeScreen(Renderer *ren)
 {
 	EntityManager* entMan = EntityManager::getInstance();
+	bool goBack = false;
 	while(!goBack)
 	{
 	ren->glEnable2D();
@@ -149,8 +150,6 @@ int Menu::timeScreen(Renderer *ren)
 	ren->outputText("Press Start To Go Back to Main Menu", 255, 0,0, 1280/3, 680);
 	ren->glDisable2D();		
 	SDL_Event eventIn;	
-	bool goBack = false;
-	
 	while(SDL_PollEvent( &eventIn )) {
 		
 		switch (eventIn.type)

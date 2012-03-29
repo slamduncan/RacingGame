@@ -527,7 +527,7 @@ Car* Car::getClosestCar(bool inFront)
 		if (i == id)
 			continue;
 		Car* c = cList->at(i);
-		btVector3 directionVect = getPosition() - c->getPosition();
+		btVector3 directionVect = c->getPosition() - getPosition();
 		btScalar tempDist(directionVect.length());
 		if (inFront)
 		{
