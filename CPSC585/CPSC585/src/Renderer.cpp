@@ -124,6 +124,7 @@ int Renderer::initGL()
 	glShadeModel(GL_SMOOTH);	// smooth shading
     glFrontFace(GL_CW);	// set front face objects to be in CCW direction
     glEnable( GL_CULL_FACE );	// allow removing culled surfaces
+	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendFunc(GL_ONE, GL_ONE);	
 	//glEnable(GL_BLEND);
 
@@ -222,7 +223,8 @@ int Renderer::initFont()
 
 int Renderer::initTexs()
 {
-	tm->genTexture("/Documentation/Art/Varios Logo.png", "logo");
+	tm->genTexture("texture/tempHUD.png", "hud");
+	tm->genTexture("Documentation/Art/Varios Logo.png", "logo");
 	tm->genTexture("texture/sky.png", "sky");
 	tm->genTexture("model/box.png", "car1");	// load the car texture into GPU memory
 	tm->genTexture(2048, 2048, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
@@ -836,7 +838,7 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 	SDL_Surface *toTexture;	// will contain all the text
 	SDL_Color color;	// color of the text
 	SDL_Rect position;	// position of the text
-	
+
 	// width and height of the texture
 	int wt = 0;
 	int ht = 0;
@@ -886,12 +888,12 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 
 	// generate a surface based on the width and height of the text
 	toTexture = SDL_CreateRGBSurface(0, wt, ht, 32, 0, 0, 0, 0);
+	SDL_SetAlpha(toTexture, SDL_SRCALPHA, SDL_ALPHA_TRANSPARENT);
 
 	// render each line into a surface
 	for(int i = 0; i < (int)mlines.size(); i++)
 	{
-		temp = TTF_RenderText_Solid(debugFont, mlines[i].c_str(), color);	// render a line to the surface
-
+		temp = TTF_RenderText_Blended(debugFont, mlines[i].c_str(), color);	// render a line to the surface
 		// compute the location of the next text location
 		SDL_Rect skip;
 		skip.x = 0;
@@ -910,9 +912,8 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	//glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glColor3f(1.0f, 1.0f, 1.0f);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	
 	/* Draw a quad at location */
 	glBegin(GL_QUADS);

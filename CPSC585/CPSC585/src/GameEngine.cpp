@@ -1122,6 +1122,12 @@ m.loading(ren, "Cars");
 
 		ren->glEnable2D();
 
+		glColor4f(1,1, 1, 1);
+		//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//ren->drawTexture("hud");
+		//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
 		/* Starting CountDown */
 		if (CURRENT_STATE == GAME_STARTING)
 		{
