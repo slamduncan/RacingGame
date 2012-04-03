@@ -85,6 +85,7 @@ void AIHandler::generateNextMove(){
 		//int waypointDiff = c->getPosition().setY(0.f) - humanCar->getPosition().setY(0.f)
 		forwardForce = forwardForce - waypointDiff * rubberBandModifier;
 
+		//User too good, warp forward!
 		if (waypointDiff > 300 && (c->lapCount < humanCar->lapCount || c->halfWayAround != humanCar->halfWayAround))   //abs(forwardForce) > (35000.0f + 400 * rubberBandModifier) && forwardForce < 0 && c->lapCount <= humanCar->lapCount)
 		{
 			EntityManager* entM = EntityManager::getInstance();
@@ -94,6 +95,17 @@ void AIHandler::generateNextMove(){
 			c->halfWayAround = humanCar->halfWayAround;
 			c->setNextWaypointIndex(moveCarTo->getWaypointList().at(0)->getIndex());
 			c->AIresetCounter = 0;
+		}
+		//User is bad, warp back :(
+		else if (waypointDiff < -150 && c->lapCount >= humanCar->lapCount)
+		{
+			EntityManager* entM = EntityManager::getInstance();
+			Waypoint* moveCarTo = entM->getWaypoint(((humanCar->getNextWaypointIndex() + 20) + entM->numWaypoints()) % entM->numWaypoints());
+			c->physicsObject->setWorldTransform(moveCarTo->getTransform());			
+			c->halfWayAround = humanCar->halfWayAround;
+			c->setNextWaypointIndex(moveCarTo->getWaypointList().at(0)->getIndex());
+			c->AIresetCounter = 0;
+
 		}
 		else
 		{

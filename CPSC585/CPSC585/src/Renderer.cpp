@@ -891,12 +891,12 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 	ht = (int)mlines.size() * lineSkip;	// compute the maximum height of the texture
 
 	// generate a surface based on the width and height of the text
-	toTexture = SDL_CreateRGBSurface(SDL_HWSURFACE|SDL_SRCALPHA, wt, ht, 32, 0x000000ff,0x0000ff00,0x00ff0000,0xff000000);
+	toTexture = SDL_CreateRGBSurface(SDL_SRCALPHA, wt, ht, 32, 0x000000ff,0x0000ff00,0x00ff0000,0xff000000);
 
 	// render each line into a surface
 	for(int i = 0; i < (int)mlines.size(); i++)
 	{
-		temp = SDL_DisplayFormatAlpha(TTF_RenderUTF8_Blended(debugFont, mlines[i].c_str(), color));	// render a line to the surface
+		temp = TTF_RenderUTF8_Blended(debugFont, mlines[i].c_str(), color);	// render a line to the surface
 		
 		//SDL_SetAlpha(temp, SDL_SRCALPHA, SDL_ALPHA_TRANSPARENT);
 		// compute the location of the next text location
@@ -912,8 +912,6 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-
-	SDL_PixelFormat* pd = toTexture->format;
 
 	//printf("%d\n", pd->alpha);
 

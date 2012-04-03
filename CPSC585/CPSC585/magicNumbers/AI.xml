@@ -8,6 +8,6 @@
   <carDetectionRange value ="20.0"/>
   <rocketSpeed value ="5.0"/>
   <rocketDetectionRange value ="100.0"/>
-  <rubberBandModifier value ="200.0"/>
+  <rubberBandModifier value ="250.0"/>
   <rammingRange value ="10.0"/>
 </AI>
