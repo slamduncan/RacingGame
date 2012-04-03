@@ -73,6 +73,7 @@ updateVariableObserver(this, &Car::observeVariables)
 	finishedRacing = false;
 	finalPosition = -1;
 	AIresetCounter = 0;
+	currentPosition = 0;
 }
 
 void Car::initObservers()

@@ -761,6 +761,68 @@ void resetCars(){
 	}
 }
 
+void calcPositions()
+{
+	int currentPosition = 6;
+	Car* currentCar;
+	Car* positionCar;
+	Car* lastCar;
+	Car* firstCar;
+	int atWaypoint = entManager->numWaypoints();
+	int lapCount = 3;
+	/* Find last car */
+	for (int i = 0; i < entManager->numCars(); i++)
+	{
+		Car* tempC = entManager->getCar(i);
+		if (tempC->getNextWaypointIndex() <= atWaypoint && tempC->lapCount <= lapCount)
+		{
+			lastCar = tempC;
+			atWaypoint = lastCar->getNextWaypointIndex();
+			lapCount = lastCar->lapCount;			
+		}
+	}
+	lastCar->currentPosition = currentPosition;
+	currentPosition -= 1;
+	/* Find first car */
+	atWaypoint = 0;
+	lapCount = 0;
+	for (int i = 0; i < entManager->numCars(); i++)
+	{
+		Car* tempC = entManager->getCar(i);
+		if (tempC->getNextWaypointIndex() >= atWaypoint && tempC->lapCount >= lapCount)
+		{
+			firstCar = tempC;
+			atWaypoint = firstCar->getNextWaypointIndex();
+			lapCount = firstCar->lapCount;			
+		}
+	}
+	firstCar->currentPosition = 1;
+
+	
+	for (int i = 0; i < entManager->numCars() - 1; i++)
+	{
+		Car* lastFoundCar = firstCar;
+		for (int j = 0; j < entManager->numCars(); j++)
+		{
+			currentCar = entManager->getCar(j);
+
+			if (currentCar->getNextWaypointIndex() > lastCar->getNextWaypointIndex() &&
+				currentCar->lapCount >= lastCar->lapCount)
+			{				
+				if (currentCar->getNextWaypointIndex() < lastFoundCar->getNextWaypointIndex()
+					&& currentCar->lapCount <= lastFoundCar->lapCount)
+				{
+					lastFoundCar = currentCar;					
+				}
+			}
+		}
+		lastFoundCar->currentPosition = currentPosition;
+		currentPosition -= 1;
+		lastCar = lastFoundCar;
+		lastFoundCar = firstCar;
+	}
+}
+
 // Engine Main
 int main(int argc, char** argv)
 {	
@@ -979,6 +1041,7 @@ m.loading(ren, "Cars");
 			// AI
 			AIpowerUPDelayCounter++;
 			ai->generateNextMove();
+			calcPositions();
 			if (AIpowerUPDelayCounter > 240)
 			{
 				for(int i = 0; i < entManager->numCars(); i++)			
@@ -1254,6 +1317,9 @@ m.loading(ren, "Cars");
 		
 		LapMilliseconds = TimeDifference / 10;
 		ssLapTime << LapMilliseconds;
+
+		//Display Position
+		ssLapTime << " Current Position: " << entManager->getCar(0)->currentPosition;
 
 		// Display the current lap time
 		ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);
