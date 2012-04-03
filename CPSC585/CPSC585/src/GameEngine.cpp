@@ -1096,15 +1096,16 @@ m.loading(ren, "Cars");
 
 		// set camera to eye space
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
-		ren->setCamera(camera1);
 
+		ren->setCamera(camera1);
+/*
 		ren->draw(camera1);
-		
+*/		
 /*
 		ren->normalMapPass();
 		//ren->drawTexture("nd");
 		ren->ssaoPass();
-		ren->clearGL();
+		ren->clearGL();!
 */
 /*
 		ren->clearGL();		
@@ -1121,12 +1122,9 @@ m.loading(ren, "Cars");
 		ren->glEnableLighting();
 
 		ren->glEnable2D();
-
-		glColor4f(1,1, 1, 1);
-		//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		//ren->drawTexture("hud");
-		//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+		//glBlendFunc(GL_ONE, GL_ONE);
+		
 
 		/* Starting CountDown */
 		if (CURRENT_STATE == GAME_STARTING)
@@ -1292,6 +1290,10 @@ m.loading(ren, "Cars");
 				ren->outputText("Wrong Way", 255, 0, 0, 500, 600);
 			}
 		}
+
+				glColor4f(1.0, 1.0, 1.0, 1.0);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ren->drawTexture("hud");
 
 		ren->glDisable2D();
 

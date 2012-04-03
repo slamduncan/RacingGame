@@ -227,8 +227,10 @@ void Car::updateWheels()
 	for (int i = 0; i < 4; i++){
 		btVector3 contact = newWheels[i].getBottomSpringPosition();		
 		btScalar upComponent =  newWheels[i].hitNormal.dot(btVector3(0,1,0)) ;
+		/*
 		if (this->id == 0)
 			printf("x = %f, y = %f, z = %f \n", newWheels[i].hitNormal.x(), newWheels[i].hitNormal.y(), newWheels[i].hitNormal.z());
+		*/
 		if(newWheels[i].hitObject && upComponent > 0.5)
 		{
 			chassis->applyForce(forces[i]*springForceModifier,contact - chassis->getCenterOfMassPosition()/*wheelOffsets[i]*/);
