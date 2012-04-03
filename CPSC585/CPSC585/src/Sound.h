@@ -72,7 +72,7 @@ void LoadBackgroundSoundFile(ALbyte* FileName)
 	alSourcePlay(BackGroundSource);
 }
 
-void LoadSoundFile(ALbyte* FileName, ALuint* Source)
+void LoadSoundFile(ALbyte* FileName, ALuint* Source, ALboolean Looping = AL_FALSE)
 {
 	ALCdevice* device = alcOpenDevice(NULL);
 	ALCcontext* context = alcCreateContext(device, NULL);
@@ -134,7 +134,7 @@ void LoadSoundFile(ALbyte* FileName, ALuint* Source)
 	alSourcefv(*Source, AL_POSITION, source0Pos);
 	alSourcefv(*Source, AL_VELOCITY, source0Vel);
 	alSourcei(*Source, AL_BUFFER,buffer);
-	alSourcei(*Source, AL_LOOPING, AL_TRUE);
+	alSourcei(*Source, AL_LOOPING, Looping);
 
 	alSourcePlay(*Source);
 }
