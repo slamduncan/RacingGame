@@ -574,7 +574,8 @@ void Renderer::celPass()
 
 void Renderer::drawAll()
 {
-/*
+	glLightfv(GL_LIGHT0, GL_POSITION, lights[0].getPosition());
+
 	// draw the skydome/sphere
 	glDisableLighting();
 	glActiveTexture(GL_TEXTURE0);
@@ -582,7 +583,7 @@ void Renderer::drawAll()
 	drawEntity(*(em->getSky()));
 	textureOff();
 	glEnableLighting();
-*/	
+	
 	// draw the track
 	drawEntity(*(em->getTrack()));
 
