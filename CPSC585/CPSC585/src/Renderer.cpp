@@ -417,10 +417,12 @@ void Renderer::setTextureMatrix()
 	static double projection[16];
 
 	// this is a bias matrix which is used to convert the shadow map matrix from [-1, 1] to [0, 1]
+	
 	const GLdouble bias[16] = {	0.5, 0.0, 0.0, 0.0, 
 								0.0, 0.5, 0.0, 0.0,
 								0.0, 0.0, 0.5, 0.0,
 								0.5, 0.5, 0.5, 1.0 };
+	
 
 	glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);
@@ -833,6 +835,8 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 		return;
 	}
 	
+	glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+
 	vector<string> mlines;	// a vector to hold each line delimited by a '\n'
 	SDL_Surface *temp;		// temporary surface to blit each line to
 	SDL_Surface *toTexture;	// will contain all the text
@@ -887,13 +891,14 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 	ht = (int)mlines.size() * lineSkip;	// compute the maximum height of the texture
 
 	// generate a surface based on the width and height of the text
-	toTexture = SDL_CreateRGBSurface(0, wt, ht, 32, 0, 0, 0, 0);
-	SDL_SetAlpha(toTexture, SDL_SRCALPHA, SDL_ALPHA_TRANSPARENT);
+	toTexture = SDL_CreateRGBSurface(SDL_HWSURFACE|SDL_SRCALPHA, wt, ht, 32, 0x000000ff,0x0000ff00,0x00ff0000,0xff000000);
 
 	// render each line into a surface
 	for(int i = 0; i < (int)mlines.size(); i++)
 	{
-		temp = TTF_RenderText_Blended(debugFont, mlines[i].c_str(), color);	// render a line to the surface
+		temp = SDL_DisplayFormatAlpha(TTF_RenderUTF8_Blended(debugFont, mlines[i].c_str(), color));	// render a line to the surface
+		
+		//SDL_SetAlpha(temp, SDL_SRCALPHA, SDL_ALPHA_TRANSPARENT);
 		// compute the location of the next text location
 		SDL_Rect skip;
 		skip.x = 0;
@@ -907,14 +912,21 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, wt, ht, 0, GL_BGRA, GL_UNSIGNED_BYTE, toTexture->pixels);
+
+	SDL_PixelFormat* pd = toTexture->format;
+
+	//printf("%d\n", pd->alpha);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, wt, ht, 0, GL_RGBA, GL_UNSIGNED_BYTE, toTexture->pixels);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_ONE, GL_ONE);	
 	/* Draw a quad at location */
 	glBegin(GL_QUADS);
 
