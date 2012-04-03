@@ -12,7 +12,7 @@ int Menu::run(Renderer *ren)
 	bool InMenu = true;
 	ren->glEnable2D();
 	ren->changeFontSize(26);
-	int delay = 120;
+	int delay = 100;
 	Uint32 lastTickCount = SDL_GetTicks();
 	bool moved = false;
 	while(InMenu)
