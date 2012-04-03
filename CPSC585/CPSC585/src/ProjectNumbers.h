@@ -46,6 +46,8 @@ public:
 		float carDetectionRange; //Car
 		float rocketSpeed; //Rocket
 		float rocketDetectionRange; //Rocket
+		float rubberBandModifier; //AiHandler
+		float rammingRange; //AiHandler
 	} aiInfo;	
 
 	ProjectNumbers(){}//readVariablesIn();}

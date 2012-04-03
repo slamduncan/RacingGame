@@ -733,7 +733,7 @@ void resetCars(){
 				entManager->resetCar(i, btVector3(0, 3, 0));
 			}
 		}
-		if (c->getNormal().dot(btVector3(0,1,0)) < 0.3 || c->AIresetCounter > 120)
+		if (c->getNormal().dot(btVector3(0,1,0)) < 0.3 || c->AIresetCounter > 360)
 		{
 			c->resetCounter++;
 			if (c->resetCounter > 40 || c->AIresetCounter > 120)

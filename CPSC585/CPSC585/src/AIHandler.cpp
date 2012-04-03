@@ -8,13 +8,16 @@ AIHandler::AIHandler() : reloadObserver(this, &AIHandler::reloadVariables){
 	turningModifier = 1.0;
 	forwardModifier = 1.0;
 	maxMovementForce = 1.0;
+	rubberBandModifier = 1.0;
+	rammingRange = 10.0;	
 	reloadObserver.init(EventTypes::RELOAD_VARIABLES);
 }
 
 void AIHandler::generateNextMove(){
+	Car* humanCar = cars->at(0);
 	for(int i = 1; i < cars->size(); i++){
 		Car* c = cars->at(i);
-		Car* closeC = c->getClosestCar(true);
+		Car* closeC = c->getClosestCar(true, rammingRange);
 
 		btScalar forwardForce, turningScalar, rateOfChange, roationForce, distance;
 		btVector3 carPos, wayPos, tan, toWaypoint, angleRot;
@@ -36,7 +39,7 @@ void AIHandler::generateNextMove(){
 
 		if( i == 0 )
 			continue;
-		if (!changed)
+		if (!changed)			
 			c->AIresetCounter++;
 		else 
 			c->AIresetCounter = 0;
@@ -66,14 +69,38 @@ void AIHandler::generateNextMove(){
 		RotationEvent* re = new RotationEvent(btQuaternion(0, roationForce,0,0));
 		c->observeRotation(re);		
 		delete re;
-		
+
+
+
 		if (forwardForce > maxMovementForce)
 			forwardForce = maxMovementForce;
 		else if (forwardForce < -maxMovementForce)
 			forwardForce = -maxMovementForce;
-		ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0f);
-		c->observeForwardForce(ffe);
-		delete ffe;
+		/*rubber banding effect */
+		int waypointDiff = 0;
+		if (abs(humanCar->getNextWaypointIndex() - c->getNextWaypointIndex()) < 650)
+			waypointDiff = humanCar->getNextWaypointIndex() - c->getNextWaypointIndex();
+		if (c->lapCount - humanCar->lapCount != 0)
+			waypointDiff += EntityManager::getInstance()->numWaypoints() * (humanCar->lapCount - c->lapCount);
+		//int waypointDiff = c->getPosition().setY(0.f) - humanCar->getPosition().setY(0.f)
+		forwardForce = forwardForce - waypointDiff * rubberBandModifier;
+
+		if (waypointDiff > 300 && (c->lapCount < humanCar->lapCount || c->halfWayAround != humanCar->halfWayAround))   //abs(forwardForce) > (35000.0f + 400 * rubberBandModifier) && forwardForce < 0 && c->lapCount <= humanCar->lapCount)
+		{
+			EntityManager* entM = EntityManager::getInstance();
+			Waypoint* moveCarTo = entM->getWaypoint(((humanCar->getNextWaypointIndex() - 10) + entM->numWaypoints()) % entM->numWaypoints());
+			c->physicsObject->setWorldTransform(moveCarTo->getTransform());
+			c->lapCount = humanCar->lapCount;
+			c->halfWayAround = humanCar->halfWayAround;
+			c->setNextWaypointIndex(moveCarTo->getWaypointList().at(0)->getIndex());
+			c->AIresetCounter = 0;
+		}
+		else
+		{
+			ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0f);
+			c->observeForwardForce(ffe);
+			delete ffe;
+		}
 
 		PowerUpCheck(c);
 		//printf("Car: %d, Forward = %f, Turn = %f\n", i, forwardForce, roationForce);
@@ -143,4 +170,6 @@ void AIHandler::reloadVariables(ReloadEvent *e){
 	forwardModifier = e->numberHolder.aiInfo.drivingModifier;
 	maxMovementForce = e->numberHolder.aiInfo.maxMovementForce;
 	rateOfChangeModifier = e->numberHolder.aiInfo.rateOfChangeModifier;
+	rubberBandModifier = e->numberHolder.aiInfo.rubberBandModifier;
+	rammingRange = e->numberHolder.aiInfo.rammingRange;
 }

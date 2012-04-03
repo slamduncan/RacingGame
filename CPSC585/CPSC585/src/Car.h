@@ -78,6 +78,7 @@ public:
 	//Pass in true if the closest car found must be infront of the other car.
 	//Returns NULL if no car is found in range.
 	Car* getClosestCar(bool inFront);
+	Car* getClosestCar(bool inFront, float detectionDistance);
 	void setBeingSlowed();
 
 	btCompoundShape * slowBlobContainer;

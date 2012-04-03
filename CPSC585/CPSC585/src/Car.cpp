@@ -72,6 +72,7 @@ updateVariableObserver(this, &Car::observeVariables)
 	timeFinished;
 	finishedRacing = false;
 	finalPosition = -1;
+	AIresetCounter = 0;
 }
 
 void Car::initObservers()
@@ -520,6 +521,35 @@ void Car::outputPowerups()
 Car* Car::getClosestCar(bool inFront)
 {
 	btScalar distance(detectionRange);
+	int index = -1;
+	btAlignedObjectArray<Car*>* cList = EntityManager::getInstance()->getCarList();
+	for(int i = 0; i < cList->size(); i++)
+	{
+		if (i == id)
+			continue;
+		Car* c = cList->at(i);
+		btVector3 directionVect = c->getPosition() - getPosition();
+		btScalar tempDist(directionVect.length());
+		if (inFront)
+		{
+			if (directionVect.dot(getTangent()) < 0.03)
+				continue;
+		}
+		if (tempDist < distance)
+		{
+			distance = tempDist;
+			index = i;
+		}
+	}
+	if (index != -1)
+		return cList->at(index);
+	return NULL;
+}
+
+//Right now possible issue with cars above each other.
+Car* Car::getClosestCar(bool inFront, float detectionDistance)
+{
+	btScalar distance(detectionDistance);
 	int index = -1;
 	btAlignedObjectArray<Car*>* cList = EntityManager::getInstance()->getCarList();
 	for(int i = 0; i < cList->size(); i++)
