@@ -68,7 +68,7 @@ updateVariableObserver(this, &Car::observeVariables)
 
 	beingSlowed = false;
 	halfWayAround = false;
-	lapCount = 1;
+	lapCount = 0;
 	timeFinished;
 	finishedRacing = false;
 	finalPosition = -1;
@@ -201,12 +201,7 @@ void Car::updateWheels()
 	}
 
 	// simulate side friction, forward friction
-	//printf("LINEAR = %f, %f, %f\n" , chassis->getLinearVelocity().x(), chassis->getLinearVelocity().y(), chassis->getLinearVelocity().z());
-	//printf("DeltaLinear = %f, %f, %f\n" , chassis->getDeltaLinearVelocity().x(), chassis->getDeltaLinearVelocity().y(), chassis->getDeltaLinearVelocity().z());
 	btVector3 sideFricMag = -(this->chassis->getAngularVelocity());
-	//printf("Angular = %f, %f, %f\n" , chassis->getAngularVelocity().x(), chassis->getAngularVelocity().y(), chassis->getAngularVelocity().z());
-	//printf("DeltatAngle = %f, %f, %f\n" , chassis->getDeltaAngularVelocity().x(), chassis->getDeltaAngularVelocity().y(), chassis->getDeltaAngularVelocity().z());
-
 	btVector3 forwardFricMag = -(this->chassis->getLinearVelocity());
 	for(int i = 0; i < 4; i++)
 	{
@@ -230,9 +225,18 @@ void Car::updateWheels()
 
 
 	for (int i = 0; i < 4; i++){
-		btVector3 contact = newWheels[i].getBottomSpringPosition();
-
-		chassis->applyForce(forces[i]*springForceModifier,contact - chassis->getCenterOfMassPosition()/*wheelOffsets[i]*/);
+		btVector3 contact = newWheels[i].getBottomSpringPosition();		
+		btScalar upComponent =  newWheels[i].hitNormal.dot(btVector3(0,1,0)) ;
+		/*
+		if (this->id == 0)
+			printf("x = %f, y = %f, z = %f \n", newWheels[i].hitNormal.x(), newWheels[i].hitNormal.y(), newWheels[i].hitNormal.z());
+		*/
+		if(newWheels[i].hitObject && upComponent > 0.5)
+		{
+			chassis->applyForce(forces[i]*springForceModifier,contact - chassis->getCenterOfMassPosition()/*wheelOffsets[i]*/);
+			/*if (this->id == 0)
+				printf("Driving Force %f\n", (forces[i]*springForceModifier).length());*/
+		}
 		if(sideFriction[i] != btScalar(1.) && newWheels[i].hitObject)
 		{
 			/*
@@ -244,6 +248,8 @@ void Car::updateWheels()
 
 			chassis->applyForce(getBinormal() * sideFriction[i]*0.1f * sideFrictionModifier,relpos);
 			*/
+			/*if (this->id == 0)
+				printf("Side Friction %f\n", (sideFricMag/4.0f * sideFrictionModifier).length());*/
 			chassis->applyTorque(sideFricMag/4.0f * sideFrictionModifier);
 			
 		}
@@ -260,6 +266,8 @@ void Car::updateWheels()
 			chassis->applyForce(getTangent() * forwardFriction[i]*0.1f * forwardFrictionModifier,relpos);
 			*/
 			chassis->applyCentralForce(forwardFricMag * forwardFrictionModifier);
+			/*if (this->id == 0)
+				printf("Forward Friction %f\n", (forwardFricMag * forwardFrictionModifier).length());*/
 
 			/* Apply sideways friction so it less like ice driving... */
 			float amountOnBi = forwardFricMag.dot(getBinormal());
@@ -268,6 +276,8 @@ void Car::updateWheels()
 				forceAmount = -sqrt(abs(forwardFricMag.dot(getBinormal()))) * slidingFrictionModifier;
 			else
 				forceAmount = sqrt(abs(forwardFricMag.dot(getBinormal()))) * slidingFrictionModifier;
+			/*if (this->id == 0)
+				printf("Forward-Side Friction %f\n\n", forceAmount);*/
 			chassis->applyCentralForce(getBinormal() * forceAmount);
 		}
 
@@ -366,7 +376,7 @@ void Car::UsePowerUp( int index , bool offensive)
 				if (!offensive)
 				{
 					btVector3 forward = getTangent();
-					forward.setY(0);
+					forward.setY(0);	// projects the tangent along the xz plane
 					chassis->applyCentralForce(-speedBoostModifier*forward);
 				}
 				//SLOW POWERUP
@@ -519,7 +529,7 @@ Car* Car::getClosestCar(bool inFront)
 		if (i == id)
 			continue;
 		Car* c = cList->at(i);
-		btVector3 directionVect = getPosition() - c->getPosition();
+		btVector3 directionVect = c->getPosition() - getPosition();
 		btScalar tempDist(directionVect.length());
 		if (inFront)
 		{

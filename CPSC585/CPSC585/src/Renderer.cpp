@@ -115,11 +115,7 @@ int Renderer::initGL()
 	{
 		fprintf( stderr, "Resolution not set properly, exiting...: %s\n", SDL_GetError() );
         counter--;//quitSDL();
-	}
-	
-	float ratio = (float) width / (float) height;	// compute FOV
-
-    
+	} 
 	//
 	//	GL options go here, ie glEnable, etc
 	//
@@ -128,6 +124,7 @@ int Renderer::initGL()
 	glShadeModel(GL_SMOOTH);	// smooth shading
     glFrontFace(GL_CW);	// set front face objects to be in CCW direction
     glEnable( GL_CULL_FACE );	// allow removing culled surfaces
+	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendFunc(GL_ONE, GL_ONE);	
 	//glEnable(GL_BLEND);
 
@@ -190,7 +187,8 @@ int Renderer::initGL()
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity( );
     // horizontal fov, vertical fov, min view distance, max view distance
-	gluPerspective( 60.0, ratio, 1.0, 2048.0 );	// need to fix this to change fov on the fly
+	float ratio = (float) width / (float) height;	// compute FOV
+	gluPerspective( 60.0, ratio, 1.0, 5120.0 );	// need to fix this to change fov on the fly
 	glMatrixMode(GL_MODELVIEW);	// switch back to model view
 
 	glDisable2D();
@@ -225,8 +223,11 @@ int Renderer::initFont()
 
 int Renderer::initTexs()
 {
+	tm->genTexture("texture/tempHUD.png", "hud");
+	tm->genTexture("Documentation/Art/Varios Logo.png", "logo");
+	tm->genTexture("texture/sky.png", "sky");
 	tm->genTexture("model/box.png", "car1");	// load the car texture into GPU memory
-	tm->genTexture(width, height, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
+	tm->genTexture(2048, 2048, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
 	tm->genTexture(width, height, "gaussian");	// gaussian blur
 	tm->genTexture(width, height, "smap");		// shadow maps
 	tm->genTexture(width, height, "nd");		// create a texture for ssao pass 1
@@ -289,22 +290,32 @@ void Renderer::changeFontSize(int size)
 		counter--;
 	}
 	*/
+	currentSize = size;
 
 	if(debugFont != NULL)
 	{
 		TTF_CloseFont(debugFont);
-		debugFont = TTF_OpenFont("font/ARIAL.TTF", size);
+		debugFont = TTF_OpenFont("font/STARCRAFT.TTF", currentSize);
 	}
 	else
 	{
 		//printf("Error: Font has yet to be initialized\n");
-		debugFont = TTF_OpenFont("font/ARIAL.TTF", size);
+		debugFont = TTF_OpenFont("font/STARCRAFT.TTF", currentSize);
 	}
 }
 
 void Renderer::changeFont(std::string fontpath)
 {
-
+	if(debugFont != NULL)
+	{
+		TTF_CloseFont(debugFont);
+		debugFont = TTF_OpenFont(fontpath.c_str(), currentSize);
+	}
+	else
+	{
+		//printf("Error: Font has yet to be initialized\n");
+		debugFont = TTF_OpenFont(fontpath.c_str(), currentSize);
+	}
 }
 
 
@@ -398,52 +409,67 @@ void Renderer::draw(Shader &s)
 	shaderOff(s);
 }
 
+void Renderer::setTextureMatrix()
+{
+	// this stores the light's view matrix
+	static double modelView[16];
+	// this stores the light's projection matrix
+	static double projection[16];
+
+	// this is a bias matrix which is used to convert the shadow map matrix from [-1, 1] to [0, 1]
+	
+	const GLdouble bias[16] = {	0.5, 0.0, 0.0, 0.0, 
+								0.0, 0.5, 0.0, 0.0,
+								0.0, 0.0, 0.5, 0.0,
+								0.5, 0.5, 0.5, 1.0 };
+	
+
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+
+	glMatrixMode(GL_TEXTURE);
+	glActiveTexture(GL_TEXTURE7);
+
+	glLoadIdentity();	
+	glLoadMatrixd(bias);
+	
+	// concatating all matrice into one.
+	glMultMatrixd(projection);
+	glMultMatrixd(modelView);
+	
+	// Go back to normal matrix mode
+	glMatrixMode(GL_MODELVIEW);
+}
+
 //
 // generates a moment texture for shadow mapping
 //
 void Renderer::depthMapPass()
 {
+	float ratio = (float) width / (float) height;	// compute aspect
+	
+	gluPerspective( 90.0, 1.0, 1.0, 5120.0 );
+	
 	// for each light source in our world, generate a depth map for the first car
 	for(int i = 0; i < lights.size(); i++)
 	{
+		std::stringstream ss;
+
+		ss << "depth2l" << (i+1);
+
 		fb.turnOn();
-		glViewport(0, 0, width, height);
-		fb.attachTexture(getTexture("depth2l1"), GL_COLOR_ATTACHMENT0_EXT);
+		glViewport(0, 0, 2048, 2048);
+		fb.attachTexture(getTexture(ss.str()), GL_COLOR_ATTACHMENT0_EXT);
 		clearGL();
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
 		depth2pass.turnShadersOn();
 
-		//glCullFace(GL_FRONT);
+		glCullFace(GL_FRONT);
 		//glDisable(GL_CULL_FACE);
 		
 		drawAll();
-
-		//glEnable(GL_CULL_FACE);
-		static double modelView[16];
-		static double projection[16];
-
-		const GLdouble bias[16] = {	0.5, 0.0, 0.0, 0.0, 
-									0.0, 0.5, 0.0, 0.0,
-									0.0, 0.0, 0.5, 0.0,
-									0.5, 0.5, 0.5, 1.0 };
-
-		glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
-		glGetDoublev(GL_PROJECTION_MATRIX, projection);
-
-		glMatrixMode(GL_TEXTURE);
-		glActiveTexture(GL_TEXTURE7);
-
-		glLoadIdentity();	
-		glLoadMatrixd(bias);
-		
-		// concatating all matrice into one.
-		glMultMatrixd(projection);
-		glMultMatrixd(modelView);
-		
-		// Go back to normal matrix mode
-		glMatrixMode(GL_MODELVIEW);
-
+		setTextureMatrix();
 
 		//shaderOff(depth2pass);
 		depth2pass.turnShadersOff();
@@ -454,6 +480,9 @@ void Renderer::depthMapPass()
 		fb.turnOff();
 	}
 
+	gluPerspective( 60.0, ratio, 1.0, 5120.0 );
+	glViewport(0, 0, width, height);
+	glCullFace(GL_BACK);
 	// bind and active the texture
 	// draw using the depth map
 
@@ -545,6 +574,15 @@ void Renderer::celPass()
 
 void Renderer::drawAll()
 {
+/*
+	// draw the skydome/sphere
+	glDisableLighting();
+	glActiveTexture(GL_TEXTURE0);
+	textureOn(tm->getTexture("sky"));
+	drawEntity(*(em->getSky()));
+	textureOff();
+	glEnableLighting();
+*/	
 	// draw the track
 	drawEntity(*(em->getTrack()));
 
@@ -558,7 +596,7 @@ void Renderer::drawAll()
 		drawEntity(*temp);
 		//textureOff();
 
-/*		
+		/*		
 		// for each wheel we need to draw a line
 		for(int j = 0; j < 4; j++)
 		{
@@ -608,6 +646,133 @@ void Renderer::drawAll()
 	for(int i = 0; i <em->numMines(); i++)
 	{
 		drawEntity(*(em->getMine(i)));
+	}
+
+	for(int i = 0; i < em->numSlowField();i++)
+	{
+		drawSlowField(*(em->getSlowField(i)));
+	}
+}
+
+
+
+void Renderer::drawCars()
+{
+
+}
+void Renderer::drawPowerups()
+{
+
+}
+void Renderer::drawTrack()
+{
+
+}
+void Renderer::drawRockets()
+{
+
+}
+void Renderer::drawShields()
+{
+
+}
+void Renderer::drawMines()
+{
+
+}
+void Renderer::drawSlowFields()
+{
+
+}
+
+void Renderer::drawCar(Car &car)
+{
+
+}
+
+void Renderer::drawPowerup(PowerUp &power)
+{
+
+}
+
+void Renderer::drawRocket(Rocket &rocket)
+{
+
+}
+
+void Renderer::drawShield(Shield &shield)
+{
+
+}
+
+void Renderer::drawMine(Mine &mine)
+{
+
+}
+
+
+void Renderer::drawSlowField(SlowField &slow)
+{
+	for(int i = 0; i < slow.blobContainer->getNumChildShapes(); i++)
+	{
+		glPushMatrix();
+		//slow.blobContainer->getChildTransform(i);
+		btScalar* cT = slow.getChildGLMatrix(i);	// get a child transform
+
+		glMultMatrixf(cT);
+
+		for(int i = 0; i < (int)slow.renderObject->mNumMeshes; i++)
+		{
+			const aiMesh* mesh = slow.renderObject->mMeshes[i];
+
+			if(slow.renderObject->HasMaterials())
+			{
+				const aiMaterial* mat = slow.renderObject->mMaterials[mesh->mMaterialIndex];
+				
+				float Kd[4];
+				aiColor4D diffuse;
+
+				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
+				{
+					Kd[0] = diffuse.r;
+					Kd[1] = diffuse.g;
+					Kd[2] = diffuse.b;
+					Kd[3] = diffuse.a;
+
+					glColor4fv(Kd);
+				}
+			}
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glEnableClientState(GL_NORMAL_ARRAY);
+
+			if(mesh->HasTextureCoords(0))
+			{
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			}
+
+			glVertexPointer(3, GL_FLOAT, sizeof(aiVector3D), mesh->mVertices);
+			glNormalPointer(GL_FLOAT, sizeof(aiVector3D), mesh->mNormals);
+			
+			if(mesh->HasTextureCoords(0))
+			{
+				glTexCoordPointer(2, GL_FLOAT, sizeof(aiVector3D), mesh->mTextureCoords[0]);
+			}
+
+			glDrawArrays(GL_TRIANGLES, 0, mesh->mNumVertices);
+
+			if(mesh->HasTextureCoords(0))
+			{
+				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+			}
+
+			glDisableClientState(GL_NORMAL_ARRAY);
+			glDisableClientState(GL_VERTEX_ARRAY);
+			
+		}
+
+		glPopMatrix();	
+
 	}
 }
 
@@ -670,12 +835,14 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 		return;
 	}
 	
+	glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+
 	vector<string> mlines;	// a vector to hold each line delimited by a '\n'
 	SDL_Surface *temp;		// temporary surface to blit each line to
 	SDL_Surface *toTexture;	// will contain all the text
 	SDL_Color color;	// color of the text
 	SDL_Rect position;	// position of the text
-	
+
 	// width and height of the texture
 	int wt = 0;
 	int ht = 0;
@@ -724,13 +891,14 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 	ht = (int)mlines.size() * lineSkip;	// compute the maximum height of the texture
 
 	// generate a surface based on the width and height of the text
-	toTexture = SDL_CreateRGBSurface(0, wt, ht, 32, 0, 0, 0, 0);
+	toTexture = SDL_CreateRGBSurface(SDL_HWSURFACE|SDL_SRCALPHA, wt, ht, 32, 0x000000ff,0x0000ff00,0x00ff0000,0xff000000);
 
 	// render each line into a surface
 	for(int i = 0; i < (int)mlines.size(); i++)
 	{
-		temp = TTF_RenderText_Solid(debugFont, mlines[i].c_str(), color);	// render a line to the surface
-
+		temp = SDL_DisplayFormatAlpha(TTF_RenderUTF8_Blended(debugFont, mlines[i].c_str(), color));	// render a line to the surface
+		
+		//SDL_SetAlpha(temp, SDL_SRCALPHA, SDL_ALPHA_TRANSPARENT);
 		// compute the location of the next text location
 		SDL_Rect skip;
 		skip.x = 0;
@@ -744,15 +912,21 @@ void Renderer::outputText(string text, int r, int g, int b, int x, int y)
 
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, wt, ht, 0, GL_BGRA, GL_UNSIGNED_BYTE, toTexture->pixels);
+
+	SDL_PixelFormat* pd = toTexture->format;
+
+	//printf("%d\n", pd->alpha);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, wt, ht, 0, GL_RGBA, GL_UNSIGNED_BYTE, toTexture->pixels);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	//glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	
+
+	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_ONE, GL_ONE);	
 	/* Draw a quad at location */
 	glBegin(GL_QUADS);
 

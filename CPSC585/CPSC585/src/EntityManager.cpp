@@ -51,9 +51,29 @@ EntityManager::~EntityManager()
 	}
 	spawnList.clear();
 
+
+	for(int i = 0; i < slowFieldList.size(); i++)
+	{
+		if(slowFieldList[i])
+			delete slowFieldList[i];
+	}
+	slowFieldList.clear();
+
+	for(int i = 0; i < mineList.size(); i++)
+	{
+		if(mineList[i])
+			delete mineList[i];
+	}
+	mineList.clear();
+	
+
 	if(track != NULL)
 	{
 		delete track;
+	}
+	if(sky != NULL)
+	{
+		delete sky;
 	}
 }
 
@@ -96,7 +116,7 @@ Mine* EntityManager::getMine(int index)
 }
 
 void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
-{
+{	
 	btScalar width = btScalar(10.0f);
 	btScalar height = btScalar(5.f);
 	btScalar depth = btScalar(5.f);
@@ -138,6 +158,18 @@ void EntityManager::createTrack(char* path, btTransform &trans)
 	Physics::Inst()->addEntity(*trk);
 }
 
+void EntityManager::createSky(char* path, btTransform &trans)
+{
+	btScalar mass = btScalar(0.f);
+
+	SkySphere* s = new SkySphere();
+	s->initRenderObject(path);
+
+	s->initPhysicsObject(NULL, mass, trans);
+
+	addSky(s);
+}
+
 void EntityManager::createWaypoint(char* path, btTransform &trans, int carThrottle)
 {
 	btScalar mass = btScalar(0.f);
@@ -157,12 +189,12 @@ void EntityManager::createWaypoint(char* path, btTransform &trans, int carThrott
 	addWaypoint(wp);
 }
 
-void EntityManager::createPowerup(char* path, btTransform &trans)
+void EntityManager::createPowerup(char* path, btTransform &trans, int type)
 {
 	btScalar mass = btScalar(0.f);
 	
 	PowerUp* pup = new PowerUp();
-	pup->SetType(2);
+	pup->SetType(type);
 
 	pup->initRenderObject(path);
 	
@@ -245,7 +277,7 @@ void EntityManager::createSlowField(Car* c)
 {
 	SlowField* sf = new SlowField(c);
 	
-	sf->initRenderObject("model/powerup.lwo");
+	sf->initRenderObject("model/slow.lwo");
 	sf->carId = c->id;
 	
 	btCompoundShape* blobContainer = new btCompoundShape();
@@ -331,8 +363,16 @@ void EntityManager::addCar(Car* car)
 // We need a way to remove the track from the physics world first before we delete it.
 void EntityManager::addTrack(Track* track)
 {
+	
 	this->track = track;	// will memleak if we try to create another track
 }
+
+void EntityManager::addSky(SkySphere* sky)
+{
+	this->sky = sky;
+}
+
+
 void EntityManager::addPowerUp(PowerUp* powerup)
 {
 	powerUpList.push_back(powerup);
@@ -366,6 +406,10 @@ void EntityManager::removeCar()
 
 }
 void EntityManager::removeTrack()
+{
+
+}
+void EntityManager::removeSky()
 {
 
 }
@@ -494,6 +538,12 @@ Track* EntityManager::getTrack()
 {
 	return track;
 }
+
+SkySphere* EntityManager::getSky()
+{
+	return sky;
+}
+
 
 btAlignedObjectArray<PowerUp*>* EntityManager::getPowerUpList()
 {

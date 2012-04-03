@@ -35,9 +35,11 @@ const int TICKS_PER_SECONDS = 60;
 const int SKIP_TICKS = 1000/TICKS_PER_SECONDS;
 const int MAX_FRAMESKIP = 5;
 
+bool stillWantsToPlay = true;
+
 ALuint EngineSource = 2;
 
-enum GameState {MAIN_MENU, LOADING_GAME, GAME_STARTING, GAME_RUNNING, GAME_FINISHED};
+enum GameState {MAIN_MENU, LOADING_GAME, GAME_STARTING, GAME_RUNNING, GAME_FINISHED, PAUSED_IN_GAME};
 GameState CURRENT_STATE = MAIN_MENU;
 // Other init
 // ie. Physics, AI, Renderer, Sound, Container for ents?
@@ -405,6 +407,82 @@ void readWaypoints(const char* fileName){
 		printf("Unable to open Waypoint File - Read\n");
 }
 
+void loadPowerupLocation(char* fname)
+{
+	std::ifstream file(fname);
+
+	// if the file does exist.
+	if(file)
+	{
+		std::ofstream pfile;
+		pfile.open("poweruploc.p");
+		
+		const aiScene* ploc = aiImportFile(fname, 
+			aiProcess_CalcTangentSpace       |
+			aiProcess_Triangulate            |
+			//aiProcess_JoinIdenticalVertices  |
+			aiProcess_GenSmoothNormals |
+			aiProcess_ImproveCacheLocality |
+			aiProcess_GenUVCoords |
+			aiProcess_TransformUVCoords |
+			aiProcess_OptimizeMeshes |
+			aiProcess_SortByPType |
+			aiProcess_FlipUVs);
+
+		for(unsigned int i = 0; i < ploc->mNumMeshes; i++)
+		{
+			const aiMesh* mesh = ploc->mMeshes[i];
+
+			for(unsigned int vert = 0; vert < mesh->mNumVertices; vert++)
+			{
+				aiVector3D vertex = mesh->mVertices[vert];
+				pfile << vertex.x << " " << vertex.y << " " << vertex.z << " " << (vert % 3 +1) << "\n";
+				
+				//printf("(%f, %f, %f), ", vertex.x, vertex.y, vertex.z);
+			}
+			
+			//printf("\n");
+		}
+		pfile.close();
+		aiReleaseImport(ploc);
+	}
+	file.close();
+}
+
+void readPowerupfile(char* name)
+{
+	std::ifstream file;
+	file.open(name);
+
+	if(file.is_open())
+	{
+		while(!file.eof())
+		{
+			std::string line;
+			getline(file, line);
+
+			std::stringstream ss;
+
+			ss << line;
+
+			btScalar x;
+			btScalar y;
+			btScalar z;
+			int type;
+
+			ss >> x;
+			ss >> y;
+			ss >> z;
+			ss >> type;
+
+			btTransform pT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(x, y, z));
+
+			entManager->createPowerup("model/powerup.lwo", pT, type);
+		}
+	}
+	file.close();
+}
+
 
 /*
 *	Handles what to do when key has been pressed
@@ -525,11 +603,13 @@ void process_events()
 			if (controller1.isBDown())
 			{
 				//createWaypoint();
+				
 				if(entManager->getCar(0)->GetPowerUpAt(0)->GetType() != 0)
 				{
 					entManager->getCar(0)->UsePowerUp(0, false);
 					entManager->getCar(0)->RotatePowerups( true );
-				}				
+				}
+				//moveWaypoint();
 			}
 			if(controller1.isADown())
 			{				
@@ -538,26 +618,28 @@ void process_events()
 				//cin >> i;
 
 				//printf("Trying to use a speed boost...\n");
+				
 				if(entManager->getCar(0)->GetPowerUpAt(0)->GetType() != 0)
 				{
 					entManager->getCar(0)->UsePowerUp(0, true);
 					entManager->getCar(0)->RotatePowerups( true );
 				}
 				//moveWaypoint();
+				//addWaypointInbetween();
 
 			}
 			if(controller1.isXDown())
 			{
-				entManager->getCar(0)->RotatePowerups( true );
+				//entManager->getCar(0)->RotatePowerups( true );
 			}
 			if(controller1.isYDown())
 			{
-				entManager->getCar(0)->RotatePowerups( false );
+				//entManager->getCar(0)->RotatePowerups( false );
 			}
 			if(controller1.isButtonDown(controller1.R_Bump))
 			{
 				//floatingWaypoint();
-
+/*
 				int index = getClosestWaypoint();
 				if (entManager->getWaypointList()->size() > 0 && index != -1)
 				{
@@ -574,10 +656,11 @@ void process_events()
 				else
 				{
 					entManager->resetCarOrientation(0);
-				}
+				}*/
+				entManager->getCar(0)->RotatePowerups( false );
 			}
 			if(controller1.isButtonDown(controller1.L_Bump))
-			{
+			{/*
 				if(entManager->numCars() > 0)
 				{
 					// resetCar(index of car, position we want to reset to)
@@ -594,11 +677,13 @@ void process_events()
 					{
 						entManager->resetCar(0, btVector3(0, 3, 0));
 					}
-				}
+				}*/
+				entManager->getCar(0)->RotatePowerups( true );
 			}
 
 			if (controller1.isButtonDown(controller1.Start_button))
 			{
+				/*
 #if SANDBOX
 				readWaypoints("sandboxWaypoints.w");
 #else 				
@@ -606,6 +691,8 @@ void process_events()
 #endif
 				LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
 				LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+				*/
+				CURRENT_STATE = PAUSED_IN_GAME;
 			}
 			//if (controller1.isButtonDown(controller1.L_Bump))
 			//{
@@ -646,7 +733,7 @@ void resetCars(){
 				entManager->resetCar(i, btVector3(0, 3, 0));
 			}
 		}
-		if (c->getNormal().dot(btVector3(0,1,0)) < 0.1 || c->AIresetCounter > 120)
+		if (c->getNormal().dot(btVector3(0,1,0)) < 0.3 || c->AIresetCounter > 120)
 		{
 			c->resetCounter++;
 			if (c->resetCounter > 40 || c->AIresetCounter > 120)
@@ -673,9 +760,6 @@ void resetCars(){
 			c->resetCounter = 0;
 	}
 }
-
-
-
 
 // Engine Main
 int main(int argc, char** argv)
@@ -707,8 +791,11 @@ int main(int argc, char** argv)
 
 	}		
 
+	while (stillWantsToPlay)
+	{
 /* Menu Code */
 	Menu m = Menu();	
+	//loadPowerupLocation("model/poweruplocation.lwo");
 	int selection = m.run(ren);
 
 
@@ -720,6 +807,7 @@ int main(int argc, char** argv)
 	{
 		CURRENT_STATE = LOADING_GAME;
 		m.loading(ren, "PowerUps");
+		readPowerupfile("poweruploc.p");
 	}
 	// //RENDERER DEBUG TESTING
 	
@@ -731,10 +819,7 @@ int main(int argc, char** argv)
 
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
-	btTransform wayPointT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 3.5f, -2.f));
-	btTransform wayPointT2 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(25.f, 3.5f, 0.f));
-	btTransform wayPointT3 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 3.5f, 3.5f));
-	
+		/*
 	for(int i = 1; i < 5; i++){
 		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 7.5f, 50.f*i));
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
@@ -747,17 +832,10 @@ int main(int argc, char** argv)
 		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(-50.f*i, 7.5f, 450.f));
 		entManager->createPowerup("model/powerup.lwo", powerupT1);
 	}
-	m.loading(ren, "Cars");
-
-	entManager->createCar("model/ship1.lwo", carMass, carT1);	
-	entManager->createCar("model/ship1.lwo", carMass, carT2);	
+	*/
 	
-	for(int i = 1; i < 4; i++){
-		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
-		entManager->createCar("model/ship1.lwo", carMass, carT3);	
-		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
-		entManager->createCar("model/ship1.lwo", carMass, carT4);	
-	}
+
+	
 	m.loading(ren, "Track");
 	
 	
@@ -767,6 +845,30 @@ int main(int argc, char** argv)
 #else
 	entManager->createTrack("model/Track1tri.lwo", groundT);
 #endif
+
+m.loading(ren, "AI Information");
+	readWaypoints("waypoints.w");
+
+m.loading(ren, "Cars");
+
+	//entManager->createCar("model/ship1.lwo", carMass, carT1);	
+	//entManager->createCar("model/ship1.lwo", carMass, carT2);	
+	
+	for(int i = 1; i < 4; i++){
+		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
+		entManager->createCar("model/ship1.lwo", carMass, carT3);	
+		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
+		entManager->createCar("model/ship1.lwo", carMass, carT4);	
+	}
+	for (int i = 0; i < entManager->getCarList()->size(); i++)
+			entManager->getCar(i)->setNextWaypointIndex(0);
+
+	m.loading(ren, "Powerups");
+
+
+	m.loading(ren, "Sky");
+	btTransform skyT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0));
+	entManager->createSky("model/skydome2.lwo", skyT);
 
 	m.loading(ren, "Initializing Variables, almost done!");
 	// Variables for lap time
@@ -785,8 +887,8 @@ int main(int argc, char** argv)
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
 	
-	//LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
-	//LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+	LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
+	LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	//Load variables from the xml file.
 	ReloadEvent* e = new ReloadEvent();
@@ -795,7 +897,7 @@ int main(int argc, char** argv)
 
 	float EngineModifier = 0;
 	
-	int LapNumber = 1;
+	int LapNumber = entManager->getCar(0)->lapCount;
 	int WaypointIndex = -1;
 	int CurrentWaypointIndex = 0;
 	int finishingPosition = 0;
@@ -816,9 +918,7 @@ int main(int argc, char** argv)
 	float interpolation;
 	bool running = true;
 
-	Uint32 next_game_tick = SDL_GetTicks();
-	m.loading(ren, "AI Information");
-	readWaypoints("waypoints.w");
+	Uint32 next_game_tick = SDL_GetTicks();	
 
 	m.loading(ren, "Game Ready!");
 	// game loop
@@ -892,7 +992,7 @@ int main(int argc, char** argv)
 			{
 				Car* tempCarPtr = entManager->getCar(i);
 				int currentWPIndex = tempCarPtr->getNextWaypointIndex();
-				if (currentWPIndex > entManager->getWaypointList()->size()/2)
+				if (currentWPIndex > entManager->getWaypointList()->size()/2 && currentWPIndex < entManager->getWaypointList()->size()/2 + 200)
 				{
 					tempCarPtr->halfWayAround = true;
 				}
@@ -902,7 +1002,13 @@ int main(int argc, char** argv)
 					tempCarPtr->lapCount++;
 					if (tempCarPtr->lapCount == 3)
 					{
-						tempCarPtr->timeFinished << totalMinutes << ":" << totalMinutes << "\n";
+						tempCarPtr->timeFinished << "LAP " << tempCarPtr->lapCount<< ": ";
+						if (tempCarPtr->lapCount != LapNumber+1 && tempCarPtr->id != 0)
+							tempCarPtr->timeFinished << "+";						
+						//else if (tempCarPtr->id !=0)
+							//tempCarPtr->timeFinished << "-";
+						tempCarPtr->timeFinished << LapMinutes << ":" << LapSeconds << "\n";
+						tempCarPtr->timeFinished << "TOTAL TIME: " << totalMinutes << ":" << totalLapSeconds << "\n";
 						tempCarPtr->finishedRacing = true;
 						finishingPosition++;
 						tempCarPtr->finalPosition = finishingPosition;
@@ -911,22 +1017,36 @@ int main(int argc, char** argv)
 							CURRENT_STATE = GAME_FINISHED;
 					}
 					else
-						tempCarPtr->timeFinished << LapMinutes << ":" << LapSeconds << "\n";
-					LapMinutes = 0;
-					LapSeconds = 0;
-					LapMilliseconds = 0;
+					{
+						tempCarPtr->timeFinished << "LAP " << tempCarPtr->lapCount<< ": ";
+						if (tempCarPtr->lapCount != LapNumber+1 && tempCarPtr->id != 0)
+							tempCarPtr->timeFinished << "+";						
+						//else if (tempCarPtr->id !=0)
+						//	tempCarPtr->timeFinished << "-";
+						tempCarPtr->timeFinished << LapMinutes << ":" << LapSeconds << "\n";				
+					}
+					if (tempCarPtr->id == 0)
+					{
+						LapMinutes = 0;
+						LapSeconds = 0;
+						LapMilliseconds = 0;
+						LapNumber++;
+					}
 				}
+				// Resets any cars which have fallen off the track.
+				resetCars();
 			}
-			/*if (CURRENT_STATE == GAME_FINISHED)
-			{
+
+			if (CURRENT_STATE == GAME_FINISHED)
+			{				
 				for (int i = 0; i < entManager->numCars(); i++)
 				{
 					Car* tempC = entManager->getCar(i);
 					if (!tempC->finishedRacing)
 					{
 						float percentDone = tempC->getNextWaypointIndex()/(float)entManager->numWaypoints() + tempC->lapCount;
-						int avgMin = totalMinutes / percentDone;
-						int avgSec = totalLapSeconds / percentDone;
+						int avgMin =(int)( totalMinutes / percentDone);
+						int avgSec = (int) (totalLapSeconds / percentDone);
 						int tempTotalMin = totalMinutes, tempTotalSec = totalLapSeconds;
 						for (int j = 3; j > tempC->lapCount; j--)
 						{
@@ -937,13 +1057,16 @@ int main(int argc, char** argv)
 								minToWrite++;
 								secToWrite = secToWrite - 60;
 							}
-							tempTotalMin += 
-							tempC->timeFinished << minToWrite << ":" << 
+//							tempTotalMin -= avgMin
+							tempC->timeFinished << minToWrite << ":" << secToWrite << "\n";
+							percentDone = 1;
 						}
-					}
-				}					
+						tempC->timeFinished << "DNF\n";						
+					}					
+				}
+				m.timeScreen(ren);
+				running = false;
 			}*/
-
 			//WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
 			//if( WaypointIndex != CurrentWaypointIndex )
 			//{
@@ -971,23 +1094,25 @@ int main(int argc, char** argv)
 		ren->depthMapPass();
 		ren->clearGL();
 
-		
 		// set camera to eye space
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
-		ren->setCamera(camera1);
 
+		ren->setCamera(camera1);
+/*
+		ren->draw(camera1);
+*/		
+/*
 		ren->normalMapPass();
 		//ren->drawTexture("nd");
 		ren->ssaoPass();
-		ren->clearGL();
-
-		ren->setCamera(camera1);
-		ren->draw(camera1);
+		ren->clearGL();!
+*/
 /*
 		ren->clearGL();		
 		ren->setCamera(camera1);
 		ren->celPass();
 */
+
 		ren->clearGL();		
 		ren->setCamera(camera1);
 		ren->drawAll();
@@ -997,6 +1122,9 @@ int main(int argc, char** argv)
 		ren->glEnableLighting();
 
 		ren->glEnable2D();
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+		//glBlendFunc(GL_ONE, GL_ONE);
+		
 
 		/* Starting CountDown */
 		if (CURRENT_STATE == GAME_STARTING)
@@ -1012,7 +1140,19 @@ int main(int argc, char** argv)
 			{
 				ren->outputText("GO!", 255, 255,0, 1280/2, 780/2);
 				CURRENT_STATE = GAME_RUNNING;
+				next_game_tick = SDL_GetTicks();
 			}
+		}
+		if (CURRENT_STATE == PAUSED_IN_GAME)
+		{
+			int selection = m.inGameMenu(ren);
+			if (selection == m.CONTINUE)
+			{
+				CURRENT_STATE = GAME_RUNNING;
+				next_game_tick = SDL_GetTicks();
+			}
+			else if (selection = m.QUIT_IN_GAME)
+				running = false;
 		}
 
 		ren->changeFontSize(20);
@@ -1125,17 +1265,11 @@ int main(int argc, char** argv)
 			if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 0 )
 				ssPowerUps << "Empty ";
 			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 1 )
-				ssPowerUps << "Speed ";
+				ssPowerUps << "|| Slow / Speed ||";
 			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 2 )
-				ssPowerUps << "Rocket ";
+				ssPowerUps << "|| Rocket / Shield ||";
 			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 3 )
-				ssPowerUps << "Nova ";
-			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 4 )
-				ssPowerUps << "Slow ";
-			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 5 )
-				ssPowerUps << "Traction ";
-			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 6 )
-				ssPowerUps << "Shield ";
+				ssPowerUps << "|| Mine / Nova ||";			
 		}
 
 		ren->outputText("Powerups: " + ssPowerUps.str(), 255, 0, 0, 300, 700);
@@ -1157,14 +1291,22 @@ int main(int argc, char** argv)
 			}
 		}
 
+				glColor4f(1.0, 1.0, 1.0, 1.0);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ren->drawTexture("hud");
+
 		ren->glDisable2D();
 
 		ren->updateGL();	// update the screen
 
-		// Resets any cars which have fallen off the track.
-		resetCars();
-		
+	
 	}
+	running = true;
 
+	//delete ph;
+	//ph = Physics::Inst();
+	//delete entManager;
+	//entManager = EntityManager::getInstance();
+}
 	return 0;
 }

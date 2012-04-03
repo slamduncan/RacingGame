@@ -32,7 +32,7 @@ void Camera::rotateCamera(RightAnalogEvent *e){
 
 	//printf("(%f, 0, %f)\n", e->getNormX(), e->getNormY());
 	
-	btVector3 target = btVector3(e->getNormX(), 0, e->getNormY());
+	btVector3 target = btVector3(e->getNormX(), 0.f, e->getNormY());
 
 	if(!target.isZero())
 	{

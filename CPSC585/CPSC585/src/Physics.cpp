@@ -148,10 +148,10 @@ void Physics::step(btScalar &timeStep)
 			sf->numSpawned++;
 			if(sf->numSpawned > 9){
 				//Set time to drop next way after the time the SlowField will self destruct
-				sf->timeToDrop += 1000*CLOCKS_PER_SEC;
+				sf->timeToDrop += 1000.f*CLOCKS_PER_SEC;
 			}else{
 				//Magic number! Set this as an XML variable later
-				sf->timeToDrop += 0.10*CLOCKS_PER_SEC;
+				sf->timeToDrop += 0.10f*CLOCKS_PER_SEC;
 			}
 			
 		}

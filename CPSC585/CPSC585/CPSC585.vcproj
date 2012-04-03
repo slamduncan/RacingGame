@@ -297,6 +297,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\SkySphere.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\SlowField.cpp"
 				>
 			</File>
@@ -484,6 +488,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Shield.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\SkySphere.h"
 				>
 			</File>
 			<File

@@ -9,6 +9,12 @@ TextureManager::TextureManager()
 	numTextures = 0;
 }
 
+TextureManager::~TextureManager()
+{
+	freeAll();
+}
+
+
 int TextureManager::loadTexture(std::string filename, std::string name)
 {
 	std::ifstream fileCheck(filename.c_str());
@@ -64,6 +70,8 @@ int TextureManager::loadTexture(std::string filename, std::string name)
 		glBindTexture(GL_TEXTURE_2D, 0);  // unbind our texture
 		
 		texman.insert(pair<string, int>(name, texID));
+
+		keys.push_back(name);
 
 		// free up the image since we already have it in GPU memory
 		if(image)
@@ -139,6 +147,7 @@ GLuint TextureManager::genTexture(std::string filename, std::string key)
 		glBindTexture(GL_TEXTURE_2D, 0);  // unbind our texture
 		
 		texman.insert(pair<string, GLuint>(key, texID));
+		keys.push_back(key);
 
 		// free up the image since we already have it in GPU memory
 		if(image)
@@ -165,7 +174,8 @@ GLuint TextureManager::genTexture(unsigned int width, unsigned int height, std::
 	glBindTexture(GL_TEXTURE_2D, 0);  // unbind out texture
 
 	texman.insert(pair<string, GLuint>(key, texID));
-	
+	keys.push_back(key);
+
 	return texID;
 }
 	
@@ -177,10 +187,13 @@ void TextureManager::freeTexture()
 
 void TextureManager::freeAll()
 {
-	for(int i = 0; i < texman.size(); i++)
+	for(unsigned int i = 0; i < keys.size(); i++)
 	{
-		//glDeleteTextures(1, texman.);
+		GLuint id = getTexture(keys[i]);
+		glDeleteTextures(1, &id);
 	}
+	keys.clear();
+	texman.clear();
 }
 
 int TextureManager::getNumTex()

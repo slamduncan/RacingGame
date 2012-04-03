@@ -10,6 +10,7 @@
 #include "Entity.h"
 #include "Car.h"
 #include "Track.h"
+#include "SkySphere.h"
 #include "Waypoint.h"
 #include "PowerUp.h"
 #include "Spawnable.h"
@@ -31,6 +32,8 @@ private:
 	btAlignedObjectArray<Mine*> mineList;
 
 	Track* track;
+
+	SkySphere* sky;
 
 	static EntityManager* instance;
 
@@ -71,8 +74,9 @@ public:
 
 	void createCar(char* path, btScalar &mass, btTransform &trans);
 	void createTrack(char* path, btTransform &trans);
+	void createSky(char* path, btTransform &trans);
 	void createWaypoint(char* path, btTransform &trans, int carThrottle = -32767);
-	void createPowerup(char* path, btTransform &trans);
+	void createPowerup(char* path, btTransform &trans, int type);
 	void createObstacle(char* path, btScalar &mass, btTransform &trans);
 	void createSpawnable(char* path, btTransform &trans);
 	void createRocket(int startingWaypoint, btTransform &trans, int carId);
@@ -83,6 +87,7 @@ public:
 
 	void addCar(Car* car);
 	void addTrack(Track* track);
+	void addSky(SkySphere* sky);
 	void addPowerUp(PowerUp* powerup);
 	void addObstacle();
 	void addWaypoint(Waypoint* waypoint);
@@ -92,6 +97,7 @@ public:
 	
 	void removeCar();
 	void removeTrack();
+	void removeSky();
 	void removePowerUp();
 	void removeObstacle();
 	void removeWaypoint();
@@ -115,6 +121,8 @@ public:
 	btAlignedObjectArray<Car*>* getCarList();
 	btAlignedObjectArray<Waypoint*>* getWaypointList();
 	Track* getTrack();
+	SkySphere* getSky();
+
 	btAlignedObjectArray<PowerUp*>* getPowerUpList();
 	// btAlignedObjectArray<Obstacle*>* getObstacleList();
 	btAlignedObjectArray<Spawnable*>* getSpawnableList();

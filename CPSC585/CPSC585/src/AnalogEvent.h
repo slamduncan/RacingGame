@@ -6,20 +6,20 @@
 class AnalogEvent : public Event{
 
 public:	
-	AnalogEvent(int xval,double normXVal, int yval,double normYVal, bool clickedIn);
+	AnalogEvent(int xval,float normXVal, int yval,float normYVal, bool clickedIn);
 	EventTypes::EventType AnalogEvent::getType() const{
 		return EventTypes::ANALOG;
 	}
 	AnalogEvent(){}
 	int getXVal(){return XValue;}
 	int getYVal(){return YValue;}
-	double getNormY(){return normYValue;}
-	double getNormX(){return normXValue;}
+	float getNormY(){return normYValue;}
+	float getNormX(){return normXValue;}
 	bool isClicked(){return clicked;}
 
 private:
 	int XValue, YValue;
-	double normXValue, normYValue;
+	float normXValue, normYValue;
 	bool clicked;
 
 };

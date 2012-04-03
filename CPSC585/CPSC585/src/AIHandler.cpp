@@ -98,7 +98,7 @@ void AIHandler::PowerUpCheck(Car* c)
 				//Rocket
 				if (carInFront)
 				{
-					if ((closestFrontCar->getPosition() - c->getPosition()).length() >10.0)
+					if ((closestFrontCar->getPosition() - c->getPosition()).length() > 15.0)
 						c->UsePowerUp(i, true);
 				}
 				else 
@@ -116,7 +116,7 @@ void AIHandler::PowerUpCheck(Car* c)
 		case(SPEED_SLOW):
 			{
 				//Slow
-				if (carBehind)
+				if (carBehind || c->GetNumberPowerUps() == 3)
 				{
 					c->UsePowerUp(i, true);
 				}
@@ -125,11 +125,11 @@ void AIHandler::PowerUpCheck(Car* c)
 		case(NOVA_MINE):
 			{
 				//Nova
-				if ((carInFront || carBehind) && ((closestBackCar->getPosition() - c->getPosition()).length() < 10.0))
+				if ((carInFront || carBehind) && ((closestBackCar->getPosition() - c->getPosition()).length() < 20.0))
 				{
 					c->UsePowerUp(i, false);
 				}
-				else if (carBehind)
+				else if (carInFront || carBehind || c->GetNumberPowerUps() == 3)
 					c->UsePowerUp(i, true);
 				break;
 			}

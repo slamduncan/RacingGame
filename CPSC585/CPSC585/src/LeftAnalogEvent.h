@@ -5,7 +5,7 @@
 class LeftAnalogEvent : public AnalogEvent {
 public:
 	LeftAnalogEvent(){};
-	LeftAnalogEvent(int xval,double normXVal, int yval,double normYVal, bool clickedIn):AnalogEvent(xval, normXVal, yval, normYVal, clickedIn){};
+	LeftAnalogEvent(int xval,float normXVal, int yval,float normYVal, bool clickedIn):AnalogEvent(xval, normXVal, yval, normYVal, clickedIn){};
 	EventTypes::EventType LeftAnalogEvent::getType() const{
 		return EventTypes::LEFT_ANALOG;
 	}

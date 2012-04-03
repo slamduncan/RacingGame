@@ -57,8 +57,14 @@ void Rocket::applyNextMove()
 	distance = toWaypoint.length();
 	forwardForce = btScalar(-distance*forwardModifier);
 
+	btTransform wT = w->getTransform();
+
 	btVector3 mov = getPosition() + toWaypoint.normalize()* rocketSpeed;
-	this->physicsObject->getWorldTransform().getOrigin().setValue(mov.x(), mov.y(), mov.z());
+	//this->physicsObject->getWorldTransform().getOrigin().setValue(mov.x(), mov.y(), mov.z());
+
+	wT.setOrigin(mov);
+
+	physicsObject->setWorldTransform(wT);
 
 
 	//RotationEvent* re = new RotationEvent(btQuaternion(0, roationForce,0,0));
