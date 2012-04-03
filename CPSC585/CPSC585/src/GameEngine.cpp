@@ -887,8 +887,8 @@ m.loading(ren, "Cars");
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
 	
-	//LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
-	//LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+	LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
+	LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	//Load variables from the xml file.
 	ReloadEvent* e = new ReloadEvent();
