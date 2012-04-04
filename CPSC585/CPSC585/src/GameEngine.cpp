@@ -923,16 +923,13 @@ m.loading(ren, "Cars");
 		entManager->createCar("model/ship1.lwo", carMass, carT4);	
 	}
 	for (int i = 0; i < entManager->getCarList()->size(); i++)
-			entManager->getCar(i)->setNextWaypointIndex(0);
-
-	m.loading(ren, "Powerups");
-
+		entManager->getCar(i)->setNextWaypointIndex(getClosestWaypoint(entManager->getCar(i)) + 2);
 
 	m.loading(ren, "Sky");
 	btTransform skyT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0));
 	entManager->createSky("model/skydome2.lwo", skyT);
 
-	m.loading(ren, "Initializing Variables, almost done!");
+	m.loading(ren, "Initializing Variables,\n Almost done!");
 	// Variables for lap time
 	int LapMinutes = 0;
 	int LapSeconds = 0;
@@ -948,6 +945,7 @@ m.loading(ren, "Cars");
 	btVector3 camOffset = car1N + car1T;
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
+	camera1.setTrackCar(entManager->getCar(0));
 	
 	LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource, AL_TRUE);
 	LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");

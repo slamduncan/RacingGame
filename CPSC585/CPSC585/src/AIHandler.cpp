@@ -111,7 +111,7 @@ void AIHandler::generateNextMove(){
 			c->AIresetCounter = 0;
 		}
 		//User is bad, warp back :(
-		else if (waypointDiff < -150 && c->lapCount >= humanCar->lapCount)
+		else if (waypointDiff < -150 && (c->lapCount > humanCar->lapCount || c->halfWayAround != humanCar->halfWayAround))
 		{
 			EntityManager* entM = EntityManager::getInstance();
 			Waypoint* moveCarTo = entM->getWaypoint(((humanCar->getNextWaypointIndex() + 20) + entM->numWaypoints()) % entM->numWaypoints());

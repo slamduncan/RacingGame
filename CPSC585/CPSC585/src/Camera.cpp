@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "EntityManager.h"
 
 Camera::Camera(): analogObserver(this, &Camera::rotateCamera){
 	analogObserver.init(EventTypes::RIGHT_ANALOG);
@@ -18,44 +19,73 @@ Camera::Camera(btVector3 &upIn, btVector3 &lookAtPointIn, btVector3 &cameraPosit
 	analogObserver.init(EventTypes::RIGHT_ANALOG);
 
 	angle = 0;
-
+	trackCar = NULL;
 	UPVECTOR = btVector3(0, 1, 0);
+	oldCameraPos = btVector3(0,0,0);
+	lookedBack = false;
 }
 
 Camera::Camera(btVector3 &lookAtPointIn, btVector3& offset) : analogObserver(this, & Camera::rotateCamera)
 {
 	this->offset = offset;
 	lookAtPoint = lookAtPointIn;
+	trackCar = NULL;
+	oldCameraPos = btVector3(0,0,0);
+	lookedBack = false;
+}
+
+void Camera::setTrackCar(Car* c)
+{
+	trackCar = c;
 }
 
 void Camera::rotateCamera(RightAnalogEvent *e){
 
 	//printf("(%f, 0, %f)\n", e->getNormX(), e->getNormY());
-	
-	btVector3 target = btVector3(e->getNormX(), 0.f, e->getNormY());
-
-	if(!target.isZero())
-	{
+	btVector3 target = btVector3(e->getNormX(), 0.f, e->getNormY());	
+	if (trackCar != NULL && !target.isZero())
+	{	
+		btVector3 getHere = lookAtPoint + trackCar->getTangent() * -50 + trackCar->getNormal() * 10;		
+		int interpelationCount = 0;		
+		cameraPosition = cameraPosition.lerp(getHere, 0.01f);
+		while(interpelationCount < 100)
+		{
+			cameraPosition = cameraPosition.lerp(getHere, 0.01f);
+			interpelationCount++;
+		}
 		
-		btVector3 projOffset = offset;
-		projOffset.setY(btScalar(0.f));
-
-		btScalar length = projOffset.length();
-
-		target = target.normalized() * length;
-
-		//target = target.rotate(UPVECTOR, 90);
-
-		cameraPosition = target + lookAtPoint;
-
-		lookAtVector = lookAtPoint - cameraPosition;
-
-		normal = lookAtVector.cross(UPVECTOR);
-
-		normal = normal.cross(lookAtVector).normalized();
-		
+		lookedBack = true;
 	}
-	
+	else if (lookedBack)
+	{
+		lookedBack = false;
+		cameraPosition = trackCar->physicsObject->getWorldTransform() * offset;
+	}
+
+	//btVector3 target = btVector3(e->getNormX(), 0.f, e->getNormY());	
+
+	//if(!target.isZero())
+	//{
+	//	
+	//	btVector3 projOffset = offset;
+	//	projOffset.setY(btScalar(0.f));
+
+	//	btScalar length = projOffset.length();
+
+	//	target = target.normalized() * length;
+
+	//	//target = target.rotate(UPVECTOR, 90);
+
+	//	cameraPosition = target + lookAtPoint;
+
+	//	lookAtVector = lookAtPoint - cameraPosition;
+
+	//	normal = lookAtVector.cross(UPVECTOR);
+
+	//	normal = normal.cross(lookAtVector).normalized();
+	//	
+	//}
+	//}
 /*
 	cameraPosition = cameraPosition.lerp(target, 0.05f);
 
@@ -95,11 +125,21 @@ void Camera::updateCamera(btTransform &transform)
 
 	lookAtPoint = transform.getOrigin();
 
+	btMatrix3x3 orientation = transform.getBasis();
+	btVector3 tan = orientation.getColumn(0);
+
 	int interpelationCount = 0;
-	cameraPosition = cameraPosition.lerp(target, 0.01f);
-	while((cameraPosition - lookAtPoint).length() > 50 && interpelationCount < 70)
-	{
+	if (!lookedBack)
 		cameraPosition = cameraPosition.lerp(target, 0.01f);
+	else
+		oldCameraPos = oldCameraPos.lerp(target, 0.01f);
+	while(((cameraPosition - lookAtPoint).length() > 50 || ((cameraPosition - lookAtPoint).dot(tan) < 30) && !lookedBack) &&  interpelationCount < 600)
+	{		
+		
+		if (!lookedBack)
+			cameraPosition = cameraPosition.lerp(target, 0.01f);
+		else
+			oldCameraPos = oldCameraPos.lerp(target, 0.01f);
 		interpelationCount++;
 	}
 
@@ -108,6 +148,8 @@ void Camera::updateCamera(btTransform &transform)
 	normal = lookAtVector.cross(UPVECTOR);
 
 	normal = normal.cross(lookAtVector).normalized();
+	
+	//oldCameraPos = cameraPosition;
 
 }
 
