@@ -90,9 +90,23 @@ void AIHandler::generateNextMove(){
 		{
 			EntityManager* entM = EntityManager::getInstance();
 			Waypoint* moveCarTo = entM->getWaypoint(((humanCar->getNextWaypointIndex() - 10) + entM->numWaypoints()) % entM->numWaypoints());
+			int previousIndex = c->getNextWaypointIndex();
 			c->physicsObject->setWorldTransform(moveCarTo->getTransform());
-			c->lapCount = humanCar->lapCount;
-			c->halfWayAround = humanCar->halfWayAround;
+			if (moveCarTo->getIndex() < entM->numWaypoints()/2)
+			{
+				c->halfWayAround = false;
+			}
+			else
+			{
+				c->halfWayAround = true;
+			}
+
+			if (previousIndex > moveCarTo->getIndex())
+			{
+				c->lapCount++;
+			}
+//			c->lapCount = humanCar->lapCount;
+//			c->halfWayAround = humanCar->halfWayAround;
 			c->setNextWaypointIndex(moveCarTo->getWaypointList().at(0)->getIndex());
 			c->AIresetCounter = 0;
 		}
