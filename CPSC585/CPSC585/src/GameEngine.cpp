@@ -1061,36 +1061,22 @@ m.loading(ren, "Cars");
 				{
 					tempCarPtr->halfWayAround = false;
 					tempCarPtr->lapCount++;
-					if (tempCarPtr->lapCount == 3)
-					{
-						tempCarPtr->timeFinished << "LAP " << tempCarPtr->lapCount<< ": ";
-						if (tempCarPtr->lapCount != LapNumber+1 && tempCarPtr->id != 0)
-							tempCarPtr->timeFinished << "+";						
-						//else if (tempCarPtr->id !=0)
-							//tempCarPtr->timeFinished << "-";
-						tempCarPtr->timeFinished << LapMinutes << ":" << LapSeconds << "\n";
-						tempCarPtr->timeFinished << "TOTAL TIME: " << totalMinutes << ":" << totalLapSeconds << "\n";
+					tempCarPtr->finishedLap(totalMinutes, totalLapSeconds, totalLapMilliseconds);
+					if (tempCarPtr->lapCount == 4)
+					{																	
 						tempCarPtr->finishedRacing = true;
 						finishingPosition++;
 						tempCarPtr->finalPosition = finishingPosition;
+						tempCarPtr->displayTime();
 						/*Modification to stop after first human player CHANGE FOR MULTIPLAYER IF ADDED*/
 						if (tempCarPtr->id == 0)
 							CURRENT_STATE = GAME_FINISHED;
 					}
-					else
-					{
-						tempCarPtr->timeFinished << "LAP " << tempCarPtr->lapCount<< ": ";
-						if (tempCarPtr->lapCount != LapNumber+1 && tempCarPtr->id != 0)
-							tempCarPtr->timeFinished << "+";						
-						//else if (tempCarPtr->id !=0)
-						//	tempCarPtr->timeFinished << "-";
-						tempCarPtr->timeFinished << LapMinutes << ":" << LapSeconds << "\n";				
-					}
 					if (tempCarPtr->id == 0)
 					{
+						LapMilliseconds = 0;
 						LapMinutes = 0;
 						LapSeconds = 0;
-						LapMilliseconds = 0;
 						LapNumber++;
 					}
 				}
@@ -1100,30 +1086,58 @@ m.loading(ren, "Cars");
 
 			if (CURRENT_STATE == GAME_FINISHED)
 			{				
+				Car* playerCar = entManager->getCar(0);
 				for (int i = 0; i < entManager->numCars(); i++)
 				{
 					Car* tempC = entManager->getCar(i);
 					if (!tempC->finishedRacing)
 					{
-						float percentDone = tempC->getNextWaypointIndex()/(float)entManager->numWaypoints() + tempC->lapCount;
-						int avgMin =(int)( totalMinutes / percentDone);
-						int avgSec = (int) (totalLapSeconds / percentDone);
-						int tempTotalMin = totalMinutes, tempTotalSec = totalLapSeconds;
-						for (int j = 3; j > tempC->lapCount; j--)
+						int tempMin=0, tempSec=0, tempMil =0;
+						for (int j = 0; j < 3; j++)
 						{
-							int secToWrite = avgSec + avgSec * (1-percentDone);
-							int minToWrite = avgMin;
-							if (secToWrite > 60)
+							if (tempC->lapTimes.size() < j)
 							{
-								minToWrite++;
-								secToWrite = secToWrite - 60;
+								tempMin += tempC->lapTimes.at(j).min;
+								tempSec += tempC->lapTimes.at(j).sec;
+								tempMil += tempC->lapTimes.at(j).mil;
+								continue;
 							}
-//							tempTotalMin -= avgMin
-							tempC->timeFinished << minToWrite << ":" << secToWrite << "\n";
-							percentDone = 1;
+							else
+							{
+								tempMin += playerCar->lapTimes.at(j).min;
+								tempSec += playerCar->lapTimes.at(j).sec;
+								tempMil += playerCar->lapTimes.at(j).mil;
+
+								tempSec += tempMil % 60;								
+								if (tempMil >= 1000)
+								{
+									tempMil = tempMil - 1000;
+									tempSec = tempSec + 1;
+								}
+								if (tempSec >= 60)
+								{
+									tempSec = tempSec - 60;
+									tempMin = tempMin + 1;
+								}
+								tempC->finishedLap(tempMin, tempSec, tempMil);
+							}
 						}
-						tempC->timeFinished << "DNF\n";						
-					}					
+					}
+					for (int i = 0; i < entManager->numCars(); i++)
+					{
+						Car* tempC = entManager->getCar(i);
+						int pos = 0;
+						for (int j = 0; j < entManager->numCars(); j++)
+						{
+							Car* tempCompare = entManager->getCar(j);
+							if (tempCompare->totalMin <= tempC->totalMin)
+								if (tempCompare->totalSec <= tempC->totalSec)
+									if (tempCompare->totalMil <= tempC->totalMil)
+										pos++;
+						}
+						tempC->finalPosition = pos;
+						tempC->displayTime();
+					}
 				}
 				m.timeScreen(ren);
 				running = false;

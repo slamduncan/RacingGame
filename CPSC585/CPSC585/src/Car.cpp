@@ -599,3 +599,72 @@ void Car::RotatePowerups( bool RotateLeft )
 void Car::setBeingSlowed(){
 	beingSlowed = true;
 }
+
+void Car::finishedLap(int min, int sec, int mil)
+{
+	
+	if (lapTimes.size() == 0)
+	{
+		LapTime t;
+		t.min = min;
+		t.mil = mil;
+		t.sec = sec;
+		lapTimes.push_back(t);
+	}
+	else
+	{
+		int lapMin = 0, lapMil = 0, lapSec = 0;
+		for (int i = 0; i < lapTimes.size(); i++)
+		{
+			lapMin = min - lapTimes.at(i).min;
+			lapMil = mil - lapTimes.at(i).mil;
+			lapSec = sec - lapTimes.at(i).sec;
+		}
+		LapTime t;
+		t.min = lapMin;
+		t.mil = lapMil;
+		t.sec = lapSec;
+
+		if (t.mil < 0)
+		{
+			t.mil = t.mil + 1000;
+			t.sec = t.sec - 1;
+		}
+		if (t.sec < 0)
+		{
+			t.sec = t.sec + 60;
+			t.min = t.min - 1;
+		}
+		//Should never happen... but if it does fake it.
+		if (t.min < 0)
+		{
+			t.min = 0;
+		}
+		lapTimes.push_back(t);		
+	}
+	totalMin = min;
+	totalSec = sec;
+	totalMil = mil;
+}
+
+std::string Car::displayTime()
+{	
+	timeFinished.str("");	
+	for (int i = 1; i <= lapTimes.size(); i++)
+	{
+		timeFinished << "Lap " << i << ": ";
+		if (lapTimes.at(i-1).min >= 10)
+			timeFinished << lapTimes.at(i-1).min;
+		else
+			timeFinished << " " << lapTimes.at(i-1).min;
+		if (lapTimes.at(i-1).sec >= 10)
+			timeFinished << ":" << lapTimes.at(i-1).sec;
+		else
+			timeFinished << ":0" << lapTimes.at(i-1).sec;
+		timeFinished << "\n";
+	}
+	timeFinished << "Total Time: " << totalMin << ":" << totalSec << "\n";
+	timeFinished << "Position " << finalPosition;
+
+	return timeFinished.str();
+}
