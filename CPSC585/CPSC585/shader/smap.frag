@@ -15,7 +15,7 @@ float chebyshevUpperBound(float distance)
 	// The fragment is either in shadow or penumbra. We now use chebyshev's upperBound to check
 	// How likely this pixel is to be lit (p_max)
 	float variance = moments.y - (moments.x*moments.x);
-	variance = max(variance,0.00002);
+	variance = max(variance,0.002);
 
 	float d = distance - moments.x;
 	float p_max = variance / (variance + d*d);

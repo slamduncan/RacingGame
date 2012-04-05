@@ -96,6 +96,7 @@ public:
 	void abtexPass();
 	void normalMapPass();
 	void celPass();
+	void blurPass();
 
 	bool init();
 	int initSDL();

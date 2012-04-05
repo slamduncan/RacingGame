@@ -440,10 +440,10 @@ void Renderer::depthMapPass()
 		clearGL();
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
-		glCullFace(GL_FRONT);
-		glEnable(GL_CULL_FACE);
+		//glCullFace(GL_FRONT);
+		//glEnable(GL_CULL_FACE);
 
-		glGenerateMipmapEXT(GL_TEXTURE_2D);
+		//glGenerateMipmap(GL_TEXTURE_2D);
 		drawAll();
 		setTextureMatrix(lights[i]);
 
@@ -551,6 +551,14 @@ void Renderer::ssaoPass()
 
 	ssao.turnShadersOff();
 	textureOff();
+}
+
+void Renderer::blurPass()
+{
+	
+
+
+
 }
 
 void Renderer::abtexPass()

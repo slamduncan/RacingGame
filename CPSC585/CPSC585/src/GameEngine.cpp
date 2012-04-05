@@ -1169,6 +1169,7 @@ m.loading(ren, "Cars");
 		ren->depthMapPass();
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
 		ren->drawShadow(camera1);
+//		ren->clearGL();	// clear the screen
 
 //		ren->drawTexture("depth2l1");		
 /*
