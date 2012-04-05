@@ -9,6 +9,10 @@ private:
 	btVector3 position;
 
 public:
+
+	double modelView[16];
+	double projection[16];
+
 	Light(void);
 	~Light(void);
 	Light(btVector3 &initPos);

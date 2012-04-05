@@ -13,7 +13,7 @@ Renderer::Renderer()
 	height = 720;
 	bpp = 0;
 
-	Light light0 = Light(btVector3(-100, 100, 0));
+	Light light0 = Light(btVector3(-730, 200, 1216));
 
 	lights.push_back(light0);
 
@@ -123,12 +123,12 @@ int Renderer::initGL()
 	//glShadeModel(GL_FLAT);
 	glShadeModel(GL_SMOOTH);	// smooth shading
     glFrontFace(GL_CW);	// set front face objects to be in CCW direction
-    glEnable( GL_CULL_FACE );	// allow removing culled surfaces
+    //glEnable( GL_CULL_FACE );	// allow removing culled surfaces
 	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBlendFunc(GL_ONE, GL_ONE);	
+	//glBlendFunc(GL_ONE, GL_ONE);	
 	//glEnable(GL_BLEND);
 
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	GLfloat diff[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 	GLfloat spec[4] = {0.0f, 0.0f, 0.0f, 0.0f};
@@ -246,7 +246,7 @@ int Renderer::initTexs()
 int Renderer::initShaders()
 {
 	// generates a depth and depth2 in rg channels
-	depth2pass = Shader("shader/basic.vert", "shader/d2.frag");
+	depth2pass = Shader("shader/d2.vert", "shader/d2.frag");
 	depth2pass.debug();
 	
 	// shadow map shader
@@ -409,36 +409,10 @@ void Renderer::draw(Shader &s)
 	shaderOff(s);
 }
 
-void Renderer::setTextureMatrix()
+void Renderer::setTextureMatrix(Light &light)
 {
-	// this stores the light's view matrix
-	static double modelView[16];
-	// this stores the light's projection matrix
-	static double projection[16];
-
-	// this is a bias matrix which is used to convert the shadow map matrix from [-1, 1] to [0, 1]
-	
-	const GLdouble bias[16] = {	0.5, 0.0, 0.0, 0.0, 
-								0.0, 0.5, 0.0, 0.0,
-								0.0, 0.0, 0.5, 0.0,
-								0.5, 0.5, 0.5, 1.0 };
-	
-
-	glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
-	glGetDoublev(GL_PROJECTION_MATRIX, projection);
-
-	glMatrixMode(GL_TEXTURE);
-	glActiveTexture(GL_TEXTURE7);
-
-	glLoadIdentity();	
-	glLoadMatrixd(bias);
-	
-	// concatating all matrice into one.
-	glMultMatrixd(projection);
-	glMultMatrixd(modelView);
-	
-	// Go back to normal matrix mode
-	glMatrixMode(GL_MODELVIEW);
+	glGetDoublev(GL_MODELVIEW_MATRIX, light.modelView);
+	glGetDoublev(GL_PROJECTION_MATRIX, light.projection);
 }
 
 //
@@ -447,9 +421,16 @@ void Renderer::setTextureMatrix()
 void Renderer::depthMapPass()
 {
 	float ratio = (float) width / (float) height;	// compute aspect
-	
-	gluPerspective( 90.0, 1.0, 1.0, 5120.0 );
-	
+/*	
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+*/
+//	gluPerspective(90.0, 1.0, 1.0, 5120.0 );
+/*
+	glPushMatrix();
+	glMatrixMode(GL_MODELVIEW);	
+*/	
+	//glDisable(GL_DEPTH_TEST);
 	// for each light source in our world, generate a depth map for the first car
 	for(int i = 0; i < lights.size(); i++)
 	{
@@ -457,37 +438,103 @@ void Renderer::depthMapPass()
 
 		ss << "depth2l" << (i+1);
 
+		GLuint depthTexture = getTexture(ss.str());
+
+		/*
+		textureOn(depthTexture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+		textureOff();
+		*/
 		fb.turnOn();
+		depth2pass.turnShadersOn();
+		
 		glViewport(0, 0, 2048, 2048);
-		fb.attachTexture(getTexture(ss.str()), GL_COLOR_ATTACHMENT0_EXT);
+		fb.attachTexture(depthTexture, GL_COLOR_ATTACHMENT0);
+
 		clearGL();
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
-		depth2pass.turnShadersOn();
+		//glCullFace(GL_FRONT);
+		//glEnable(GL_CULL_FACE);
 
-		glCullFace(GL_FRONT);
-		//glDisable(GL_CULL_FACE);
-		
+		glGenerateMipmapEXT(GL_TEXTURE_2D);
 		drawAll();
-		setTextureMatrix();
+		setTextureMatrix(lights[i]);
 
 		//shaderOff(depth2pass);
 		depth2pass.turnShadersOff();
-
-		fb.deattachTexture();
 		
 		fb.deattachTexture();
 		fb.turnOff();
 	}
-
-	gluPerspective( 60.0, ratio, 1.0, 5120.0 );
+/*
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+*/
+//	gluPerspective( 60.0, ratio, 1.0, 5120.0 );
+/*
 	glViewport(0, 0, width, height);
 	glCullFace(GL_BACK);
+
+	glMatrixMode(GL_MODELVIEW);	
+*/
 	// bind and active the texture
 	// draw using the depth map
+}
 
+void Renderer::drawShadow(Camera &camera)
+{
+	const GLdouble bias[16] = {	
+		0.5, 0.0, 0.0, 0.0, 
+		0.0, 0.5, 0.0, 0.0,
+		0.0, 0.0, 0.5, 0.0,
+	0.5, 0.5, 0.5, 1.0};
+		
+	glMatrixMode(GL_TEXTURE);
+	glActiveTextureARB(GL_TEXTURE7);
+
+	glLoadIdentity();	
+	glLoadMatrixd(bias);
+
+	glMultMatrixd (lights[0].projection);
+	glMultMatrixd (lights[0].modelView);
+
+	glMatrixMode(GL_MODELVIEW);
+
+	clearGL();
+	glViewport(0, 0, width, height);
+
+	shadowPass.turnShadersOn();
+	glUniform1i(shadowPass.getUniform("ShadowMap"), 7);
+
+	glActiveTexture(GL_TEXTURE7);
+	textureOn(tm->getTexture("depth2l1"));
+
+	setCamera(camera);
+	glLightfv(GL_LIGHT0, GL_POSITION, lights[0].getPosition());
 	
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
 
+	drawAll();
+
+	textureOff();
+	shadowPass.turnShadersOff();
+/*
+	shadowPass.turnShadersOn();
+	GLuint momentMapUniform = shadowPass.getUniform("ShadowMap");
+	glUniform1i(momentMapUniform,7);
+	
+	glActiveTexture(GL_TEXTURE7);
+	textureOn(tm->getTexture("depth2l1"));
+
+	glCullFace(GL_BACK);
+	drawAll();
+
+	//setTextureMatrix();
+
+	textureOff();
+	shadowPass.turnShadersOff();*/
 
 }
 
@@ -574,8 +621,8 @@ void Renderer::celPass()
 
 void Renderer::drawAll()
 {
-	glLightfv(GL_LIGHT0, GL_POSITION, lights[0].getPosition());
-
+	//glLightfv(GL_LIGHT0, GL_POSITION, lights[0].getPosition());
+/*
 	// draw the skydome/sphere
 	glDisableLighting();
 	glActiveTexture(GL_TEXTURE0);
@@ -583,7 +630,7 @@ void Renderer::drawAll()
 	drawEntity(*(em->getSky()));
 	textureOff();
 	glEnableLighting();
-	
+*/	
 	// draw the track
 	drawEntity(*(em->getTrack()));
 
@@ -777,7 +824,7 @@ void Renderer::drawSlowField(SlowField &slow)
 	}
 }
 
-void Renderer::draw(Camera &cam)
+void Renderer::draw()
 {
 	shadowPass.turnShadersOn();
 	GLuint momentMapUniform = shadowPass.getUniform("ShadowMap");
@@ -785,9 +832,6 @@ void Renderer::draw(Camera &cam)
 	
 	glActiveTexture(GL_TEXTURE7);
 	textureOn(tm->getTexture("depth2l1"));
-
-	// i need to set the camera back here
-	setCamera(cam);
 
 	glCullFace(GL_BACK);
 	drawAll();
@@ -801,6 +845,8 @@ void Renderer::draw(Camera &cam)
 void Renderer::drawTexture(std::string texName)
 {
 	glEnable2D();
+	
+	glColor4f(1, 1, 1, 1);
 
 	textureOn(getTexture(texName));
     glBegin (GL_QUADS); 
@@ -957,11 +1003,7 @@ void Renderer::setCamera(const btVector3& pos, const btVector3& lookAtPoint)
 	btVector3 binormal = lookAtVector.cross(up);
 
 	btVector3 normal = (binormal.cross(lookAtVector)).normalize();
-/*	
-	printf("campos: (%f, %f, %f)\n", pos.x(), pos.y(), pos.z());
-	printf("camLookAt: (%f, %f, %f)\n", lookAtPoint.x(), lookAtPoint.y(), lookAtPoint.z()); 
-	printf("camnormal: (%f, %f, %f)\n", normal.x(), normal.y(), normal.z()); 
-*/
+
 	gluLookAt(pos.x(), pos.y(), pos.z(),	// camera position
 		      lookAtPoint.x(), lookAtPoint.y(), lookAtPoint.z(),	// look at point
 			  normal.x(), normal.y(), normal.z());	// up vector

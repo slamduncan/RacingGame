@@ -33,15 +33,6 @@ void FBO::init(int width, int height)
 */
 void FBO::attachTexture(GLuint texture, GLenum type)
 {
-/*	
-	if(type > GL_MAX_COLOR_ATTACHMENTS_EXT)
-	{
-		printf("over max color attachment point\n");
-		printf("%d, %d\n",GL_MAX_COLOR_ATTACHMENTS_EXT, type);	
-		
-		return;
-	}
-*/	
 	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, texture, 0);
 }
 
