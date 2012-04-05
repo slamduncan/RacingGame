@@ -715,7 +715,7 @@ void resetCars(){
 	for (int i = 0; i < entManager->getCarList()->size(); i ++)
 	{
 		Car* c = entManager->getCar(i);
-		if (c->getPosition().y() < -300.0)
+		if (c->getPosition().y() < entManager->getTrack()->lowest - 50.f)
 		{
 			// resetCar(index of car, position we want to reset to)
 			int index = getClosestWaypoint(c);
@@ -1146,7 +1146,7 @@ m.loading(ren, "Cars");
 			instantFrameCount++;
 		}
 
-		interpolation = float(SDL_GetTicks() + SKIP_TICKS - next_game_tick/ float(SKIP_TICKS));
+		//interpolation = float(SDL_GetTicks() + SKIP_TICKS - next_game_tick/ float(SKIP_TICKS));
 
 		// Render
 		ren->clearGL();	// clear the screen
@@ -1156,7 +1156,7 @@ m.loading(ren, "Cars");
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
 		ren->drawShadow(camera1);
 
-		//ren->drawTexture("depth2l1");		
+//		ren->drawTexture("depth2l1");		
 /*
 		// set camera to eye space
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());

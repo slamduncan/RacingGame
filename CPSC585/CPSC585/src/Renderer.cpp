@@ -13,7 +13,7 @@ Renderer::Renderer()
 	height = 720;
 	bpp = 0;
 
-	Light light0 = Light(btVector3(-730, 200, 1216));
+	Light light0 = Light(btVector3(-730, 2000, 1216));
 
 	lights.push_back(light0);
 
@@ -421,16 +421,7 @@ void Renderer::setTextureMatrix(Light &light)
 void Renderer::depthMapPass()
 {
 	float ratio = (float) width / (float) height;	// compute aspect
-/*	
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-*/
-//	gluPerspective(90.0, 1.0, 1.0, 5120.0 );
-/*
-	glPushMatrix();
-	glMatrixMode(GL_MODELVIEW);	
-*/	
-	//glDisable(GL_DEPTH_TEST);
+
 	// for each light source in our world, generate a depth map for the first car
 	for(int i = 0; i < lights.size(); i++)
 	{
@@ -440,11 +431,6 @@ void Renderer::depthMapPass()
 
 		GLuint depthTexture = getTexture(ss.str());
 
-		/*
-		textureOn(depthTexture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-		textureOff();
-		*/
 		fb.turnOn();
 		depth2pass.turnShadersOn();
 		
@@ -454,8 +440,8 @@ void Renderer::depthMapPass()
 		clearGL();
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
-		//glCullFace(GL_FRONT);
-		//glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
+		glEnable(GL_CULL_FACE);
 
 		glGenerateMipmapEXT(GL_TEXTURE_2D);
 		drawAll();
@@ -467,19 +453,6 @@ void Renderer::depthMapPass()
 		fb.deattachTexture();
 		fb.turnOff();
 	}
-/*
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-*/
-//	gluPerspective( 60.0, ratio, 1.0, 5120.0 );
-/*
-	glViewport(0, 0, width, height);
-	glCullFace(GL_BACK);
-
-	glMatrixMode(GL_MODELVIEW);	
-*/
-	// bind and active the texture
-	// draw using the depth map
 }
 
 void Renderer::drawShadow(Camera &camera)
@@ -496,8 +469,8 @@ void Renderer::drawShadow(Camera &camera)
 	glLoadIdentity();	
 	glLoadMatrixd(bias);
 
-	glMultMatrixd (lights[0].projection);
-	glMultMatrixd (lights[0].modelView);
+	glMultMatrixd(lights[0].projection);
+	glMultMatrixd(lights[0].modelView);
 
 	glMatrixMode(GL_MODELVIEW);
 
@@ -520,22 +493,6 @@ void Renderer::drawShadow(Camera &camera)
 
 	textureOff();
 	shadowPass.turnShadersOff();
-/*
-	shadowPass.turnShadersOn();
-	GLuint momentMapUniform = shadowPass.getUniform("ShadowMap");
-	glUniform1i(momentMapUniform,7);
-	
-	glActiveTexture(GL_TEXTURE7);
-	textureOn(tm->getTexture("depth2l1"));
-
-	glCullFace(GL_BACK);
-	drawAll();
-
-	//setTextureMatrix();
-
-	textureOff();
-	shadowPass.turnShadersOff();*/
-
 }
 
 void Renderer::normalMapPass()

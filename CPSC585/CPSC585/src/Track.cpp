@@ -2,7 +2,7 @@
 
 Track::Track()
 {
-
+	lowest = btScalar(0.f);
 }
 
 Track::~Track()
@@ -38,4 +38,26 @@ bool Track::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransf
 void Track::initObservers()
 {
 
+}
+
+void Track::lowestPoint()
+{
+	if(renderObject)
+	{
+		
+		for(unsigned int i = 0; i < renderObject->mNumMeshes; i++)
+		{
+			const aiMesh* mesh = renderObject->mMeshes[i];
+
+			for(unsigned int v = 0; v < mesh->mNumVertices; v++)
+			{
+				aiVector3D vertex = mesh->mVertices[v];
+
+				if(vertex.y < lowest)
+				{
+					lowest = vertex.y;
+				}
+			}
+		}
+	}
 }

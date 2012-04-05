@@ -153,9 +153,13 @@ void EntityManager::createTrack(char* path, btTransform &trans)
 
 	trk->initPhysicsObject(triMesh, mass, trans);
 
+	trk->lowestPoint();
+
 	addTrack(trk);
 
 	Physics::Inst()->addEntity(*trk);
+
+	
 }
 
 void EntityManager::createSky(char* path, btTransform &trans)

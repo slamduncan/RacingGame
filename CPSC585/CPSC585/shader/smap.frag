@@ -4,12 +4,12 @@ varying vec4 ShadowCoord;
 
 vec4 ShadowCoordPostW;
 
-float chebyshevUpperBound( float distance)
+float chebyshevUpperBound(float distance)
 {
 	vec2 moments = texture2D(ShadowMap,ShadowCoordPostW.xy).rg;
 	
 	// Surface is fully lit. as the current fragment is before the light occluder
-	if (distance <= moments.x)
+	if (distance < moments.x)
 		return 1.0 ;
 
 	// The fragment is either in shadow or penumbra. We now use chebyshev's upperBound to check
@@ -27,7 +27,7 @@ float chebyshevUpperBound( float distance)
 void main()
 {	
 	ShadowCoordPostW = ShadowCoord / ShadowCoord.w;
-	//ShadowCoordPostW = ShadowCoordPostW * 0.5 + 0.5; // this is done in the program.
+	ShadowCoordPostW += 0.0005;
 
 	float shadow = chebyshevUpperBound(ShadowCoordPostW.z);
 
