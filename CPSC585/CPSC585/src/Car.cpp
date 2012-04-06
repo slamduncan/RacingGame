@@ -1,10 +1,14 @@
 #include "Car.h"
 #include "EventSystemHandler.h"
 #include "EntityManager.h"
+#include "SoundPlayer.h"
 
 #ifndef M_PI
 #define M_PI           3.14159265358979323846
 #endif
+
+SoundPlayer SoundEffectPlayer;
+ALuint SoundEffectSource = 8;
 
 //
 //	Current Car representation
@@ -394,6 +398,7 @@ void Car::UsePowerUp( int index , bool offensive)
 					//ROCKET POWERUP
 					if (offensive)
 					{
+						SoundEffectPlayer.LoadSoundFile("Documentation/Music/RocketFired.wav", &SoundEffectSource);
 						btTransform rocketT= physicsObject->getWorldTransform();				
 						rocketT.setOrigin( rocketT.getOrigin() - getTangent()*8.0);
 						ent->createRocket(this->getNextWaypointIndex(), rocketT, id);
