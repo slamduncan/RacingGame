@@ -671,7 +671,11 @@ std::string Car::displayTime()
 			timeFinished << ":0" << lapTimes.at(i-1).sec;
 		timeFinished << "\n";
 	}
-	timeFinished << "Total Time: " << totalMin << ":" << totalSec << "\n";
+	timeFinished << "Total Time: " << totalMin << ":" ;
+	if (totalSec < 10)
+		timeFinished << "0" << totalSec << "\n";
+	else
+		timeFinished << totalSec << "\n";
 	timeFinished << "Position " << finalPosition;
 
 	return timeFinished.str();
