@@ -1066,7 +1066,7 @@ m.loading(ren, "Cars");
 				}
 				m.timeScreen(ren);
 				running = false;
-			}*/
+			}
 			//WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
 			//if( WaypointIndex != CurrentWaypointIndex )
 			//{
