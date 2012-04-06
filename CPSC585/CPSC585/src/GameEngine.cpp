@@ -26,7 +26,7 @@
 #include "Rocket.h"
 #include "Menu.h"
 
-#include "Sound.h"
+#include "SoundPlayer.h"
 #define SANDBOX 0
 using namespace std;
 
@@ -46,6 +46,8 @@ GameState CURRENT_STATE = MAIN_MENU;
 Renderer* ren = Renderer::getInstance();
 AIHandler* ai = AIHandler::getInstance();
 Physics* ph = Physics::Inst();
+
+SoundPlayer soundPlayer;
 
 //Controller, camera, eventSystem handle.
 InputMapper* playerInput = new InputMapper();
@@ -930,6 +932,10 @@ int main(int argc, char** argv)
 
 	}		
 
+	ALCdevice* device = alcOpenDevice(NULL);
+	ALCcontext* context = alcCreateContext(device, NULL);
+	alcMakeContextCurrent(context);
+
 	while (stillWantsToPlay)
 	{
 /* Menu Code */
@@ -977,8 +983,6 @@ int main(int argc, char** argv)
 	
 	m.loading(ren, "Track");
 	
-	
-	
 #if SANDBOX
 	entManager->createTrack("model/groundBox.lwo", groundT);
 #else
@@ -993,7 +997,7 @@ m.loading(ren, "Cars");
 	//entManager->createCar("model/ship1.lwo", carMass, carT1);	
 	//entManager->createCar("model/ship1.lwo", carMass, carT2);	
 	
-	for(int i = 1; i < 4; i++){
+	for(int i = 4; i > 1; i--){
 		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
 		entManager->createCar("model/ship1.lwo", carMass, carT3);	
 		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
@@ -1024,8 +1028,8 @@ m.loading(ren, "Cars");
 	camera1.setUpCamera(camLookAt, camOffset);
 	camera1.setTrackCar(entManager->getCar(0));
 	
-	LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource, AL_TRUE);
-	LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+	soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource, AL_TRUE);
+	soundPlayer.LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	//Load variables from the xml file.
 	ReloadEvent* e = new ReloadEvent();
@@ -1245,14 +1249,14 @@ m.loading(ren, "Cars");
 		// done in light space
 		ren->depthMapPass();
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
-		ren->drawShadow(camera1);
-//		ren->clearGL();	// clear the screen
+//		ren->drawShadow(camera1);
+		ren->clearGL();	// clear the screen
 
-//		ren->drawTexture("depth2l1");		
+		ren->drawTexture("depth2l1");		
 /*
 		// set camera to eye space
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
-		ren->setCamera(camera1);
+
 		ren->draw();
 */		
 /*
@@ -1268,6 +1272,7 @@ m.loading(ren, "Cars");
 */
 
 		ren->clearGL();		
+		ren->setCamera(camera1);
 		ren->drawAll();
 
 		ren->glDisableLighting();

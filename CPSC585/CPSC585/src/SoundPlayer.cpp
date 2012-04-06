@@ -1,13 +1,11 @@
-#ifndef SOUND_H
-#define SOUND_H
+#include "SoundPlayer.h"
 
-#include "al.h"
-#include "alc.h"
-#include "alut.h"
+SoundPlayer::SoundPlayer()
+{
 
-#include <stdio.h>
+}
 
-void LoadBackgroundSoundFile(ALbyte* FileName)
+void SoundPlayer::LoadBackgroundSoundFile(ALbyte* FileName)
 {
 	ALuint BackGroundSource = 1;
 
@@ -36,7 +34,6 @@ void LoadBackgroundSoundFile(ALbyte* FileName)
 	if(alGetError() != AL_NO_ERROR) 
 	{
     	printf("- Error creating buffers !!\n");
-    	exit(1);
 	}
 	else
 	{
@@ -55,7 +52,6 @@ void LoadBackgroundSoundFile(ALbyte* FileName)
 	if(alGetError() != AL_NO_ERROR) 
 	{
     	printf("- Error creating sources !!\n");
-    	exit(2);
 	}
 	else
 	{
@@ -72,12 +68,8 @@ void LoadBackgroundSoundFile(ALbyte* FileName)
 	alSourcePlay(BackGroundSource);
 }
 
-void LoadSoundFile(ALbyte* FileName, ALuint* Source, ALboolean Looping = AL_FALSE)
+void SoundPlayer::LoadSoundFile(ALbyte* FileName, ALuint* Source, ALboolean Looping)
 {
-	ALCdevice* device = alcOpenDevice(NULL);
-	ALCcontext* context = alcCreateContext(device, NULL);
-	alcMakeContextCurrent(context);
-
 	ALfloat listenerPos[]={0.0,0.0,4.0};
 	ALfloat listenerVel[]={0.0,0.0,0.0};
 	ALfloat listenerOri[]={0.0,0.0,1.0, 0.0,1.0,0.0};
@@ -103,7 +95,6 @@ void LoadSoundFile(ALbyte* FileName, ALuint* Source, ALboolean Looping = AL_FALS
 	if(alGetError() != AL_NO_ERROR) 
 	{
     	printf("- Error creating buffers !!\n");
-    	exit(1);
 	}
 	else
 	{
@@ -122,7 +113,6 @@ void LoadSoundFile(ALbyte* FileName, ALuint* Source, ALboolean Looping = AL_FALS
 	if(alGetError() != AL_NO_ERROR) 
 	{
     	printf("- Error creating sources !!\n");
-    	exit(2);
 	}
 	else
 	{
@@ -138,6 +128,3 @@ void LoadSoundFile(ALbyte* FileName, ALuint* Source, ALboolean Looping = AL_FALS
 
 	alSourcePlay(*Source);
 }
-
-
-#endif SOUND_H

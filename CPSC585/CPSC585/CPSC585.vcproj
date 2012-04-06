@@ -197,6 +197,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Effect.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Entity.cpp"
 				>
 			</File>
@@ -305,6 +309,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\SoundPlayer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Spawnable.cpp"
 				>
 			</File>
@@ -368,6 +376,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Car.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Effect.h"
 				>
 			</File>
 			<File
@@ -499,7 +511,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\Sound.h"
+				RelativePath=".\src\SoundPlayer.h"
 				>
 			</File>
 			<File

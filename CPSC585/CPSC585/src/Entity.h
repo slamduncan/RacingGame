@@ -43,9 +43,6 @@ public:
 	btScalar* glMatrix;
 	//btScalar mass;
 
-
-
-
 	// render model (objloader)
 	const aiScene* renderObject;
 
@@ -55,8 +52,6 @@ public:
 
 	//Observer
 	virtual void initObservers() = 0;
-	
-
 
 	Entity();
 	//Entity(char* filename);

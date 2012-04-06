@@ -5,10 +5,14 @@
 #include "Rocket.h"
 #include "SlowField.h"
 #include "Time.h"
+#include "SoundPlayer.h"
 
 Physics* Physics::physInstance = 0;
 EntityManager* entityManager;
 Renderer* physRender;
+
+SoundPlayer CollisionPlayer;
+ALuint CollisionSource = 10;
 
 Physics* Physics::Inst(void){	
 	if(physInstance == 0){
@@ -115,7 +119,10 @@ void Physics::step(btScalar &timeStep)
 				{				
 					Car* carTemp = entityManager->getCar(index);
 					if (!carTemp->shieldActive)
-						carTemp->chassis->applyTorque(r->getNormal()*500000.0);				
+					{
+						CollisionPlayer.LoadSoundFile("Documentation/Music/RocketCollision.wav", &CollisionSource);
+						carTemp->chassis->applyTorque(r->getNormal()*500000.0);	
+					}
 					
 					dynamicsWorld->removeCollisionObject(r->physicsObject);
 					entityManager->removeSpawnable(r);				
@@ -232,14 +239,12 @@ void Physics::step(btScalar &timeStep)
 			btCollisionObject * carMaybe = oa.at(j);
 			//Todo: check this pointer against all car pointers in carList
 			int index = entityManager->getCarIndexViaPointer(carMaybe);
-			if(index != -1 && mine->carId != index)
-			{
-				entityManager->getCar(index)->chassis->applyCentralForce(btVector3(0,15000.0,0));
+			entityManager->getCar(index)->chassis->applyCentralForce(btVector3(0,15000.0,0));
 
-				dynamicsWorld->removeCollisionObject(entityManager->getMine(i)->physicsObject);
-				entityManager->removeMine(entityManager->getMine(i));
-				i--;
-			}
+			dynamicsWorld->removeCollisionObject(entityManager->getMine(i)->physicsObject);
+			entityManager->removeMine(entityManager->getMine(i));
+			i--;
+
 		}
 	}
 
@@ -251,6 +256,7 @@ void Physics::step(btScalar &timeStep)
 			i--;
 		}
 	}
+	entityManager->removeEffects();
 }
 
 void Physics::updateCarSprings(btScalar timeStep)
