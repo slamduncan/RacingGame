@@ -138,10 +138,6 @@ void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
 	car->carMass = mass;
 	car->id = carList.size();
 
-	const aiScene* test = modelManager.getModel(path);
-
-	printf("%d\n", test->mNumMeshes);
-
 	car->initRenderObject(path);
 	
 	btCollisionShape* boxShape = sFactory.createBox(width, height, depth);
