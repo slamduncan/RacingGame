@@ -223,6 +223,7 @@ int Renderer::initFont()
 
 int Renderer::initTexs()
 {
+	tm->genTexture("texture/Tutorial.png", "tut");
 	tm->genTexture("texture/tempHUD.png", "hud");
 	tm->genTexture("Documentation/Art/Varios Logo.png", "logo");
 	tm->genTexture("texture/sky.png", "sky");
