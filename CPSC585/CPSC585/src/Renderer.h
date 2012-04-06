@@ -131,7 +131,7 @@ public:
 	void drawShield(Shield &shield);
 	void drawMine(Mine &mine);
 	void drawSlowField(SlowField &slow);
-
+	void drawNova(Effect &effect);
 
 	void drawPlane(float height);
 	void drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width = 1.0);

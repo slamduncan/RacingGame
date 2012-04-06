@@ -421,6 +421,8 @@ void Car::UsePowerUp( int index , bool offensive)
 						Physics * phys = Physics::Inst();				
 						phys->addGhost(explosionShell);
 
+						EntityManager::getInstance()->createEffect(btScalar(100.f), this, "model/nova.lwo", 1);
+
 						btAlignedObjectArray<btCollisionObject*> oa = explosionShell->getOverlappingPairs();
 						//printf("I hit %i things!\n",oa.size());
 

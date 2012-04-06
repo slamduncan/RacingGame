@@ -13,8 +13,8 @@ Renderer::Renderer()
 	height = 720;
 	bpp = 0;
 
-	Light light0 = Light(btVector3(-730, 2000, 1216));
-
+	//Light light0 = Light(btVector3(-730, 2000, 1216));
+	Light light0 = Light(btVector3(-100, 100, 0));
 	lights.push_back(light0);
 
 	tm = TextureManager::getInstance();
@@ -440,8 +440,9 @@ void Renderer::depthMapPass()
 		clearGL();
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
-		//glCullFace(GL_FRONT);
-		//glEnable(GL_CULL_FACE);
+		glFrontFace(GL_CW);
+		glCullFace(GL_BACK);
+		glEnable(GL_CULL_FACE);
 
 		//glGenerateMipmap(GL_TEXTURE_2D);
 		drawAll();
@@ -453,6 +454,8 @@ void Renderer::depthMapPass()
 		fb.deattachTexture();
 		fb.turnOff();
 	}
+	glViewport(0, 0, width, height);
+
 }
 
 void Renderer::drawShadow(Camera &camera)
@@ -586,7 +589,7 @@ void Renderer::celPass()
 
 void Renderer::drawAll()
 {
-	//glLightfv(GL_LIGHT0, GL_POSITION, lights[0].getPosition());
+	glLightfv(GL_LIGHT0, GL_POSITION, lights[0].getPosition());
 /*
 	// draw the skydome/sphere
 	glDisableLighting();
@@ -665,9 +668,23 @@ void Renderer::drawAll()
 	{
 		drawSlowField(*(em->getSlowField(i)));
 	}
+
+	for(int i = 0; i < em->numEffects(); i++)
+	{
+		Effect* effect = em->getEffect(i);
+		
+		if(effect->getType() == NOVA)
+		{
+
+			drawNova(*effect);
+			effect->scale += btScalar(1.5f);
+		}
+		else if(effect->getType() == SPEED)
+		{
+			drawEntity(*effect);
+		}
+	}
 }
-
-
 
 void Renderer::drawCars()
 {
@@ -1130,6 +1147,71 @@ void Renderer::drawEntity(Entity &entity)
 	//drawLine(entity.getPosition(),entity.getPosition()+ entity.getTangent(), 256, 0, 0, 10);
 	//drawLine(entity.getPosition(),entity.getPosition()+ entity.getNormal(), 0, 256, 0, 10);
 	//drawLine(entity.getPosition(), entity.getPosition()+entity.getBinormal(), 0, 0, 256, 10);
+}
+
+void Renderer::drawNova(Effect &effect)
+{
+	glPushMatrix();
+	
+	btScalar* matrix = effect.getGLMatrix();
+
+	glMultMatrixf(matrix);
+	glScalef(effect.scale, effect.scale, effect.scale);
+
+	for(int i = 0; i < (int)effect.renderObject->mNumMeshes; i++)
+	{
+		const aiMesh* mesh = effect.renderObject->mMeshes[i];
+
+
+		if(effect.renderObject->HasMaterials())
+		{
+
+			const aiMaterial* mat = effect.renderObject->mMaterials[mesh->mMaterialIndex];
+			
+			float Kd[4];
+			aiColor4D diffuse;
+
+			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
+			{
+				Kd[0] = diffuse.r;
+				Kd[1] = diffuse.g;
+				Kd[2] = diffuse.b;
+				Kd[3] = diffuse.a;
+
+				glColor4fv(Kd);
+			}
+		}
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
+
+		if(mesh->HasTextureCoords(0))
+		{
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+
+		glVertexPointer(3, GL_FLOAT, sizeof(aiVector3D), mesh->mVertices);
+		glNormalPointer(GL_FLOAT, sizeof(aiVector3D), mesh->mNormals);
+		
+		if(mesh->HasTextureCoords(0))
+		{
+			glTexCoordPointer(2, GL_FLOAT, sizeof(aiVector3D), mesh->mTextureCoords[0]);
+		}
+
+		glDrawArrays(GL_TRIANGLES, 0, mesh->mNumVertices);
+
+		if(mesh->HasTextureCoords(0))
+		{
+			//glTexCoord2f(mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+
+		glDisableClientState(GL_NORMAL_ARRAY);
+		glDisableClientState(GL_VERTEX_ARRAY);
+
+	}
+
+	glPopMatrix();	
 }
 
 void Renderer::drawPlane(float height)

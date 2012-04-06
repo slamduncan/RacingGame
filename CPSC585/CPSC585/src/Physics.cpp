@@ -251,6 +251,7 @@ void Physics::step(btScalar &timeStep)
 			i--;
 		}
 	}
+	entityManager->removeEffects();
 }
 
 void Physics::updateCarSprings(btScalar timeStep)
