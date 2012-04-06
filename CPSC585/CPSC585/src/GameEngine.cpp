@@ -918,7 +918,7 @@ m.loading(ren, "Cars");
 	//entManager->createCar("model/ship1.lwo", carMass, carT1);	
 	//entManager->createCar("model/ship1.lwo", carMass, carT2);	
 	
-	for(int i = 1; i < 4; i++){
+	for(int i = 4; i > 1; i--){
 		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
 		entManager->createCar("model/ship1.lwo", carMass, carT3);	
 		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
