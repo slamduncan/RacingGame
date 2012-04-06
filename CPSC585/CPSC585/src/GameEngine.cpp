@@ -1082,23 +1082,32 @@ m.loading(ren, "Cars");
 						LapNumber++;
 					}
 				}
-				// Resets any cars which have fallen off the track.
-				resetCars();
 			}
+			// Resets any cars which have fallen off the track.
+			resetCars();
 
 			if (CURRENT_STATE == GAME_FINISHED)
 			{				
 				Car* playerCar = entManager->getCar(0);
+				//for every car
 				for (int i = 0; i < entManager->numCars(); i++)
 				{
+					//fetch the car
 					Car* tempC = entManager->getCar(i);
-					if (!tempC->finishedRacing)
+
+					//if it's not finished racing
+					if (tempC->finishedRacing == false)
 					{
+						//initialize some things
 						int tempMin=0, tempSec=0, tempMil =0;
+
+						//for every lap
 						for (int j = 0; j < 3; j++)
 						{
+							//if they finished the lap, collect the data, else fabricate it
 							if (tempC->lapTimes.size() < j)
 							{
+								//printf("Unfabricated results: lap %d car %d");
 								tempMin += tempC->lapTimes.at(j).min;
 								tempSec += tempC->lapTimes.at(j).sec;
 								tempMil += tempC->lapTimes.at(j).mil;
@@ -1110,7 +1119,7 @@ m.loading(ren, "Cars");
 								tempSec += playerCar->lapTimes.at(j).sec;
 								tempMil += playerCar->lapTimes.at(j).mil;
 
-								tempSec += tempMil % 60;								
+								tempSec += tempSec % 35;								
 								if (tempMil >= 1000)
 								{
 									tempMil = tempMil - 1000;
@@ -1125,21 +1134,24 @@ m.loading(ren, "Cars");
 							}
 						}
 					}
-					for (int i = 0; i < entManager->numCars(); i++)
+				}
+
+				//for every car (again)
+				for (int i = 0; i < entManager->numCars(); i++)
+				{
+					//get the car
+					Car* tempC = entManager->getCar(i);
+					int pos = 0;
+					for (int j = 0; j < entManager->numCars(); j++)
 					{
-						Car* tempC = entManager->getCar(i);
-						int pos = 0;
-						for (int j = 0; j < entManager->numCars(); j++)
-						{
-							Car* tempCompare = entManager->getCar(j);
-							if (tempCompare->totalMin <= tempC->totalMin)
-								if (tempCompare->totalSec <= tempC->totalSec)
-									if (tempCompare->totalMil <= tempC->totalMil)
-										pos++;
-						}
-						tempC->finalPosition = pos;
-						tempC->displayTime();
+						Car* tempCompare = entManager->getCar(j);
+						if (tempCompare->totalMin <= tempC->totalMin)
+							if (tempCompare->totalSec <= tempC->totalSec)
+								if (tempCompare->totalMil <= tempC->totalMil)
+									pos++;
 					}
+					tempC->finalPosition = pos;
+					tempC->displayTime();
 				}
 				m.timeScreen(ren);
 				running = false;
