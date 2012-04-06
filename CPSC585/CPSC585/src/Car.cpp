@@ -633,12 +633,12 @@ void Car::finishedLap(int min, int sec, int mil)
 		t.mil = lapMil;
 		t.sec = lapSec;
 
-		if (t.mil < 0)
+		while (t.mil < 0)
 		{
 			t.mil = t.mil + 1000;
 			t.sec = t.sec - 1;
 		}
-		if (t.sec < 0)
+		while (t.sec < 0)
 		{
 			t.sec = t.sec + 60;
 			t.min = t.min - 1;
