@@ -90,12 +90,13 @@ public:
 	void shaderOn(Shader &s);
 	void shaderOff(Shader &s);
 
-	void setTextureMatrix();
+	void setTextureMatrix(Light & light);
 	void depthMapPass();
 	void ssaoPass();
 	void abtexPass();
 	void normalMapPass();
 	void celPass();
+	void blurPass();
 
 	bool init();
 	int initSDL();
@@ -136,8 +137,9 @@ public:
 	void drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width = 1.0);
 	
 	void drawTexture(std::string texName);
+	void drawShadow(Camera &camera);
 
-	void draw(Camera &cam);
+	void draw();
 
 	void glEnable2D();
 	void glDisable2D();

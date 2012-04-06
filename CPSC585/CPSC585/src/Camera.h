@@ -7,6 +7,7 @@
 #include "LinearMath/btVector3.h"
 #include "LinearMath/btTransform.h"
 #include "LinearMath/btMatrix3x3.h"
+#include "Car.h"
 
 class Camera {
 public:
@@ -27,6 +28,8 @@ public:
 	void updateCamera(btTransform &transform);
 	void updateCamera(btVector3 &lookAtPointIn, btVector3 &alignVector);
 
+	void setTrackCar(Car* c);
+
 	btVector3 offset;
 
 	btVector3 up, lookAtPoint, cameraPosition, normal, lookAtVector;
@@ -36,8 +39,10 @@ public:
 private:
 	MethodObserver<RightAnalogEvent, Camera> analogObserver;
 	void rotateCamera(RightAnalogEvent *e);
-
+	Car* trackCar;
 	btVector3 lastLookatPoint;
+	btVector3 oldCameraPos;
+	bool lookedBack;
 	void computeCameraPosition();
 
 	btVector3 UPVECTOR;

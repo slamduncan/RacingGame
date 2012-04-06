@@ -20,6 +20,17 @@ class Car : public Entity
 {
 
 public:
+	struct LapTime{
+		int min;
+		int sec;
+		int mil;
+	};
+
+	btAlignedObjectArray<LapTime> lapTimes;
+	int totalMin;
+	int totalSec;
+	int totalMil;
+
 	btRigidBody* chassis;
 	
 	btScalar kVal;
@@ -35,6 +46,7 @@ public:
 	btVector3 gravity;
 	btScalar lastAngleForce;
 	int id;
+	int currentPosition;
 
 	Car();
 	bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans);
@@ -78,6 +90,7 @@ public:
 	//Pass in true if the closest car found must be infront of the other car.
 	//Returns NULL if no car is found in range.
 	Car* getClosestCar(bool inFront);
+	Car* getClosestCar(bool inFront, float detectionDistance);
 	void setBeingSlowed();
 
 	btCompoundShape * slowBlobContainer;
@@ -89,7 +102,13 @@ public:
 	bool finishedRacing;
 	int finalPosition;
 
-private:
+	//Note: passed in time should be total time passed.
+	void finishedLap(int min, int sec, int mil);
+	std::string displayTime();
+
+private:		
+	
+
 	btScalar width, length, height;
 	int nextWaypoint;
 	float m_Speed;

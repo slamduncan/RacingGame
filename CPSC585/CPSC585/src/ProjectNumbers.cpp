@@ -100,6 +100,18 @@ void ProjectNumbers::readAI(){
 				if (pElem)
 					pElem->QueryFloatAttribute("value", &aiInfo.rocketDetectionRange);
 			}
+			//AI Rocket detection range
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(8).Element();
+				if (pElem)
+					pElem->QueryFloatAttribute("value", &aiInfo.rubberBandModifier);
+			}
+			//AI Rocket detection range
+			{
+				pElem = hDoc.FirstChildElement().ChildElement(9).Element();
+				if (pElem)
+					pElem->QueryFloatAttribute("value", &aiInfo.rammingRange);
+			}
 		}
 		else
 		{

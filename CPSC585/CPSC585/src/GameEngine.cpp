@@ -715,7 +715,7 @@ void resetCars(){
 	for (int i = 0; i < entManager->getCarList()->size(); i ++)
 	{
 		Car* c = entManager->getCar(i);
-		if (c->getPosition().y() < -300.0)
+		if (c->getPosition().y() < entManager->getTrack()->lowest - 50.f)
 		{
 			// resetCar(index of car, position we want to reset to)
 			int index = getClosestWaypoint(c);
@@ -733,7 +733,7 @@ void resetCars(){
 				entManager->resetCar(i, btVector3(0, 3, 0));
 			}
 		}
-		if (c->getNormal().dot(btVector3(0,1,0)) < 0.3 || c->AIresetCounter > 120)
+		if (c->getNormal().dot(btVector3(0,1,0)) < 0.3 || c->AIresetCounter > 360)
 		{
 			c->resetCounter++;
 			if (c->resetCounter > 40 || c->AIresetCounter > 120)
@@ -758,6 +758,68 @@ void resetCars(){
 		}
 		else
 			c->resetCounter = 0;
+	}
+}
+
+void calcPositions()
+{
+	int currentPosition = 6;
+	Car* currentCar;
+	Car* positionCar;
+	Car* lastCar;
+	Car* firstCar;
+	int atWaypoint = entManager->numWaypoints();
+	int lapCount = 3;
+	/* Find last car */
+	for (int i = 0; i < entManager->numCars(); i++)
+	{
+		Car* tempC = entManager->getCar(i);
+		if (tempC->getNextWaypointIndex() <= atWaypoint && tempC->lapCount <= lapCount)
+		{
+			lastCar = tempC;
+			atWaypoint = lastCar->getNextWaypointIndex();
+			lapCount = lastCar->lapCount;			
+		}
+	}
+	lastCar->currentPosition = currentPosition;
+	currentPosition -= 1;
+	/* Find first car */
+	atWaypoint = 0;
+	lapCount = 0;
+	for (int i = 0; i < entManager->numCars(); i++)
+	{
+		Car* tempC = entManager->getCar(i);
+		if (tempC->getNextWaypointIndex() >= atWaypoint && tempC->lapCount >= lapCount)
+		{
+			firstCar = tempC;
+			atWaypoint = firstCar->getNextWaypointIndex();
+			lapCount = firstCar->lapCount;			
+		}
+	}
+	firstCar->currentPosition = 1;
+
+	
+	for (int i = 0; i < entManager->numCars() - 1; i++)
+	{
+		Car* lastFoundCar = firstCar;
+		for (int j = 0; j < entManager->numCars(); j++)
+		{
+			currentCar = entManager->getCar(j);
+
+			if (currentCar->getNextWaypointIndex() > lastCar->getNextWaypointIndex() &&
+				currentCar->lapCount >= lastCar->lapCount)
+			{				
+				if (currentCar->getNextWaypointIndex() < lastFoundCar->getNextWaypointIndex()
+					&& currentCar->lapCount <= lastFoundCar->lapCount)
+				{
+					lastFoundCar = currentCar;					
+				}
+			}
+		}
+		lastFoundCar->currentPosition = currentPosition;
+		currentPosition -= 1;
+		lastCar = lastFoundCar;
+		lastFoundCar = firstCar;
 	}
 }
 
@@ -861,16 +923,13 @@ m.loading(ren, "Cars");
 		entManager->createCar("model/ship1.lwo", carMass, carT4);	
 	}
 	for (int i = 0; i < entManager->getCarList()->size(); i++)
-			entManager->getCar(i)->setNextWaypointIndex(0);
-
-	m.loading(ren, "Powerups");
-
+		entManager->getCar(i)->setNextWaypointIndex(getClosestWaypoint(entManager->getCar(i)) + 2);
 
 	m.loading(ren, "Sky");
 	btTransform skyT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0));
 	entManager->createSky("model/skydome2.lwo", skyT);
 
-	m.loading(ren, "Initializing Variables, almost done!");
+	m.loading(ren, "Initializing Variables,\n Almost done!");
 	// Variables for lap time
 	int LapMinutes = 0;
 	int LapSeconds = 0;
@@ -886,8 +945,9 @@ m.loading(ren, "Cars");
 	btVector3 camOffset = car1N + car1T;
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
+	camera1.setTrackCar(entManager->getCar(0));
 	
-	LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource);
+	LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource, AL_TRUE);
 	LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	//Load variables from the xml file.
@@ -979,6 +1039,7 @@ m.loading(ren, "Cars");
 			// AI
 			AIpowerUPDelayCounter++;
 			ai->generateNextMove();
+			calcPositions();
 			if (AIpowerUPDelayCounter > 240)
 			{
 				for(int i = 0; i < entManager->numCars(); i++)			
@@ -1000,36 +1061,22 @@ m.loading(ren, "Cars");
 				{
 					tempCarPtr->halfWayAround = false;
 					tempCarPtr->lapCount++;
-					if (tempCarPtr->lapCount == 3)
-					{
-						tempCarPtr->timeFinished << "LAP " << tempCarPtr->lapCount<< ": ";
-						if (tempCarPtr->lapCount != LapNumber+1 && tempCarPtr->id != 0)
-							tempCarPtr->timeFinished << "+";						
-						//else if (tempCarPtr->id !=0)
-							//tempCarPtr->timeFinished << "-";
-						tempCarPtr->timeFinished << LapMinutes << ":" << LapSeconds << "\n";
-						tempCarPtr->timeFinished << "TOTAL TIME: " << totalMinutes << ":" << totalLapSeconds << "\n";
+					tempCarPtr->finishedLap(totalMinutes, totalLapSeconds, totalLapMilliseconds);
+					if (tempCarPtr->lapCount == 4)
+					{																	
 						tempCarPtr->finishedRacing = true;
 						finishingPosition++;
 						tempCarPtr->finalPosition = finishingPosition;
+						tempCarPtr->displayTime();
 						/*Modification to stop after first human player CHANGE FOR MULTIPLAYER IF ADDED*/
 						if (tempCarPtr->id == 0)
 							CURRENT_STATE = GAME_FINISHED;
 					}
-					else
-					{
-						tempCarPtr->timeFinished << "LAP " << tempCarPtr->lapCount<< ": ";
-						if (tempCarPtr->lapCount != LapNumber+1 && tempCarPtr->id != 0)
-							tempCarPtr->timeFinished << "+";						
-						//else if (tempCarPtr->id !=0)
-						//	tempCarPtr->timeFinished << "-";
-						tempCarPtr->timeFinished << LapMinutes << ":" << LapSeconds << "\n";				
-					}
 					if (tempCarPtr->id == 0)
 					{
+						LapMilliseconds = 0;
 						LapMinutes = 0;
 						LapSeconds = 0;
-						LapMilliseconds = 0;
 						LapNumber++;
 					}
 				}
@@ -1039,30 +1086,58 @@ m.loading(ren, "Cars");
 
 			if (CURRENT_STATE == GAME_FINISHED)
 			{				
+				Car* playerCar = entManager->getCar(0);
 				for (int i = 0; i < entManager->numCars(); i++)
 				{
 					Car* tempC = entManager->getCar(i);
 					if (!tempC->finishedRacing)
 					{
-						float percentDone = tempC->getNextWaypointIndex()/(float)entManager->numWaypoints() + tempC->lapCount;
-						int avgMin =(int)( totalMinutes / percentDone);
-						int avgSec = (int) (totalLapSeconds / percentDone);
-						int tempTotalMin = totalMinutes, tempTotalSec = totalLapSeconds;
-						for (int j = 3; j > tempC->lapCount; j--)
+						int tempMin=0, tempSec=0, tempMil =0;
+						for (int j = 0; j < 3; j++)
 						{
-							int secToWrite = avgSec + avgSec * (1-percentDone);
-							int minToWrite = avgMin;
-							if (secToWrite > 60)
+							if (tempC->lapTimes.size() < j)
 							{
-								minToWrite++;
-								secToWrite = secToWrite - 60;
+								tempMin += tempC->lapTimes.at(j).min;
+								tempSec += tempC->lapTimes.at(j).sec;
+								tempMil += tempC->lapTimes.at(j).mil;
+								continue;
 							}
-//							tempTotalMin -= avgMin
-							tempC->timeFinished << minToWrite << ":" << secToWrite << "\n";
-							percentDone = 1;
+							else
+							{
+								tempMin += playerCar->lapTimes.at(j).min;
+								tempSec += playerCar->lapTimes.at(j).sec;
+								tempMil += playerCar->lapTimes.at(j).mil;
+
+								tempSec += tempMil % 60;								
+								if (tempMil >= 1000)
+								{
+									tempMil = tempMil - 1000;
+									tempSec = tempSec + 1;
+								}
+								if (tempSec >= 60)
+								{
+									tempSec = tempSec - 60;
+									tempMin = tempMin + 1;
+								}
+								tempC->finishedLap(tempMin, tempSec, tempMil);
+							}
 						}
-						tempC->timeFinished << "DNF\n";						
-					}					
+					}
+					for (int i = 0; i < entManager->numCars(); i++)
+					{
+						Car* tempC = entManager->getCar(i);
+						int pos = 0;
+						for (int j = 0; j < entManager->numCars(); j++)
+						{
+							Car* tempCompare = entManager->getCar(j);
+							if (tempCompare->totalMin <= tempC->totalMin)
+								if (tempCompare->totalSec <= tempC->totalSec)
+									if (tempCompare->totalMil <= tempC->totalMil)
+										pos++;
+						}
+						tempC->finalPosition = pos;
+						tempC->displayTime();
+					}
 				}
 				m.timeScreen(ren);
 				running = false;
@@ -1085,21 +1160,23 @@ m.loading(ren, "Cars");
 			instantFrameCount++;
 		}
 
-		interpolation = float(SDL_GetTicks() + SKIP_TICKS - next_game_tick/ float(SKIP_TICKS));
+		//interpolation = float(SDL_GetTicks() + SKIP_TICKS - next_game_tick/ float(SKIP_TICKS));
 
 		// Render
 		ren->clearGL();	// clear the screen
 
 		// done in light space
 		ren->depthMapPass();
-		ren->clearGL();
+		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
+		ren->drawShadow(camera1);
+//		ren->clearGL();	// clear the screen
 
+//		ren->drawTexture("depth2l1");		
+/*
 		// set camera to eye space
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
-
 		ren->setCamera(camera1);
-/*
-		ren->draw(camera1);
+		ren->draw();
 */		
 /*
 		ren->normalMapPass();
@@ -1114,7 +1191,6 @@ m.loading(ren, "Cars");
 */
 
 		ren->clearGL();		
-		ren->setCamera(camera1);
 		ren->drawAll();
 
 		ren->glDisableLighting();
@@ -1254,6 +1330,9 @@ m.loading(ren, "Cars");
 		
 		LapMilliseconds = TimeDifference / 10;
 		ssLapTime << LapMilliseconds;
+
+		//Display Position
+		ssLapTime << " Current Position: " << entManager->getCar(0)->currentPosition;
 
 		// Display the current lap time
 		ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);

@@ -50,7 +50,8 @@ public:
 	int loadTexture(std::string filename, std::string name);
 	GLuint genTexture(std::string filename, std::string key);
 	GLuint genTexture(unsigned int width, unsigned int height, std::string key);
-	
+	GLuint genDepthTexture(unsigned int width, unsigned int height, std::string key);
+
 	int loadTextureFromImage();
 
 	void freeTexture();

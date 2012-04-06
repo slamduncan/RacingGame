@@ -5,7 +5,7 @@ varying vec4 vert_pos;
 varying vec2 uv;
 
 float near = 1.0;
-float far = 1024.0;
+float far = 5120.0;
 
 void main()
 {

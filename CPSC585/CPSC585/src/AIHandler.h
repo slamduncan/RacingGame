@@ -20,7 +20,9 @@ private:
 	float turningModifier;
 	float forwardModifier;
 	float maxMovementForce;
-	float rateOfChangeModifier;		
+	float rateOfChangeModifier;	
+	float rubberBandModifier;
+	float rammingRange;
 	void PowerUpCheck(Car* c);
 
 public:
