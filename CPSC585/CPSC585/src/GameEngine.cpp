@@ -1061,7 +1061,7 @@ m.loading(ren, "Cars");
 
 	Uint32 next_game_tick = SDL_GetTicks();	
 
-	m.loading(ren, "Game Ready!");
+	m.loading(ren, "Game Ready!\nPress Start To Continue", true);
 	// game loop
 	CURRENT_STATE = GAME_STARTING;
 	while(running)
