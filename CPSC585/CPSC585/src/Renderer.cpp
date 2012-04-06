@@ -591,7 +591,7 @@ void Renderer::celPass()
 void Renderer::drawAll()
 {
 	glLightfv(GL_LIGHT0, GL_POSITION, lights[0].getPosition());
-/*
+
 	// draw the skydome/sphere
 	glDisableLighting();
 	glActiveTexture(GL_TEXTURE0);
@@ -599,7 +599,7 @@ void Renderer::drawAll()
 	drawEntity(*(em->getSky()));
 	textureOff();
 	glEnableLighting();
-*/	
+	
 	// draw the track
 	drawEntity(*(em->getTrack()));
 
@@ -673,7 +673,6 @@ void Renderer::drawAll()
 	for(int i = 0; i < em->numEffects(); i++)
 	{
 		Effect* effect = em->getEffect(i);
-		
 		if(effect->getType() == NOVA)
 		{
 
@@ -1057,6 +1056,7 @@ void Renderer::drawEntity(Entity &entity)
 			
 			float Kd[4];
 			aiColor4D diffuse;
+			aiColor4D opacity;
 
 			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
 			{
