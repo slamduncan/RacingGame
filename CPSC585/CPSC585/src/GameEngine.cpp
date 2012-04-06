@@ -766,21 +766,41 @@ void resetCars(){
 void calcPositions()
 {
 	int currentPosition = 6;
-	Car* currentCar;
-	Car* positionCar;
 	Car* lastCar;
 	Car* firstCar;
 	int atWaypoint = entManager->numWaypoints();
 	int lapCount = 3;
+	float distanceToWP = 0.0f;
+
+	for (int i = 0; i < entManager->numCars(); i++)
+	{
+		Car* tempC = entManager->getCar(i);
+		tempC->distanceToNextWP = (entManager->getWaypoint(tempC->getNextWaypointIndex())->getPosition() - tempC->getPosition()).dot(entManager->getWaypoint(tempC->getNextWaypointIndex())->getTangent());
+		tempC->currentPosition = -1;
+	}
+
 	/* Find last car */
 	for (int i = 0; i < entManager->numCars(); i++)
 	{
 		Car* tempC = entManager->getCar(i);
 		if (tempC->getNextWaypointIndex() <= atWaypoint && tempC->lapCount <= lapCount)
 		{
-			lastCar = tempC;
-			atWaypoint = lastCar->getNextWaypointIndex();
-			lapCount = lastCar->lapCount;			
+			if (tempC->getNextWaypointIndex() == atWaypoint)
+			{
+				if (distanceToWP < tempC->distanceToNextWP)
+				{
+					lastCar = tempC;
+					atWaypoint = lastCar->getNextWaypointIndex();
+					lapCount = lastCar->lapCount;			
+					distanceToWP = tempC->distanceToNextWP;
+				}
+			}
+			else {
+				lastCar = tempC;
+				atWaypoint = lastCar->getNextWaypointIndex();
+				lapCount = lastCar->lapCount;			
+				distanceToWP = lastCar->distanceToNextWP;
+			}
 		}
 	}
 	lastCar->currentPosition = currentPosition;
@@ -788,41 +808,98 @@ void calcPositions()
 	/* Find first car */
 	atWaypoint = 0;
 	lapCount = 0;
+	distanceToWP = 1000.0f;
 	for (int i = 0; i < entManager->numCars(); i++)
 	{
 		Car* tempC = entManager->getCar(i);
 		if (tempC->getNextWaypointIndex() >= atWaypoint && tempC->lapCount >= lapCount)
 		{
+			if (tempC->getNextWaypointIndex() == atWaypoint)
+			{
+				if (distanceToWP > tempC->distanceToNextWP)
+				{
+					firstCar = tempC;
+					atWaypoint = lastCar->getNextWaypointIndex();
+					lapCount = lastCar->lapCount;			
+					distanceToWP = tempC->distanceToNextWP;
+				}
+			}
 			firstCar = tempC;
 			atWaypoint = firstCar->getNextWaypointIndex();
 			lapCount = firstCar->lapCount;			
+			distanceToWP = tempC->distanceToNextWP;
 		}
 	}
 	firstCar->currentPosition = 1;
 
-	
+
+	//Last Found Car: last car that got it's position found.
+	Car* nextCar = lastCar;
+	Car* frontCar = firstCar;
+	atWaypoint = lastCar->getNextWaypointIndex();
+	lapCount = lastCar->lapCount;
+	distanceToWP = lastCar->distanceToNextWP;
 	for (int i = 0; i < entManager->numCars() - 1; i++)
-	{
-		Car* lastFoundCar = firstCar;
+	{		
 		for (int j = 0; j < entManager->numCars(); j++)
 		{
-			currentCar = entManager->getCar(j);
-
-			if (currentCar->getNextWaypointIndex() > lastCar->getNextWaypointIndex() &&
-				currentCar->lapCount >= lastCar->lapCount)
-			{				
-				if (currentCar->getNextWaypointIndex() < lastFoundCar->getNextWaypointIndex()
-					&& currentCar->lapCount <= lastFoundCar->lapCount)
+			Car* tempC = entManager->getCar(j);
+			//Infront of last car.
+			if (tempC->getNextWaypointIndex() <= frontCar->getNextWaypointIndex())
+			{
+				if (tempC->lapCount <= frontCar->lapCount)
 				{
-					lastFoundCar = currentCar;					
+					if (tempC->getNextWaypointIndex() == frontCar->getNextWaypointIndex())
+					{
+						if (tempC->distanceToNextWP > frontCar->distanceToNextWP)
+						{
+							if (tempC->id != nextCar->id && tempC->currentPosition == -1)
+								frontCar = tempC;
+						}
+					}
+					else
+					{
+						if (tempC->id != nextCar->id && tempC->currentPosition == -1)
+								frontCar = tempC;
+					}
 				}
 			}
 		}
-		lastFoundCar->currentPosition = currentPosition;
+		nextCar = frontCar;
+		frontCar = firstCar;
+		nextCar->currentPosition = currentPosition;
 		currentPosition -= 1;
-		lastCar = lastFoundCar;
-		lastFoundCar = firstCar;
 	}
+
+	
+	//for (int i = 0; i < entManager->numCars() - 1; i++)
+	//{
+	//	//Last Found Car: last car that got it's position found.
+	//	Car* lastFoundCar = firstCar;
+	//	for (int j = 0; j < entManager->numCars(); j++)
+	//	{
+	//		currentCar = entManager->getCar(j);
+
+	//		if (currentCar->getNextWaypointIndex() >= lastCar->getNextWaypointIndex() &&
+	//			currentCar->lapCount >= lastCar->lapCount)
+	//		{				
+	//			if (currentCar->getNextWaypointIndex() <= lastFoundCar->getNextWaypointIndex()
+	//				&& currentCar->lapCount <= lastFoundCar->lapCount)
+	//			{
+	//				if (currentCar->getNextWaypointIndex() != lastFoundCar->getNextWaypointIndex() || 
+	//					(lastFoundCar->distanceToNextWP < currentCar->distanceToNextWP) && currentCar->getNextWaypointIndex() == lastFoundCar->getNextWaypointIndex())
+	//				{
+	//					lastFoundCar = currentCar;					
+	//				}
+	//			}
+	//		}
+	//	}
+	//	lastFoundCar->currentPosition = currentPosition;
+	//	currentPosition -= 1;
+	//	//Car behind the next postion to be found.
+	//	lastCar = lastFoundCar;
+	//	lastFoundCar = firstCar;
+	//}
 }
 
 // Engine Main
@@ -854,6 +931,10 @@ int main(int argc, char** argv)
 		ren->quitSDL();
 
 	}		
+
+	ALCdevice* device = alcOpenDevice(NULL);
+	ALCcontext* context = alcCreateContext(device, NULL);
+	alcMakeContextCurrent(context);
 
 	while (stillWantsToPlay)
 	{
@@ -901,8 +982,6 @@ int main(int argc, char** argv)
 
 	
 	m.loading(ren, "Track");
-	
-	
 	
 #if SANDBOX
 	entManager->createTrack("model/groundBox.lwo", groundT);
@@ -1182,14 +1261,14 @@ m.loading(ren, "Cars");
 		// done in light space
 		ren->depthMapPass();
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
-		ren->drawShadow(camera1);
-//		ren->clearGL();	// clear the screen
+//		ren->drawShadow(camera1);
+		ren->clearGL();	// clear the screen
 
-//		ren->drawTexture("depth2l1");		
+		ren->drawTexture("depth2l1");		
 /*
 		// set camera to eye space
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
-		ren->setCamera(camera1);
+
 		ren->draw();
 */		
 /*
@@ -1205,6 +1284,7 @@ m.loading(ren, "Cars");
 */
 
 		ren->clearGL();		
+		ren->setCamera(camera1);
 		ren->drawAll();
 
 		ren->glDisableLighting();

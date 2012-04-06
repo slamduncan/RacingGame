@@ -66,6 +66,14 @@ EntityManager::~EntityManager()
 	}
 	mineList.clear();
 	
+	for(int i = 0; i < effectList.size(); i++)
+	{
+		if(effectList[i])
+		{
+			delete effectList[i];
+		}
+	}
+	effectList.clear();
 
 	if(track != NULL)
 	{
@@ -115,6 +123,11 @@ Mine* EntityManager::getMine(int index)
 	return mineList[index];
 }
 
+Effect* EntityManager::getEffect(int index)
+{
+	return effectList[index];
+}
+
 void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
 {	
 	btScalar width = btScalar(10.0f);
@@ -158,8 +171,6 @@ void EntityManager::createTrack(char* path, btTransform &trans)
 	addTrack(trk);
 
 	Physics::Inst()->addEntity(*trk);
-
-	
 }
 
 void EntityManager::createSky(char* path, btTransform &trans)
@@ -357,6 +368,14 @@ void EntityManager::createMine(Car* c, char* path)
 	Physics::Inst()->addEntity(*mine);
 }
 
+void EntityManager::createEffect(btScalar ttl, Entity* e, char* path, int type)
+{
+	Effect* effect = new Effect(ttl, e->physicsObject->getWorldTransform(), type);
+	effect->initRenderObject(path);
+
+	effectList.push_back(effect);
+}
+
 
 void EntityManager::addCar(Car* car)
 {
@@ -452,6 +471,18 @@ void EntityManager::removeMine(Mine* mine)
 	mine->~Mine();
 }
 
+void EntityManager::removeEffects()
+{
+	for(int i = 0; i < effectList.size(); i++)
+	{
+		if(effectList[i]->timeUp())
+		{
+			effectList.remove(effectList[i]);
+			i--;
+		}
+	}
+}
+
 int EntityManager::numCars()
 {
 	return carList.size();
@@ -482,6 +513,13 @@ int EntityManager::numSlowField()
 int EntityManager::numMines()
 {
 	return mineList.size();
+}
+
+int EntityManager::numEffects()
+{
+	int size = effectList.size();
+
+	return effectList.size();
 }
 
 void EntityManager::resetCarPosition(int index, btVector3 &position)

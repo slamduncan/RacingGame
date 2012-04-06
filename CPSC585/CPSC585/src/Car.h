@@ -47,6 +47,7 @@ public:
 	btScalar lastAngleForce;
 	int id;
 	int currentPosition;
+	float distanceToNextWP;
 
 	Car();
 	bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans);

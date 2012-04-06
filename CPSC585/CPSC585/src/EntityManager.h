@@ -19,6 +19,7 @@
 #include "Slowfield.h"
 #include "Shield.h"
 #include "Mine.h"
+#include "Effect.h"
 
 class EntityManager
 {
@@ -30,6 +31,7 @@ private:
 	btAlignedObjectArray<Spawnable*> spawnList;
 	btAlignedObjectArray<SlowField*> slowFieldList;
 	btAlignedObjectArray<Mine*> mineList;
+	btAlignedObjectArray<Effect*> effectList;
 
 	Track* track;
 
@@ -71,6 +73,7 @@ public:
 	Spawnable* getSpawnable(int index);
 	SlowField* getSlowField(int index);
 	Mine* getMine(int index);
+	Effect* getEffect(int index);
 
 	void createCar(char* path, btScalar &mass, btTransform &trans);
 	void createTrack(char* path, btTransform &trans);
@@ -84,6 +87,7 @@ public:
 	void createSlowFieldSpawnable(char* path, SlowField* sf);
 	void createShield(Car* c);
 	void createMine(Car* c, char* path);
+	void createEffect(btScalar ttl, Entity* e, char* path, int type);
 
 	void addCar(Car* car);
 	void addTrack(Track* track);
@@ -104,6 +108,7 @@ public:
 	void removeSpawnable(Spawnable * spawnable);
 	void removeSlowField(SlowField * sf);
 	void removeMine(Mine* mine);
+	void removeEffects();
 
 	int numCars();
 	int numPowerUps();
@@ -112,6 +117,7 @@ public:
 	int numSpawnable();
 	int numSlowField();
 	int numMines();
+	int numEffects();
 
 	void resetCarPosition(int index, btVector3 &position);
 	void resetCar(int index, btTransform &transform);

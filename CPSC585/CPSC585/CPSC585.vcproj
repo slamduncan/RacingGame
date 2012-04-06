@@ -197,6 +197,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Effect.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Entity.cpp"
 				>
 			</File>
@@ -372,6 +376,10 @@
 			</File>
 			<File
 				RelativePath=".\src\Car.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Effect.h"
 				>
 			</File>
 			<File

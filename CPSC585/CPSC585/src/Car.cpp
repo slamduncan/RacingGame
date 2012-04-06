@@ -1,10 +1,14 @@
 #include "Car.h"
 #include "EventSystemHandler.h"
 #include "EntityManager.h"
+#include "SoundPlayer.h"
 
 #ifndef M_PI
 #define M_PI           3.14159265358979323846
 #endif
+
+SoundPlayer SoundEffectPlayer;
+ALuint SoundEffectSource = 8;
 
 //
 //	Current Car representation
@@ -74,6 +78,7 @@ updateVariableObserver(this, &Car::observeVariables)
 	finalPosition = -1;
 	AIresetCounter = 0;
 	currentPosition = 0;
+	distanceToNextWP = 0.0f;
 }
 
 void Car::initObservers()
@@ -394,6 +399,7 @@ void Car::UsePowerUp( int index , bool offensive)
 					//ROCKET POWERUP
 					if (offensive)
 					{
+						SoundEffectPlayer.LoadSoundFile("Documentation/Music/RocketFired.wav", &SoundEffectSource);
 						btTransform rocketT= physicsObject->getWorldTransform();				
 						rocketT.setOrigin( rocketT.getOrigin() - getTangent()*8.0);
 						ent->createRocket(this->getNextWaypointIndex(), rocketT, id);
@@ -420,6 +426,8 @@ void Car::UsePowerUp( int index , bool offensive)
 
 						Physics * phys = Physics::Inst();				
 						phys->addGhost(explosionShell);
+
+						EntityManager::getInstance()->createEffect(btScalar(100.f), this, "model/nova.lwo", 1);
 
 						btAlignedObjectArray<btCollisionObject*> oa = explosionShell->getOverlappingPairs();
 						//printf("I hit %i things!\n",oa.size());
@@ -613,12 +621,12 @@ void Car::finishedLap(int min, int sec, int mil)
 	}
 	else
 	{
-		int lapMin = 0, lapMil = 0, lapSec = 0;
+		int lapMin = min, lapMil = mil, lapSec = sec;
 		for (int i = 0; i < lapTimes.size(); i++)
 		{
-			lapMin = min - lapTimes.at(i).min;
-			lapMil = mil - lapTimes.at(i).mil;
-			lapSec = sec - lapTimes.at(i).sec;
+			lapMin = lapMin - lapTimes.at(i).min;
+			lapMil = lapMil - lapTimes.at(i).mil;
+			lapSec = lapSec - lapTimes.at(i).sec;
 		}
 		LapTime t;
 		t.min = lapMin;

@@ -175,9 +175,10 @@ void Menu::loading(Renderer *ren, std::string loadingWhat)
 {
 	ren->glEnable2D();
 	ren->clearGL();
+	ren->drawTexture("tut");
 	ren->changeFontSize(26);
-	ren->outputText("Loading...", 0, 255, 255, 1280/2, 720/2);
-	ren->outputText(loadingWhat, 0, 255, 255, 1280/2, 720/3);
+	ren->outputText("Loading...", 0, 255, 255, 800, 200);
+	ren->outputText(loadingWhat, 0, 255, 255, 800, 170);
 	ren->updateGL();
 	ren->glDisable2D();
 }
