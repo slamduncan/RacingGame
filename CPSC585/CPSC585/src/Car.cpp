@@ -74,6 +74,7 @@ updateVariableObserver(this, &Car::observeVariables)
 	finalPosition = -1;
 	AIresetCounter = 0;
 	currentPosition = 0;
+	distanceToNextWP = 0.0f;
 }
 
 void Car::initObservers()
@@ -613,12 +614,12 @@ void Car::finishedLap(int min, int sec, int mil)
 	}
 	else
 	{
-		int lapMin = 0, lapMil = 0, lapSec = 0;
+		int lapMin = min, lapMil = mil, lapSec = sec;
 		for (int i = 0; i < lapTimes.size(); i++)
 		{
-			lapMin = min - lapTimes.at(i).min;
-			lapMil = mil - lapTimes.at(i).mil;
-			lapSec = sec - lapTimes.at(i).sec;
+			lapMin = lapMin - lapTimes.at(i).min;
+			lapMil = lapMil - lapTimes.at(i).mil;
+			lapSec = lapSec - lapTimes.at(i).sec;
 		}
 		LapTime t;
 		t.min = lapMin;
