@@ -305,6 +305,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\SoundPlayer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Spawnable.cpp"
 				>
 			</File>
@@ -499,7 +503,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\Sound.h"
+				RelativePath=".\src\SoundPlayer.h"
 				>
 			</File>
 			<File

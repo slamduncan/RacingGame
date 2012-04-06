@@ -26,7 +26,7 @@
 #include "Rocket.h"
 #include "Menu.h"
 
-#include "Sound.h"
+#include "SoundPlayer.h"
 #define SANDBOX 0
 using namespace std;
 
@@ -46,6 +46,8 @@ GameState CURRENT_STATE = MAIN_MENU;
 Renderer* ren = Renderer::getInstance();
 AIHandler* ai = AIHandler::getInstance();
 Physics* ph = Physics::Inst();
+
+SoundPlayer soundPlayer;
 
 //Controller, camera, eventSystem handle.
 InputMapper* playerInput = new InputMapper();
@@ -947,8 +949,8 @@ m.loading(ren, "Cars");
 	camera1.setUpCamera(camLookAt, camOffset);
 	camera1.setTrackCar(entManager->getCar(0));
 	
-	LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource, AL_TRUE);
-	LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+	soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource, AL_TRUE);
+	soundPlayer.LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	//Load variables from the xml file.
 	ReloadEvent* e = new ReloadEvent();

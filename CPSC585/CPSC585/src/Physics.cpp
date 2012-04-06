@@ -5,10 +5,13 @@
 #include "Rocket.h"
 #include "SlowField.h"
 #include "Time.h"
+#include "SoundPlayer.h"
 
 Physics* Physics::physInstance = 0;
 EntityManager* entityManager;
 Renderer* physRender;
+
+SoundPlayer soundEffectPlayer;
 
 Physics* Physics::Inst(void){	
 	if(physInstance == 0){
