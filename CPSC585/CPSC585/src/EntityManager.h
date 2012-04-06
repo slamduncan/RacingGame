@@ -20,6 +20,7 @@
 #include "Shield.h"
 #include "Mine.h"
 #include "Effect.h"
+#include "ModelManager.h"
 
 class EntityManager
 {
@@ -42,6 +43,8 @@ private:
 	EntityManager();
 
 	ShapeFactory sFactory;
+
+	ModelManager modelManager;
 
 public:
 

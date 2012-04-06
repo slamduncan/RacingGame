@@ -256,6 +256,7 @@ void Physics::step(btScalar &timeStep)
 			i--;
 		}
 	}
+
 	entityManager->removeEffects();
 }
 

@@ -288,6 +288,16 @@ void Car::updateWheels()
 		}
 
 	}
+
+/*	
+	srand(time(NULL));
+
+	int spawn = rand() % 100;
+
+	if(spawn <= 25)
+		EntityManager::getInstance()->createEffect(btScalar(300.f), this, "model/particle.lwo", 0);
+*/
+
 }
 
 // probably not needed anymore
