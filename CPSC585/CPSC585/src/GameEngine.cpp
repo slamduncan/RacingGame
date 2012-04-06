@@ -25,6 +25,7 @@
 #include "Timer.h"
 #include "Rocket.h"
 #include "Menu.h"
+#include "Math.h"
 
 #include "SoundPlayer.h"
 #define SANDBOX 0
@@ -940,6 +941,10 @@ int main(int argc, char** argv)
 	{
 /* Menu Code */
 	Menu m = Menu();	
+	srand( time(NULL) );
+
+	int a = rand() %21 + 1;
+	printf("Rand: %d\n",a);
 	//loadPowerupLocation("model/poweruplocation.lwo");
 	int selection = m.run(ren);
 
@@ -1198,13 +1203,16 @@ m.loading(ren, "Cars");
 								tempSec += playerCar->lapTimes.at(j).sec;
 								tempMil += playerCar->lapTimes.at(j).mil;
 
-								tempSec += tempSec % 35;								
-								if (tempMil >= 1000)
+								//tempSec += tempSec % 35;
+								int randm = rand() % 21 + 1;
+								tempSec += randm;
+								printf("Adding %d",randm);
+								while (tempMil >= 1000)
 								{
 									tempMil = tempMil - 1000;
 									tempSec = tempSec + 1;
 								}
-								if (tempSec >= 60)
+								while (tempSec >= 60)
 								{
 									tempSec = tempSec - 60;
 									tempMin = tempMin + 1;
