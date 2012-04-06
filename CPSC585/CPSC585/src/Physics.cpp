@@ -239,11 +239,15 @@ void Physics::step(btScalar &timeStep)
 			btCollisionObject * carMaybe = oa.at(j);
 			//Todo: check this pointer against all car pointers in carList
 			int index = entityManager->getCarIndexViaPointer(carMaybe);
-			entityManager->getCar(index)->chassis->applyCentralForce(btVector3(0,15000.0,0));
+			if(index != -1){
+				entityManager->getCar(index)->chassis->applyCentralForce(btVector3(0,15000.0,0));
 
-			dynamicsWorld->removeCollisionObject(entityManager->getMine(i)->physicsObject);
-			entityManager->removeMine(entityManager->getMine(i));
-			i--;
+				dynamicsWorld->removeCollisionObject(entityManager->getMine(i)->physicsObject);
+				entityManager->removeMine(entityManager->getMine(i));
+
+				i--;
+				break;
+			}
 
 		}
 	}

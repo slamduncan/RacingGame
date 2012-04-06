@@ -78,6 +78,7 @@ updateVariableObserver(this, &Car::observeVariables)
 	finalPosition = -1;
 	AIresetCounter = 0;
 	currentPosition = 0;
+	distanceToNextWP = 0.0f;
 }
 
 void Car::initObservers()
@@ -630,24 +631,24 @@ void Car::finishedLap(int min, int sec, int mil)
 	}
 	else
 	{
-		int lapMin = 0, lapMil = 0, lapSec = 0;
+		int lapMin = min, lapMil = mil, lapSec = sec;
 		for (int i = 0; i < lapTimes.size(); i++)
 		{
-			lapMin = min - lapTimes.at(i).min;
-			lapMil = mil - lapTimes.at(i).mil;
-			lapSec = sec - lapTimes.at(i).sec;
+			lapMin = lapMin - lapTimes.at(i).min;
+			lapMil = lapMil - lapTimes.at(i).mil;
+			lapSec = lapSec - lapTimes.at(i).sec;
 		}
 		LapTime t;
 		t.min = lapMin;
 		t.mil = lapMil;
 		t.sec = lapSec;
 
-		if (t.mil < 0)
+		while (t.mil < 0)
 		{
 			t.mil = t.mil + 1000;
 			t.sec = t.sec - 1;
 		}
-		if (t.sec < 0)
+		while (t.sec < 0)
 		{
 			t.sec = t.sec + 60;
 			t.min = t.min - 1;
@@ -680,7 +681,11 @@ std::string Car::displayTime()
 			timeFinished << ":0" << lapTimes.at(i-1).sec;
 		timeFinished << "\n";
 	}
-	timeFinished << "Total Time: " << totalMin << ":" << totalSec << "\n";
+	timeFinished << "Total Time: " << totalMin << ":" ;
+	if (totalSec < 10)
+		timeFinished << "0" << totalSec << "\n";
+	else
+		timeFinished << totalSec << "\n";
 	timeFinished << "Position " << finalPosition;
 
 	return timeFinished.str();

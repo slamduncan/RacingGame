@@ -25,6 +25,7 @@
 #include "Timer.h"
 #include "Rocket.h"
 #include "Menu.h"
+#include "Math.h"
 
 #include "SoundPlayer.h"
 #define SANDBOX 0
@@ -766,21 +767,41 @@ void resetCars(){
 void calcPositions()
 {
 	int currentPosition = 6;
-	Car* currentCar;
-	Car* positionCar;
 	Car* lastCar;
 	Car* firstCar;
 	int atWaypoint = entManager->numWaypoints();
 	int lapCount = 3;
+	float distanceToWP = 0.0f;
+
+	for (int i = 0; i < entManager->numCars(); i++)
+	{
+		Car* tempC = entManager->getCar(i);
+		tempC->distanceToNextWP = (entManager->getWaypoint(tempC->getNextWaypointIndex())->getPosition() - tempC->getPosition()).dot(entManager->getWaypoint(tempC->getNextWaypointIndex())->getTangent());
+		tempC->currentPosition = -1;
+	}
+
 	/* Find last car */
 	for (int i = 0; i < entManager->numCars(); i++)
 	{
 		Car* tempC = entManager->getCar(i);
 		if (tempC->getNextWaypointIndex() <= atWaypoint && tempC->lapCount <= lapCount)
 		{
-			lastCar = tempC;
-			atWaypoint = lastCar->getNextWaypointIndex();
-			lapCount = lastCar->lapCount;			
+			if (tempC->getNextWaypointIndex() == atWaypoint)
+			{
+				if (distanceToWP < tempC->distanceToNextWP)
+				{
+					lastCar = tempC;
+					atWaypoint = lastCar->getNextWaypointIndex();
+					lapCount = lastCar->lapCount;			
+					distanceToWP = tempC->distanceToNextWP;
+				}
+			}
+			else {
+				lastCar = tempC;
+				atWaypoint = lastCar->getNextWaypointIndex();
+				lapCount = lastCar->lapCount;			
+				distanceToWP = lastCar->distanceToNextWP;
+			}
 		}
 	}
 	lastCar->currentPosition = currentPosition;
@@ -788,41 +809,98 @@ void calcPositions()
 	/* Find first car */
 	atWaypoint = 0;
 	lapCount = 0;
+	distanceToWP = 1000.0f;
 	for (int i = 0; i < entManager->numCars(); i++)
 	{
 		Car* tempC = entManager->getCar(i);
 		if (tempC->getNextWaypointIndex() >= atWaypoint && tempC->lapCount >= lapCount)
 		{
+			if (tempC->getNextWaypointIndex() == atWaypoint)
+			{
+				if (distanceToWP > tempC->distanceToNextWP)
+				{
+					firstCar = tempC;
+					atWaypoint = lastCar->getNextWaypointIndex();
+					lapCount = lastCar->lapCount;			
+					distanceToWP = tempC->distanceToNextWP;
+				}
+			}
 			firstCar = tempC;
 			atWaypoint = firstCar->getNextWaypointIndex();
 			lapCount = firstCar->lapCount;			
+			distanceToWP = tempC->distanceToNextWP;
 		}
 	}
 	firstCar->currentPosition = 1;
 
-	
+
+	//Last Found Car: last car that got it's position found.
+	Car* nextCar = lastCar;
+	Car* frontCar = firstCar;
+	atWaypoint = lastCar->getNextWaypointIndex();
+	lapCount = lastCar->lapCount;
+	distanceToWP = lastCar->distanceToNextWP;
 	for (int i = 0; i < entManager->numCars() - 1; i++)
-	{
-		Car* lastFoundCar = firstCar;
+	{		
 		for (int j = 0; j < entManager->numCars(); j++)
 		{
-			currentCar = entManager->getCar(j);
-
-			if (currentCar->getNextWaypointIndex() > lastCar->getNextWaypointIndex() &&
-				currentCar->lapCount >= lastCar->lapCount)
-			{				
-				if (currentCar->getNextWaypointIndex() < lastFoundCar->getNextWaypointIndex()
-					&& currentCar->lapCount <= lastFoundCar->lapCount)
+			Car* tempC = entManager->getCar(j);
+			//Infront of last car.
+			if (tempC->getNextWaypointIndex() <= frontCar->getNextWaypointIndex())
+			{
+				if (tempC->lapCount <= frontCar->lapCount)
 				{
-					lastFoundCar = currentCar;					
+					if (tempC->getNextWaypointIndex() == frontCar->getNextWaypointIndex())
+					{
+						if (tempC->distanceToNextWP > frontCar->distanceToNextWP)
+						{
+							if (tempC->id != nextCar->id && tempC->currentPosition == -1)
+								frontCar = tempC;
+						}
+					}
+					else
+					{
+						if (tempC->id != nextCar->id && tempC->currentPosition == -1)
+								frontCar = tempC;
+					}
 				}
 			}
 		}
-		lastFoundCar->currentPosition = currentPosition;
+		nextCar = frontCar;
+		frontCar = firstCar;
+		nextCar->currentPosition = currentPosition;
 		currentPosition -= 1;
-		lastCar = lastFoundCar;
-		lastFoundCar = firstCar;
 	}
+
+	
+	//for (int i = 0; i < entManager->numCars() - 1; i++)
+	//{
+	//	//Last Found Car: last car that got it's position found.
+	//	Car* lastFoundCar = firstCar;
+	//	for (int j = 0; j < entManager->numCars(); j++)
+	//	{
+	//		currentCar = entManager->getCar(j);
+
+	//		if (currentCar->getNextWaypointIndex() >= lastCar->getNextWaypointIndex() &&
+	//			currentCar->lapCount >= lastCar->lapCount)
+	//		{				
+	//			if (currentCar->getNextWaypointIndex() <= lastFoundCar->getNextWaypointIndex()
+	//				&& currentCar->lapCount <= lastFoundCar->lapCount)
+	//			{
+	//				if (currentCar->getNextWaypointIndex() != lastFoundCar->getNextWaypointIndex() || 
+	//					(lastFoundCar->distanceToNextWP < currentCar->distanceToNextWP) && currentCar->getNextWaypointIndex() == lastFoundCar->getNextWaypointIndex())
+	//				{
+	//					lastFoundCar = currentCar;					
+	//				}
+	//			}
+	//		}
+	//	}
+	//	lastFoundCar->currentPosition = currentPosition;
+	//	currentPosition -= 1;
+	//	//Car behind the next postion to be found.
+	//	lastCar = lastFoundCar;
+	//	lastFoundCar = firstCar;
+	//}
 }
 
 // Engine Main
@@ -863,6 +941,10 @@ int main(int argc, char** argv)
 	{
 /* Menu Code */
 	Menu m = Menu();	
+	srand( time(NULL) );
+
+	int a = rand() %21 + 1;
+	printf("Rand: %d\n",a);
 	//loadPowerupLocation("model/poweruplocation.lwo");
 	int selection = m.run(ren);
 
@@ -984,7 +1066,7 @@ m.loading(ren, "Cars");
 
 	Uint32 next_game_tick = SDL_GetTicks();	
 
-	m.loading(ren, "Game Ready!");
+	m.loading(ren, "Game Ready!\nPress Start To Continue", true);
 	// game loop
 	CURRENT_STATE = GAME_STARTING;
 	while(running)
@@ -1084,23 +1166,32 @@ m.loading(ren, "Cars");
 						LapNumber++;
 					}
 				}
-				// Resets any cars which have fallen off the track.
-				resetCars();
 			}
+			// Resets any cars which have fallen off the track.
+			resetCars();
 
 			if (CURRENT_STATE == GAME_FINISHED)
 			{				
 				Car* playerCar = entManager->getCar(0);
+				//for every car
 				for (int i = 0; i < entManager->numCars(); i++)
 				{
+					//fetch the car
 					Car* tempC = entManager->getCar(i);
-					if (!tempC->finishedRacing)
+
+					//if it's not finished racing
+					if (tempC->finishedRacing == false)
 					{
+						//initialize some things
 						int tempMin=0, tempSec=0, tempMil =0;
+
+						//for every lap
 						for (int j = 0; j < 3; j++)
 						{
+							//if they finished the lap, collect the data, else fabricate it
 							if (tempC->lapTimes.size() < j)
 							{
+								//printf("Unfabricated results: lap %d car %d");
 								tempMin += tempC->lapTimes.at(j).min;
 								tempSec += tempC->lapTimes.at(j).sec;
 								tempMil += tempC->lapTimes.at(j).mil;
@@ -1112,13 +1203,16 @@ m.loading(ren, "Cars");
 								tempSec += playerCar->lapTimes.at(j).sec;
 								tempMil += playerCar->lapTimes.at(j).mil;
 
-								tempSec += tempMil % 60;								
-								if (tempMil >= 1000)
+								//tempSec += tempSec % 35;
+								int randm = rand() % 21 + 1;
+								tempSec += randm;
+								printf("Adding %d",randm);
+								while (tempMil >= 1000)
 								{
 									tempMil = tempMil - 1000;
 									tempSec = tempSec + 1;
 								}
-								if (tempSec >= 60)
+								while (tempSec >= 60)
 								{
 									tempSec = tempSec - 60;
 									tempMin = tempMin + 1;
@@ -1127,21 +1221,24 @@ m.loading(ren, "Cars");
 							}
 						}
 					}
-					for (int i = 0; i < entManager->numCars(); i++)
+				}
+
+				//for every car (again)
+				for (int i = 0; i < entManager->numCars(); i++)
+				{
+					//get the car
+					Car* tempC = entManager->getCar(i);
+					int pos = 0;
+					for (int j = 0; j < entManager->numCars(); j++)
 					{
-						Car* tempC = entManager->getCar(i);
-						int pos = 0;
-						for (int j = 0; j < entManager->numCars(); j++)
-						{
-							Car* tempCompare = entManager->getCar(j);
-							if (tempCompare->totalMin <= tempC->totalMin)
-								if (tempCompare->totalSec <= tempC->totalSec)
-									if (tempCompare->totalMil <= tempC->totalMil)
-										pos++;
-						}
-						tempC->finalPosition = pos;
-						tempC->displayTime();
+						Car* tempCompare = entManager->getCar(j);
+						if (tempCompare->totalMin <= tempC->totalMin)
+							if (tempCompare->totalSec <= tempC->totalSec)
+								if (tempCompare->totalMil <= tempC->totalMil)
+									pos++;
 					}
+					tempC->finalPosition = pos;
+					tempC->displayTime();
 				}
 				m.timeScreen(ren);
 				running = false;

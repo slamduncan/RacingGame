@@ -171,16 +171,35 @@ int Menu::timeScreen(Renderer *ren)
 	return 0;
 }
 
-void Menu::loading(Renderer *ren, std::string loadingWhat)
+void Menu::loading(Renderer *ren, std::string loadingWhat, bool wait)
 {
 	ren->glEnable2D();
 	ren->clearGL();
 	ren->drawTexture("tut");
 	ren->changeFontSize(26);
-	ren->outputText("Loading...", 0, 255, 255, 800, 200);
-	ren->outputText(loadingWhat, 0, 255, 255, 800, 170);
+	if (!wait)
+		ren->outputText("Loading...", 0, 255, 255, 800, 200);
+	ren->outputText(loadingWhat, 0, 255, 255, 800, 150);
 	ren->updateGL();
 	ren->glDisable2D();
+	SDL_Event eventIn;	
+	while (wait)
+	{
+		while(SDL_PollEvent( &eventIn )) {		
+		switch (eventIn.type)
+		{			
+		case SDL_JOYBUTTONDOWN:
+			{
+				if (eventIn.jbutton.button == 7){ //Start
+					wait = false;
+				}
+			}
+			break;
+		}		
+	}
+
+
+	}
 }
 int Menu::inGameMenu(Renderer *ren)
 {
