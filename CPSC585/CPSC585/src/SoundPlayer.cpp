@@ -68,12 +68,8 @@ void SoundPlayer::LoadBackgroundSoundFile(ALbyte* FileName)
 	alSourcePlay(BackGroundSource);
 }
 
-void SoundPlayer::LoadSoundFile(ALbyte* FileName, ALuint* Source, ALboolean Looping = AL_FALSE)
+void SoundPlayer::LoadSoundFile(ALbyte* FileName, ALuint* Source, ALboolean Looping)
 {
-	ALCdevice* device = alcOpenDevice(NULL);
-	ALCcontext* context = alcCreateContext(device, NULL);
-	alcMakeContextCurrent(context);
-
 	ALfloat listenerPos[]={0.0,0.0,4.0};
 	ALfloat listenerVel[]={0.0,0.0,0.0};
 	ALfloat listenerOri[]={0.0,0.0,1.0, 0.0,1.0,0.0};

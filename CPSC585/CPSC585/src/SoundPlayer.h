@@ -12,10 +12,9 @@ class SoundPlayer
 public:
 	SoundPlayer();
 	void LoadBackgroundSoundFile(ALbyte* FileName);
-	void LoadSoundFile(ALbyte* FileName, ALuint* Source, ALboolean Looping);
+	void LoadSoundFile(ALbyte* FileName, ALuint* Source, ALboolean Looping  = AL_FALSE);
 
 private:
-	//ALuint CurrentSoundSource = 10;
 };
 
 #endif SOUNDPLAYER_H

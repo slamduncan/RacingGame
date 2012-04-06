@@ -855,6 +855,10 @@ int main(int argc, char** argv)
 
 	}		
 
+	ALCdevice* device = alcOpenDevice(NULL);
+	ALCcontext* context = alcCreateContext(device, NULL);
+	alcMakeContextCurrent(context);
+
 	while (stillWantsToPlay)
 	{
 /* Menu Code */
