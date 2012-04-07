@@ -17,5 +17,5 @@
   <tractionBoostModifier value ="1.0"/>
   <shieldModifier value ="1.0"/>
   <forceBubbleModifier value ="100.0" /> <!-- Radius of the nova's sphere of influence -->
-  <slidingFrictionModifier value="100.0"/>
+  <slidingFrictionModifier value="200.0"/>
 </Physics>
