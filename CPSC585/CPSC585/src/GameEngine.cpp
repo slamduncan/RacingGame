@@ -1196,7 +1196,6 @@ m.loading(ren, "Cars");
 							//if they finished the lap, collect the data, else fabricate it
 							if (tempC->lapTimes.size() < j)
 							{
-								//printf("Unfabricated results: lap %d car %d");
 								tempMin += tempC->lapTimes.at(j).min;
 								tempSec += tempC->lapTimes.at(j).sec;
 								tempMil += tempC->lapTimes.at(j).mil;
@@ -1225,15 +1224,40 @@ m.loading(ren, "Cars");
 								tempC->finishedLap(tempMin, tempSec, tempMil);
 							}
 						}
+					}else
+					{
+						if(tempC->lapTimes.size() == 1){
+							int tempMin=0, tempSec=0, tempMil =0;
+							for (int p = 0; p < tempC->lapTimes.size(); p++)
+							{
+								tempMin += tempC->lapTimes.at(p).min;
+								tempSec += tempC->lapTimes.at(p).sec;
+								tempMil += tempC->lapTimes.at(p).mil;
+							}
+							tempC->lapTimes.resize(0);
+							//tempC->lapTimes.re
+							int totalSec = tempMin * 60 + tempSec;
+							int lapSecs = totalSec /3;
+							int avgMin = lapSecs /60;
+							int avgSec = lapSecs % 60;
+							printf("Hacking time: ID: %d Time: %d : %d\n", tempC->id, avgMin, avgSec);
+							
+							for (int p = 1; p <4; p++){
+								tempC->finishedLap(p*avgMin, p*avgSec, 0);
+								
+							}
+
+						}
 					}
 				}
 
-				//for every car (again)
+				//for every car
 				for (int i = 0; i < entManager->numCars(); i++)
 				{
 					//get the car
 					Car* tempC = entManager->getCar(i);
 					int pos = 0;
+					//for every car (again)
 					for (int j = 0; j < entManager->numCars(); j++)
 					{
 						Car* tempCompare = entManager->getCar(j);
@@ -1244,7 +1268,10 @@ m.loading(ren, "Cars");
 					}
 					tempC->finalPosition = pos;
 					tempC->displayTime();
+					printf("ID: %d Position: %d", tempC->id, tempC->finalPosition);
 				}
+				
+
 				m.timeScreen(ren);
 				running = false;
 			}

@@ -627,7 +627,16 @@ void Car::setBeingSlowed(){
 
 void Car::finishedLap(int min, int sec, int mil)
 {
-	
+	while(mil > 1000){
+		mil -= 1000;
+		sec++;
+	}
+
+	while(sec > 60){
+		sec -= 60;
+		min++;
+	}
+
 	if (lapTimes.size() == 0)
 	{
 		LapTime t;

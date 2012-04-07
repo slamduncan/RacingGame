@@ -103,11 +103,15 @@ int Menu::timeScreen(Renderer *ren)
 	
 	int position = 1;
 	int offset = 10;
+	//for each car
 	for (int i = 0; i < entMan->numCars(); i++)
 	{	
+		//for each car (again)
 		for (int j = 0; j < entMan->numCars(); j++)
 		{	
+			//get inner car
 			Car* tempC = entMan->getCar(j);
+			//check if car has desired position...
 			if (tempC->finalPosition == position)
 			{
 				ren->changeFontSize(26);
@@ -122,10 +126,10 @@ int Menu::timeScreen(Renderer *ren)
 					offset += 20*16 + 16;
 				ren->outputText(name.str(), 0, 255, 255, offset, 720/2);
 				ren->changeFontSize(16);				
-				ren->outputText(tempC->timeFinished.str(), 0, 255, 150,offset, 720/3);
-				position++;
+				ren->outputText(tempC->timeFinished.str(), 0, 255, 150,offset, 720/3);				
 			}
 		}		
+		position++;
 	}
 //	for (int i = 0; i < entMan->numCars();i++)
 	{
