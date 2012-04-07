@@ -70,23 +70,26 @@ void AIHandler::generateNextMove(){
 		c->observeRotation(re);		
 		delete re;
 
-
-
 		if (forwardForce > maxMovementForce)
 			forwardForce = maxMovementForce;
 		else if (forwardForce < -maxMovementForce)
 			forwardForce = -maxMovementForce;
 		/*rubber banding effect */
 		int waypointDiff = 0;
-		if (abs(humanCar->getNextWaypointIndex() - c->getNextWaypointIndex()) < 650)
-			waypointDiff = humanCar->getNextWaypointIndex() - c->getNextWaypointIndex();
+		//if (abs(humanCar->getNextWaypointIndex() - c->getNextWaypointIndex()) < 650)
+		waypointDiff = humanCar->getNextWaypointIndex() - c->getNextWaypointIndex();
 		if (c->lapCount - humanCar->lapCount != 0)
 			waypointDiff += EntityManager::getInstance()->numWaypoints() * (humanCar->lapCount - c->lapCount);
 		//int waypointDiff = c->getPosition().setY(0.f) - humanCar->getPosition().setY(0.f)
 		forwardForce = forwardForce - waypointDiff * rubberBandModifier;
 
+		if (forwardForce > maxMovementForce)
+			forwardForce = maxMovementForce;
+		else if (forwardForce < -55534.0f) //About the fastest they can go with out flipping...
+			forwardForce = -55534.0f;		
+
 		//User too good, warp forward!
-		if (waypointDiff > 300 && (c->lapCount < humanCar->lapCount || c->halfWayAround != humanCar->halfWayAround))   //abs(forwardForce) > (35000.0f + 400 * rubberBandModifier) && forwardForce < 0 && c->lapCount <= humanCar->lapCount)
+		if (waypointDiff > 25 && (c->lapCount < humanCar->lapCount || c->halfWayAround != humanCar->halfWayAround))   //abs(forwardForce) > (35000.0f + 400 * rubberBandModifier) && forwardForce < 0 && c->lapCount <= humanCar->lapCount)
 		{
 			EntityManager* entM = EntityManager::getInstance();
 			Waypoint* moveCarTo = entM->getWaypoint(((humanCar->getNextWaypointIndex() - 10) + entM->numWaypoints()) % entM->numWaypoints());
@@ -109,17 +112,18 @@ void AIHandler::generateNextMove(){
 //			c->halfWayAround = humanCar->halfWayAround;
 			c->setNextWaypointIndex(moveCarTo->getWaypointList().at(0)->getIndex());
 			c->AIresetCounter = 0;
+			printf("Warped Forward, From: %d, To: %d\n", previousIndex, moveCarTo->getIndex());
 		}
 		//User is bad, warp back :(
 		else if (waypointDiff < -150 && (c->lapCount > humanCar->lapCount || c->halfWayAround != humanCar->halfWayAround))
-		{
+		{			
 			EntityManager* entM = EntityManager::getInstance();
 			Waypoint* moveCarTo = entM->getWaypoint(((humanCar->getNextWaypointIndex() + 20) + entM->numWaypoints()) % entM->numWaypoints());
+			printf("Warped Back, From: %d, To: %d\n", c->getNextWaypointIndex(), moveCarTo->getIndex());
 			c->physicsObject->setWorldTransform(moveCarTo->getTransform());			
 			c->halfWayAround = humanCar->halfWayAround;
 			c->setNextWaypointIndex(moveCarTo->getWaypointList().at(0)->getIndex());
-			c->AIresetCounter = 0;
-
+			c->AIresetCounter = 0;			
 		}
 		else
 		{

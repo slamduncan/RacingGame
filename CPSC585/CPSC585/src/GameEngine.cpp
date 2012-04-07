@@ -1031,10 +1031,7 @@ m.loading(ren, "Cars");
 	btVector3 camOffset = car1N + car1T;
 	btVector3 camLookAt = entManager->getCar(0)->getPosition();
 	camera1.setUpCamera(camLookAt, camOffset);
-	camera1.setTrackCar(entManager->getCar(0));
-	
-	soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource, AL_TRUE);
-	soundPlayer.LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+	camera1.setTrackCar(entManager->getCar(0));		
 
 	//Load variables from the xml file.
 	ReloadEvent* e = new ReloadEvent();
@@ -1067,6 +1064,11 @@ m.loading(ren, "Cars");
 	Uint32 next_game_tick = SDL_GetTicks();	
 
 	m.loading(ren, "Game Ready!\nPress Start To Continue", true);
+
+	/*Load game music */
+	soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource, AL_TRUE);
+	soundPlayer.LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+
 	// game loop
 	CURRENT_STATE = GAME_STARTING;
 	while(running)
@@ -1123,17 +1125,6 @@ m.loading(ren, "Cars");
 			controller1.emitRightAnalog();
 
 			// AI
-			AIpowerUPDelayCounter++;
-			ai->generateNextMove();
-			calcPositions();
-			if (AIpowerUPDelayCounter > 240)
-			{
-				for(int i = 0; i < entManager->numCars(); i++)			
-					entManager->getCar(i)->usedPowerUpRecently = false;
-			}
-			entManager->getCar(0)->setNextWaypointIndex(getClosestWaypoint());
-			
-
 			// Calculate current lap for player's car
 			for (int i = 0 ; i < entManager->getCarList()->size(); i++)
 			{
@@ -1167,6 +1158,19 @@ m.loading(ren, "Cars");
 					}
 				}
 			}
+
+			AIpowerUPDelayCounter++;
+			ai->generateNextMove();
+			calcPositions();
+			if (AIpowerUPDelayCounter > 240)
+			{
+				for(int i = 0; i < entManager->numCars(); i++)			
+					entManager->getCar(i)->usedPowerUpRecently = false;
+			}
+			entManager->getCar(0)->setNextWaypointIndex(getClosestWaypoint());
+			
+
+
 			// Resets any cars which have fallen off the track.
 			resetCars();
 
