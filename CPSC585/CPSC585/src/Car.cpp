@@ -388,8 +388,8 @@ void Car::UsePowerUp( int index , bool offensive)
 				}
 				//SLOW POWERUP
 				else {
-					EntityManager * ent;
-					ent = EntityManager::getInstance();
+					//EntityManager * ent;
+					//ent = EntityManager::getInstance();
 					ent->createSlowField(this);				
 				}
 				break;
@@ -402,7 +402,10 @@ void Car::UsePowerUp( int index , bool offensive)
 						SoundEffectPlayer.LoadSoundFile("Documentation/Music/RocketFired.wav", &SoundEffectSource);
 						btTransform rocketT= physicsObject->getWorldTransform();				
 						rocketT.setOrigin( rocketT.getOrigin() - getTangent()*8.0);
-						ent->createRocket(this->getNextWaypointIndex(), rocketT, id);
+						if (this->getNextWaypointIndex() < ent->numWaypoints() - 5)
+							ent->createRocket(this->getNextWaypointIndex()+5, rocketT, id);
+						else
+							ent->createRocket(this->getNextWaypointIndex(), rocketT, id);
 						//ent->createCar("model/ship1.lwo", carMass, rocketT);
 					}
 					//Shield PowerUP
@@ -588,20 +591,24 @@ Car* Car::getClosestCar(bool inFront, float detectionDistance)
 
 void Car::RotatePowerups( bool RotateLeft )
 {
-	if( RotateLeft )
-	{
-		int temp = m_CarPowerUps[0].GetType();
-		m_CarPowerUps[0].SetType( m_CarPowerUps[1].GetType() );
-		m_CarPowerUps[1].SetType( m_CarPowerUps[2].GetType() );
-		m_CarPowerUps[2].SetType( temp );
-	}
-	else
-	{
-		int temp = m_CarPowerUps[0].GetType();
-		m_CarPowerUps[0].SetType( m_CarPowerUps[2].GetType() );
-		m_CarPowerUps[2].SetType( m_CarPowerUps[1].GetType() );
-		m_CarPowerUps[1].SetType( temp );
-	}
+	int count = 0;
+	do{
+		count++;
+		if( RotateLeft )
+		{
+			int temp = m_CarPowerUps[0].GetType();
+			m_CarPowerUps[0].SetType( m_CarPowerUps[1].GetType() );
+			m_CarPowerUps[1].SetType( m_CarPowerUps[2].GetType() );
+			m_CarPowerUps[2].SetType( temp );
+		}
+		else
+		{
+			int temp = m_CarPowerUps[0].GetType();
+			m_CarPowerUps[0].SetType( m_CarPowerUps[2].GetType() );
+			m_CarPowerUps[2].SetType( m_CarPowerUps[1].GetType() );
+			m_CarPowerUps[1].SetType( temp );
+		}
+	}while (m_CarPowerUps[0].GetType() == EMPTY && count < 4);
 }
 
 void Car::setBeingSlowed(){
