@@ -770,7 +770,8 @@ void calcPositions()
 	Car* lastCar;
 	Car* firstCar;
 	int atWaypoint = entManager->numWaypoints();
-	int lapCount = 3;
+	int lapCount = 4;	
+
 	float distanceToWP = 0.0f;
 
 	for (int i = 0; i < entManager->numCars(); i++)
