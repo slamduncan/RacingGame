@@ -223,6 +223,7 @@ int Renderer::initFont()
 
 int Renderer::initTexs()
 {
+	tm->genTexture("texture/particle.png", "particle");
 	tm->genTexture("texture/Tutorial.png", "tut");
 	tm->genTexture("texture/tempHUD.png", "hud");
 	tm->genTexture("Documentation/Art/Varios Logo.png", "logo");
@@ -681,7 +682,9 @@ void Renderer::drawAll()
 		}
 		else if(effect->getType() == SPEED)
 		{
+			textureOn(tm->getTexture("particle"));
 			drawEntity(*effect);
+			textureOff();
 		}
 	}
 }
@@ -1060,6 +1063,11 @@ void Renderer::drawEntity(Entity &entity)
 
 			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
 			{
+				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_OPACITY, &opacity))
+				{
+					diffuse = diffuse * opacity.r;
+				}
+
 				Kd[0] = diffuse.r;
 				Kd[1] = diffuse.g;
 				Kd[2] = diffuse.b;
