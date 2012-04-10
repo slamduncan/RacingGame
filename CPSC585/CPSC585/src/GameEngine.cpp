@@ -770,7 +770,7 @@ void calcPositions()
 	Car* lastCar;
 	Car* firstCar;
 	int atWaypoint = entManager->numWaypoints();
-	int lapCount = 4;	
+	int myLapCount = 4;	
 
 	float distanceToWP = 0.0f;
 
@@ -785,7 +785,7 @@ void calcPositions()
 	for (int i = 0; i < entManager->numCars(); i++)
 	{
 		Car* tempC = entManager->getCar(i);
-		if (tempC->getNextWaypointIndex() <= atWaypoint && tempC->lapCount <= lapCount)
+		if (tempC->getNextWaypointIndex() <= atWaypoint && tempC->lapCount <= myLapCount)
 		{
 			if (tempC->getNextWaypointIndex() == atWaypoint)
 			{
@@ -793,14 +793,14 @@ void calcPositions()
 				{
 					lastCar = tempC;
 					atWaypoint = lastCar->getNextWaypointIndex();
-					lapCount = lastCar->lapCount;			
+					myLapCount = lastCar->lapCount;			
 					distanceToWP = tempC->distanceToNextWP;
 				}
 			}
 			else {
 				lastCar = tempC;
 				atWaypoint = lastCar->getNextWaypointIndex();
-				lapCount = lastCar->lapCount;			
+				myLapCount = lastCar->lapCount;			
 				distanceToWP = lastCar->distanceToNextWP;
 			}
 		}
@@ -809,12 +809,12 @@ void calcPositions()
 	currentPosition -= 1;
 	/* Find first car */
 	atWaypoint = 0;
-	lapCount = 0;
+	myLapCount = 0;
 	distanceToWP = 1000.0f;
 	for (int i = 0; i < entManager->numCars(); i++)
 	{
 		Car* tempC = entManager->getCar(i);
-		if (tempC->getNextWaypointIndex() >= atWaypoint && tempC->lapCount >= lapCount)
+		if (tempC->getNextWaypointIndex() >= atWaypoint && tempC->lapCount >= myLapCount)
 		{
 			if (tempC->getNextWaypointIndex() == atWaypoint)
 			{
@@ -822,13 +822,13 @@ void calcPositions()
 				{
 					firstCar = tempC;
 					atWaypoint = lastCar->getNextWaypointIndex();
-					lapCount = lastCar->lapCount;			
+					myLapCount = lastCar->lapCount;			
 					distanceToWP = tempC->distanceToNextWP;
 				}
 			}
 			firstCar = tempC;
 			atWaypoint = firstCar->getNextWaypointIndex();
-			lapCount = firstCar->lapCount;			
+			myLapCount = firstCar->lapCount;			
 			distanceToWP = tempC->distanceToNextWP;
 		}
 	}
@@ -839,7 +839,7 @@ void calcPositions()
 	Car* nextCar = lastCar;
 	Car* frontCar = firstCar;
 	atWaypoint = lastCar->getNextWaypointIndex();
-	lapCount = lastCar->lapCount;
+	myLapCount = lastCar->lapCount;
 	distanceToWP = lastCar->distanceToNextWP;
 	for (int i = 0; i < entManager->numCars() - 1; i++)
 	{		
@@ -1194,7 +1194,7 @@ m.loading(ren, "Cars");
 						for (int j = 0; j < 3; j++)
 						{
 							//if they finished the lap, collect the data, else fabricate it
-							if (tempC->lapTimes.size() < j)
+							if (tempC->lapTimes.size() > j)
 							{
 								tempMin += tempC->lapTimes.at(j).min;
 								tempSec += tempC->lapTimes.at(j).sec;
