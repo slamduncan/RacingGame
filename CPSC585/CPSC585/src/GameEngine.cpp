@@ -1257,21 +1257,48 @@ m.loading(ren, "Cars");
 					//get the car
 					Car* tempC = entManager->getCar(i);
 					int pos = 0;
+					int totalSecC = tempC->totalMin * 60 + tempC->totalSec;
 					//for every car (again)
 					for (int j = 0; j < entManager->numCars(); j++)
 					{
 						Car* tempCompare = entManager->getCar(j);
-						if (tempCompare->totalMin <= tempC->totalMin)
-							if (tempCompare->totalSec <= tempC->totalSec)
-								if (tempCompare->totalMil <= tempC->totalMil)
-									pos++;
+						int totalSecCompare = tempCompare->totalMin * 60 + tempCompare->totalSec;
+						if (totalSecCompare <= totalSecC)														
+							pos++;
 					}
-					tempC->finalPosition = pos;
-					tempC->displayTime();
-					printf("ID: %d Position: %d", tempC->id, tempC->finalPosition);
+					tempC->finalPosition = pos;																	
+					printf("ID: %d Position: %d\n", tempC->id, tempC->finalPosition);
 				}
-				
-
+				int currentPosToFind = 1;
+				int count = 0;
+				for (int j = 0; j < entManager->numCars(); j++)
+				{
+					count = 0;
+					for (int p = 0; p < entManager->numCars(); p++)
+					{
+						Car* tempCompare = entManager->getCar(p);
+						if (currentPosToFind == tempCompare->finalPosition)
+							count++;
+					}
+					while (count > 1)
+					{
+						for (int p = 0; p < entManager->numCars(); p++)
+						{
+							Car* tempCompare = entManager->getCar(p);
+							if (currentPosToFind == tempCompare->finalPosition)
+							{
+								count--;
+								tempCompare->finalPosition++;
+							}
+						}							
+					}
+					currentPosToFind++;
+				}
+				for (int j = 0; j < entManager->numCars(); j++)
+				{
+					Car* tempC = entManager->getCar(j);
+					tempC->displayTime();
+				}
 				m.timeScreen(ren);
 				running = false;
 			}
