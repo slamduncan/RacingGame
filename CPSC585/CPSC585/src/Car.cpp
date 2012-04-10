@@ -392,6 +392,7 @@ void Car::UsePowerUp( int index , bool offensive)
 				//SPEED POWERUP
 				if (!offensive)
 				{
+					SoundEffectPlayer.LoadSoundFile("Documentation/Music/Speed.wav", &SoundEffectSource);
 					btVector3 forward = getTangent();
 					forward.setY(0);	// projects the tangent along the xz plane
 					chassis->applyCentralForce(-speedBoostModifier*forward);
@@ -400,6 +401,7 @@ void Car::UsePowerUp( int index , bool offensive)
 				else {
 					//EntityManager * ent;
 					//ent = EntityManager::getInstance();
+					SoundEffectPlayer.LoadSoundFile("Documentation/Music/Slow.wav", &SoundEffectSource);
 					ent->createSlowField(this);				
 				}
 				break;
@@ -420,6 +422,7 @@ void Car::UsePowerUp( int index , bool offensive)
 					}
 					//Shield PowerUP
 					else{
+						SoundEffectPlayer.LoadSoundFile("Documentation/Music/Shield.wav", &SoundEffectSource);
 						ent->createShield(this);
 					}					
 					break;
@@ -429,6 +432,7 @@ void Car::UsePowerUp( int index , bool offensive)
 					//NOVA POWERUP
 					if (!offensive)
 					{
+						SoundEffectPlayer.LoadSoundFile("Documentation/Music/Nova2.wav", &SoundEffectSource);
 						btGhostObject * explosionShell;
 						explosionShell = new btGhostObject();
 						btCollisionShape* sphereShape;
