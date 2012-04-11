@@ -1344,10 +1344,10 @@ m.loading(ren, "Cars");
 		// done in light space
 		ren->depthMapPass();
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
-//		ren->drawShadow(camera1);
-		ren->clearGL();	// clear the screen
+		ren->drawShadow(camera1);
+//		ren->clearGL();	// clear the screen
 
-		ren->drawTexture("depth2l1");		
+//		ren->drawTexture("depth2l1");		
 /*
 		// set camera to eye space
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
