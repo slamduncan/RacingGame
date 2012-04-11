@@ -477,7 +477,9 @@ void EntityManager::removeEffects()
 	{
 		if(effectList[i]->timeUp())
 		{
+			Effect* e = effectList[i];
 			effectList.remove(effectList[i]);
+			e->~Effect();
 			i--;
 		}
 	}
