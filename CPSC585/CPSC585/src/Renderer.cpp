@@ -14,7 +14,7 @@ Renderer::Renderer()
 	bpp = 0;
 
 	//Light light0 = Light(btVector3(-730, 2000, 1216));
-	Light light0 = Light(btVector3(-100, 100, 0));
+	Light light0 = Light(btVector3(-100, 500, 0));
 	lights.push_back(light0);
 
 	tm = TextureManager::getInstance();
@@ -230,7 +230,7 @@ int Renderer::initTexs()
 	tm->genTexture("Documentation/Art/Varios Logo.png", "logo");
 	tm->genTexture("texture/sky.png", "sky");
 	tm->genTexture("model/box.png", "car1");	// load the car texture into GPU memory
-	tm->genTexture(2048, 2048, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
+	tm->genTexture(width, height, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
 	tm->genTexture(width, height, "gaussian");	// gaussian blur
 	tm->genTexture(width, height, "smap");		// shadow maps
 	tm->genTexture(width, height, "nd");		// create a texture for ssao pass 1
@@ -239,11 +239,8 @@ int Renderer::initTexs()
 	tm->genTexture(width, height, "rblur");		// radial blur
 	tm->genTexture("texture/celgray.png", "cel");
 
-	fb.init(2048, 2048);
+	fb.init(width, height);
 	
-
-	//printf("num textures %d\n", tm->getNumTex());
-
 	return 0;
 }
 int Renderer::initShaders()
@@ -437,14 +434,21 @@ void Renderer::depthMapPass()
 		fb.turnOn();
 		depth2pass.turnShadersOn();
 		
-		glViewport(0, 0, 2048, 2048);
+		glViewport(0, 0, width, height);
 		fb.attachTexture(depthTexture, GL_COLOR_ATTACHMENT0);
 
 		clearGL();
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
+		/*
+		if(fb.isValid())
+		{
+			printf("is valid\n");
+		}
+		*/
+
 		glFrontFace(GL_CW);
-		glCullFace(GL_BACK);
+		glCullFace(GL_FRONT);
 		glEnable(GL_CULL_FACE);
 
 		//glGenerateMipmap(GL_TEXTURE_2D);
@@ -601,7 +605,7 @@ void Renderer::drawAll()
 	drawEntity(*(em->getSky()));
 	textureOff();
 	glEnableLighting();
-	
+
 	// draw the track
 
 	glActiveTexture(GL_TEXTURE0);
