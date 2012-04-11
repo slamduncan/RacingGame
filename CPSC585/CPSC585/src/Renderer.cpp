@@ -223,6 +223,7 @@ int Renderer::initFont()
 
 int Renderer::initTexs()
 {
+	tm->genTexture("texture/Track.png", "track");
 	tm->genTexture("texture/particle.png", "particle");
 	tm->genTexture("texture/Tutorial.png", "tut");
 	tm->genTexture("texture/tempHUD.png", "hud");
@@ -238,7 +239,7 @@ int Renderer::initTexs()
 	tm->genTexture(width, height, "rblur");		// radial blur
 	tm->genTexture("texture/celgray.png", "cel");
 
-	fb.init(width, height);
+	fb.init(2048, 2048);
 	
 
 	//printf("num textures %d\n", tm->getNumTex());
@@ -602,7 +603,11 @@ void Renderer::drawAll()
 	glEnableLighting();
 	
 	// draw the track
+
+	glActiveTexture(GL_TEXTURE0);
+	//textureOn(tm->getTexture("track"));
 	drawEntity(*(em->getTrack()));
+	textureOff();
 
 	// draw all cars
 	for(int i = 0; i < em->numCars(); i++)

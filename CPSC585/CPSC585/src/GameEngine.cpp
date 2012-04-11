@@ -992,7 +992,7 @@ int main(int argc, char** argv)
 #if SANDBOX
 	entManager->createTrack("model/groundBox.lwo", groundT);
 #else
-	entManager->createTrack("model/Track1tri.lwo", groundT);
+	entManager->createTrack("model/Track.lwo", groundT);
 #endif
 
 m.loading(ren, "AI Information");
