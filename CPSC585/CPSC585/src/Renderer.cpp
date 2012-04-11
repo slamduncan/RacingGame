@@ -605,7 +605,7 @@ void Renderer::drawAll()
 	// draw the track
 
 	glActiveTexture(GL_TEXTURE0);
-	//textureOn(tm->getTexture("track"));
+	textureOn(tm->getTexture("track"));
 	drawEntity(*(em->getTrack()));
 	textureOff();
 
