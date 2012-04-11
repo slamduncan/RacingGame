@@ -29,6 +29,7 @@
 
 #include "SoundPlayer.h"
 #define SANDBOX 0
+#define EDIT_WAYPOINTS 1
 using namespace std;
 
 // FPS LIMITING DATA
@@ -513,8 +514,8 @@ void handle_key_down( SDL_keysym* keysym )
 			{
 #if SANDBOX
 				writeWaypoints("sandboxWaypoints.w");
-#else
-				//writeWaypoints("waypoints.w");
+#elif EDIT_WAYPOINTS
+				writeWaypoints("waypoints.w");
 #endif
 				break;
 			}
@@ -527,7 +528,7 @@ void handle_key_down( SDL_keysym* keysym )
 #endif
 				break;
 			}
-/*
+#if EDIT_WAYPOINTS
 		case SDLK_c:
 			{
 				markConverge();
@@ -562,7 +563,8 @@ void handle_key_down( SDL_keysym* keysym )
 			{
 				floatingWaypoint();
 				break;
-			}*/
+			}
+#endif
 		default:
 			{
 				break;
@@ -605,14 +607,16 @@ void process_events()
 
 			if (controller1.isBDown())
 			{
-				//createWaypoint();
-				
+#if EDIT_WAYPOINTS				
+				createWaypoint();
+#else		
 				if(entManager->getCar(0)->GetPowerUpAt(0)->GetType() != 0)
 				{
 					entManager->getCar(0)->UsePowerUp(0, false);
 					entManager->getCar(0)->RotatePowerups( true );
 				}
 				//moveWaypoint();
+#endif
 			}
 			if(controller1.isADown())
 			{				
@@ -621,13 +625,15 @@ void process_events()
 				//cin >> i;
 
 				//printf("Trying to use a speed boost...\n");
-				
+#if EDIT_WAYPOINTS
+				moveWaypoint();
+#else
 				if(entManager->getCar(0)->GetPowerUpAt(0)->GetType() != 0)
 				{
 					entManager->getCar(0)->UsePowerUp(0, true);
 					entManager->getCar(0)->RotatePowerups( true );
 				}
-				//moveWaypoint();
+#endif
 				//addWaypointInbetween();
 
 			}
@@ -641,7 +647,10 @@ void process_events()
 			}
 			if(controller1.isButtonDown(controller1.R_Bump))
 			{
-				//floatingWaypoint();
+#if EDIT_WAYPOINTS
+				//moveWaypoint();
+				floatingWaypoint();
+#else
 /*
 				int index = getClosestWaypoint();
 				if (entManager->getWaypointList()->size() > 0 && index != -1)
@@ -661,6 +670,7 @@ void process_events()
 					entManager->resetCarOrientation(0);
 				}*/
 				entManager->getCar(0)->RotatePowerups( false );
+#endif
 			}
 			if(controller1.isButtonDown(controller1.L_Bump))
 			{/*
@@ -681,7 +691,11 @@ void process_events()
 						entManager->resetCar(0, btVector3(0, 3, 0));
 					}
 				}*/
+#if EDIT_WAYPOINTS
+				addWaypointInbetween();
+#else
 				entManager->getCar(0)->RotatePowerups( true );
+#endif
 			}
 
 			if (controller1.isButtonDown(controller1.Start_button))
@@ -1002,7 +1016,9 @@ m.loading(ren, "Cars");
 
 	//entManager->createCar("model/ship1.lwo", carMass, carT1);	
 	//entManager->createCar("model/ship1.lwo", carMass, carT2);	
-	
+	btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, -30.0f));	
+		entManager->createCar("model/ship1.lwo", carMass, carT3);		
+
 	for(int i = 4; i > 1; i--){
 		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
 		entManager->createCar("model/ship1.lwo", carMass, carT3);	
@@ -1125,8 +1141,8 @@ m.loading(ren, "Cars");
 			controller1.emitLeftAnalog();
 			controller1.emitRightAnalog();
 
-			// AI
-			// Calculate current lap for player's car
+			//// AI
+			//// Calculate current lap for player's car
 			for (int i = 0 ; i < entManager->getCarList()->size(); i++)
 			{
 				Car* tempCarPtr = entManager->getCar(i);
