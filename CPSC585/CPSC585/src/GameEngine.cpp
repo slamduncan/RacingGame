@@ -985,7 +985,7 @@ int main(int argc, char** argv)
 
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
-		
+	/*	
 	for(int i = 1; i < 5; i++){
 		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 5.5f, 50.f*i));
 		entManager->createPowerup("model/powerup.lwo", powerupT1, 1);
@@ -998,7 +998,7 @@ int main(int argc, char** argv)
 		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(-50.f*i, 5.5f, 450.f));
 		entManager->createPowerup("model/powerup.lwo", powerupT1, 1);
 	}
-	
+	*/
 	
 
 	
