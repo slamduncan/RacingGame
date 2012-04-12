@@ -39,7 +39,8 @@ const int MAX_FRAMESKIP = 5;
 
 bool stillWantsToPlay = true;
 
-ALuint EngineSource = 2;
+ALuint EngineSource = 1;
+ALuint EngineBuffer = 2;
 
 enum GameState {MAIN_MENU, LOADING_GAME, GAME_STARTING, GAME_RUNNING, GAME_FINISHED, PAUSED_IN_GAME};
 GameState CURRENT_STATE = MAIN_MENU;
@@ -984,20 +985,20 @@ int main(int argc, char** argv)
 
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
-		/*
+		
 	for(int i = 1; i < 5; i++){
-		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 7.5f, 50.f*i));
-		entManager->createPowerup("model/powerup.lwo", powerupT1);
+		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 5.5f, 50.f*i));
+		entManager->createPowerup("model/powerup.lwo", powerupT1, 1);
 	}
 
 	
 
 	for(int i = 1; i < 10; i++)
 	{
-		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(-50.f*i, 7.5f, 450.f));
-		entManager->createPowerup("model/powerup.lwo", powerupT1);
+		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(-50.f*i, 5.5f, 450.f));
+		entManager->createPowerup("model/powerup.lwo", powerupT1, 1);
 	}
-	*/
+	
 	
 
 	
@@ -1083,7 +1084,7 @@ m.loading(ren, "Cars");
 	m.loading(ren, "Game Ready!\nPress Start To Continue", true);
 
 	/*Load game music */
-	soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource, AL_TRUE);
+	soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", EngineSource, EngineBuffer, AL_TRUE);
 	soundPlayer.LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	// game loop

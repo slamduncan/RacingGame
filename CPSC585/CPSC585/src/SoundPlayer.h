@@ -12,7 +12,7 @@ class SoundPlayer
 public:
 	SoundPlayer();
 	void LoadBackgroundSoundFile(ALbyte* FileName);
-	void LoadSoundFile(ALbyte* FileName, ALuint* Source, ALboolean Looping  = AL_FALSE);
+	void LoadSoundFile(ALbyte* FileName, ALuint& Source, ALuint& buffer, ALboolean Looping  = AL_FALSE);
 
 private:
 };
