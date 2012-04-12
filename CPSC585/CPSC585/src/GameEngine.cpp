@@ -29,7 +29,7 @@
 
 #include "SoundPlayer.h"
 #define SANDBOX 0
-#define EDIT_WAYPOINTS 1
+#define EDIT_WAYPOINTS 0
 using namespace std;
 
 // FPS LIMITING DATA
@@ -996,7 +996,7 @@ int main(int argc, char** argv)
 	for(int i = 1; i < 10; i++)
 	{
 		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(-50.f*i, 5.5f, 450.f));
-		entManager->createPowerup("model/powerup.lwo", powerupT1, 1);
+		entManager->createPowerup("model/powerup.lwo", powerupT1, 2);
 	}
 	*/
 	
@@ -1084,8 +1084,8 @@ m.loading(ren, "Cars");
 	m.loading(ren, "Game Ready!\nPress Start To Continue", true);
 
 	/*Load game music */
-	soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", EngineSource, EngineBuffer, AL_TRUE);
-	soundPlayer.LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+	//soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", EngineSource, EngineBuffer, AL_TRUE);
+	//soundPlayer.LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	// game loop
 	CURRENT_STATE = GAME_STARTING;

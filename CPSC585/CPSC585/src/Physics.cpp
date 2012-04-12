@@ -89,7 +89,9 @@ void Physics::step(btScalar &timeStep)
 			if(index != -1)
 			{
 				if(p->isCollected() == false){
-					CollisionPlayer.LoadSoundFile("Documentation/Music/Powerup.wav", PowerupCollisionBuffer, PowerupCollisionSource);
+					float ListenerPos[3] = {entityManager->getCar(0)->getPosition().x(), entityManager->getCar(0)->getPosition().y(), entityManager->getCar(0)->getPosition().z()};
+					float SourcePos[3] = {entityManager->getCar(index)->getPosition().x(), entityManager->getCar(index)->getPosition().y(), entityManager->getCar(index)->getPosition().z()};
+					CollisionPlayer.LoadSoundFile("Documentation/Music/MPowerup.wav", PowerupCollisionBuffer, PowerupCollisionSource, ListenerPos, SourcePos);
 					p->setCollected(true);
 					p->timeToRespawn = clock() + 3*CLOCKS_PER_SEC;
 
@@ -128,7 +130,9 @@ void Physics::step(btScalar &timeStep)
 					Car* carTemp = entityManager->getCar(index);
 					if (!carTemp->shieldActive)
 					{
-						CollisionPlayer.LoadSoundFile("Documentation/Music/RocketCollision.wav", RocketCollisionBuffer, RocketCollisionSource);
+						float ListenerPos[3] = {entityManager->getCar(0)->getPosition().x(), entityManager->getCar(0)->getPosition().y(), entityManager->getCar(0)->getPosition().z()};
+						float SourcePos[3] = {entityManager->getCar(index)->getPosition().x(), entityManager->getCar(index)->getPosition().y(), entityManager->getCar(index)->getPosition().z()};
+						CollisionPlayer.LoadSoundFile("Documentation/Music/MRocketCollision.wav", RocketCollisionBuffer, RocketCollisionSource, ListenerPos, SourcePos);
 						carTemp->chassis->applyTorque(r->getNormal()*500000.0);	
 					}
 					
@@ -248,7 +252,9 @@ void Physics::step(btScalar &timeStep)
 			//Todo: check this pointer against all car pointers in carList
 			int index = entityManager->getCarIndexViaPointer(carMaybe);
 			if(index != -1){
-				CollisionPlayer.LoadSoundFile("Documentation/Music/Mine.wav", MineCollisionBuffer, MineCollisionSource);
+				float ListenerPos[3] = {entityManager->getCar(0)->getPosition().x(), entityManager->getCar(0)->getPosition().y(), entityManager->getCar(0)->getPosition().z()};
+				float SourcePos[3] = {entityManager->getCar(index)->getPosition().x(), entityManager->getCar(index)->getPosition().y(), entityManager->getCar(index)->getPosition().z()};
+				CollisionPlayer.LoadSoundFile("Documentation/Music/MMine.wav", MineCollisionBuffer, MineCollisionSource, ListenerPos, SourcePos);
 				entityManager->getCar(index)->chassis->applyCentralForce(btVector3(0,15000.0,0));
 
 				dynamicsWorld->removeCollisionObject(entityManager->getMine(i)->physicsObject);
