@@ -1017,8 +1017,8 @@ m.loading(ren, "Cars");
 
 	//entManager->createCar("model/ship1.lwo", carMass, carT1);	
 	//entManager->createCar("model/ship1.lwo", carMass, carT2);	
-	btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, -30.0f));	
-		entManager->createCar("model/ship1.lwo", carMass, carT3);		
+	//btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, -30.0f));	
+	//	entManager->createCar("model/ship1.lwo", carMass, carT3);		
 
 	for(int i = 4; i > 1; i--){
 		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
@@ -1273,14 +1273,14 @@ m.loading(ren, "Cars");
 				{
 					//get the car
 					Car* tempC = entManager->getCar(i);
-					int pos = 0;
+					int pos = 1;
 					int totalSecC = tempC->totalMin * 60 + tempC->totalSec;
 					//for every car (again)
 					for (int j = 0; j < entManager->numCars(); j++)
 					{
 						Car* tempCompare = entManager->getCar(j);
 						int totalSecCompare = tempCompare->totalMin * 60 + tempCompare->totalSec;
-						if (totalSecCompare <= totalSecC)														
+						if (totalSecCompare < totalSecC)
 							pos++;
 					}
 					tempC->finalPosition = pos;																	

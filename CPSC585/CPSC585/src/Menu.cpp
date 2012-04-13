@@ -100,59 +100,86 @@ int Menu::timeScreen(Renderer *ren)
 	{
 	ren->glEnable2D();
 	ren->clearGL();
-	
+
 	int position = 1;
 	int offset = 10;
-	//for each car
+	int count = 0;
 	for (int i = 0; i < entMan->numCars(); i++)
-	{	
-		//for each car (again)
-		for (int j = 0; j < entMan->numCars(); j++)
-		{	
-			//get inner car
-			Car* tempC = entMan->getCar(j);
-			//check if car has desired position...
-			if (tempC->finalPosition == position)
-			{
-				ren->changeFontSize(26);
-				std::stringstream name;
-				if (tempC->id == 0)
-					name << "You!\n";
-				else
-					name << "Computer " << tempC->id << "\n";				
-				if (name.str().length() > 20)
-					offset += name.str().length()*16 + 16;
-				else
-					offset += 20*16 + 16;
-				ren->outputText(name.str(), 0, 255, 255, offset, 720/2);
-				ren->changeFontSize(16);				
-				ren->outputText(tempC->timeFinished.str(), 0, 255, 150,offset, 720/3);				
-			}
-		}		
-		position++;
-	}
-//	for (int i = 0; i < entMan->numCars();i++)
 	{
-		for (int j = 0; j < entMan->numCars(); j++)
+		Car* tempC = entMan->getCar(i);
+		ren->changeFontSize(26);
+		std::stringstream name;
+		if (tempC->id == 0)
+			name << "You!\n";
+		else
+			name << "Computer " << tempC->id << "\n";				
+		if (name.str().length() > 20)
+			offset += name.str().length()*16 + 16;
+		else
+		{			
+			offset += 20*16 + 16;
+		}
+		ren->outputText(name.str(), 0, 255, 255, offset - (20*16), 720 - 100 - count * 200);
+		ren->changeFontSize(20);				
+		ren->outputText(tempC->timeFinished.str(), 0, 255, 150,offset - (20*16), 720 - 180 - count * 200);	
+		if (i == 2)
 		{
-			Car* tempC = entMan->getCar(j);
-			if (!tempC->finishedRacing)
-			{
-				
-				ren->changeFontSize(26);
-				std::stringstream name;
-				name << "Computer " << tempC->id << "\n";
-				if (name.str().length() > 20)
-					offset += name.str().length()*16 + 16;
-				else
-					offset += 20*16 + 16;
-				ren->outputText(name.str(), 0, 255, 255, offset, 720/2);
-				ren->changeFontSize(16);				
-				ren->outputText(tempC->timeFinished.str(), 0, 255, 150, offset, 720/3);
-				position++;
-			}
+			count = 1;
+			offset = 10;
 		}
 	}
+	
+//	
+//	//for each car
+//	for (int i = 0; i < entMan->numCars(); i++)
+//	{	
+//		//for each car (again)
+//		for (int j = 0; j < entMan->numCars(); j++)
+//		{	
+//			//get inner car
+//			Car* tempC = entMan->getCar(j);
+//			//check if car has desired position...
+//			if (tempC->finalPosition == position)
+//			{
+//				ren->changeFontSize(26);
+//				std::stringstream name;
+//				if (tempC->id == 0)
+//					name << "You!\n";
+//				else
+//					name << "Computer " << tempC->id << "\n";				
+//				if (name.str().length() > 20)
+//					offset += name.str().length()*16 + 16;
+//				else
+//					offset += 20*16 + 16;
+//				ren->outputText(name.str(), 0, 255, 255, offset, 720/2);
+//				ren->changeFontSize(16);				
+//				ren->outputText(tempC->timeFinished.str(), 0, 255, 150,offset, 720/3);				
+//			}
+//		}		
+//		position++;
+//	}
+////	for (int i = 0; i < entMan->numCars();i++)
+//	{
+//		for (int j = 0; j < entMan->numCars(); j++)
+//		{
+//			Car* tempC = entMan->getCar(j);
+//			if (!tempC->finishedRacing)
+//			{
+//				
+//				ren->changeFontSize(26);
+//				std::stringstream name;
+//				name << "Computer " << tempC->id << "\n";
+//				if (name.str().length() > 20)
+//					offset += name.str().length()*16 + 16;
+//				else
+//					offset += 20*16 + 16;
+//				ren->outputText(name.str(), 0, 255, 255, offset, 720/2);
+//				ren->changeFontSize(16);				
+//				ren->outputText(tempC->timeFinished.str(), 0, 255, 150, offset, 720/3);
+//				position++;
+//			}
+//		}
+//	}
 
 	ren->outputText("Press Start To Go Back to Main Menu", 255, 0,0, 1280/3, 680);
 	ren->glDisable2D();		
