@@ -29,7 +29,7 @@
 
 #include "SoundPlayer.h"
 #define SANDBOX 0
-#define EDIT_WAYPOINTS 1
+#define EDIT_WAYPOINTS 0
 using namespace std;
 
 // FPS LIMITING DATA
@@ -1272,14 +1272,14 @@ m.loading(ren, "Cars");
 				{
 					//get the car
 					Car* tempC = entManager->getCar(i);
-					int pos = 0;
+					int pos = 1;
 					int totalSecC = tempC->totalMin * 60 + tempC->totalSec;
 					//for every car (again)
 					for (int j = 0; j < entManager->numCars(); j++)
 					{
 						Car* tempCompare = entManager->getCar(j);
 						int totalSecCompare = tempCompare->totalMin * 60 + tempCompare->totalSec;
-						if (totalSecCompare <= totalSecC)														
+						if (totalSecCompare < totalSecC)
 							pos++;
 					}
 					tempC->finalPosition = pos;																	

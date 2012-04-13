@@ -77,7 +77,7 @@ void AIHandler::generateNextMove(){
 		/*rubber banding effect */
 		int waypointDiff = 0;
 		//if (abs(humanCar->getNextWaypointIndex() - c->getNextWaypointIndex()) < 650)
-		waypointDiff = humanCar->getNextWaypointIndex() - c->getNextWaypointIndex();
+		waypointDiff = humanCar->getNextWaypointIndex() - c->getNextWaypointIndex();		
 		if (c->lapCount - humanCar->lapCount != 0)
 			waypointDiff += EntityManager::getInstance()->numWaypoints() * (humanCar->lapCount - c->lapCount);
 		//int waypointDiff = c->getPosition().setY(0.f) - humanCar->getPosition().setY(0.f)
