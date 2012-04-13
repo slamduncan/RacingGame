@@ -424,7 +424,7 @@ void loadPowerupLocation(char* fname)
 		
 		const aiScene* ploc = aiImportFile(fname, 
 			aiProcess_CalcTangentSpace       |
-			aiProcess_Triangulate            |
+			//aiProcess_Triangulate            |
 			//aiProcess_JoinIdenticalVertices  |
 			aiProcess_GenSmoothNormals |
 			aiProcess_ImproveCacheLocality |

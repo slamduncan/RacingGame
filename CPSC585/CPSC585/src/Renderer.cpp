@@ -223,6 +223,7 @@ int Renderer::initFont()
 
 int Renderer::initTexs()
 {
+	tm->genTexture("texture/rocket.png", "rocket");
 	tm->genTexture("texture/Track.png", "track");
 	tm->genTexture("texture/particle.png", "particle");
 	tm->genTexture("texture/Tutorial.png", "tut");
@@ -651,7 +652,7 @@ void Renderer::drawAll()
 	// draw obstacles
 
 	// debug draw waypoints
-#if 1
+#if 0
 	for(int i = 0; i < em->numWaypoints(); i++)
 	{
 		drawEntity(*(em->getWaypoint(i)));
@@ -667,7 +668,10 @@ void Renderer::drawAll()
 
 	for(int i = 0; i < em->numSpawnable(); i++)
 	{
+		glActiveTexture(GL_TEXTURE0);
+		textureOn(tm->getTexture("rocket"));
 		drawEntity(*(em->getSpawnable(i)));
+		textureOff();
 	}
 	
 	for(int i = 0; i <em->numMines(); i++)
