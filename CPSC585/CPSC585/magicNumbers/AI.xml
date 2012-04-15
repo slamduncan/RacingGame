@@ -9,5 +9,5 @@
   <rocketSpeed value ="5.0"/>
   <rocketDetectionRange value ="100.0"/>
   <rubberBandModifier value ="425.0"/>
-  <rammingRange value ="10.0"/>
+  <rammingRange value ="30.0"/>
 </AI>
