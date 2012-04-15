@@ -979,9 +979,6 @@ int main(int argc, char** argv)
 	
 	// Create all the enitities.
 	btScalar carMass = 2.0;
-	
-	btTransform carT1 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, 0));	
-	btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15, 3, 0));	
 
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
@@ -1020,12 +1017,29 @@ m.loading(ren, "Cars");
 	//btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, -30.0f));	
 	//	entManager->createCar("model/ship1.lwo", carMass, carT3);		
 
+/*
 	for(int i = 4; i > 1; i--){
 		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
-		entManager->createCar("model/ship1.lwo", carMass, carT3);	
+		entManager->createCar("model/Ship1.lwo", carMass, carT3);	
 		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
 		entManager->createCar("model/ship1.lwo", carMass, carT4);	
 	}
+*/
+
+	btTransform carT1 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15.0f, 3.0f, 0.f));	
+	btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(-15.0f, 3.0f, -15.f));	
+	btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15.0f, 3.0f, -30.f));	
+	btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(-15.0f, 3.0f, -45.f));	
+	btTransform carT5 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15.0f, 3.0f, -60.f));	
+	btTransform carT6 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(-15.0f, 3.0f, -75.f));	
+
+	entManager->createCar("model/Ship1.lwo", carMass, carT1);
+	entManager->createCar("model/Ship2.lwo", carMass, carT2);
+	entManager->createCar("model/Ship3.lwo", carMass, carT3);
+	entManager->createCar("model/Ship4.lwo", carMass, carT4);
+	entManager->createCar("model/Ship1.lwo", carMass, carT5);
+	entManager->createCar("model/Ship1.lwo", carMass, carT6);
+
 	for (int i = 0; i < entManager->getCarList()->size(); i++)
 		entManager->getCar(i)->setNextWaypointIndex(getClosestWaypoint(entManager->getCar(i)) + 2);
 

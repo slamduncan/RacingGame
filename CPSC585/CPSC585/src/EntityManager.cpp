@@ -131,7 +131,7 @@ Effect* EntityManager::getEffect(int index)
 void EntityManager::createCar(char* path, btScalar &mass, btTransform &trans)
 {	
 	btScalar width = btScalar(10.0f);
-	btScalar height = btScalar(5.f);
+	btScalar height = btScalar(2.5f);
 	btScalar depth = btScalar(5.f);
 
 	Car* car = new Car();

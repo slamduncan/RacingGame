@@ -46,7 +46,7 @@ forwardForceObserver(this, &Car::observeForwardForce),
 updateVariableObserver(this, &Car::observeVariables)
 {		
 	Car::width = btScalar(5.0f);
-	Car::height = btScalar(5.0f);
+	Car::height = btScalar(2.5f);
 	Car::length = btScalar(10.0f);
 	gravity = Physics::Inst()->getGravity();
 	restDisplacement = btScalar(2.0f);
