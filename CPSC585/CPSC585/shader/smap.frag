@@ -19,12 +19,25 @@ float chebyshevUpperBound(float distance)
 		return 1.0;
 	}
 	
+	float p_max = 0.0;
+	
+	float E_x2 = moments.y;
+	float Ex_2 = moments.x * moments.x;
+	
+	float variance = E_x2 - Ex_2;
+	float mD = moments.x - distance;
+	
+	float mD_2 = mD * mD;
+	
+	float p = variance / (variance + mD_2);
+	
+	/*
 	float mean = moments.x;
 	float variance = moments.y - (moments.x*moments.x);
 	
 	float p_max = variance/(variance + ((distance - mean)*(distance - mean)));
-	
-	return p_max;
+	*/
+	return p;
 	
 	
 /*	
@@ -46,7 +59,8 @@ float chebyshevUpperBound(float distance)
 void main()
 {	
 	ShadowCoordPostW = ShadowCoord / ShadowCoord.w;
-	ShadowCoordPostW += 0.0005;
+	//ShadowCoordPostW += 0.0005;
+	ShadowCoordPostW += 0.00005;
 
 	float shadow = chebyshevUpperBound(ShadowCoordPostW.z);
 

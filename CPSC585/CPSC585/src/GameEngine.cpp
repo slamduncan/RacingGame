@@ -978,7 +978,7 @@ int main(int argc, char** argv)
 	// //RENDERER DEBUG TESTING
 	
 	// Create all the enitities.
-	btScalar carMass = 2.0;
+	btScalar carMass = 1.5;
 
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
@@ -1401,6 +1401,7 @@ m.loading(ren, "Cars");
 		ren->glDisableLighting();
 		ph->debugDraw();
 		ren->glEnableLighting();
+
 
 		ren->glEnable2D();
 		glColor4f(1.0, 1.0, 1.0, 1.0);
