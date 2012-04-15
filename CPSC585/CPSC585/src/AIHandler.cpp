@@ -81,7 +81,8 @@ void AIHandler::generateNextMove(){
 		if (c->lapCount - humanCar->lapCount != 0)
 			waypointDiff += EntityManager::getInstance()->numWaypoints() * (humanCar->lapCount - c->lapCount);
 		//int waypointDiff = c->getPosition().setY(0.f) - humanCar->getPosition().setY(0.f)
-		forwardForce = forwardForce - waypointDiff * rubberBandModifier;
+		if (!((c->getPosition() - humanCar->getPosition()).length() < 550.0f))
+			forwardForce = forwardForce - waypointDiff * rubberBandModifier;
 
 		if (forwardForce > maxMovementForce)
 			forwardForce = maxMovementForce;
@@ -89,7 +90,7 @@ void AIHandler::generateNextMove(){
 			forwardForce = -55534.0f;		
 		
 		EntityManager* entM = EntityManager::getInstance();
-		if (c->getNextWaypointIndex() < 10 || c->getNextWaypointIndex() > entM->numWaypoints() - 10)
+		if ((c->getNextWaypointIndex() < 10 || c->getNextWaypointIndex() > entM->numWaypoints() - 10))
 		{
 			ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0f);
 			c->observeForwardForce(ffe);
