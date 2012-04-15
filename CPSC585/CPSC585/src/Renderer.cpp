@@ -644,7 +644,7 @@ void Renderer::drawAll()
 		drawEntity(*temp);
 		//textureOff();
 
-		/*		
+				
 		// for each wheel we need to draw a line
 		for(int j = 0; j < 4; j++)
 		{
@@ -658,7 +658,7 @@ void Renderer::drawAll()
 			drawLine(springPos, springLength, 0, 0, 255, 3.0f);
 
 		}
-		*/
+		
 	}
 
 

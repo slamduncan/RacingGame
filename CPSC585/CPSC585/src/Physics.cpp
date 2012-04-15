@@ -34,7 +34,8 @@ Physics::Physics(void) : variableObserver(this, &Physics::updateVariables)
 
 	broadphase = new btDbvtBroadphase();
 	collisionConfiguration = new btDefaultCollisionConfiguration();
-	
+	//collisionConfiguration->
+
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	solver = new btSequentialImpulseConstraintSolver;
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,broadphase,solver,collisionConfiguration);
@@ -45,6 +46,7 @@ Physics::Physics(void) : variableObserver(this, &Physics::updateVariables)
 
 	//btInternalTickCallback cb = updateCarSprings;
 	dynamicsWorld->setInternalTickCallback(myTickCallback, static_cast<void *>(this));
+
 }
 
 Physics::~Physics(void)
@@ -63,6 +65,15 @@ Physics::~Physics(void)
 void Physics::step(btScalar &timeStep)
 {	
 	//printf("Velocity: %f\n",entityManager->getCar(0)->chassis->getLinearVelocity().length());
+
+	for(int i=0; i< entityManager->getCarList()->size(); i++){
+		btVector3 rotation = entityManager->getCar(i)->chassis->getAngularVelocity();
+		if(rotation.length() > 5 && entityManager->getCar(i)->beingHitUntil < clock()){
+			btVector3 newRot = 0.01f*rotation;
+			entityManager->getCar(i)->chassis->setAngularVelocity(newRot);
+			//printf("REDUCTO! \n");
+		}
+	}
 
 	dynamicsWorld->stepSimulation(timeStep, 10);//1/60.f,10);
 
@@ -135,7 +146,8 @@ void Physics::step(btScalar &timeStep)
 						float ListenerPosition[3] = {entityManager->getCar(0)->getPosition().x(), entityManager->getCar(0)->getPosition().y(), entityManager->getCar(0)->getPosition().z()};
 						CollisionPlayer.UpdateListenerPosition( ListenerPosition );
 						CollisionPlayer.LoadSoundFile("Documentation/Music/MRocketCollision.wav", RocketCollisionBuffer, RocketCollisionSource, SourcePos);
-						carTemp->chassis->applyTorque(r->getNormal()*500000.0);	
+						carTemp->chassis->applyTorque(r->getNormal()*500000.0);
+						carTemp->beingHitUntil = clock() + 2.0*CLOCKS_PER_SEC;
 					}
 					
 					dynamicsWorld->removeCollisionObject(r->physicsObject);

@@ -1,15 +1,15 @@
 <?xml version="1.0" ?>
 <Physics>
-  <kModifer value ="1.25" />
-  <cModifier value ="0.4" />
+  <kModifer value ="1.25" /> <!--Was 1.25-->
+  <cModifier value ="0.05" /> <!--Was 0.4-->
   <gravity xComponent = "0.0" yComponent ="-105.0" zComponent ="0.0"/>
   <staticFrictionModifier value ="1.0" />
   <dynamicFrictionModifier value = "1.0"/>
   <forwardForceModifier value ="500.0"/>
   <sideFrictionModifier value ="100.0"/>
   <forwardFrictionModifier value ="0.3"/>
-  <turningForceModifier value ="8.0" />
-  <springForceModifier value="3.0"/>
+  <turningForceModifier value ="12.0" />
+  <springForceModifier value="3.5"/>
   
   <speedBoostModifier value ="10000.0"/> <!-- Forward force vector length -->
   <slowFieldModifier value ="80.0"/> <!-- Max speed of a car influenced by the slow field -->

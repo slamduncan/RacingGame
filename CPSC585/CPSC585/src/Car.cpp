@@ -89,6 +89,8 @@ updateVariableObserver(this, &Car::observeVariables)
 	AIresetCounter = 0;
 	currentPosition = 0;
 	distanceToNextWP = 0.0f;
+
+	beingHitUntil = clock();
 }
 
 void Car::initObservers()
