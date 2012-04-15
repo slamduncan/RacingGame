@@ -1678,8 +1678,8 @@ m.loading(ren, "Cars");
 	}
 	running = true;
 
-	//delete ph;
-	//ph = Physics::Inst();
+	delete ph;
+	ph = Physics::Inst();
 	//delete entManager;
 	//entManager = EntityManager::getInstance();
 }
