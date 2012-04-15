@@ -1396,6 +1396,7 @@ m.loading(ren, "Cars");
 		ren->setCamera(camera1);
 		ren->drawAll();
 
+//		ren->drawAll();
 		ren->glDisableLighting();
 		ph->debugDraw();
 		ren->glEnableLighting();

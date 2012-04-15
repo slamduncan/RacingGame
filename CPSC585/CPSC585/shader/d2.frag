@@ -11,12 +11,12 @@ void main()
 	float moment2 = depth * depth;
 
 	// Adjusting moments (this is sort of bias per pixel) using partial derivative
-	float dx = dFdx(depth);
-	float dy = dFdy(depth);
-	moment2 += 0.25*(dx*dx+dy*dy);
+	//float dx = dFdx(depth);
+	//float dy = dFdy(depth);
+	//moment2 += 0.25*(dx*dx+dy*dy);
 	
 	//float bd = linearDepth + 0.1;
 	
 	gl_FragColor = vec4( moment1 , moment2, 0.0, 1.0 );
-	//gl_FragColor = vec4(vec3(bd), 1.0 );
+	//gl_FragColor = vec4(vec3(linearDepth), 1.0 );
 }
