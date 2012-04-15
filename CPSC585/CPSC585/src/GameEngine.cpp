@@ -1586,11 +1586,11 @@ m.loading(ren, "Cars");
 		btVector3 c11 = btVector3(591, 504, 0);
 		btVector3 c21 = btVector3(689, 602, 0);
 		glActiveTexture(GL_TEXTURE0);
+		glColor4f(1, 1, 1, 1);
 		// slow/speed
 		if( entManager->getCar(0)->GetPowerUpAt(0)->GetType() == 1 )
 		{	
 			ren->textureOff();
-			glColor4f(1, 1, 1, 1);
 		}
 		// rocket/shield
 		else if( entManager->getCar(0)->GetPowerUpAt(0)->GetType() == 2 )
@@ -1615,11 +1615,11 @@ m.loading(ren, "Cars");
 		btVector3 c12 = btVector3(455, 583, 0);
 		btVector3 c22 = btVector3(553, 681, 0);
 		glActiveTexture(GL_TEXTURE0);
+		glColor4f(1, 1, 1, 1);
 		// slow/speed
 		if( entManager->getCar(0)->GetPowerUpAt(1)->GetType() == 1 )
 		{
 			ren->textureOff();
-			glColor4f(1, 1, 1, 1);
 		}
 		// rocket/shield
 		else if( entManager->getCar(0)->GetPowerUpAt(1)->GetType() == 2 )
@@ -1644,11 +1644,11 @@ m.loading(ren, "Cars");
 		btVector3 c13 = btVector3(727, 583, 0);
 		btVector3 c23 = btVector3(825, 681, 0);
 		glActiveTexture(GL_TEXTURE0);
+		glColor4f(1, 1, 1, 1);
 		// slow/speed
 		if( entManager->getCar(0)->GetPowerUpAt(2)->GetType() == 1 )
 		{
 			ren->textureOff();
-			glColor4f(1, 1, 1, 1);
 		}
 		// rocket/shield
 		else if( entManager->getCar(0)->GetPowerUpAt(2)->GetType() == 2 )
@@ -1667,15 +1667,6 @@ m.loading(ren, "Cars");
 			glColor4f(0, 0, 0, 0);
 		}
 		ren->drawQuad(c13, c23);
-
-
-
-
-
-
-
-
-
 
 		ren->glDisable2D();
 
