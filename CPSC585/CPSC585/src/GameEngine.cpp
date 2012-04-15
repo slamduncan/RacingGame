@@ -29,7 +29,7 @@
 
 #include "SoundPlayer.h"
 #define SANDBOX 0
-#define EDIT_WAYPOINTS 0
+#define EDIT_WAYPOINTS 1
 using namespace std;
 
 // FPS LIMITING DATA
@@ -1185,8 +1185,8 @@ m.loading(ren, "Cars");
 					if (tempCarPtr->lapCount == 4)
 					{																	
 						tempCarPtr->finishedRacing = true;
-						finishingPosition++;
-						tempCarPtr->finalPosition = finishingPosition;
+						//finishingPosition++;
+						//tempCarPtr->finalPosition = finishingPosition;
 						tempCarPtr->displayTime();
 						/*Modification to stop after first human player CHANGE FOR MULTIPLAYER IF ADDED*/
 						if (tempCarPtr->id == 0)
@@ -1250,7 +1250,7 @@ m.loading(ren, "Cars");
 								tempMil += playerCar->lapTimes.at(j).mil;
 
 								//tempSec += tempSec % 35;
-								int randm = rand() % 21 + 1;
+								int randm = rand() % 41 + 3;
 								tempSec += randm;
 								printf("Adding %d",randm);
 								while (tempMil >= 1000)
@@ -1268,6 +1268,7 @@ m.loading(ren, "Cars");
 						}
 					}else
 					{
+						/*Note: This code shouldn't end up getting run anymore */
 						if(tempC->lapTimes.size() == 1){
 							int tempMin=0, tempSec=0, tempMil =0;
 							for (int p = 0; p < tempC->lapTimes.size(); p++)
@@ -1324,7 +1325,7 @@ m.loading(ren, "Cars");
 					}
 					while (count > 1)
 					{
-						for (int p = 0; p < entManager->numCars(); p++)
+						for (int p = 0; p < entManager->numCars() && count > 1; p++)
 						{
 							Car* tempCompare = entManager->getCar(p);
 							if (currentPosToFind == tempCompare->finalPosition)
