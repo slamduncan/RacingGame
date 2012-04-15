@@ -8,7 +8,7 @@
   <forwardForceModifier value ="500.0"/>
   <sideFrictionModifier value ="100.0"/>
   <forwardFrictionModifier value ="0.3"/>
-  <turningForceModifier value ="10.0" />
+  <turningForceModifier value ="12.0" />
   <springForceModifier value="3.5"/>
   
   <speedBoostModifier value ="10000.0"/> <!-- Forward force vector length -->

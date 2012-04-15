@@ -29,7 +29,7 @@
 
 #include "SoundPlayer.h"
 #define SANDBOX 0
-#define EDIT_WAYPOINTS 1
+#define EDIT_WAYPOINTS 0
 using namespace std;
 
 // FPS LIMITING DATA

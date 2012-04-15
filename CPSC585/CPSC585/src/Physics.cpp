@@ -66,14 +66,14 @@ void Physics::step(btScalar &timeStep)
 {	
 	//printf("Velocity: %f\n",entityManager->getCar(0)->chassis->getLinearVelocity().length());
 
-	/*for(int i=0; i< entityManager->getCarList()->size(); i++){
+	for(int i=0; i< entityManager->getCarList()->size(); i++){
 		btVector3 rotation = entityManager->getCar(i)->chassis->getAngularVelocity();
-		if(rotation.length() > 10){
-			btVector3 newRot = 0.1f*rotation;
+		if(rotation.length() > 5 && entityManager->getCar(i)->beingHitUntil < clock()){
+			btVector3 newRot = 0.01f*rotation;
 			entityManager->getCar(i)->chassis->setAngularVelocity(newRot);
-			printf("REDUCTO! \n");
+			//printf("REDUCTO! \n");
 		}
-	}*/
+	}
 
 	dynamicsWorld->stepSimulation(timeStep, 10);//1/60.f,10);
 
@@ -146,7 +146,8 @@ void Physics::step(btScalar &timeStep)
 						float ListenerPosition[3] = {entityManager->getCar(0)->getPosition().x(), entityManager->getCar(0)->getPosition().y(), entityManager->getCar(0)->getPosition().z()};
 						CollisionPlayer.UpdateListenerPosition( ListenerPosition );
 						CollisionPlayer.LoadSoundFile("Documentation/Music/MRocketCollision.wav", RocketCollisionBuffer, RocketCollisionSource, SourcePos);
-						carTemp->chassis->applyTorque(r->getNormal()*500000.0);	
+						carTemp->chassis->applyTorque(r->getNormal()*500000.0);
+						carTemp->beingHitUntil = clock() + 2.0*CLOCKS_PER_SEC;
 					}
 					
 					dynamicsWorld->removeCollisionObject(r->physicsObject);

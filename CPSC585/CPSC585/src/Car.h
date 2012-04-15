@@ -11,6 +11,7 @@
 #include "Spring.h"
 #include "Wheel.h"
 #include "PowerUp.h"
+#include "Time.h"
 
 #ifndef MAX_POWERUPS
 #define MAX_POWERUPS           3 // Use this value when initializing array of power-ups
@@ -48,6 +49,7 @@ public:
 	int id;
 	int currentPosition;
 	float distanceToNextWP;
+	clock_t beingHitUntil;
 
 	Car();
 	bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans);
