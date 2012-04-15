@@ -458,7 +458,8 @@ void Car::UsePowerUp( int index , bool offensive)
 						btGhostObject * explosionShell;
 						explosionShell = new btGhostObject();
 						btCollisionShape* sphereShape;
-						sphereShape = new btSphereShape(btScalar(forceBubbleModifier));
+						sphereShape = new btSphereShape(btScalar(forceBubbleModifier/4.f));
+
 						explosionShell->setCollisionShape(sphereShape);
 						explosionShell->setWorldTransform(physicsObject->getWorldTransform());
 						explosionShell->setCollisionFlags(physicsObject->CF_NO_CONTACT_RESPONSE);

@@ -247,7 +247,7 @@ int Renderer::initTexs()
 	tm->genTexture("Documentation/Art/Varios Logo.png", "logo");
 	tm->genTexture("texture/sky.png", "sky");
 	tm->genTexture("model/box.png", "car1");	// load the car texture into GPU memory
-	tm->genTexture(width, height, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
+	tm->genTexture(2048, 2048, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
 	tm->genTexture(width, height, "gaussian");	// gaussian blur
 	tm->genTexture(width, height, "smap");		// shadow maps
 	tm->genTexture(width, height, "nd");		// create a texture for ssao pass 1
@@ -256,7 +256,7 @@ int Renderer::initTexs()
 	tm->genTexture(width, height, "rblur");		// radial blur
 	tm->genTexture("texture/celgray.png", "cel");
 
-	fb.init(width, height);
+	fb.init(2048, 2048);
 	
 	return 0;
 }
@@ -451,7 +451,7 @@ void Renderer::depthMapPass()
 		fb.turnOn();
 		depth2pass.turnShadersOn();
 		
-		glViewport(0, 0, width, height);
+		glViewport(0, 0, 2048, 2048);
 		fb.attachTexture(depthTexture, GL_COLOR_ATTACHMENT0);
 
 		glEnable(GL_DEPTH_TEST);
@@ -460,12 +460,12 @@ void Renderer::depthMapPass()
 		clearGL();
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
-		/*
+		
 		if(fb.isValid())
 		{
 			printf("is valid\n");
 		}
-		*/
+		
 		
 
 		glFrontFace(GL_CW);
@@ -744,7 +744,15 @@ void Renderer::drawAll()
 			tm->getTexture("particle");
 			glBegin(GL_QUADS);
 			{
-				
+				glTexCoord2f(0.0f, 0.0f); 
+				glVertex3f (-0.5f, -0.5f, 0.f); 
+				glTexCoord2f(0.0f, 1.0f); 
+				glVertex3f (-0.5f, 0.5f, 0.f); 
+				glTexCoord2f(1.f, 1.0f);
+				glVertex3f (0.5f, 0.5f, 0.f); 
+				glTexCoord2f(1.f, 0.f); 
+				glVertex3f (0.5f, -0.5f, 0.f); 
+
 			}
 			glEnd();
 
