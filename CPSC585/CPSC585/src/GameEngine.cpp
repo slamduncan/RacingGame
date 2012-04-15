@@ -1034,12 +1034,13 @@ m.loading(ren, "Cars");
 	btTransform carT6 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(-15.0f, 3.0f, -75.f));	
 
 	entManager->createCar("model/Ship1.lwo", carMass, carT6);
+	/*
 	entManager->createCar("model/Ship2.lwo", carMass, carT2);
 	entManager->createCar("model/Ship3.lwo", carMass, carT3);
 	entManager->createCar("model/Ship4.lwo", carMass, carT4);
 	entManager->createCar("model/Ship1.lwo", carMass, carT5);
 	entManager->createCar("model/Ship1.lwo", carMass, carT1);
-
+*/
 	for (int i = 0; i < entManager->getCarList()->size(); i++)
 		entManager->getCar(i)->setNextWaypointIndex(getClosestWaypoint(entManager->getCar(i)) + 2);
 
@@ -1133,7 +1134,7 @@ m.loading(ren, "Cars");
 			float ListenerPos[3] = { entManager->getCar(0)->getPosition().x(), entManager->getCar(0)->getPosition().y(), entManager->getCar(0)->getPosition().z() };
 			soundPlayer.UpdateListenerPosition( ListenerPos );
 
-			for( int i = 0; i < 6 ; i++ )
+			for( int i = 0; i < entManager->numCars() ; i++ )
 			{
 				entManager->getCar(i)->ListenerPosition[0] = ListenerPos[0];
 				entManager->getCar(i)->ListenerPosition[1] = ListenerPos[1];
