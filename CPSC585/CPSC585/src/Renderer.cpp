@@ -672,7 +672,7 @@ void Renderer::drawAll()
 	// draw obstacles
 
 	// debug draw waypoints
-#if 1
+#if 0
 	for(int i = 0; i < em->numWaypoints(); i++)
 	{
 		drawEntity(*(em->getWaypoint(i)));
@@ -715,9 +715,47 @@ void Renderer::drawAll()
 		}
 		else if(effect->getType() == SPEED)
 		{
-			textureOn(tm->getTexture("particle"));
-			drawEntity(*effect);
-			textureOff();
+			// we need to billboard this
+			float modelview[16];
+			glPushMatrix();
+
+			// get the current model view matrix
+			glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
+			
+			// reset the rotations and scale, this will make it so anything we draw will always face the viewer.
+			for(int i = 0; i < 3; i++)
+			{
+				for(int j = 0; j < 3; j++)
+				{
+					if ( i==j )
+						modelview[i*4+j] = 1.0;
+					else
+						modelview[i*4+j] = 0.0;
+				}
+			}
+			glLoadMatrixf(modelview);
+
+			btVector3 pos = effect->getPosition();			
+
+			glTranslatef(pos.x(), pos.y(), pos.z());
+
+			glColor4f(1, 1, 1, 1);
+			glActiveTexture(GL_TEXTURE0);
+			tm->getTexture("particle");
+			glBegin(GL_QUADS);
+			{
+				
+			}
+			glEnd();
+
+			// return the original modelview matrix
+			glPopMatrix();
+
+			
+			
+			//textureOn(tm->getTexture("particle"));
+			//drawEntity(*effect);
+			//textureOff();
 		}
 	}
 }

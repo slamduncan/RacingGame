@@ -116,7 +116,7 @@ btVector3 Wheel::calcForce(btVector3 &springLocation, btVector3 &carNormal)
 		//Combine the forces to get the total force that should be applied.
 		btVector3 totalForce = initialForce - dampingForce*FORCEDIRECTION;
 
-		btScalar maxForce = 30.0f / physicsObject->getInvMass();
+		btScalar maxForce = fabs(physicsObject->getGravity().length()) / physicsObject->getInvMass();
 
 		if (totalForce.length() > maxForce)
 			totalForce = totalForce.normalize() * maxForce;
