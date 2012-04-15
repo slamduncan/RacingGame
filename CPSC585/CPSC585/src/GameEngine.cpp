@@ -29,7 +29,7 @@
 
 #include "SoundPlayer.h"
 #define SANDBOX 0
-#define EDIT_WAYPOINTS 1
+#define EDIT_WAYPOINTS 0
 using namespace std;
 
 // FPS LIMITING DATA
@@ -930,8 +930,8 @@ int main(int argc, char** argv)
 
 	// DEBUG DRAW SETUP
 	ph->setDebugDrawer(ren);
-	//ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
-	ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
+	ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
+	//ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
 
 	/* Added by Kent */
 	
