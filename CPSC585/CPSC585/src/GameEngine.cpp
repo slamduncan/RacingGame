@@ -670,7 +670,7 @@ void process_events()
 				{
 					entManager->resetCarOrientation(0);
 				}*/
-				entManager->getCar(0)->RotatePowerups( false );
+				entManager->getCar(0)->RotatePowerups( true );
 #endif
 			}
 			if(controller1.isButtonDown(controller1.L_Bump))
@@ -695,7 +695,7 @@ void process_events()
 #if EDIT_WAYPOINTS
 				addWaypointInbetween();
 #else
-				entManager->getCar(0)->RotatePowerups( true );
+				entManager->getCar(0)->RotatePowerups( false );
 #endif
 			}
 
@@ -1033,12 +1033,12 @@ m.loading(ren, "Cars");
 	btTransform carT5 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15.0f, 3.0f, -60.f));	
 	btTransform carT6 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(-15.0f, 3.0f, -75.f));	
 
-	entManager->createCar("model/Ship1.lwo", carMass, carT1);
+	entManager->createCar("model/Ship1.lwo", carMass, carT6);
 	entManager->createCar("model/Ship2.lwo", carMass, carT2);
 	entManager->createCar("model/Ship3.lwo", carMass, carT3);
 	entManager->createCar("model/Ship4.lwo", carMass, carT4);
 	entManager->createCar("model/Ship1.lwo", carMass, carT5);
-	entManager->createCar("model/Ship1.lwo", carMass, carT6);
+	entManager->createCar("model/Ship1.lwo", carMass, carT1);
 
 	for (int i = 0; i < entManager->getCarList()->size(); i++)
 		entManager->getCar(i)->setNextWaypointIndex(getClosestWaypoint(entManager->getCar(i)) + 2);
@@ -1541,9 +1541,11 @@ m.loading(ren, "Cars");
 		ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);
 		ren->outputText("Lap: " + ssLap.str(), 255, 0, 0, 0, 640);
 
+		/*
 		std::stringstream ssPowerUps;
 		for( int i = 0; i < 3; i++ )
 		{
+	
 			if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 0 )
 				ssPowerUps << "Empty ";
 			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 1 )
@@ -1554,8 +1556,9 @@ m.loading(ren, "Cars");
 				ssPowerUps << "|| Mine / Nova ||";			
 		}
 
-		ren->outputText("Powerups: " + ssPowerUps.str(), 255, 0, 0, 300, 700);
-		
+		//ren->outputText("Powerups: " + ssPowerUps.str(), 255, 0, 0, 300, 700);
+		*/
+
 		if(entManager->numWaypoints() > 0)
 		{
 			Car* player = entManager->getCar(0);
@@ -1573,11 +1576,108 @@ m.loading(ren, "Cars");
 			}
 		}
 
-				glColor4f(1.0, 1.0, 1.0, 1.0);
+		glColor4f(1.0, 1.0, 1.0, 1.0);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		ren->drawTexture("hud");
 
+		// this will draw the middle powerup
+		btVector3 c11 = btVector3(591, 504, 0);
+		btVector3 c21 = btVector3(689, 602, 0);
+		glActiveTexture(GL_TEXTURE0);
+		// slow/speed
+		if( entManager->getCar(0)->GetPowerUpAt(0)->GetType() == 1 )
+		{	
+			ren->textureOff();
+			glColor4f(1, 1, 1, 1);
+		}
+		// rocket/shield
+		else if( entManager->getCar(0)->GetPowerUpAt(0)->GetType() == 2 )
+		{
+			ren->textureOn(ren->getTexture("rs"));
+		}
+		// nova/mine
+		else if( entManager->getCar(0)->GetPowerUpAt(0)->GetType() == 3 )
+		{
+			ren->textureOn(ren->getTexture("mn"));
+		}
+		// empty
+		else
+		{
+			ren->textureOff();
+			glColor4f(0, 0, 0, 0);
+		}
+		ren->drawQuad(c11, c21);
+
+
+		// this will draw the left powerup
+		btVector3 c12 = btVector3(455, 583, 0);
+		btVector3 c22 = btVector3(553, 681, 0);
+		glActiveTexture(GL_TEXTURE0);
+		// slow/speed
+		if( entManager->getCar(0)->GetPowerUpAt(1)->GetType() == 1 )
+		{
+			ren->textureOff();
+			glColor4f(1, 1, 1, 1);
+		}
+		// rocket/shield
+		else if( entManager->getCar(0)->GetPowerUpAt(1)->GetType() == 2 )
+		{
+			ren->textureOn(ren->getTexture("rs"));
+		}
+		// nova/mine
+		else if( entManager->getCar(0)->GetPowerUpAt(1)->GetType() == 3 )
+		{
+			ren->textureOn(ren->getTexture("mn"));
+		}
+		// empty
+		else
+		{
+			ren->textureOff();
+			glColor4f(0, 0, 0, 0);
+		}
+		ren->drawQuad(c12, c22);
+
+
+		// this will draw the right powerup
+		btVector3 c13 = btVector3(727, 583, 0);
+		btVector3 c23 = btVector3(825, 681, 0);
+		glActiveTexture(GL_TEXTURE0);
+		// slow/speed
+		if( entManager->getCar(0)->GetPowerUpAt(2)->GetType() == 1 )
+		{
+			ren->textureOff();
+			glColor4f(1, 1, 1, 1);
+		}
+		// rocket/shield
+		else if( entManager->getCar(0)->GetPowerUpAt(2)->GetType() == 2 )
+		{
+			ren->textureOn(ren->getTexture("rs"));
+		}
+		// nova/mine
+		else if( entManager->getCar(0)->GetPowerUpAt(2)->GetType() == 3 )
+		{
+			ren->textureOn(ren->getTexture("mn"));
+		}
+		// empty
+		else
+		{
+			ren->textureOff();
+			glColor4f(0, 0, 0, 0);
+		}
+		ren->drawQuad(c13, c23);
+
+
+
+
+
+
+
+
+
+
 		ren->glDisable2D();
+
+		glColor4f(1,1,1,1);
 
 		ren->updateGL();	// update the screen
 

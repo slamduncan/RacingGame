@@ -237,7 +237,9 @@ int Renderer::initFont()
 
 int Renderer::initTexs()
 {
-	tm->genTexture("texture/rocket.png", "rocket");
+	tm->genTexture("texture/rs.png", "rs");
+	tm->genTexture("texture/mn.png", "mn");
+	//tm->genTexture("texture/rocket.png", "rocket");
 	tm->genTexture("texture/Track.png", "track");
 	tm->genTexture("texture/particle.png", "particle");
 	tm->genTexture("texture/Tutorial.png", "tut");
@@ -682,10 +684,10 @@ void Renderer::drawAll()
 
 	for(int i = 0; i < em->numSpawnable(); i++)
 	{
-		glActiveTexture(GL_TEXTURE0);
-		textureOn(tm->getTexture("rocket"));
+		//glActiveTexture(GL_TEXTURE0);
+		//textureOn(tm->getTexture("rocket"));
 		drawEntity(*(em->getSpawnable(i)));
-		textureOff();
+		//textureOff();
 	}
 	
 	for(int i = 0; i <em->numMines(); i++)
@@ -714,6 +716,43 @@ void Renderer::drawAll()
 			textureOff();
 		}
 	}
+}
+
+void Renderer::drawQuad(btVector3 &c1, btVector3 &c2)
+{	
+	glBegin(GL_QUADS);
+	
+	glTexCoord2f(0.0f, 0.0f); 
+	glVertex2i ((GLint)c1.x(), (GLint)c1.y()); 
+	glTexCoord2f(0.0f, 1.0f); 
+	glVertex2i ((GLint)c1.x(),(GLint)c2.y()); 
+	glTexCoord2f(1.f, 1.0f);
+	glVertex2i ((GLint)c2.x(), (GLint)c2.y()); 
+	glTexCoord2f(1.f, 0.f); 
+	glVertex2i ((GLint)c2.x(), (GLint)c1.y()); 
+
+	glEnd();
+
+
+/*glEnable2D();
+	
+	glColor4f(1, 1, 1, 1);
+
+	textureOn(getTexture(texName));
+    glBegin (GL_QUADS); 
+	glTexCoord2f(0.0f, 0.0f); 
+	glVertex2i (0, 0); 
+	glTexCoord2f(0.0f, 1.0f); 
+	glVertex2i (0,height); 
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2i (width, height); 
+	glTexCoord2f(1.0f, 0.0f); 
+	glVertex2i (width, 0); 
+	glEnd();
+    textureOff();
+
+	glDisable2D();*/
+
 }
 
 void Renderer::drawCars()
@@ -856,7 +895,6 @@ void Renderer::draw()
 
 void Renderer::drawTexture(std::string texName)
 {
-	glEnable2D();
 	
 	glColor4f(1, 1, 1, 1);
 
@@ -872,9 +910,6 @@ void Renderer::drawTexture(std::string texName)
 	glVertex2i (width, 0); 
 	glEnd();
     textureOff();
-
-	glDisable2D();
-
 }
 
 /*
