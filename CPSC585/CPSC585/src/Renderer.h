@@ -133,6 +133,7 @@ public:
 	void drawSlowField(SlowField &slow);
 	void drawNova(Effect &effect);
 
+	void drawQuad(btVector3 &c1, btVector3 &c2);
 	void drawPlane(float height);
 	void drawLine(btVector3 &start, btVector3 &end, int r, int g, int b, float width = 1.0);
 	

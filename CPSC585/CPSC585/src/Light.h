@@ -10,6 +10,10 @@ private:
 
 public:
 
+	float diff[4];
+	float spec[4];
+	float ambient[4];
+
 	double modelView[16];
 	double projection[16];
 

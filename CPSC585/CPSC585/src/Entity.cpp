@@ -132,8 +132,8 @@ bool Entity::initRenderObject(char* filename)
 			//aiProcess_JoinIdenticalVertices  |
 			aiProcess_GenSmoothNormals |
 			aiProcess_ImproveCacheLocality |
-			aiProcess_GenUVCoords |
-			aiProcess_TransformUVCoords |
+			//aiProcess_GenUVCoords |
+			//aiProcess_TransformUVCoords |
 			aiProcess_OptimizeMeshes |
 			aiProcess_SortByPType |
 			aiProcess_FlipUVs

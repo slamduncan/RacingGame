@@ -29,6 +29,7 @@
 
 #include "SoundPlayer.h"
 #define SANDBOX 0
+#define EDIT_WAYPOINTS 0
 using namespace std;
 
 // FPS LIMITING DATA
@@ -38,7 +39,8 @@ const int MAX_FRAMESKIP = 5;
 
 bool stillWantsToPlay = true;
 
-ALuint EngineSource = 2;
+ALuint EngineSource = 1;
+ALuint EngineBuffer = 2;
 
 enum GameState {MAIN_MENU, LOADING_GAME, GAME_STARTING, GAME_RUNNING, GAME_FINISHED, PAUSED_IN_GAME};
 GameState CURRENT_STATE = MAIN_MENU;
@@ -422,7 +424,7 @@ void loadPowerupLocation(char* fname)
 		
 		const aiScene* ploc = aiImportFile(fname, 
 			aiProcess_CalcTangentSpace       |
-			aiProcess_Triangulate            |
+			//aiProcess_Triangulate            |
 			//aiProcess_JoinIdenticalVertices  |
 			aiProcess_GenSmoothNormals |
 			aiProcess_ImproveCacheLocality |
@@ -513,8 +515,8 @@ void handle_key_down( SDL_keysym* keysym )
 			{
 #if SANDBOX
 				writeWaypoints("sandboxWaypoints.w");
-#else
-				//writeWaypoints("waypoints.w");
+#elif EDIT_WAYPOINTS
+				writeWaypoints("waypoints.w");
 #endif
 				break;
 			}
@@ -527,7 +529,7 @@ void handle_key_down( SDL_keysym* keysym )
 #endif
 				break;
 			}
-/*
+#if EDIT_WAYPOINTS
 		case SDLK_c:
 			{
 				markConverge();
@@ -562,7 +564,8 @@ void handle_key_down( SDL_keysym* keysym )
 			{
 				floatingWaypoint();
 				break;
-			}*/
+			}
+#endif
 		default:
 			{
 				break;
@@ -605,14 +608,16 @@ void process_events()
 
 			if (controller1.isBDown())
 			{
-				//createWaypoint();
-				
+#if EDIT_WAYPOINTS				
+				createWaypoint();
+#else		
 				if(entManager->getCar(0)->GetPowerUpAt(0)->GetType() != 0)
 				{
 					entManager->getCar(0)->UsePowerUp(0, false);
 					entManager->getCar(0)->RotatePowerups( true );
 				}
 				//moveWaypoint();
+#endif
 			}
 			if(controller1.isADown())
 			{				
@@ -621,13 +626,15 @@ void process_events()
 				//cin >> i;
 
 				//printf("Trying to use a speed boost...\n");
-				
+#if EDIT_WAYPOINTS
+				moveWaypoint();
+#else
 				if(entManager->getCar(0)->GetPowerUpAt(0)->GetType() != 0)
 				{
 					entManager->getCar(0)->UsePowerUp(0, true);
 					entManager->getCar(0)->RotatePowerups( true );
 				}
-				//moveWaypoint();
+#endif
 				//addWaypointInbetween();
 
 			}
@@ -641,7 +648,10 @@ void process_events()
 			}
 			if(controller1.isButtonDown(controller1.R_Bump))
 			{
-				//floatingWaypoint();
+#if EDIT_WAYPOINTS
+				//moveWaypoint();
+				floatingWaypoint();
+#else
 /*
 				int index = getClosestWaypoint();
 				if (entManager->getWaypointList()->size() > 0 && index != -1)
@@ -660,7 +670,8 @@ void process_events()
 				{
 					entManager->resetCarOrientation(0);
 				}*/
-				entManager->getCar(0)->RotatePowerups( false );
+				entManager->getCar(0)->RotatePowerups( true );
+#endif
 			}
 			if(controller1.isButtonDown(controller1.L_Bump))
 			{/*
@@ -681,7 +692,11 @@ void process_events()
 						entManager->resetCar(0, btVector3(0, 3, 0));
 					}
 				}*/
-				entManager->getCar(0)->RotatePowerups( true );
+#if EDIT_WAYPOINTS
+				addWaypointInbetween();
+#else
+				entManager->getCar(0)->RotatePowerups( false );
+#endif
 			}
 
 			if (controller1.isButtonDown(controller1.Start_button))
@@ -770,7 +785,8 @@ void calcPositions()
 	Car* lastCar;
 	Car* firstCar;
 	int atWaypoint = entManager->numWaypoints();
-	int lapCount = 4;
+	int myLapCount = 4;	
+
 	float distanceToWP = 0.0f;
 
 	for (int i = 0; i < entManager->numCars(); i++)
@@ -784,7 +800,7 @@ void calcPositions()
 	for (int i = 0; i < entManager->numCars(); i++)
 	{
 		Car* tempC = entManager->getCar(i);
-		if (tempC->getNextWaypointIndex() <= atWaypoint && tempC->lapCount <= lapCount)
+		if (tempC->getNextWaypointIndex() <= atWaypoint && tempC->lapCount <= myLapCount)
 		{
 			if (tempC->getNextWaypointIndex() == atWaypoint)
 			{
@@ -792,14 +808,14 @@ void calcPositions()
 				{
 					lastCar = tempC;
 					atWaypoint = lastCar->getNextWaypointIndex();
-					lapCount = lastCar->lapCount;			
+					myLapCount = lastCar->lapCount;			
 					distanceToWP = tempC->distanceToNextWP;
 				}
 			}
 			else {
 				lastCar = tempC;
 				atWaypoint = lastCar->getNextWaypointIndex();
-				lapCount = lastCar->lapCount;			
+				myLapCount = lastCar->lapCount;			
 				distanceToWP = lastCar->distanceToNextWP;
 			}
 		}
@@ -808,12 +824,12 @@ void calcPositions()
 	currentPosition -= 1;
 	/* Find first car */
 	atWaypoint = 0;
-	lapCount = 0;
+	myLapCount = 0;
 	distanceToWP = 1000.0f;
 	for (int i = 0; i < entManager->numCars(); i++)
 	{
 		Car* tempC = entManager->getCar(i);
-		if (tempC->getNextWaypointIndex() >= atWaypoint && tempC->lapCount >= lapCount)
+		if (tempC->getNextWaypointIndex() >= atWaypoint && tempC->lapCount >= myLapCount)
 		{
 			if (tempC->getNextWaypointIndex() == atWaypoint)
 			{
@@ -821,13 +837,13 @@ void calcPositions()
 				{
 					firstCar = tempC;
 					atWaypoint = lastCar->getNextWaypointIndex();
-					lapCount = lastCar->lapCount;			
+					myLapCount = lastCar->lapCount;			
 					distanceToWP = tempC->distanceToNextWP;
 				}
 			}
 			firstCar = tempC;
 			atWaypoint = firstCar->getNextWaypointIndex();
-			lapCount = firstCar->lapCount;			
+			myLapCount = firstCar->lapCount;			
 			distanceToWP = tempC->distanceToNextWP;
 		}
 	}
@@ -838,7 +854,7 @@ void calcPositions()
 	Car* nextCar = lastCar;
 	Car* frontCar = firstCar;
 	atWaypoint = lastCar->getNextWaypointIndex();
-	lapCount = lastCar->lapCount;
+	myLapCount = lastCar->lapCount;
 	distanceToWP = lastCar->distanceToNextWP;
 	for (int i = 0; i < entManager->numCars() - 1; i++)
 	{		
@@ -963,24 +979,21 @@ int main(int argc, char** argv)
 	
 	// Create all the enitities.
 	btScalar carMass = 2.0;
-	
-	btTransform carT1 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0, 3, 0));	
-	btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15, 3, 0));	
 
 	btTransform groundT = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -5, 0));
 
-		/*
+	/*	
 	for(int i = 1; i < 5; i++){
-		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 7.5f, 50.f*i));
-		entManager->createPowerup("model/powerup.lwo", powerupT1);
+		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0.f, 5.5f, 50.f*i));
+		entManager->createPowerup("model/powerup.lwo", powerupT1, 1);
 	}
 
 	
 
 	for(int i = 1; i < 10; i++)
 	{
-		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(-50.f*i, 7.5f, 450.f));
-		entManager->createPowerup("model/powerup.lwo", powerupT1);
+		btTransform powerupT1 = btTransform(btQuaternion(0, 0, 0, 1), btVector3(-50.f*i, 5.5f, 450.f));
+		entManager->createPowerup("model/powerup.lwo", powerupT1, 2);
 	}
 	*/
 	
@@ -991,7 +1004,7 @@ int main(int argc, char** argv)
 #if SANDBOX
 	entManager->createTrack("model/groundBox.lwo", groundT);
 #else
-	entManager->createTrack("model/Track1tri.lwo", groundT);
+	entManager->createTrack("model/Track.lwo", groundT);
 #endif
 
 m.loading(ren, "AI Information");
@@ -1001,13 +1014,32 @@ m.loading(ren, "Cars");
 
 	//entManager->createCar("model/ship1.lwo", carMass, carT1);	
 	//entManager->createCar("model/ship1.lwo", carMass, carT2);	
-	
+	//btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, -30.0f));	
+	//	entManager->createCar("model/ship1.lwo", carMass, carT3);		
+
+/*
 	for(int i = 4; i > 1; i--){
 		btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(0.0f, 3.0f, (float)i*-30.0f));	
-		entManager->createCar("model/ship1.lwo", carMass, carT3);	
+		entManager->createCar("model/Ship1.lwo", carMass, carT3);	
 		btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(30.0f, 3.0f, (float)i*-30.0f));	
 		entManager->createCar("model/ship1.lwo", carMass, carT4);	
 	}
+*/
+
+	btTransform carT1 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15.0f, 3.0f, 0.f));	
+	btTransform carT2 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(-15.0f, 3.0f, -15.f));	
+	btTransform carT3 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15.0f, 3.0f, -30.f));	
+	btTransform carT4 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(-15.0f, 3.0f, -45.f));	
+	btTransform carT5 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(15.0f, 3.0f, -60.f));	
+	btTransform carT6 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(-15.0f, 3.0f, -75.f));	
+
+	entManager->createCar("model/Ship1.lwo", carMass, carT6);
+	entManager->createCar("model/Ship2.lwo", carMass, carT2);
+	entManager->createCar("model/Ship3.lwo", carMass, carT3);
+	entManager->createCar("model/Ship4.lwo", carMass, carT4);
+	entManager->createCar("model/Ship1.lwo", carMass, carT5);
+	entManager->createCar("model/Ship1.lwo", carMass, carT1);
+
 	for (int i = 0; i < entManager->getCarList()->size(); i++)
 		entManager->getCar(i)->setNextWaypointIndex(getClosestWaypoint(entManager->getCar(i)) + 2);
 
@@ -1066,7 +1098,8 @@ m.loading(ren, "Cars");
 	m.loading(ren, "Game Ready!\nPress Start To Continue", true);
 
 	/*Load game music */
-	soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", &EngineSource, AL_TRUE);
+	float ListenerPos[3] = { entManager->getCar(0)->getPosition().x(), entManager->getCar(0)->getPosition().y(), entManager->getCar(0)->getPosition().z() };
+	soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", EngineSource, EngineBuffer, ListenerPos, AL_TRUE);
 	soundPlayer.LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	// game loop
@@ -1097,6 +1130,16 @@ m.loading(ren, "Cars");
 			
 		while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAMESKIP && CURRENT_STATE == GAME_RUNNING)
 		{
+			float ListenerPos[3] = { entManager->getCar(0)->getPosition().x(), entManager->getCar(0)->getPosition().y(), entManager->getCar(0)->getPosition().z() };
+			soundPlayer.UpdateListenerPosition( ListenerPos );
+
+			for( int i = 0; i < 6 ; i++ )
+			{
+				entManager->getCar(i)->ListenerPosition[0] = ListenerPos[0];
+				entManager->getCar(i)->ListenerPosition[1] = ListenerPos[1];
+				entManager->getCar(i)->ListenerPosition[2] = ListenerPos[2];
+			}
+
 			// Calculate engine's change in pitch
 			EngineModifier = (entManager->getCar(0)->GetSpeed() / (-1 * entManager->getCar(0)->GetForwardForceModifier()));
 
@@ -1124,8 +1167,8 @@ m.loading(ren, "Cars");
 			controller1.emitLeftAnalog();
 			controller1.emitRightAnalog();
 
-			// AI
-			// Calculate current lap for player's car
+			//// AI
+			//// Calculate current lap for player's car
 			for (int i = 0 ; i < entManager->getCarList()->size(); i++)
 			{
 				Car* tempCarPtr = entManager->getCar(i);
@@ -1193,7 +1236,7 @@ m.loading(ren, "Cars");
 						for (int j = 0; j < 3; j++)
 						{
 							//if they finished the lap, collect the data, else fabricate it
-							if (tempC->lapTimes.size() < j)
+							if (tempC->lapTimes.size() > j)
 							{
 								tempMin += tempC->lapTimes.at(j).min;
 								tempSec += tempC->lapTimes.at(j).sec;
@@ -1255,22 +1298,49 @@ m.loading(ren, "Cars");
 				{
 					//get the car
 					Car* tempC = entManager->getCar(i);
-					int pos = 0;
+					int pos = 1;
+					int totalSecC = tempC->totalMin * 60 + tempC->totalSec;
 					//for every car (again)
 					for (int j = 0; j < entManager->numCars(); j++)
 					{
 						Car* tempCompare = entManager->getCar(j);
-						if (tempCompare->totalMin <= tempC->totalMin)
-							if (tempCompare->totalSec <= tempC->totalSec)
-								if (tempCompare->totalMil <= tempC->totalMil)
-									pos++;
+						int totalSecCompare = tempCompare->totalMin * 60 + tempCompare->totalSec;
+						if (totalSecCompare < totalSecC)
+							pos++;
 					}
-					tempC->finalPosition = pos;
-					tempC->displayTime();
-					printf("ID: %d Position: %d", tempC->id, tempC->finalPosition);
+					tempC->finalPosition = pos;																	
+					printf("ID: %d Position: %d\n", tempC->id, tempC->finalPosition);
 				}
-				
-
+				int currentPosToFind = 1;
+				int count = 0;
+				for (int j = 0; j < entManager->numCars(); j++)
+				{
+					count = 0;
+					for (int p = 0; p < entManager->numCars(); p++)
+					{
+						Car* tempCompare = entManager->getCar(p);
+						if (currentPosToFind == tempCompare->finalPosition)
+							count++;
+					}
+					while (count > 1)
+					{
+						for (int p = 0; p < entManager->numCars(); p++)
+						{
+							Car* tempCompare = entManager->getCar(p);
+							if (currentPosToFind == tempCompare->finalPosition)
+							{
+								count--;
+								tempCompare->finalPosition++;
+							}
+						}							
+					}
+					currentPosToFind++;
+				}
+				for (int j = 0; j < entManager->numCars(); j++)
+				{
+					Car* tempC = entManager->getCar(j);
+					tempC->displayTime();
+				}
 				m.timeScreen(ren);
 				running = false;
 			}
@@ -1300,10 +1370,10 @@ m.loading(ren, "Cars");
 		// done in light space
 		ren->depthMapPass();
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
-//		ren->drawShadow(camera1);
-		ren->clearGL();	// clear the screen
+		ren->drawShadow(camera1);
+//		ren->clearGL();	// clear the screen
 
-		ren->drawTexture("depth2l1");		
+//		ren->drawTexture("depth2l1");		
 /*
 		// set camera to eye space
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
@@ -1326,6 +1396,7 @@ m.loading(ren, "Cars");
 		ren->setCamera(camera1);
 		ren->drawAll();
 
+//		ren->drawAll();
 		ren->glDisableLighting();
 		ph->debugDraw();
 		ren->glEnableLighting();
@@ -1471,9 +1542,11 @@ m.loading(ren, "Cars");
 		ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);
 		ren->outputText("Lap: " + ssLap.str(), 255, 0, 0, 0, 640);
 
+		/*
 		std::stringstream ssPowerUps;
 		for( int i = 0; i < 3; i++ )
 		{
+	
 			if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 0 )
 				ssPowerUps << "Empty ";
 			else if( entManager->getCar(0)->GetPowerUpAt(i)->GetType() == 1 )
@@ -1484,8 +1557,9 @@ m.loading(ren, "Cars");
 				ssPowerUps << "|| Mine / Nova ||";			
 		}
 
-		ren->outputText("Powerups: " + ssPowerUps.str(), 255, 0, 0, 300, 700);
-		
+		//ren->outputText("Powerups: " + ssPowerUps.str(), 255, 0, 0, 300, 700);
+		*/
+
 		if(entManager->numWaypoints() > 0)
 		{
 			Car* player = entManager->getCar(0);
@@ -1503,11 +1577,108 @@ m.loading(ren, "Cars");
 			}
 		}
 
-				glColor4f(1.0, 1.0, 1.0, 1.0);
+		glColor4f(1.0, 1.0, 1.0, 1.0);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		ren->drawTexture("hud");
 
+		// this will draw the middle powerup
+		btVector3 c11 = btVector3(591, 504, 0);
+		btVector3 c21 = btVector3(689, 602, 0);
+		glActiveTexture(GL_TEXTURE0);
+		// slow/speed
+		if( entManager->getCar(0)->GetPowerUpAt(0)->GetType() == 1 )
+		{	
+			ren->textureOff();
+			glColor4f(1, 1, 1, 1);
+		}
+		// rocket/shield
+		else if( entManager->getCar(0)->GetPowerUpAt(0)->GetType() == 2 )
+		{
+			ren->textureOn(ren->getTexture("rs"));
+		}
+		// nova/mine
+		else if( entManager->getCar(0)->GetPowerUpAt(0)->GetType() == 3 )
+		{
+			ren->textureOn(ren->getTexture("mn"));
+		}
+		// empty
+		else
+		{
+			ren->textureOff();
+			glColor4f(0, 0, 0, 0);
+		}
+		ren->drawQuad(c11, c21);
+
+
+		// this will draw the left powerup
+		btVector3 c12 = btVector3(455, 583, 0);
+		btVector3 c22 = btVector3(553, 681, 0);
+		glActiveTexture(GL_TEXTURE0);
+		// slow/speed
+		if( entManager->getCar(0)->GetPowerUpAt(1)->GetType() == 1 )
+		{
+			ren->textureOff();
+			glColor4f(1, 1, 1, 1);
+		}
+		// rocket/shield
+		else if( entManager->getCar(0)->GetPowerUpAt(1)->GetType() == 2 )
+		{
+			ren->textureOn(ren->getTexture("rs"));
+		}
+		// nova/mine
+		else if( entManager->getCar(0)->GetPowerUpAt(1)->GetType() == 3 )
+		{
+			ren->textureOn(ren->getTexture("mn"));
+		}
+		// empty
+		else
+		{
+			ren->textureOff();
+			glColor4f(0, 0, 0, 0);
+		}
+		ren->drawQuad(c12, c22);
+
+
+		// this will draw the right powerup
+		btVector3 c13 = btVector3(727, 583, 0);
+		btVector3 c23 = btVector3(825, 681, 0);
+		glActiveTexture(GL_TEXTURE0);
+		// slow/speed
+		if( entManager->getCar(0)->GetPowerUpAt(2)->GetType() == 1 )
+		{
+			ren->textureOff();
+			glColor4f(1, 1, 1, 1);
+		}
+		// rocket/shield
+		else if( entManager->getCar(0)->GetPowerUpAt(2)->GetType() == 2 )
+		{
+			ren->textureOn(ren->getTexture("rs"));
+		}
+		// nova/mine
+		else if( entManager->getCar(0)->GetPowerUpAt(2)->GetType() == 3 )
+		{
+			ren->textureOn(ren->getTexture("mn"));
+		}
+		// empty
+		else
+		{
+			ren->textureOff();
+			glColor4f(0, 0, 0, 0);
+		}
+		ren->drawQuad(c13, c23);
+
+
+
+
+
+
+
+
+
+
 		ren->glDisable2D();
+
+		glColor4f(1,1,1,1);
 
 		ren->updateGL();	// update the screen
 

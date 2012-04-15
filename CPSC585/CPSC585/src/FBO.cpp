@@ -12,17 +12,17 @@ void FBO::init(int width, int height)
 {
 	glGenFramebuffersEXT(1, &fb);	// generate the FBO
 	turnOn();	// bind the FBO to initialize data for it
-/*
+
 	glGenRenderbuffersEXT(1, &rb);	// generate the render buffer
 
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rb);	// bind it
 
-	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, width, height);
+	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, width, height);
 
 	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER_EXT, rb);
 
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);	// unbind the render buffer
-*/
+
 	turnOff();	// unbind it to resume normal frame buffer
 }
 

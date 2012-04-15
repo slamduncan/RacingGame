@@ -13,8 +13,25 @@ Renderer::Renderer()
 	height = 720;
 	bpp = 0;
 
-	//Light light0 = Light(btVector3(-730, 2000, 1216));
-	Light light0 = Light(btVector3(-100, 100, 0));
+	Light light0 = Light(btVector3(-730, 1000, -1216));
+	//Light light0 = Light(btVector3(-100, 500, 0));
+	
+	light0.diff[0] = 1.f;
+	light0.diff[1] = 1.f;
+	light0.diff[2] = 1.f;
+	light0.diff[3] = 1.f;
+	
+	light0.spec[0] = 1.f;
+	light0.spec[1] = 1.f;
+	light0.spec[2] = 1.f;
+	light0.spec[3] = 1.f;
+
+	light0.ambient[0] = 0.2f;
+	light0.ambient[1] = 0.2f;
+	light0.ambient[2] = 0.2f;
+	light0.ambient[3] = 1.0f;
+
+
 	lights.push_back(light0);
 
 	tm = TextureManager::getInstance();
@@ -130,11 +147,6 @@ int Renderer::initGL()
 
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	GLfloat diff[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-	GLfloat spec[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	GLfloat amb[4] = {0.2f, 0.2f, 0.2f, 0.2f};
-	//GLfloat lightPos[4] = {5.0f, 5.0f, 0.0f, 0.0f};
-
 	// enable lighting
 	glEnable(GL_LIGHTING);
 	// enable light 0
@@ -144,14 +156,16 @@ int Renderer::initGL()
     //glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
     //glMaterialf(GL_FRONT, GL_SHININESS, 1.0);
 	
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);         // set the diffuse color for the light
-    glLightfv(GL_LIGHT0, GL_SPECULAR, spec);			// set the specular color of the light
-    glLightfv(GL_LIGHT0, GL_AMBIENT, amb);			// set the specular color of the light
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lights[0].diff);         // set the diffuse color for the light
+    glLightfv(GL_LIGHT0, GL_SPECULAR, lights[0].spec);			// set the specular color of the light
+	glLightfv(GL_LIGHT0, GL_AMBIENT, lights[0].ambient);			// set the specular color of the light
 	glLightfv(GL_LIGHT0, GL_POSITION, lights[0].getPosition());        // set the position of the light
 
 
 	glEnable(GL_COLOR_MATERIAL);						// allow shading for colored material
 	glEnable(GL_TEXTURE_2D);
+
+	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
 	GLenum glewCheck = glewInit();	// initialize GLEW
     if (GLEW_OK != glewCheck)
@@ -223,13 +237,17 @@ int Renderer::initFont()
 
 int Renderer::initTexs()
 {
+	tm->genTexture("texture/rs.png", "rs");
+	tm->genTexture("texture/mn.png", "mn");
+	//tm->genTexture("texture/rocket.png", "rocket");
+	tm->genTexture("texture/Track.png", "track");
 	tm->genTexture("texture/particle.png", "particle");
 	tm->genTexture("texture/Tutorial.png", "tut");
-	tm->genTexture("texture/tempHUD.png", "hud");
+	tm->genTexture("texture/HUD.png", "hud");
 	tm->genTexture("Documentation/Art/Varios Logo.png", "logo");
 	tm->genTexture("texture/sky.png", "sky");
 	tm->genTexture("model/box.png", "car1");	// load the car texture into GPU memory
-	tm->genTexture(2048, 2048, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
+	tm->genTexture(width, height, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
 	tm->genTexture(width, height, "gaussian");	// gaussian blur
 	tm->genTexture(width, height, "smap");		// shadow maps
 	tm->genTexture(width, height, "nd");		// create a texture for ssao pass 1
@@ -240,9 +258,6 @@ int Renderer::initTexs()
 
 	fb.init(width, height);
 	
-
-	//printf("num textures %d\n", tm->getNumTex());
-
 	return 0;
 }
 int Renderer::initShaders()
@@ -436,14 +451,25 @@ void Renderer::depthMapPass()
 		fb.turnOn();
 		depth2pass.turnShadersOn();
 		
-		glViewport(0, 0, 2048, 2048);
+		glViewport(0, 0, width, height);
 		fb.attachTexture(depthTexture, GL_COLOR_ATTACHMENT0);
+
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
 
 		clearGL();
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
+		/*
+		if(fb.isValid())
+		{
+			printf("is valid\n");
+		}
+		*/
+		
+
 		glFrontFace(GL_CW);
-		glCullFace(GL_BACK);
+		glCullFace(GL_FRONT);
 		glEnable(GL_CULL_FACE);
 
 		//glGenerateMipmap(GL_TEXTURE_2D);
@@ -600,9 +626,13 @@ void Renderer::drawAll()
 	drawEntity(*(em->getSky()));
 	textureOff();
 	glEnableLighting();
-	
+
 	// draw the track
+
+	glActiveTexture(GL_TEXTURE0);
+	textureOn(tm->getTexture("track"));
 	drawEntity(*(em->getTrack()));
+	textureOff();
 
 	// draw all cars
 	for(int i = 0; i < em->numCars(); i++)
@@ -636,7 +666,7 @@ void Renderer::drawAll()
 	for(int i = 0; i < em->numPowerUps(); i++)
 	{
 		if(em->getPowerup(i)->isCollected() == false)
-			drawEntity(*(em->getPowerup(i)));
+			drawPowerup(*(em->getPowerup(i)));
 	}
 
 	// draw obstacles
@@ -658,7 +688,10 @@ void Renderer::drawAll()
 
 	for(int i = 0; i < em->numSpawnable(); i++)
 	{
+		//glActiveTexture(GL_TEXTURE0);
+		//textureOn(tm->getTexture("rocket"));
 		drawEntity(*(em->getSpawnable(i)));
+		//textureOff();
 	}
 	
 	for(int i = 0; i <em->numMines(); i++)
@@ -687,6 +720,43 @@ void Renderer::drawAll()
 			textureOff();
 		}
 	}
+}
+
+void Renderer::drawQuad(btVector3 &c1, btVector3 &c2)
+{	
+	glBegin(GL_QUADS);
+	
+	glTexCoord2f(0.0f, 0.0f); 
+	glVertex2i ((GLint)c1.x(), (GLint)c1.y()); 
+	glTexCoord2f(0.0f, 1.0f); 
+	glVertex2i ((GLint)c1.x(),(GLint)c2.y()); 
+	glTexCoord2f(1.f, 1.0f);
+	glVertex2i ((GLint)c2.x(), (GLint)c2.y()); 
+	glTexCoord2f(1.f, 0.f); 
+	glVertex2i ((GLint)c2.x(), (GLint)c1.y()); 
+
+	glEnd();
+
+
+/*glEnable2D();
+	
+	glColor4f(1, 1, 1, 1);
+
+	textureOn(getTexture(texName));
+    glBegin (GL_QUADS); 
+	glTexCoord2f(0.0f, 0.0f); 
+	glVertex2i (0, 0); 
+	glTexCoord2f(0.0f, 1.0f); 
+	glVertex2i (0,height); 
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2i (width, height); 
+	glTexCoord2f(1.0f, 0.0f); 
+	glVertex2i (width, 0); 
+	glEnd();
+    textureOff();
+
+	glDisable2D();*/
+
 }
 
 void Renderer::drawCars()
@@ -725,7 +795,179 @@ void Renderer::drawCar(Car &car)
 
 void Renderer::drawPowerup(PowerUp &power)
 {
+	glPushMatrix();
+	
+	btScalar* matrix = power.getGLMatrix();
 
+	glMultMatrixf(matrix);
+
+	for(int i = 0; i < (int)power.renderObject->mNumMeshes; i++)
+	{
+		const aiMesh* mesh = power.renderObject->mMeshes[i];
+
+		/*
+		if(mesh->mColors[0] != NULL) 
+		{
+			glEnable(GL_COLOR_MATERIAL);
+		} else 
+		{
+			glDisable(GL_COLOR_MATERIAL);
+		}
+		*/
+
+		if(power.renderObject->HasMaterials())
+		{
+
+			//printf("i has found material\n");
+			const aiMaterial* mat = power.renderObject->mMaterials[mesh->mMaterialIndex];
+			
+			float Kd[4];
+			float Ks[4];
+			float Ka[4];
+			float Kt[4];
+			aiColor4D diffuse;
+			aiColor4D spec;
+			aiColor4D ambient;
+			aiColor4D transparency;
+
+			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
+			{
+				if(power.GetType() == 1)
+				{
+					diffuse.g = 0.f;
+					diffuse.b = 0.f;
+				}
+				else if(power.GetType() == 2)
+				{
+					diffuse.r = 0.f;
+					diffuse.b = 0.f;
+				}
+				else if (power.GetType() == 3)
+				{
+					diffuse.r = 0.f;
+					diffuse.g = 0.f;
+				}
+				
+				Kd[0] = diffuse.r;
+				Kd[1] = diffuse.g;
+				Kd[2] = diffuse.b;
+				Kd[3] = diffuse.a;
+
+				//printf("KD (%f, %f, %f, %f)\n", Kd[0], Kd[1], Kd[2], Kd[3]);
+				/*
+				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_TRANSPARENT, &transparency))
+				{
+					Kt[0] = transparency.r;
+					Kt[1] = transparency.g;
+					Kt[2] = transparency.b;
+					Kt[3] = transparency.a;
+					glMaterialfv(GL_FRONT, GL_TRANSP, Ka);
+				}
+				else
+				{
+					Kt[0] = 1.f;
+					Kt[0] = 1.f;
+					Kt[0] = 1.f;
+					Kt[0] = 1.f;
+				}
+				*/
+				//printf("%f, %f, %f, %f\n", Kd[0], Kd[1], Kd[2], Kd[3]);
+				
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Kd);
+				glColor4fv(Kd);
+			}
+			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_SPECULAR, &spec))
+			{
+				Ks[0] = spec.r;
+				Ks[1] = spec.g;
+				Ks[2] = spec.b;
+				Ks[3] = spec.a;
+				//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+			}
+			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_AMBIENT, &ambient))
+			{
+				Ka[0] = ambient.r;
+				Ka[1] = ambient.g;
+				Ka[2] = ambient.b;
+				Ka[3] = ambient.a;
+				//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
+			}
+		}
+		
+	
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
+
+		if(mesh->HasTextureCoords(0))
+		{
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+
+		//aiVector3D
+
+		glVertexPointer(3, GL_FLOAT, sizeof(aiVector3D), mesh->mVertices);
+		glNormalPointer(GL_FLOAT, sizeof(aiVector3D), mesh->mNormals);
+		
+		if(mesh->HasTextureCoords(0))
+		{
+			glTexCoordPointer(2, GL_FLOAT, sizeof(aiVector3D), mesh->mTextureCoords[0]);
+		}
+
+		glDrawArrays(GL_TRIANGLES, 0, mesh->mNumVertices);
+		//glDrawElements(GL_TRIANGLE, mesh->mNumVertices, GL_FLOAT, indices);
+		//glDrawElements(GL_TRIANGLES, mesh->mNumVertices, GL_FLOAT, mesh->mVertices);
+
+		if(mesh->HasTextureCoords(0))
+		{
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+
+		glDisableClientState(GL_NORMAL_ARRAY);
+		glDisableClientState(GL_VERTEX_ARRAY);
+		//
+	
+		/*
+		for(int j = 0; j < (int)mesh->mNumFaces; j++)
+		{
+			const aiFace* face = &mesh->mFaces[j];	// get a face
+
+			GLenum face_mode;
+
+			switch(face->mNumIndices) 
+			{
+				case 1: face_mode = GL_POINTS; break;
+				case 2: face_mode = GL_LINES; break;
+				case 3: face_mode = GL_TRIANGLES; break;
+				default: face_mode = GL_POLYGON; break;
+			}
+
+			glBegin(face_mode);
+
+			for(unsigned int k = 0; k < face->mNumIndices; k++)
+			{
+				int index = face->mIndices[k];
+
+				if(mesh->HasTextureCoords(0))
+				{
+					glTexCoord2f(mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
+				}
+
+				// the model has normal
+				if(mesh->mNormals != NULL)
+				{
+					glNormal3fv(&mesh->mNormals[index].x);
+				}
+				glVertex3fv(&mesh->mVertices[index].x);
+			}
+
+			glEnd();
+		}
+		*/
+
+	}
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glPopMatrix();
 }
 
 void Renderer::drawRocket(Rocket &rocket)
@@ -829,7 +1071,6 @@ void Renderer::draw()
 
 void Renderer::drawTexture(std::string texName)
 {
-	glEnable2D();
 	
 	glColor4f(1, 1, 1, 1);
 
@@ -845,9 +1086,6 @@ void Renderer::drawTexture(std::string texName)
 	glVertex2i (width, 0); 
 	glEnd();
     textureOff();
-
-	glDisable2D();
-
 }
 
 /*
@@ -1049,7 +1287,8 @@ void Renderer::drawEntity(Entity &entity)
 		} else 
 		{
 			glDisable(GL_COLOR_MATERIAL);
-		}*/
+		}
+		*/
 
 		if(entity.renderObject->HasMaterials())
 		{
@@ -1058,27 +1297,63 @@ void Renderer::drawEntity(Entity &entity)
 			const aiMaterial* mat = entity.renderObject->mMaterials[mesh->mMaterialIndex];
 			
 			float Kd[4];
+			float Ks[4];
+			float Ka[4];
+			float Kt[4];
 			aiColor4D diffuse;
-			aiColor4D opacity;
+			aiColor4D spec;
+			aiColor4D ambient;
+			aiColor4D transparency;
 
 			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
 			{
-				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_OPACITY, &opacity))
-				{
-					diffuse = diffuse * opacity.r;
-				}
-
 				Kd[0] = diffuse.r;
 				Kd[1] = diffuse.g;
 				Kd[2] = diffuse.b;
 				Kd[3] = diffuse.a;
 
+				//printf("KD (%f, %f, %f, %f)\n", Kd[0], Kd[1], Kd[2], Kd[3]);
+				/*
+				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_TRANSPARENT, &transparency))
+				{
+					Kt[0] = transparency.r;
+					Kt[1] = transparency.g;
+					Kt[2] = transparency.b;
+					Kt[3] = transparency.a;
+					glMaterialfv(GL_FRONT, GL_TRANSP, Ka);
+				}
+				else
+				{
+					Kt[0] = 1.f;
+					Kt[0] = 1.f;
+					Kt[0] = 1.f;
+					Kt[0] = 1.f;
+				}
+				*/
 				//printf("%f, %f, %f, %f\n", Kd[0], Kd[1], Kd[2], Kd[3]);
-
-				//glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Kd);
+				
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Kd);
 				glColor4fv(Kd);
 			}
+			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_SPECULAR, &spec))
+			{
+				Ks[0] = spec.r;
+				Ks[1] = spec.g;
+				Ks[2] = spec.b;
+				Ks[3] = spec.a;
+				//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+			}
+			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_AMBIENT, &ambient))
+			{
+				Ka[0] = ambient.r;
+				Ka[1] = ambient.g;
+				Ka[2] = ambient.b;
+				Ka[3] = ambient.a;
+				//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
+			}
 		}
+		
+	
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
@@ -1104,7 +1379,6 @@ void Renderer::drawEntity(Entity &entity)
 
 		if(mesh->HasTextureCoords(0))
 		{
-			//glTexCoord2f(mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
 
@@ -1151,11 +1425,8 @@ void Renderer::drawEntity(Entity &entity)
 		*/
 
 	}
-
-	glPopMatrix();	
-	//drawLine(entity.getPosition(),entity.getPosition()+ entity.getTangent(), 256, 0, 0, 10);
-	//drawLine(entity.getPosition(),entity.getPosition()+ entity.getNormal(), 0, 256, 0, 10);
-	//drawLine(entity.getPosition(), entity.getPosition()+entity.getBinormal(), 0, 0, 256, 10);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glPopMatrix();
 }
 
 void Renderer::drawNova(Effect &effect)
@@ -1175,10 +1446,27 @@ void Renderer::drawNova(Effect &effect)
 		if(effect.renderObject->HasMaterials())
 		{
 
+			/*
+			if(mesh->mColors[0] != NULL) 
+			{
+				glEnable(GL_COLOR_MATERIAL);
+			} else 
+			{
+				glDisable(GL_COLOR_MATERIAL);
+			}
+			*/
+
+			//printf("i has found material\n");
 			const aiMaterial* mat = effect.renderObject->mMaterials[mesh->mMaterialIndex];
 			
 			float Kd[4];
+			float Ks[4];
+			float Ka[4];
+			float Kt[4];
 			aiColor4D diffuse;
+			aiColor4D spec;
+			aiColor4D ambient;
+			aiColor4D transparency;
 
 			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
 			{
@@ -1186,9 +1474,45 @@ void Renderer::drawNova(Effect &effect)
 				Kd[1] = diffuse.g;
 				Kd[2] = diffuse.b;
 				Kd[3] = diffuse.a;
-
+				/*
+				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_TRANSPARENT, &transparency))
+				{
+					Kt[0] = transparency.r;
+					Kt[1] = transparency.g;
+					Kt[2] = transparency.b;
+					Kt[3] = transparency.a;
+					glMaterialfv(GL_FRONT, GL_TRANSP, Ka);
+				}
+				else
+				{
+					Kt[0] = 1.f;
+					Kt[0] = 1.f;
+					Kt[0] = 1.f;
+					Kt[0] = 1.f;
+				}
+				*/
+				//printf("%f, %f, %f, %f\n", Kd[0], Kd[1], Kd[2], Kd[3]);
+				
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Kd);
 				glColor4fv(Kd);
 			}
+			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_SPECULAR, &spec))
+			{
+				Ks[0] = spec.r;
+				Ks[1] = spec.g;
+				Ks[2] = spec.b;
+				Ks[3] = spec.a;
+				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+			}
+			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_AMBIENT, &ambient))
+			{
+				Ka[0] = ambient.r;
+				Ka[1] = ambient.g;
+				Ka[2] = ambient.b;
+				Ka[3] = ambient.a;
+				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
+			}
+		
 		}
 
 		glEnableClientState(GL_VERTEX_ARRAY);
