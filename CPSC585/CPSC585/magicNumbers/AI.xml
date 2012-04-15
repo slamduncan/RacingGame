@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <AI>
   <turningModifier value = ".9" />
-  <drivingModifier value = "950.0" />
+  <drivingModifier value = "1550.0" />
   <maxMovementForce value = "32767.0" />
   <goToNextWaypointDistance beforeValue ="25.0" afterValue ="0.0" />
   <rateOfChangeModifier value ="25.0"/>

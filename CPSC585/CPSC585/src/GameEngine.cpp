@@ -1537,7 +1537,7 @@ m.loading(ren, "Cars");
 		ssLapTime << LapMilliseconds;
 
 		//Display Position
-		ssLapTime << " Current Position: " << entManager->getCar(0)->currentPosition;
+		ssLapTime << "\n Current Position: " << entManager->getCar(0)->currentPosition;
 
 		// Display the current lap time
 		ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);
