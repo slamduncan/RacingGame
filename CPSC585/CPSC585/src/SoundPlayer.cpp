@@ -2,7 +2,9 @@
 
 SoundPlayer::SoundPlayer()
 {
-
+	ListenerPos[0] = 0.0;
+	ListenerPos[1] = 0.0;
+	ListenerPos[2] = 0.0;
 }
 
 void SoundPlayer::LoadBackgroundSoundFile(ALbyte* FileName)
@@ -68,7 +70,7 @@ void SoundPlayer::LoadBackgroundSoundFile(ALbyte* FileName)
 	alSourcePlay(BackGroundSource);
 }
 
-void SoundPlayer::LoadSoundFile(ALbyte* FileName, ALuint& Source, ALuint& buffer, float ListenerPos[3], float SourcePos[3], ALboolean Looping)
+void SoundPlayer::LoadSoundFile(ALbyte* FileName, ALuint& Source, ALuint& buffer, float SourcePos[3], ALboolean Looping)
 {
 	alDeleteSources(1, &Source);
 	alDeleteBuffers(1, &buffer);
@@ -79,10 +81,10 @@ void SoundPlayer::LoadSoundFile(ALbyte* FileName, ALuint& Source, ALuint& buffer
 
 	ALfloat listenerPos[]={ListenerPos[0], ListenerPos[1], ListenerPos[2]};
 	ALfloat listenerVel[]={0.0,0.0,0.0};
-	ALfloat listenerOri[]={0.0,0.0,1.0, 0.0,1.0,0.0};
+	ALfloat listenerOri[]={0.0,0.0,0.0, 0.0,0.0,0.0};
 
 	ALfloat source0Pos[]={ SourcePos[0], SourcePos[1], SourcePos[2]};
-	ALfloat source0Vel[]={ 100.0, 100.0, 100.0};
+	ALfloat source0Vel[]={ 0.0, 0.0, 0.0};
 
 	//ALuint  buffer;
 
@@ -137,4 +139,11 @@ void SoundPlayer::LoadSoundFile(ALbyte* FileName, ALuint& Source, ALuint& buffer
 	//alSourcef(Source, AL_ROLLOFF_FACTOR, 1.0);
 
 	alSourcePlay(Source);
+}
+
+void SoundPlayer::UpdateListenerPosition(float ListenerPosition[3])
+{
+	ListenerPos[0] = ListenerPosition[0];
+	ListenerPos[1] = ListenerPosition[1];
+	ListenerPos[2] = ListenerPosition[2];
 }

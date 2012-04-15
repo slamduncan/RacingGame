@@ -402,7 +402,9 @@ void Car::UsePowerUp( int index , bool offensive)
 				//SPEED POWERUP
 				if (!offensive)
 				{
-					//SoundEffectPlayer.LoadSoundFile("Documentation/Music/MSpeed.wav", SpeedEffectSource, SpeedEffectBuffer);
+					float SourcePos[3] = { getPosition().x(), getPosition().y(), getPosition().z() };
+					SoundEffectPlayer.UpdateListenerPosition( ListenerPosition );
+					SoundEffectPlayer.LoadSoundFile("Documentation/Music/MSpeed.wav", SpeedEffectSource, SpeedEffectBuffer, SourcePos);
 					btVector3 forward = getTangent();
 					forward.setY(0);	// projects the tangent along the xz plane
 					chassis->applyCentralForce(-speedBoostModifier*forward);
@@ -411,7 +413,9 @@ void Car::UsePowerUp( int index , bool offensive)
 				else {
 					//EntityManager * ent;
 					//ent = EntityManager::getInstance();
-					//SoundEffectPlayer.LoadSoundFile("Documentation/Music/MSlow.wav", SlowEffectSource, SlowEffectBuffer);
+					float SourcePos[3] = { getPosition().x(), getPosition().y(), getPosition().z() };
+					SoundEffectPlayer.UpdateListenerPosition( ListenerPosition );
+					SoundEffectPlayer.LoadSoundFile("Documentation/Music/MSlow.wav", SlowEffectSource, SlowEffectBuffer, SourcePos);
 					ent->createSlowField(this);				
 				}
 				break;
@@ -421,7 +425,9 @@ void Car::UsePowerUp( int index , bool offensive)
 					//ROCKET POWERUP
 					if (offensive)
 					{
-						//SoundEffectPlayer.LoadSoundFile("Documentation/Music/MRocketFired.wav", RocketEffectSource, RocketEffectBuffer);
+						float SourcePos[3] = { getPosition().x(), getPosition().y(), getPosition().z() };
+						SoundEffectPlayer.UpdateListenerPosition( ListenerPosition );
+						SoundEffectPlayer.LoadSoundFile("Documentation/Music/MRocketFired.wav", RocketEffectSource, RocketEffectBuffer, SourcePos);
 						btTransform rocketT= physicsObject->getWorldTransform();				
 						rocketT.setOrigin( rocketT.getOrigin() - getTangent()*8.0);
 						if (this->getNextWaypointIndex() < ent->numWaypoints() - 5)
@@ -432,7 +438,9 @@ void Car::UsePowerUp( int index , bool offensive)
 					}
 					//Shield PowerUP
 					else{
-						//SoundEffectPlayer.LoadSoundFile("Documentation/Music/MShield.wav", ShieldEffectSource, ShieldEffectBuffer);
+						float SourcePos[3] = { getPosition().x(), getPosition().y(), getPosition().z() };
+						SoundEffectPlayer.UpdateListenerPosition( ListenerPosition );
+						SoundEffectPlayer.LoadSoundFile("Documentation/Music/MShield.wav", ShieldEffectSource, ShieldEffectBuffer, SourcePos);
 						ent->createShield(this);
 					}					
 					break;
@@ -442,7 +450,9 @@ void Car::UsePowerUp( int index , bool offensive)
 					//NOVA POWERUP
 					if (!offensive)
 					{
-						//SoundEffectPlayer.LoadSoundFile("Documentation/Music/MNova2.wav", NovaEffectSource, NovaEffectBuffer);
+						float SourcePos[3] = { getPosition().x(), getPosition().y(), getPosition().z() };
+						SoundEffectPlayer.UpdateListenerPosition( ListenerPosition );
+						SoundEffectPlayer.LoadSoundFile("Documentation/Music/MNova2.wav", NovaEffectSource, NovaEffectBuffer, SourcePos);
 						btGhostObject * explosionShell;
 						explosionShell = new btGhostObject();
 						btCollisionShape* sphereShape;

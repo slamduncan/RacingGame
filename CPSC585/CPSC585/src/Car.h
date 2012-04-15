@@ -102,6 +102,7 @@ public:
 	std::stringstream timeFinished;
 	bool finishedRacing;
 	int finalPosition;
+	float ListenerPosition[3];
 
 	//Note: passed in time should be total time passed.
 	void finishedLap(int min, int sec, int mil);

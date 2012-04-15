@@ -1084,8 +1084,9 @@ m.loading(ren, "Cars");
 	m.loading(ren, "Game Ready!\nPress Start To Continue", true);
 
 	/*Load game music */
-	//soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", EngineSource, EngineBuffer, AL_TRUE);
-	//soundPlayer.LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+	float ListenerPos[3] = { entManager->getCar(0)->getPosition().x(), entManager->getCar(0)->getPosition().y(), entManager->getCar(0)->getPosition().z() };
+	soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", EngineSource, EngineBuffer, ListenerPos, AL_TRUE);
+	soundPlayer.LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	// game loop
 	CURRENT_STATE = GAME_STARTING;
@@ -1115,6 +1116,16 @@ m.loading(ren, "Cars");
 			
 		while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAMESKIP && CURRENT_STATE == GAME_RUNNING)
 		{
+			float ListenerPos[3] = { entManager->getCar(0)->getPosition().x(), entManager->getCar(0)->getPosition().y(), entManager->getCar(0)->getPosition().z() };
+			soundPlayer.UpdateListenerPosition( ListenerPos );
+
+			for( int i = 0; i < 6 ; i++ )
+			{
+				entManager->getCar(i)->ListenerPosition[0] = ListenerPos[0];
+				entManager->getCar(i)->ListenerPosition[1] = ListenerPos[1];
+				entManager->getCar(i)->ListenerPosition[2] = ListenerPos[2];
+			}
+
 			// Calculate engine's change in pitch
 			EngineModifier = (entManager->getCar(0)->GetSpeed() / (-1 * entManager->getCar(0)->GetForwardForceModifier()));
 
