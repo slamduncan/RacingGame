@@ -630,7 +630,7 @@ void Renderer::drawAll()
 	// draw the track
 
 	glActiveTexture(GL_TEXTURE0);
-	textureOn(tm->getTexture("track"));
+	//textureOn(tm->getTexture("track"));
 	drawEntity(*(em->getTrack()));
 	textureOff();
 
@@ -672,7 +672,7 @@ void Renderer::drawAll()
 	// draw obstacles
 
 	// debug draw waypoints
-#if 0
+#if 1
 	for(int i = 0; i < em->numWaypoints(); i++)
 	{
 		drawEntity(*(em->getWaypoint(i)));
@@ -846,6 +846,7 @@ void Renderer::drawPowerup(PowerUp &power)
 				{
 					diffuse.r = 0.f;
 					diffuse.g = 0.f;
+
 				}
 				
 				Kd[0] = diffuse.r;
@@ -1502,7 +1503,7 @@ void Renderer::drawNova(Effect &effect)
 				Ks[1] = spec.g;
 				Ks[2] = spec.b;
 				Ks[3] = spec.a;
-				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+				//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
 			}
 			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_AMBIENT, &ambient))
 			{
@@ -1510,7 +1511,7 @@ void Renderer::drawNova(Effect &effect)
 				Ka[1] = ambient.g;
 				Ka[2] = ambient.b;
 				Ka[3] = ambient.a;
-				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
+				//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
 			}
 		
 		}
