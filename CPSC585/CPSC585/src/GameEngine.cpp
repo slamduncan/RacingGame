@@ -821,7 +821,7 @@ void calcPositions()
 		}
 	}
 	lastCar->currentPosition = currentPosition;
-	currentPosition -= 1;
+	//currentPosition -= 1;
 	/* Find first car */
 	atWaypoint = 0;
 	myLapCount = 0;
@@ -930,8 +930,8 @@ int main(int argc, char** argv)
 
 	// DEBUG DRAW SETUP
 	ph->setDebugDrawer(ren);
-	ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
-	//ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
+	//ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
+	ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
 
 	/* Added by Kent */
 	
@@ -1034,13 +1034,12 @@ m.loading(ren, "Cars");
 	btTransform carT6 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(-15.0f, 3.0f, -75.f));	
 
 	entManager->createCar("model/Ship1.lwo", carMass, carT6);
-	/*
 	entManager->createCar("model/Ship2.lwo", carMass, carT2);
 	entManager->createCar("model/Ship3.lwo", carMass, carT3);
 	entManager->createCar("model/Ship4.lwo", carMass, carT4);
 	entManager->createCar("model/Ship1.lwo", carMass, carT5);
 	entManager->createCar("model/Ship1.lwo", carMass, carT1);
-*/
+
 	for (int i = 0; i < entManager->getCarList()->size(); i++)
 		entManager->getCar(i)->setNextWaypointIndex(getClosestWaypoint(entManager->getCar(i)) + 2);
 

@@ -89,7 +89,7 @@ void AIHandler::generateNextMove(){
 			forwardForce = -55534.0f;		
 		
 		EntityManager* entM = EntityManager::getInstance();
-		if (c->getNextWaypointIndex() < 10 || c->getNextWaypointIndex() > entM->numWaypoints() - 10)
+		if ((c->getNextWaypointIndex() < 10 || c->getNextWaypointIndex() > entM->numWaypoints() - 10) || waypointDiff < 100)
 		{
 			ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0f);
 			c->observeForwardForce(ffe);
