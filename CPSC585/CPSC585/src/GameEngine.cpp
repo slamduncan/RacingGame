@@ -45,6 +45,9 @@ ALuint EngineBuffer = 2;
 ALuint BackgroundSource = 3;
 ALuint BackgroundBuffer = 4;
 
+ALuint MenuSource = 5;
+ALuint MenuBuffer = 6;
+
 enum GameState {MAIN_MENU, LOADING_GAME, GAME_STARTING, GAME_RUNNING, GAME_FINISHED, PAUSED_IN_GAME};
 GameState CURRENT_STATE = MAIN_MENU;
 // Other init
@@ -1078,6 +1081,10 @@ int main(int argc, char** argv)
 /* Menu Code */
 	Menu m = Menu();	
 	srand( time(NULL) );
+
+	float ListenerPosition[3] = {0.0, 0.0, 0.0};
+	soundPlayer.LoadSoundFile("Documentation/Music/Main Menu Music.wav", MenuSource, MenuBuffer, ListenerPosition, AL_TRUE);
+	alSourcef(MenuSource, AL_GAIN, 0.5f );
 	
 	//loadPowerupLocation("model/poweruplocation.lwo");
 	int selection = m.run(ren);
@@ -1210,6 +1217,8 @@ m.loading(ren, "Cars");
 	bool running = true;
 
 	Uint32 next_game_tick = SDL_GetTicks();	
+
+	alSourceStop(MenuSource);
 
 	m.loading(ren, "Game Ready!\nPress Start To Continue", true);
 
