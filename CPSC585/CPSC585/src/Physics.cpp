@@ -153,8 +153,8 @@ void Physics::step(btScalar &timeStep)
 	}
 	for(int i = 0; i < entityManager->numSpawnable(); i++)
 	{
-		Rocket* rocket = (Rocket*)entityManager->getSpawnable(i);
-		entityManager->createEffect(250.f, rocket, NULL, SPEED);
+		//Rocket* rocket = (Rocket*)entityManager->getSpawnable(i);
+		entityManager->createEffect(250.f, entityManager->getSpawnable(i), NULL, SPEED);
 	}
 	
 	//Check Powerups for car collisions

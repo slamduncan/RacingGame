@@ -246,6 +246,7 @@ int Renderer::initTexs()
 	tm->genTexture("texture/HUD.png", "hud");
 	tm->genTexture("Documentation/Art/Varios Logo.png", "logo");
 	tm->genTexture("texture/sky.png", "sky");
+	tm->genTexture(width, height, "sky2d");
 	tm->genTexture("model/box.png", "car1");	// load the car texture into GPU memory
 	tm->genTexture(width, height, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
 	tm->genTexture(width, height, "gaussian");	// gaussian blur
@@ -723,11 +724,26 @@ void Renderer::celPass()
 	celshader.turnShadersOff();
 }
 
+void Renderer::drawSky(Camera &camera1)
+{
+	fb.turnOn();
+	fb.attachTexture(getTexture("sky2d"), GL_COLOR_ATTACHMENT0);
+	// draw the skydome/sphere
+	clearGL();
+	
+	glDisableLighting();
+	glActiveTexture(GL_TEXTURE0);
+	textureOn(tm->getTexture("sky"));
+	drawEntity(*(em->getSky()));
+	textureOff();
+	glEnableLighting();
+	fb.turnOff();
+}
+
 void Renderer::drawAll()
 {
 	glLightfv(GL_LIGHT0, GL_POSITION, lights[0].getPosition());
 
-	// draw the skydome/sphere
 	glDisableLighting();
 	glActiveTexture(GL_TEXTURE0);
 	textureOn(tm->getTexture("sky"));
@@ -850,7 +866,7 @@ void Renderer::drawAll()
 			//glTranslatef(pos.x(),pos.y(),pos.z());
 			glScalef(effect->scale, effect->scale, effect->scale);
 
-			effect->scale = effect->scale - (effect->scale/effect->ttl);
+			effect->scale = effect->scale - (1.0/effect->ttl);
 
 			glColor4f(1, 1, 1, 1);
 			glActiveTexture(GL_TEXTURE0);
