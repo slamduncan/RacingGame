@@ -972,8 +972,6 @@ void Renderer::drawTrack()
 				Kd[1] = diffuse.g;
 				Kd[2] = diffuse.b;
 				Kd[3] = diffuse.a;
-
-				//printf("KD (%f, %f, %f, %f)\n", Kd[0], Kd[1], Kd[2], Kd[3]);
 				/*
 				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_TRANSPARENT, &transparency))
 				{
@@ -1002,7 +1000,13 @@ void Renderer::drawTrack()
 				Ks[1] = spec.g;
 				Ks[2] = spec.b;
 				Ks[3] = spec.a;
-				//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+
+				float shininess;
+
+				mat->Get(AI_MATKEY_SHININESS,shininess);
+
+				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 			}
 			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_AMBIENT, &ambient))
 			{
@@ -1010,7 +1014,7 @@ void Renderer::drawTrack()
 				Ka[1] = ambient.g;
 				Ka[2] = ambient.b;
 				Ka[3] = ambient.a;
-				//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
 			}
 		}
 		
@@ -1138,7 +1142,6 @@ void Renderer::drawPowerup(PowerUp &power)
 
 			//printf("i has found material\n");
 			const aiMaterial* mat = power.renderObject->mMaterials[mesh->mMaterialIndex];
-			
 			float Kd[4];
 			float Ks[4];
 			float Ka[4];
@@ -1150,29 +1153,10 @@ void Renderer::drawPowerup(PowerUp &power)
 
 			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
 			{
-				if(power.GetType() == 1)
-				{
-					diffuse.g = 0.f;
-					diffuse.b = 0.f;
-				}
-				else if(power.GetType() == 2)
-				{
-					diffuse.r = 0.f;
-					diffuse.b = 0.f;
-				}
-				else if (power.GetType() == 3)
-				{
-					diffuse.r = 0.f;
-					diffuse.g = 0.f;
-
-				}
-				
 				Kd[0] = diffuse.r;
 				Kd[1] = diffuse.g;
 				Kd[2] = diffuse.b;
 				Kd[3] = diffuse.a;
-
-				//printf("KD (%f, %f, %f, %f)\n", Kd[0], Kd[1], Kd[2], Kd[3]);
 				/*
 				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_TRANSPARENT, &transparency))
 				{
@@ -1201,7 +1185,13 @@ void Renderer::drawPowerup(PowerUp &power)
 				Ks[1] = spec.g;
 				Ks[2] = spec.b;
 				Ks[3] = spec.a;
-				//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+
+				float shininess;
+
+				mat->Get(AI_MATKEY_SHININESS,shininess);
+
+				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 			}
 			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_AMBIENT, &ambient))
 			{
@@ -1209,7 +1199,7 @@ void Renderer::drawPowerup(PowerUp &power)
 				Ka[1] = ambient.g;
 				Ka[2] = ambient.b;
 				Ka[3] = ambient.a;
-				//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
 			}
 		}
 		
@@ -1636,8 +1626,6 @@ void Renderer::drawEntity(Entity &entity)
 				Kd[1] = diffuse.g;
 				Kd[2] = diffuse.b;
 				Kd[3] = diffuse.a;
-
-				//printf("KD (%f, %f, %f, %f)\n", Kd[0], Kd[1], Kd[2], Kd[3]);
 				/*
 				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_TRANSPARENT, &transparency))
 				{
@@ -1666,7 +1654,13 @@ void Renderer::drawEntity(Entity &entity)
 				Ks[1] = spec.g;
 				Ks[2] = spec.b;
 				Ks[3] = spec.a;
-				//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+
+				float shininess;
+
+				mat->Get(AI_MATKEY_SHININESS,shininess);
+
+				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 			}
 			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_AMBIENT, &ambient))
 			{
@@ -1674,7 +1668,7 @@ void Renderer::drawEntity(Entity &entity)
 				Ka[1] = ambient.g;
 				Ka[2] = ambient.b;
 				Ka[3] = ambient.a;
-				//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
 			}
 		}
 		
@@ -1827,7 +1821,13 @@ void Renderer::drawNova(Effect &effect)
 				Ks[1] = spec.g;
 				Ks[2] = spec.b;
 				Ks[3] = spec.a;
-				//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+
+				float shininess;
+
+				mat->Get(AI_MATKEY_SHININESS,shininess);
+
+				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 			}
 			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_AMBIENT, &ambient))
 			{
@@ -1835,7 +1835,7 @@ void Renderer::drawNova(Effect &effect)
 				Ka[1] = ambient.g;
 				Ka[2] = ambient.b;
 				Ka[3] = ambient.a;
-				//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
 			}
 		
 		}

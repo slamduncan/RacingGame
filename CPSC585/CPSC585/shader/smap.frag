@@ -39,6 +39,15 @@ void main()
 
 	float shadow = chebyshevUpperBound(ShadowCoordPostW.z);
 
+	vec3 lit = vec3(shadow);
+	
+	
+	
+	
+	
+	
+	
+	
 	gl_FragColor = vec4(vec3(shadow), 1.0);
 	//gl_FragColor = vec4(vec3(shadow), 1.0);
   
