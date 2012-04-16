@@ -66,7 +66,7 @@ void SoundPlayer::LoadSoundFile(ALbyte* FileName, ALuint& Source, ALuint& buffer
 	}
 
 	alSourcef(Source, AL_PITCH, 1.0f);
-	alSourcef(Source, AL_GAIN, 1.0f);
+	alSourcef(Source, AL_GAIN, 0.3f);
 	alSourcefv(Source, AL_POSITION, source0Pos);
 	alSourcefv(Source, AL_VELOCITY, source0Vel);
 	alSourcei(Source, AL_BUFFER,buffer);
