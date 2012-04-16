@@ -189,6 +189,8 @@ bool Car::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransfor
 
 		chassis = btRigidBody::upcast(physicsObject);
 
+		chassis->setContactProcessingThreshold(0.1);
+
 		physicsObject->setActivationState(DISABLE_DEACTIVATION);
 		chassis->setActivationState(DISABLE_DEACTIVATION);
 
