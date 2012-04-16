@@ -412,6 +412,7 @@ void readWaypoints(const char* fileName){
 			entManager->getCar(i)->setNextWaypointIndex(0);
 		//Update the waypoint variables.
 		ReloadEvent e = ReloadEvent();
+		e.read();
 		evSys->emitEvent(&e);
 		//delete e;
 	}
@@ -514,6 +515,7 @@ void handle_key_down( SDL_keysym* keysym )
 		case SDLK_r:
 			{
 				ReloadEvent* e = new ReloadEvent();
+				e->read();
 				evSys->emitEvent(e);
 				delete e;
 				break;
@@ -1192,6 +1194,7 @@ m.loading(ren, "Cars");
 
 	//Load variables from the xml file.
 	ReloadEvent* e = new ReloadEvent();
+	e->read();
 	evSys->emitEvent(e);
 	delete e;
 
@@ -1837,9 +1840,11 @@ m.loading(ren, "Cars");
 	/*delete ph;
 	ph = Physics::Inst();*/
 	//delete entManager;
+	m.freeingScreen(ren, "Releasing Entities...");
 	entManager->clean();// = EntityManager::getInstance();
 	entManager = EntityManager::getInstance();	
 	//evSys->clean(&ph->variableObserver);	
+	m.freeingScreen(ren, "Releasing Physics...");
 	MethodObserver<ReloadEvent, Physics> tempObs = ph->variableObserver;
 	ph->clean();
 	ph = Physics::Inst();

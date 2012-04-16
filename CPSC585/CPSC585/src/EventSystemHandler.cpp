@@ -15,10 +15,12 @@ EventSystemHandler::EventSystemHandler(){
 
 void EventSystemHandler::clean(Observer *o)
 {
-	for (int i = 0; i < list.size(); i++)
+	list.at(o->getSupportedType()).remove(o);
+	/*for (int i = 0; i < list.size(); i++)
 	{
 		list.at(i).remove(o);
-	}
+		o->getSupportedType()
+	}*/
 }
 void EventSystemHandler::emitEvent(Event *e){
 	//Add code to emit the event (look at the type and index into array of registered observers)

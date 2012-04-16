@@ -9,6 +9,11 @@ public:
 	ProjectNumbers numberHolder;
 
 	ReloadEvent() : numberHolder(){
+		//numberHolder.readVariablesIn();
+	}
+
+	void read()
+	{
 		numberHolder.readVariablesIn();
 	}
 

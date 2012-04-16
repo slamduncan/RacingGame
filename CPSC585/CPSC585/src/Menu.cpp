@@ -239,6 +239,17 @@ void Menu::loading(Renderer *ren, std::string loadingWhat, bool wait)
 
 	}
 }
+
+void Menu::freeingScreen(Renderer *ren, std::string loadingWhat)
+{
+	ren->glEnable2D();
+	ren->clearGL();
+	ren->changeFontSize(26);
+	ren->outputText(loadingWhat, 0, 255, 255, 800, 150);
+	ren->updateGL();
+	ren->glDisable2D();
+}
+
 int Menu::inGameMenu(Renderer *ren)
 {
 	IN_GAME_MENU_OPTIONS currentSelection = CONTINUE;
