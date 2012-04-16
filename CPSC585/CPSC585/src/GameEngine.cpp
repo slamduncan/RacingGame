@@ -1585,7 +1585,7 @@ m.loading(ren, "Cars");
 		}
 
 		ren->changeFontSize(20);
-		ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
+		//ren->outputText(entManager->getCarList()->at(0)->toString(), 255, 255, 255, 200, 200);
 
 		int TimeDifference = currentTime - oldTime;
 		if((TimeDifference) > 1000){
@@ -1609,6 +1609,8 @@ m.loading(ren, "Cars");
 
 		std::stringstream ssSpeed;
 		CarSpeed = (int)(EngineModifier * 750.0f);
+		if( CarSpeed < 0 )
+			CarSpeed = 0;
 		ssSpeed << CarSpeed;
 		CarSpeedString = ssSpeed.str();
 		ren->changeFontSize(50);

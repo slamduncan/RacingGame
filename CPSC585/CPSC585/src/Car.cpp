@@ -91,7 +91,7 @@ updateVariableObserver(this, &Car::observeVariables)
 	finishedRacing = false;
 	finalPosition = -1;
 	AIresetCounter = 0;
-	currentPosition = 0;
+	currentPosition = 6;
 	distanceToNextWP = 0.0f;
 
 	beingHitUntil = clock();
