@@ -26,8 +26,8 @@ Entity::~Entity()
 	{
 		delete physicsObject;	// delete the physics object
 	}
-
-	delete[] glMatrix;	// delete the gl transform matrix
+	if (glMatrix != NULL)
+		delete[] glMatrix;	// delete the gl transform matrix
 }
 
 // The following 3 functions have become obsolete

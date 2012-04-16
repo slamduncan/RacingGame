@@ -22,4 +22,15 @@ void ObservingList::updateAll(Event *e){
 	//delete e;
 }
 
+void ObservingList::remove(Observer* o){
+	std::vector<Observer*> tempList;
+	for (int i = 0; i < (int)list.size(); i++){
+		if (list[i] != o)
+		{
+			tempList.push_back(o);
+		}
+	}
+	list = tempList;
+}
+
 int ObservingList::size(){ return list.size();}

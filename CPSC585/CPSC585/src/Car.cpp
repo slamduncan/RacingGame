@@ -70,19 +70,23 @@ updateVariableObserver(this, &Car::observeVariables)
 	detectionRange = 10.0;
 	slidingFrictionModifier = 1.0;
 
+	/*
 	PowerUp p1 = PowerUp();
 	PowerUp p2 = PowerUp();
 	PowerUp p3 = PowerUp();
+	*/
 	shieldActive = false;
 	usedPowerUpRecently = false;
 
+	/*
 	m_CarPowerUps[0] = p1;
 	m_CarPowerUps[1] = p2;
 	m_CarPowerUps[2] = p3;
+	*/
 
 	beingSlowed = false;
 	halfWayAround = false;
-	lapCount = 1;
+	lapCount = 3;
 	timeFinished;
 	finishedRacing = false;
 	finalPosition = -1;
@@ -92,6 +96,11 @@ updateVariableObserver(this, &Car::observeVariables)
 
 	beingHitUntil = clock();
 }
+
+//~Car::Car()
+//{
+//
+//}
 
 void Car::initObservers()
 {	

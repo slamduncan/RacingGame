@@ -85,6 +85,77 @@ EntityManager::~EntityManager()
 	}
 }
 
+void EntityManager::clean()
+{
+	for(int i = 0; i < waypointList.size(); i++)
+	{
+		if(waypointList[i])
+			delete waypointList[i];
+	}
+	waypointList.clear();	
+	waypointList.resize(0);
+
+	for(int i = 0; i < powerUpList.size(); i++)
+	{
+		if(powerUpList[i])
+			delete powerUpList[i];
+	}
+	powerUpList.clear();
+	powerUpList.resize(0);
+
+	for(int i = 0; i < spawnList.size(); i++)
+	{
+		if(spawnList[i])
+			delete spawnList[i];
+	}
+	spawnList.clear();
+	spawnList.resize(0);
+
+
+	for(int i = 0; i < slowFieldList.size(); i++)
+	{
+		if(slowFieldList[i])
+			delete slowFieldList[i];
+	}
+	slowFieldList.clear();
+	slowFieldList.resize(0);
+
+	for(int i = 0; i < mineList.size(); i++)
+	{
+		if(mineList[i])
+			delete mineList[i];
+	}
+	mineList.clear();
+	mineList.resize(0);
+	
+	for(int i = 0; i < effectList.size(); i++)
+	{
+		if(effectList[i])
+		{
+			delete effectList[i];
+		}
+	}
+	effectList.clear();
+	effectList.resize(0);
+
+	if(track != NULL)
+	{
+		delete track;
+	}
+	if(sky != NULL)
+	{
+		delete sky;
+	}
+
+	for(int i = 0; i < carList.size(); i++)
+	{
+		if(carList[i])
+			delete carList[i];
+	}
+	carList.clear();
+	carList.resize(0);
+}
+
 Car* EntityManager::getCar(int index)
 {
 	assert(index >= 0 && index < numCars());
@@ -370,8 +441,23 @@ void EntityManager::createMine(Car* c, char* path)
 
 void EntityManager::createEffect(btScalar ttl, Entity* e, char* path, int type)
 {
-	Effect* effect = new Effect(ttl, e->physicsObject->getWorldTransform(), type);
-	effect->initRenderObject(path);
+	Effect* effect;
+	
+	if(type == NOVA)
+	{
+		effect = new Effect(ttl, e->physicsObject->getWorldTransform(), type);
+		effect->initRenderObject(path);
+	}
+	else if(type == SPEED)
+	{
+		btTransform trans = e->physicsObject->getWorldTransform();
+		btVector3 offset = e->getTangent()*5.f;
+
+		offset = offset + trans.getOrigin();
+
+		trans.setOrigin(offset);
+		effect = new Effect(ttl, trans, type);
+	}
 
 	effectList.push_back(effect);
 }

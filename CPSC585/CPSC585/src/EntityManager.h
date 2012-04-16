@@ -49,6 +49,7 @@ private:
 public:
 
 	~EntityManager();
+	void clean();
 
 	static EntityManager* getInstance()
 	{

@@ -65,7 +65,7 @@ private:
 
 public:
 
-	~Renderer();
+	~Renderer();	
 
 	static Renderer* getInstance()
 	{
