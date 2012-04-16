@@ -76,6 +76,7 @@ void Physics::clean()
 
 void Physics::step(btScalar &timeStep)
 {	
+	
 	//printf("Velocity: %f\n",entityManager->getCar(0)->chassis->getLinearVelocity().length());
 	for(int i=0; i< entityManager->getCarList()->size(); i++){
 		Car* c = entityManager->getCar(i);
