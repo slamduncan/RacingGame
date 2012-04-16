@@ -520,6 +520,7 @@ void Renderer::drawShadow(Camera &camera)
 	glEnable(GL_CULL_FACE);
 
 	drawAll();
+	drawTrack();
 
 	textureOff();
 	shadowPass.turnShadersOff();
@@ -1001,7 +1002,7 @@ void Renderer::drawTrack()
 				Ks[2] = spec.b;
 				Ks[3] = spec.a;
 
-				float shininess;
+				float shininess = 10.f;
 
 				mat->Get(AI_MATKEY_SHININESS,shininess);
 
@@ -1153,6 +1154,22 @@ void Renderer::drawPowerup(PowerUp &power)
 
 			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
 			{
+				if(power.GetType() == 1)
+				{
+					diffuse.g = 0.f;
+					diffuse.b = 0.f;
+				}
+				else if (power.GetType() == 2)
+				{
+					diffuse.r = 0.f;
+					diffuse.b = 0.f;
+				}
+				else if (power.GetType() == 3)
+				{
+					diffuse.r = 0.f;
+					diffuse.g = 0.f;
+				}
+				
 				Kd[0] = diffuse.r;
 				Kd[1] = diffuse.g;
 				Kd[2] = diffuse.b;
@@ -1186,7 +1203,7 @@ void Renderer::drawPowerup(PowerUp &power)
 				Ks[2] = spec.b;
 				Ks[3] = spec.a;
 
-				float shininess;
+				float shininess = 10.f;
 
 				mat->Get(AI_MATKEY_SHININESS,shininess);
 
@@ -1314,7 +1331,13 @@ void Renderer::drawSlowField(SlowField &slow)
 				const aiMaterial* mat = slow.renderObject->mMaterials[mesh->mMaterialIndex];
 				
 				float Kd[4];
+				float Ks[4];
+				float Ka[4];
+				float Kt[4];
 				aiColor4D diffuse;
+				aiColor4D spec;
+				aiColor4D ambient;
+				aiColor4D transparency;
 
 				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
 				{
@@ -1322,8 +1345,49 @@ void Renderer::drawSlowField(SlowField &slow)
 					Kd[1] = diffuse.g;
 					Kd[2] = diffuse.b;
 					Kd[3] = diffuse.a;
-
+					/*
+					if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_TRANSPARENT, &transparency))
+					{
+						Kt[0] = transparency.r;
+						Kt[1] = transparency.g;
+						Kt[2] = transparency.b;
+						Kt[3] = transparency.a;
+						glMaterialfv(GL_FRONT, GL_TRANSP, Ka);
+					}
+					else
+					{
+						Kt[0] = 1.f;
+						Kt[0] = 1.f;
+						Kt[0] = 1.f;
+						Kt[0] = 1.f;
+					}
+					*/
+					//printf("%f, %f, %f, %f\n", Kd[0], Kd[1], Kd[2], Kd[3]);
+					
+					glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Kd);
 					glColor4fv(Kd);
+				}
+				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_SPECULAR, &spec))
+				{
+					Ks[0] = spec.r;
+					Ks[1] = spec.g;
+					Ks[2] = spec.b;
+					Ks[3] = spec.a;
+
+					float shininess = 10.f;
+
+					mat->Get(AI_MATKEY_SHININESS,shininess);
+
+					glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+					glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+				}
+				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_AMBIENT, &ambient))
+				{
+					Ka[0] = ambient.r;
+					Ka[1] = ambient.g;
+					Ka[2] = ambient.b;
+					Ka[3] = ambient.a;
+					glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
 				}
 			}
 
@@ -1655,7 +1719,7 @@ void Renderer::drawEntity(Entity &entity)
 				Ks[2] = spec.b;
 				Ks[3] = spec.a;
 
-				float shininess;
+				float shininess = 10.f;
 
 				mat->Get(AI_MATKEY_SHININESS,shininess);
 
@@ -1822,7 +1886,7 @@ void Renderer::drawNova(Effect &effect)
 				Ks[2] = spec.b;
 				Ks[3] = spec.a;
 
-				float shininess;
+				float shininess = 10.f;
 
 				mat->Get(AI_MATKEY_SHININESS,shininess);
 
