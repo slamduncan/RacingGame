@@ -117,6 +117,7 @@ public:
 	void drawEntity(Entity &entity);
 	void drawAll();
 	
+	void drawSky(Camera &camera1);
 	void drawCars();
 	void drawPowerups();
 	void drawTrack();

@@ -1529,32 +1529,18 @@ m.loading(ren, "Cars");
 		// this will blur the depth map, the final blurred depth map will be in "smap"
 		ren->blurPass();
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
+
+		ren->drawSky(camera1);
+
 		ren->clearGL();	// clear the screen
 		ren->drawShadow(camera1);
-		/*
+/*
 		ren->glEnable2D();
 		ren->clearGL();	// clear the screen
-		ren->drawTexture("smap");		
+		ren->drawTexture("sky2D");		
 		ren->glDisable2D();
-		*/
-		
-/*
-		// set camera to eye space
-		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
-
-		ren->draw();
 */		
-/*
-		ren->normalMapPass();
-		//ren->drawTexture("nd");
-		ren->ssaoPass();
-		ren->clearGL();!
-*/
-/*
-		ren->clearGL();		
-		ren->setCamera(camera1);
-		ren->celPass();
-*/
+		
 /*
 		ren->clearGL();		
 		ren->setCamera(camera1);
@@ -1568,8 +1554,6 @@ m.loading(ren, "Cars");
 
 		ren->glEnable2D();
 		glColor4f(1.0, 1.0, 1.0, 1.0);
-		//glBlendFunc(GL_ONE, GL_ONE);
-		
 
 		/* Starting CountDown */
 		if (CURRENT_STATE == GAME_STARTING)
