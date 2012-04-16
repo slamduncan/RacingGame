@@ -1739,8 +1739,8 @@ m.loading(ren, "Cars");
 		ren->drawTexture("hud");
 
 		// this will draw the middle powerup
-		btVector3 c11 = btVector3(591, 504, 0);
-		btVector3 c21 = btVector3(689, 602, 0);
+		btVector3 c11 = btVector3(117, 317, 0);
+		btVector3 c21 = btVector3(203, 403, 0);
 		glActiveTexture(GL_TEXTURE0);
 		glColor4f(1, 1, 1, 1);
 		// slow/speed
@@ -1768,8 +1768,8 @@ m.loading(ren, "Cars");
 
 
 		// this will draw the left powerup
-		btVector3 c12 = btVector3(455, 583, 0);
-		btVector3 c22 = btVector3(553, 681, 0);
+		btVector3 c12 = btVector3(40, 452, 0);
+		btVector3 c22 = btVector3(126, 538, 0);
 		glActiveTexture(GL_TEXTURE0);
 		glColor4f(1, 1, 1, 1);
 		// slow/speed
@@ -1797,8 +1797,8 @@ m.loading(ren, "Cars");
 
 
 		// this will draw the right powerup
-		btVector3 c13 = btVector3(727, 583, 0);
-		btVector3 c23 = btVector3(825, 681, 0);
+		btVector3 c13 = btVector3(40, 181, 0);
+		btVector3 c23 = btVector3(126, 267, 0);
 		glActiveTexture(GL_TEXTURE0);
 		glColor4f(1, 1, 1, 1);
 		// slow/speed
