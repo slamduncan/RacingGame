@@ -110,12 +110,12 @@ void Physics::step(btScalar &timeStep)
 	for(int i = 0; i < entityManager->numCars(); i++)
 	{
 		Car* car = entityManager->getCar(i);
-		entityManager->createEffect(500.f, car, NULL, SPEED);
+		entityManager->createEffect(250.f, car, NULL, SPEED);
 	}
 	for(int i = 0; i < entityManager->numSpawnable(); i++)
 	{
 		Rocket* rocket = (Rocket*)entityManager->getSpawnable(i);
-		entityManager->createEffect(500.f, rocket, NULL, SPEED);
+		entityManager->createEffect(250.f, rocket, NULL, SPEED);
 	}
 	
 	//Check Powerups for car collisions
