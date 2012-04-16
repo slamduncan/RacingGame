@@ -441,8 +441,23 @@ void EntityManager::createMine(Car* c, char* path)
 
 void EntityManager::createEffect(btScalar ttl, Entity* e, char* path, int type)
 {
-	Effect* effect = new Effect(ttl, e->physicsObject->getWorldTransform(), type);
-	effect->initRenderObject(path);
+	Effect* effect;
+	
+	if(type == NOVA)
+	{
+		effect = new Effect(ttl, e->physicsObject->getWorldTransform(), type);
+		effect->initRenderObject(path);
+	}
+	else if(type == SPEED)
+	{
+		btTransform trans = e->physicsObject->getWorldTransform();
+		btVector3 offset = e->getTangent()*5.f;
+
+		offset = offset + trans.getOrigin();
+
+		trans.setOrigin(offset);
+		effect = new Effect(ttl, trans, type);
+	}
 
 	effectList.push_back(effect);
 }

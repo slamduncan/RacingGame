@@ -42,6 +42,9 @@ bool stillWantsToPlay = true;
 ALuint EngineSource = 1;
 ALuint EngineBuffer = 2;
 
+ALuint BackgroundSource = 3;
+ALuint BackgroundBuffer = 4;
+
 enum GameState {MAIN_MENU, LOADING_GAME, GAME_STARTING, GAME_RUNNING, GAME_FINISHED, PAUSED_IN_GAME};
 GameState CURRENT_STATE = MAIN_MENU;
 // Other init
@@ -1096,7 +1099,10 @@ m.loading(ren, "Cars");
 	/*Load game music */
 	float ListenerPos[3] = { entManager->getCar(0)->getPosition().x(), entManager->getCar(0)->getPosition().y(), entManager->getCar(0)->getPosition().z() };
 	soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", EngineSource, EngineBuffer, ListenerPos, AL_TRUE);
-	soundPlayer.LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
+	soundPlayer.LoadSoundFile("Documentation/Music/InGameMusic.wav", BackgroundSource, BackgroundBuffer, ListenerPos, AL_TRUE);
+	alSourcef(BackgroundSource, AL_GAIN, 0.25f );
+	alSourcef(EngineSource, AL_GAIN, 0.5f );
+	//soundPlayer.LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	// game loop
 	CURRENT_STATE = GAME_STARTING;
@@ -1144,7 +1150,9 @@ m.loading(ren, "Cars");
 				EngineModifier *= -1;
 
 			// Change pitch of engine sound
+			alSourcef(EngineSource, AL_GAIN, 0.5f + (EngineModifier / 2.0) );
 			alSourcef(EngineSource, AL_PITCH, 1.0f + EngineModifier );
+			alSourcef(BackgroundSource, AL_GAIN, 0.25f + (EngineModifier / 1.5) );
 			
 			//// Physics
 			physicsCurrentTime = SDL_GetTicks();
@@ -1177,6 +1185,8 @@ m.loading(ren, "Cars");
 				{
 					tempCarPtr->halfWayAround = false;
 					tempCarPtr->lapCount++;
+					if( entManager->getCar(0)->lapCount == 3 )
+						alSourcef(BackgroundSource, AL_PITCH, 1.05f );
 					tempCarPtr->finishedLap(totalMinutes, totalLapSeconds, totalLapMilliseconds);
 					if (tempCarPtr->lapCount == 4)
 					{																	
@@ -1397,7 +1407,6 @@ m.loading(ren, "Cars");
 		ren->glDisableLighting();
 		ph->debugDraw();
 		ren->glEnableLighting();
-
 
 		ren->glEnable2D();
 		glColor4f(1.0, 1.0, 1.0, 1.0);

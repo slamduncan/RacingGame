@@ -711,6 +711,8 @@ void Renderer::drawAll()
 			float modelview[16];
 			glPushMatrix();
 
+			glMultMatrixf(effect->getGLMatrix());
+
 			// get the current model view matrix
 			glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
 			
@@ -727,13 +729,18 @@ void Renderer::drawAll()
 			}
 			glLoadMatrixf(modelview);
 
-			btVector3 pos = effect->getPosition();			
+			//glMultMatrixf(effect->getGLMatrix());
+			//btVector3 pos = effect->getPosition();
+			//glTranslatef(pos.x(),pos.y(),pos.z());
+			glScalef(effect->scale, effect->scale, effect->scale);
 
-			glTranslatef(pos.x(), pos.y(), pos.z());
+			effect->scale = effect->scale - (effect->scale/effect->ttl);
 
 			glColor4f(1, 1, 1, 1);
 			glActiveTexture(GL_TEXTURE0);
-			tm->getTexture("particle");
+			glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+			glEnable(GL_BLEND);
+			textureOn(tm->getTexture("particle"));
 			glBegin(GL_QUADS);
 			{
 				glTexCoord2f(0.0f, 0.0f); 
@@ -747,7 +754,9 @@ void Renderer::drawAll()
 
 			}
 			glEnd();
-
+	
+			glDisable(GL_BLEND);
+			textureOff();
 			// return the original modelview matrix
 			glPopMatrix();
 
