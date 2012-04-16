@@ -1370,7 +1370,7 @@ m.loading(ren, "Cars");
 			resetCars();
 
 			if (CURRENT_STATE == GAME_FINISHED)
-			{				
+			{			
 				Car* playerCar = entManager->getCar(0);
 				//for every car
 				for (int i = 0; i < entManager->numCars(); i++)
@@ -1495,6 +1495,8 @@ m.loading(ren, "Cars");
 					tempC->displayTime();
 				}
 				m.timeScreen(ren);
+				alSourceStop(BackgroundSource);
+				alSourceStop(EngineSource);
 				running = false;
 			}
 			//WaypointIndex = entManager->getCar(0)->getNextWaypointIndex();
