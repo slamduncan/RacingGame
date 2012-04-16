@@ -1315,7 +1315,7 @@ m.loading(ren, "Cars");
 				{
 					tempCarPtr->halfWayAround = true;
 				}
-				if (tempCarPtr->halfWayAround && currentWPIndex < 10 && !tempCarPtr->finishedRacing)
+				if (tempCarPtr->halfWayAround && currentWPIndex < 15 && currentWPIndex > 5 && !tempCarPtr->finishedRacing)
 				{
 					tempCarPtr->halfWayAround = false;
 					tempCarPtr->lapCount++;
