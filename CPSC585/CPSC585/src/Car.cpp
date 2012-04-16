@@ -144,7 +144,8 @@ void Car::observeForwardForce(ForwardForceEvent *e){
 				chassis->applyForce(tan, wheelOffsets[2]);
 				chassis->applyForce(tan, wheelOffsets[3]);
 			}
-		}else{
+		}
+		else{
 			beingSlowed = false;
 		}
 	}
@@ -664,9 +665,10 @@ void Car::RotatePowerups( bool RotateLeft )
 	}while (m_CarPowerUps[0].GetType() == EMPTY && count < 4);
 }
 
-void Car::setBeingSlowed(){
-	beingSlowed = true;
+void Car::setBeingSlowed(bool slow){
+	beingSlowed = slow;
 }
+
 
 void Car::finishedLap(int min, int sec, int mil)
 {

@@ -1,7 +1,5 @@
 uniform sampler2D ShadowMap;
-
 varying vec4 ShadowCoord;
-
 vec4 ShadowCoordPostW;
 
 //
@@ -9,58 +7,35 @@ vec4 ShadowCoordPostW;
 //
 float chebyshevUpperBound(float distance)
 {
-	// moments.x stores the current depth
-	// moments.y stores the variance based on the depth
+
+
+	//ShadowCoordPostW.x = 1.0 - ShadowCoordPostW.x;
+	//ShadowCoordPostW.y = 1.0 - ShadowCoordPostW.y;
+	
 	vec2 moments = texture2D(ShadowMap,ShadowCoordPostW.xy).rg;
 	
 	// Surface is fully lit. as the current fragment is before the light occluder
 	if (distance < moments.x)
-	{
-		return 1.0;
-	}
-	
-	float p_max = 0.0;
-	
-	float E_x2 = moments.y;
-	float Ex_2 = moments.x * moments.x;
-	
-	float variance = E_x2 - Ex_2;
-	float mD = moments.x - distance;
-	
-	float mD_2 = mD * mD;
-	
-	float p = variance / (variance + mD_2);
-	
-	/*
-	float mean = moments.x;
-	float variance = moments.y - (moments.x*moments.x);
-	
-	float p_max = variance/(variance + ((distance - mean)*(distance - mean)));
-	*/
-	return p;
-	
-	
-/*	
+		return 1.0 ;
+
 	// The fragment is either in shadow or penumbra. We now use chebyshev's upperBound to check
 	// How likely this pixel is to be lit (p_max)
 	float variance = moments.y - (moments.x*moments.x);
-	variance = max(variance,0.002);
+	variance = max(variance,0.2);
 
 	float d = distance - moments.x;
 	float p_max = variance / (variance + d*d);
 
-	p_max = clamp(p_max, 0.0, 1.0);
-	
 	return p_max;
-*/
+	
 }
 
 
 void main()
 {	
 	ShadowCoordPostW = ShadowCoord / ShadowCoord.w;
-	//ShadowCoordPostW += 0.0005;
-	ShadowCoordPostW += 0.00005;
+	//ShadowCoordPostW += 0.0075;
+	//ShadowCoordPostW += 0.0000005;
 
 	float shadow = chebyshevUpperBound(ShadowCoordPostW.z);
 

@@ -1033,11 +1033,11 @@ m.loading(ren, "Cars");
 	btTransform carT6 = btTransform(btQuaternion(0, 1, 0, 1), btVector3(-15.0f, 3.0f, -75.f));	
 
 	entManager->createCar("model/Ship1.lwo", carMass, carT6);
-	entManager->createCar("model/Ship2.lwo", carMass, carT2);
-	entManager->createCar("model/Ship3.lwo", carMass, carT3);
-	entManager->createCar("model/Ship4.lwo", carMass, carT4);
-	entManager->createCar("model/Ship1.lwo", carMass, carT5);
-	entManager->createCar("model/Ship1.lwo", carMass, carT1);
+	entManager->createCar("model/Ship2.lwo", carMass, carT5);
+	entManager->createCar("model/Ship3.lwo", carMass, carT4);
+	entManager->createCar("model/Ship4.lwo", carMass, carT3);
+	entManager->createCar("model/Ship5.lwo", carMass, carT2);
+	entManager->createCar("model/Ship6.lwo", carMass, carT1);
 
 	for (int i = 0; i < entManager->getCarList()->size(); i++)
 		entManager->getCar(i)->setNextWaypointIndex(getClosestWaypoint(entManager->getCar(i)) + 2);
@@ -1376,11 +1376,18 @@ m.loading(ren, "Cars");
 
 		// done in light space
 		ren->depthMapPass();
+		// this will blur the depth map, the final blurred depth map will be in "smap"
+		ren->blurPass();
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
+		ren->clearGL();	// clear the screen
 		ren->drawShadow(camera1);
-//		ren->clearGL();	// clear the screen
-
-//		ren->drawTexture("depth2l1");		
+		/*
+		ren->glEnable2D();
+		ren->clearGL();	// clear the screen
+		ren->drawTexture("smap");		
+		ren->glDisable2D();
+		*/
+		
 /*
 		// set camera to eye space
 		camera1.updateCamera(entManager->getCar(0)->physicsObject->getWorldTransform());
@@ -1399,9 +1406,11 @@ m.loading(ren, "Cars");
 		ren->celPass();
 */
 
+		
 		ren->clearGL();		
 		ren->setCamera(camera1);
 		ren->drawAll();
+		
 
 //		ren->drawAll();
 		ren->glDisableLighting();
@@ -1596,7 +1605,7 @@ m.loading(ren, "Cars");
 		// slow/speed
 		if( entManager->getCar(0)->GetPowerUpAt(0)->GetType() == 1 )
 		{	
-			ren->textureOff();
+			ren->textureOn(ren->getTexture("ss"));
 		}
 		// rocket/shield
 		else if( entManager->getCar(0)->GetPowerUpAt(0)->GetType() == 2 )
@@ -1625,7 +1634,7 @@ m.loading(ren, "Cars");
 		// slow/speed
 		if( entManager->getCar(0)->GetPowerUpAt(1)->GetType() == 1 )
 		{
-			ren->textureOff();
+			ren->textureOn(ren->getTexture("ss"));
 		}
 		// rocket/shield
 		else if( entManager->getCar(0)->GetPowerUpAt(1)->GetType() == 2 )
@@ -1654,7 +1663,7 @@ m.loading(ren, "Cars");
 		// slow/speed
 		if( entManager->getCar(0)->GetPowerUpAt(2)->GetType() == 1 )
 		{
-			ren->textureOff();
+			ren->textureOn(ren->getTexture("ss"));
 		}
 		// rocket/shield
 		else if( entManager->getCar(0)->GetPowerUpAt(2)->GetType() == 2 )

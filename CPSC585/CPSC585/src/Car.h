@@ -95,7 +95,7 @@ public:
 	//Returns NULL if no car is found in range.
 	Car* getClosestCar(bool inFront);
 	Car* getClosestCar(bool inFront, float detectionDistance);
-	void setBeingSlowed();
+	void setBeingSlowed(bool slow);
 
 	btCompoundShape * slowBlobContainer;
 	bool shieldActive;

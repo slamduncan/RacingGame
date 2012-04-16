@@ -263,16 +263,28 @@ void Physics::step(btScalar &timeStep)
 		SlowField* sf = entityManager->getSlowField(i);
 		btGhostObject* go = btGhostObject::upcast(sf->physicsObject);
 		btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
+		if(oa.size() == 0)
+		{
+			for(int j = 0; j < entityManager->numCars(); j++)
+			{
+				entityManager->getCar(j)->setBeingSlowed(false);
+			}
+		}
+		
 		for(int j=0; j< oa.size(); j++){
 			btCollisionObject * carMaybe = oa.at(j);
 			//Todo: check this pointer against all car pointers in carList
 			int index = entityManager->getCarIndexViaPointer(carMaybe);
 			if(index != -1 && index != sf->carId)
 			{
-				//printf("YOU GOT ME A CAR!! OMG!!! OMG!!! \n");
-				//printf("!");
 				if (!entityManager->getCar(index)->shieldActive)
-					entityManager->getCar(index)->setBeingSlowed();
+				{
+					entityManager->getCar(index)->setBeingSlowed(true);
+				}
+				else
+				{
+					entityManager->getCar(index)->setBeingSlowed(false);
+				}
 			}
 		}
 	}

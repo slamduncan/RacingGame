@@ -14,7 +14,7 @@ Renderer::Renderer()
 	bpp = 0;
 
 	Light light0 = Light(btVector3(-730, 1000, -1216));
-	//Light light0 = Light(btVector3(-100, 500, 0));
+	//Light light0 = Light(btVector3(-100,1000, 0));
 	
 	light0.diff[0] = 1.f;
 	light0.diff[1] = 1.f;
@@ -202,7 +202,7 @@ int Renderer::initGL()
     glLoadIdentity( );
     // horizontal fov, vertical fov, min view distance, max view distance
 	float ratio = (float) width / (float) height;	// compute FOV
-	gluPerspective( 60.0, ratio, 1.0, 5120.0 );	// need to fix this to change fov on the fly
+	gluPerspective( 60.0, ratio, 1.0, 4800.0 );	// need to fix this to change fov on the fly
 	glMatrixMode(GL_MODELVIEW);	// switch back to model view
 
 	glDisable2D();
@@ -237,9 +237,9 @@ int Renderer::initFont()
 
 int Renderer::initTexs()
 {
+	tm->genTexture("texture/ss.png", "ss");
 	tm->genTexture("texture/rs.png", "rs");
 	tm->genTexture("texture/mn.png", "mn");
-	//tm->genTexture("texture/rocket.png", "rocket");
 	tm->genTexture("texture/Track.png", "track");
 	tm->genTexture("texture/particle.png", "particle");
 	tm->genTexture("texture/Tutorial.png", "tut");
@@ -247,16 +247,16 @@ int Renderer::initTexs()
 	tm->genTexture("Documentation/Art/Varios Logo.png", "logo");
 	tm->genTexture("texture/sky.png", "sky");
 	tm->genTexture("model/box.png", "car1");	// load the car texture into GPU memory
-	tm->genTexture(2048, 2048, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
+	tm->genTexture(width, height, "depth2l1");	// create a texture for our shadow map might need mulitple textures for multiple lights
 	tm->genTexture(width, height, "gaussian");	// gaussian blur
 	tm->genTexture(width, height, "smap");		// shadow maps
 	tm->genTexture(width, height, "nd");		// create a texture for ssao pass 1
 	tm->genTexture(width, height, "ssao");		// create a texture for ssao pass 2
 	tm->genTexture("texture/noise.png", "noise");
-	tm->genTexture(width, height, "rblur");		// radial blur
-	tm->genTexture("texture/celgray.png", "cel");
+	//tm->genTexture(width, height, "rblur");		// radial blur
+	//tm->genTexture("texture/celgray.png", "cel");
 
-	fb.init(2048, 2048);
+	fb.init(width, height);
 	
 	return 0;
 }
@@ -279,6 +279,9 @@ int Renderer::initShaders()
 	
 	celshader = Shader("shader/cell.vert", "shader/cell.frag");
 	celshader.debug();
+
+	gaussian = Shader("shader/gaussian.vert", "shader/gaussian.frag");
+	gaussian.debug();
 
 	return 0;
 }
@@ -451,7 +454,7 @@ void Renderer::depthMapPass()
 		fb.turnOn();
 		depth2pass.turnShadersOn();
 		
-		glViewport(0, 0, 2048, 2048);
+		glViewport(0, 0, width, height);
 		fb.attachTexture(depthTexture, GL_COLOR_ATTACHMENT0);
 
 		glEnable(GL_DEPTH_TEST);
@@ -464,7 +467,7 @@ void Renderer::depthMapPass()
 		glCullFace(GL_FRONT);
 		glEnable(GL_CULL_FACE);
 
-		//glGenerateMipmap(GL_TEXTURE_2D);
+		glGenerateMipmap(GL_TEXTURE_2D);
 		drawAll();
 		setTextureMatrix(lights[i]);
 
@@ -474,6 +477,10 @@ void Renderer::depthMapPass()
 		fb.deattachTexture();
 		fb.turnOff();
 	}
+	
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glCullFace(GL_BACK);
 	glViewport(0, 0, width, height);
 
 }
@@ -504,7 +511,7 @@ void Renderer::drawShadow(Camera &camera)
 	glUniform1i(shadowPass.getUniform("ShadowMap"), 7);
 
 	glActiveTexture(GL_TEXTURE7);
-	textureOn(tm->getTexture("depth2l1"));
+	textureOn(tm->getTexture("smap"));
 
 	setCamera(camera);
 	glLightfv(GL_LIGHT0, GL_POSITION, lights[0].getPosition());
@@ -578,10 +585,118 @@ void Renderer::ssaoPass()
 
 void Renderer::blurPass()
 {
+	//glDisable(GL_CULL_FACE);
 	
+	// turn the fbo on again
+	fb.turnOn();
+	
+	// attach the blur texture so we can hold the blurred shadow map
+	
+	GLuint gID = tm->getTexture("gaussian");
+	
+	fb.attachTexture(getTexture("gaussian"), GL_COLOR_ATTACHMENT0);
+
+	// set the viewport to make the size of the texture
+	glViewport(0,0,width,height);
+
+	// turn the gaussian shader on
+	gaussian.turnShadersOn();
+	
+	// we need to clear the screen
+	clearGL();
 
 
+	// get the uniforms locations from the shader
+	GLint scaleUniform = gaussian.getUniform("ScaleU");
+	GLint textoblurUniform = gaussian.getUniform("textureSource");
 
+	// set the uniform data for the shader
+	glUniform2f(scaleUniform, 1.0f/(float)width, 0.0f);
+	glUniform1i(textoblurUniform,0);
+	// make the first texture unit active
+	glActiveTexture(GL_TEXTURE0);
+	// bind the shadow map we made in the previous pass
+	GLuint d2ID = tm->getTexture("depth2l1");
+	textureOn(getTexture("depth2l1"));
+
+	glEnable2D();
+
+    glBegin (GL_QUADS); 
+	glTexCoord2f(0.0f, 0.0f); 
+	glVertex2i (0, 0); 
+	glTexCoord2f(0.0f, 1.0f); 
+	glVertex2i (0,height); 
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2i (width, height); 
+	glTexCoord2f(1.0f, 0.0f); 
+	glVertex2i (width, 0); 
+	glEnd();
+
+	glDisable2D();
+
+	gaussian.turnShadersOff();
+	fb.deattachTexture();
+	fb.turnOff();
+	// by here we've already done a 7x1 horizontal pass
+	// we now do a 1x7 vertical pass
+
+
+	fb.turnOn();
+	// smap will contain the FINAL blurred depth map
+
+	GLuint smapID = tm->getTexture("smap");
+	fb.attachTexture(tm->getTexture("smap"), GL_COLOR_ATTACHMENT0);
+	
+	// make sure the viewport is still the same
+	glViewport(0,0,width,height);
+
+	gaussian.turnShadersOn();
+	// we need to clear the screen
+	clearGL();
+
+	scaleUniform = gaussian.getUniform("ScaleU");
+	textoblurUniform = gaussian.getUniform("textureSource");
+
+	// set the uniform data for the shader
+	glUniform2f(scaleUniform, 0.0f, 1.0f/(float)height);
+	glUniform1i(textoblurUniform,0);
+	glActiveTexture(GL_TEXTURE0);
+	// bind the shadow map we made in the previous pass
+
+	GLuint g2ID = tm->getTexture("gaussian");
+	textureOn(tm->getTexture("gaussian"));
+
+	glEnable2D();
+
+    glBegin (GL_QUADS); 
+	glTexCoord2f(0.0f, 0.0f); 
+	glVertex2i (0, 0); 
+	glTexCoord2f(0.0f, 1.0f); 
+	glVertex2i (0,height); 
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2i (width, height); 
+	glTexCoord2f(1.0f, 0.0f); 
+	glVertex2i (width, 0); 
+	glEnd();
+
+	glDisable2D();
+
+	gaussian.turnShadersOff();
+
+	fb.deattachTexture();
+	// turn the fbo off
+	fb.turnOff();
+
+
+    glMatrixMode( GL_PROJECTION );
+    glLoadIdentity( );
+    // horizontal fov, vertical fov, min view distance, max view distance
+	float ratio = (float) width / (float) height;	// compute FOV
+	gluPerspective( 60.0, ratio, 1.0, 4800.0 );	// need to fix this to change fov on the fly
+	glMatrixMode(GL_MODELVIEW);	// switch back to model view
+	glViewport( 0, 0, width, height );	// set the viewport to be the resolution of the screen
+
+	//glEnable(GL_CULL_FACE);
 }
 
 void Renderer::abtexPass()
@@ -1119,6 +1234,9 @@ void Renderer::draw()
 
 void Renderer::drawTexture(std::string texName)
 {
+	//glEnable2D();
+	//glDisable(GL_CULL_FACE);
+	//glFrontFace(GL_CW);
 	
 	glColor4f(1, 1, 1, 1);
 
@@ -1134,6 +1252,9 @@ void Renderer::drawTexture(std::string texName)
 	glVertex2i (width, 0); 
 	glEnd();
     textureOff();
+
+	//glDisable2D();
+	//glEnable(GL_CULL_FACE);
 }
 
 /*
