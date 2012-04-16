@@ -739,7 +739,9 @@ void Renderer::drawAll()
 			//glMultMatrixf(effect->getGLMatrix());
 			//btVector3 pos = effect->getPosition();
 			//glTranslatef(pos.x(),pos.y(),pos.z());
-			//glScalef(5, 5, 5);
+			glScalef(effect->scale, effect->scale, effect->scale);
+
+			effect->scale = effect->scale - (effect->scale/effect->ttl);
 
 			glColor4f(1, 1, 1, 1);
 			glActiveTexture(GL_TEXTURE0);
