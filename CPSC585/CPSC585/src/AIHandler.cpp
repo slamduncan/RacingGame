@@ -98,7 +98,7 @@ void AIHandler::generateNextMove(){
 		}//Do normal stuff
 
 		//else maybe warp
-		else {
+		/*else {
 		//User too good, warp forward!
 		if (waypointDiff > 75 && (c->lapCount < humanCar->lapCount || c->halfWayAround != humanCar->halfWayAround))   //abs(forwardForce) > (35000.0f + 400 * rubberBandModifier) && forwardForce < 0 && c->lapCount <= humanCar->lapCount)
 		{
@@ -139,7 +139,7 @@ void AIHandler::generateNextMove(){
 			c->halfWayAround = humanCar->halfWayAround;
 			c->setNextWaypointIndex(moveCarTo->getWaypointList().at(0)->getIndex());
 			c->AIresetCounter = 0;			
-		}
+		}*/
 		else
 		{
 			ForwardForceEvent* ffe = new ForwardForceEvent(forwardForce, forwardForce/32767.0f);
@@ -147,7 +147,7 @@ void AIHandler::generateNextMove(){
 			delete ffe;
 		}
 
-		}
+		//}
 		PowerUpCheck(c);
 		//printf("Car: %d, Forward = %f, Turn = %f\n", i, forwardForce, roationForce);
 	}
