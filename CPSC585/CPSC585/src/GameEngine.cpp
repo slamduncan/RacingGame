@@ -45,6 +45,9 @@ ALuint EngineBuffer = 2;
 ALuint BackgroundSource = 3;
 ALuint BackgroundBuffer = 4;
 
+ALuint MenuSource = 5;
+ALuint MenuBuffer = 6;
+
 enum GameState {MAIN_MENU, LOADING_GAME, GAME_STARTING, GAME_RUNNING, GAME_FINISHED, PAUSED_IN_GAME};
 GameState CURRENT_STATE = MAIN_MENU;
 // Other init
@@ -52,6 +55,7 @@ GameState CURRENT_STATE = MAIN_MENU;
 Renderer* ren = Renderer::getInstance();
 AIHandler* ai = AIHandler::getInstance();
 Physics* ph = Physics::Inst();
+
 
 SoundPlayer soundPlayer;
 
@@ -782,6 +786,122 @@ void resetCars(){
 	}
 }
 
+double normalizeNWP(int nwp){
+	if(nwp >= 11 && nwp <= 25){
+		double a = (nwp - 11) * (20.0 / 15.0);
+		return 47 + a;
+	}
+
+	if(nwp >= 26 && nwp <= 46){
+		double a = (nwp - 26) * (20.0 / 20.0);
+		return 47 + a;
+	}
+		
+
+	if(nwp >= 70 && nwp <= 89){
+		double a = (nwp - 70) * (20.0 / 20.0);
+		return 115 + a;
+	}
+
+	if(nwp >= 90 && nwp <= 114){
+		double a = (nwp - 90) * (20.0 / 25.0);
+		return 115 + a;
+	}
+
+	if(nwp >= 156 && nwp <= 171){
+		double a = (nwp - 156) * (37.0 / 15.0);
+		return 201 + a;
+	}
+
+	if(nwp >= 172 && nwp <= 200){
+		double a = (nwp - 172) * (37.0 / 28.0);
+		return 201 + a;
+	}	
+
+	if(nwp >= 262 && nwp <= 282){
+		double a = (nwp - 262) * (33.0 / 20.0);
+		return 314 + a;
+	}
+
+	if(nwp >= 283 && nwp <= 313){
+		double a = (nwp - 283) * (33.0 / 30.0);
+		return 314 + a;
+	}
+
+	if(nwp >= 394 && nwp <= 418){
+		double a = (nwp - 394) * (27.0 / 24.0);
+		return 419 + a;
+	}
+
+	if(nwp >= 451 && nwp <= 496){
+		double a = (nwp - 451) * (57.0 / 45.0);
+		return 549 + a;
+	}
+
+	if(nwp >= 497 && nwp <= 548){
+		double a = (nwp - 497) * (57.0 / 51.0);
+		return 549 + a;
+	}
+
+	if(nwp >= 617 && nwp <= 659){
+		double a = (nwp - 617) * (56.0 / 42.0);
+		return 709 + a;
+	}
+
+	if(nwp >= 660 && nwp <= 708){
+		double a = (nwp - 660) * (56.0 / 48.0);
+		return 709 + a;
+	}
+
+	if(nwp >= 802 && nwp <= 827){
+		double a = (nwp - 802) * (46.0 / 25.0);
+		return 864 + a;
+	}
+
+	if(nwp >= 828 && nwp <= 863){
+		double a = (nwp - 828) * (46.0 / 35.0);
+		return 864 + a;
+	}
+
+	if(nwp >= 923 && nwp <= 963){
+		double a = (nwp - 923) * (57.0 / 40.0);
+		return 1021 + a;
+	}
+
+	if(nwp >= 964 && nwp <= 1020){
+		double a = (nwp - 964) * (57.0 / 56.0);
+		return 1021 + a;
+	}
+
+	return (double)nwp;
+}
+
+void calcPositions(){
+	Car* player = entManager->getCar(0);
+	int lap = player->lapCount;
+	double waypt = normalizeNWP(player->getNextWaypointIndex());
+	int position = 1;
+
+	for(int i=1; i<entManager->getCarList()->size(); i++){
+		Car* c = entManager->getCar(i);
+		int clap = c->lapCount;
+
+		double nwp = c->getNextWaypointIndex();
+		nwp = normalizeNWP(nwp);
+
+		if(clap > lap){
+			//printf("Their lap is bigger!\n");
+			position++;
+		}else if(c->getNextWaypointIndex() >= waypt && clap == lap){
+			//printf("Their wp is bigger!\n");
+			position++;
+		}
+	}
+
+	player->currentPosition = position;
+}
+
+/*
 void calcPositions()
 {
 	int currentPosition = 6;
@@ -799,7 +919,7 @@ void calcPositions()
 		tempC->currentPosition = -1;
 	}
 
-	/* Find last car */
+	// Find last car 
 	for (int i = 0; i < entManager->numCars(); i++)
 	{
 		Car* tempC = entManager->getCar(i);
@@ -825,7 +945,7 @@ void calcPositions()
 	}
 	lastCar->currentPosition = currentPosition;
 	//currentPosition -= 1;
-	/* Find first car */
+	// Find first car
 	atWaypoint = 0;
 	myLapCount = 0;
 	distanceToWP = 1000.0f;
@@ -921,15 +1041,17 @@ void calcPositions()
 	//	lastFoundCar = firstCar;
 	//}
 }
+*/
 
 // Engine Main
 int main(int argc, char** argv)
 {	
 	// INITIALIZATIONS
-	
+	//int BLAHDEBLAH = 0;
 	
 	//Initialize the renderer
 	bool renInit = ren->init();
+	ph->initObserver();
 
 	// DEBUG DRAW SETUP
 	ph->setDebugDrawer(ren);
@@ -961,6 +1083,10 @@ int main(int argc, char** argv)
 /* Menu Code */
 	Menu m = Menu();	
 	srand( time(NULL) );
+
+	float ListenerPosition[3] = {0.0, 0.0, 0.0};
+	soundPlayer.LoadSoundFile("Documentation/Music/Main Menu Music.wav", MenuSource, MenuBuffer, ListenerPosition, AL_TRUE);
+	alSourcef(MenuSource, AL_GAIN, 0.5f );
 	
 	//loadPowerupLocation("model/poweruplocation.lwo");
 	int selection = m.run(ren);
@@ -1094,6 +1220,8 @@ m.loading(ren, "Cars");
 
 	Uint32 next_game_tick = SDL_GetTicks();	
 
+	alSourceStop(MenuSource);
+
 	m.loading(ren, "Game Ready!\nPress Start To Continue", true);
 
 	/*Load game music */
@@ -1128,7 +1256,6 @@ m.loading(ren, "Cars");
 			ren->updateGL();
 */
 		loops = 0;
-
 			
 		while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAMESKIP && CURRENT_STATE == GAME_RUNNING)
 		{
@@ -1218,7 +1345,21 @@ m.loading(ren, "Cars");
 			}
 			entManager->getCar(0)->setNextWaypointIndex(getClosestWaypoint());
 			
-
+			/*if(BLAHDEBLAH == 0){
+				for(int i=0; i<entManager->getWaypointList()->size(); i++){
+					if(entManager->getWaypoint(i)->split == true){
+						printf("%d splits with children:\n",entManager->getWaypoint(i)->getIndex());
+						for(int j=0; j<entManager->getWaypoint(i)->getWaypointList().size(); j++){
+							printf("%d, ",entManager->getWaypoint(i)->getWaypointList().at(j)->getIndex());
+						}
+						printf("\n");
+					}
+					if(entManager->getWaypoint(i)->converge == true){
+						printf("%d Converges.\n",entManager->getWaypoint(i)->getIndex());
+					}
+				}
+				BLAHDEBLAH = 1;
+			}*/
 
 			// Resets any cars which have fallen off the track.
 			resetCars();
@@ -1695,16 +1836,22 @@ m.loading(ren, "Cars");
 
 	/*delete ph;
 	ph = Physics::Inst();*/
-	evSys->clean(&ph->variableObserver);	
-	ph->clean();
-	ph = Physics::Inst();
-	// DEBUG DRAW SETUP
-	ph->setDebugDrawer(ren);
-	//ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
-	ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
 	//delete entManager;
 	entManager->clean();// = EntityManager::getInstance();
 	entManager = EntityManager::getInstance();	
+	//evSys->clean(&ph->variableObserver);	
+	MethodObserver<ReloadEvent, Physics> tempObs = ph->variableObserver;
+	ph->clean();
+	ph = Physics::Inst();
+	//tempObs.objectInstance = ph;
+	//tempObs.funcPointer = &(Physics::variableObserver);
+	//ph->variableObserver = tempObs;
+	ph->initObserver();
+	// DEBUG DRAW SETUP
+	ph->setDebugDrawer(ren);	
+	ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
+	controller1.initialize(0);
+	//entManager->getCar(0)->initObservers();
 }
 	return 0;
 }

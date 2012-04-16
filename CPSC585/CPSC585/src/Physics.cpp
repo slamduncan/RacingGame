@@ -40,7 +40,7 @@ Physics::Physics(void) : variableObserver(this, &Physics::updateVariables)
 	solver = new btSequentialImpulseConstraintSolver;
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,broadphase,solver,collisionConfiguration);
 
-	variableObserver.init(EventTypes::RELOAD_VARIABLES);
+	
 
 	dynamicsWorld->getPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 
@@ -59,7 +59,12 @@ Physics::~Physics(void)
     delete solver;
     delete dispatcher;
     delete collisionConfiguration;
-    delete broadphase;
+    delete broadphase;	
+}
+
+void Physics::initObserver()
+{
+	variableObserver.init(EventTypes::RELOAD_VARIABLES);
 }
 
 void Physics::clean()
@@ -67,25 +72,52 @@ void Physics::clean()
 	dynamicsWorld->getCollisionObjectArray().clear();
 	
 	delete dynamicsWorld;
+	dynamicsWorld = 0;
     delete solver;
+	solver = 0;
     delete dispatcher;
+	dispatcher = 0;
     delete collisionConfiguration;
+	collisionConfiguration = 0;
     delete broadphase;	
+	broadphase = 0;
 	physInstance = 0;
+	Inst();
 }
 
 void Physics::step(btScalar &timeStep)
 {	
+	
 	//printf("Velocity: %f\n",entityManager->getCar(0)->chassis->getLinearVelocity().length());
-
 	for(int i=0; i< entityManager->getCarList()->size(); i++){
-		btVector3 rotation = entityManager->getCar(i)->chassis->getAngularVelocity();
-		if(rotation.length() > 5 && entityManager->getCar(i)->beingHitUntil < clock()){
+		Car* c = entityManager->getCar(i);
+
+		//Reducing rotational force to make game more stable
+		btVector3 rotation = c->chassis->getAngularVelocity();
+		if(rotation.length() > 5 && c->beingHitUntil < clock()){
 			btVector3 newRot = 0.01f*rotation;
-			entityManager->getCar(i)->chassis->setAngularVelocity(newRot);
+			c->chassis->setAngularVelocity(newRot);
 			//printf("REDUCTO! \n");
 		}
+
+		////Checking if the car fell through the floor! :O
+		//btVector3 sum = btVector3(0,0,0);
+		//for(int j=0; j<4; j++){
+		//	sum += c->newWheels[j].hitNormal;
+		//}
+		//sum *= 0.25;
+
+		//btScalar dotprod = c->getNormal().dot(sum);
+		//dotprod *= 100000000;
+		//if(dotprod > 0.f)
+		//{
+		//	
+		//	btTransform trans = entityManager->getWaypoint(c->getNextWaypointIndex())->getTransform();
+		//	c->chassis->setWorldTransform(trans);
+		//}
 	}
+
+
 
 	dynamicsWorld->stepSimulation(timeStep, 10);//1/60.f,10);
 
@@ -340,7 +372,8 @@ void Physics::updateCarSprings(btScalar timeStep)
 void Physics::setGravity(const btVector3 &gravityIn)
 {
 	gravity = gravityIn;
-	dynamicsWorld->setGravity(gravityIn);
+	if (dynamicsWorld != 0)
+		dynamicsWorld->setGravity(gravityIn);
 }
 
 void Physics::addEntity(const Entity &ent)

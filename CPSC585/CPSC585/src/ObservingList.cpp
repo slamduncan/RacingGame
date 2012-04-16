@@ -17,7 +17,8 @@ void ObservingList::add(Observer* o){
 
 void ObservingList::updateAll(Event *e){
 	for (int i = 0; i < (int)list.size(); i++){
-		list[i]->Observe(e);
+		if (list[i] != 0)
+			list[i]->Observe(e);
 	}
 	//delete e;
 }

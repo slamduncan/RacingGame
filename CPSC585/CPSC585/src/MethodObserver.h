@@ -18,5 +18,9 @@ public:
 	void init(EventTypes::EventType evType){
 		EventSystemHandler::getInstance()->addObserver(this, evType);
 	}
+	~MethodObserver()
+	{
+		EventSystemHandler::getInstance()->clean(this);
+	}
 };
 #endif
