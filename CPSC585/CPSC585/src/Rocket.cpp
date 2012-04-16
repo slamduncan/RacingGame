@@ -1,7 +1,7 @@
 #include "Rocket.h"
 #include "time.h"
 
-Rocket::Rocket(int startingWaypoint, int spawnedBy) : reloadObserver(this, &Rocket::reloadVariables)
+Rocket::Rocket(int startingWaypoint, int spawnedBy)// : reloadObserver(this, &Rocket::reloadVariables)
 {
 	nextWaypoint = startingWaypoint;
 	waypoints = EntityManager::getInstance()->getWaypointList();
@@ -9,7 +9,7 @@ Rocket::Rocket(int startingWaypoint, int spawnedBy) : reloadObserver(this, &Rock
 	turningModifier = 1.0;
 	forwardModifier = 1.0;
 	maxMovementForce = 1.0;
-	reloadObserver.init(EventTypes::RELOAD_VARIABLES);
+	//reloadObserver.init(EventTypes::RELOAD_VARIABLES);
 	//ReloadEvent r = new ReloadEvent();	
 	rocketSpeed = 5.0;
 	detectionRange = 100;	
@@ -124,12 +124,12 @@ void Rocket::positionCheck(Waypoint* w){
 			setNextWaypointIndex(w->getWaypointList().at(0)->getIndex());
 	}
 }
-
-void Rocket::reloadVariables(ReloadEvent *e){
-	turningModifier = e->numberHolder.aiInfo.rotateModifier;
-	forwardModifier = e->numberHolder.aiInfo.drivingModifier;
-	maxMovementForce = e->numberHolder.aiInfo.maxMovementForce;
-	rateOfChangeModifier = e->numberHolder.aiInfo.rateOfChangeModifier;
-	rocketSpeed = e->numberHolder.aiInfo.rocketSpeed;
-	detectionRange = e->numberHolder.aiInfo.rocketDetectionRange;
-}
+//
+//void Rocket::reloadVariables(ReloadEvent *e){
+//	turningModifier = e->numberHolder.aiInfo.rotateModifier;
+//	forwardModifier = e->numberHolder.aiInfo.drivingModifier;
+//	maxMovementForce = e->numberHolder.aiInfo.maxMovementForce;
+//	rateOfChangeModifier = e->numberHolder.aiInfo.rateOfChangeModifier;
+//	rocketSpeed = e->numberHolder.aiInfo.rocketSpeed;
+//	detectionRange = e->numberHolder.aiInfo.rocketDetectionRange;
+//}

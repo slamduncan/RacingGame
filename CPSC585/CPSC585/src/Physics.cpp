@@ -40,7 +40,7 @@ Physics::Physics(void) : variableObserver(this, &Physics::updateVariables)
 	solver = new btSequentialImpulseConstraintSolver;
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,broadphase,solver,collisionConfiguration);
 
-	variableObserver.init(EventTypes::RELOAD_VARIABLES);
+	
 
 	dynamicsWorld->getPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 
@@ -59,7 +59,12 @@ Physics::~Physics(void)
     delete solver;
     delete dispatcher;
     delete collisionConfiguration;
-    delete broadphase;
+    delete broadphase;	
+}
+
+void Physics::initObserver()
+{
+	variableObserver.init(EventTypes::RELOAD_VARIABLES);
 }
 
 void Physics::clean()
@@ -67,11 +72,17 @@ void Physics::clean()
 	dynamicsWorld->getCollisionObjectArray().clear();
 	
 	delete dynamicsWorld;
+	dynamicsWorld = 0;
     delete solver;
+	solver = 0;
     delete dispatcher;
+	dispatcher = 0;
     delete collisionConfiguration;
+	collisionConfiguration = 0;
     delete broadphase;	
+	broadphase = 0;
 	physInstance = 0;
+	Inst();
 }
 
 void Physics::step(btScalar &timeStep)
@@ -325,7 +336,8 @@ void Physics::updateCarSprings(btScalar timeStep)
 void Physics::setGravity(const btVector3 &gravityIn)
 {
 	gravity = gravityIn;
-	dynamicsWorld->setGravity(gravityIn);
+	if (dynamicsWorld != 0)
+		dynamicsWorld->setGravity(gravityIn);
 }
 
 void Physics::addEntity(const Entity &ent)

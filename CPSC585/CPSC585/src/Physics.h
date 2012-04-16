@@ -32,6 +32,7 @@ public:
 	void updateCarSprings(btScalar timeStep);
 	void addGhost(btGhostObject * ghost);
 	void removeGhost(btGhostObject * ghost);
+	void initObserver();
 
 	MethodObserver<ReloadEvent, Physics> variableObserver;
 	

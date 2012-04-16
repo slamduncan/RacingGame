@@ -27,7 +27,7 @@ private:
 	float rateOfChangeModifier;
 	float rocketSpeed;
 	float detectionRange;	
-	MethodObserver<ReloadEvent, Rocket> reloadObserver;
+	//MethodObserver<ReloadEvent, Rocket> reloadObserver;
 };
 
 #endif

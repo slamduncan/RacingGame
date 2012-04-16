@@ -53,6 +53,7 @@ Renderer* ren = Renderer::getInstance();
 AIHandler* ai = AIHandler::getInstance();
 Physics* ph = Physics::Inst();
 
+
 SoundPlayer soundPlayer;
 
 //Controller, camera, eventSystem handle.
@@ -930,6 +931,7 @@ int main(int argc, char** argv)
 	
 	//Initialize the renderer
 	bool renInit = ren->init();
+	ph->initObserver();
 
 	// DEBUG DRAW SETUP
 	ph->setDebugDrawer(ren);
@@ -1686,16 +1688,22 @@ m.loading(ren, "Cars");
 
 	/*delete ph;
 	ph = Physics::Inst();*/
-	evSys->clean(&ph->variableObserver);	
-	ph->clean();
-	ph = Physics::Inst();
-	// DEBUG DRAW SETUP
-	ph->setDebugDrawer(ren);
-	//ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
-	ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
 	//delete entManager;
 	entManager->clean();// = EntityManager::getInstance();
 	entManager = EntityManager::getInstance();	
+	//evSys->clean(&ph->variableObserver);	
+	MethodObserver<ReloadEvent, Physics> tempObs = ph->variableObserver;
+	ph->clean();
+	ph = Physics::Inst();
+	//tempObs.objectInstance = ph;
+	//tempObs.funcPointer = &(Physics::variableObserver);
+	//ph->variableObserver = tempObs;
+	ph->initObserver();
+	// DEBUG DRAW SETUP
+	ph->setDebugDrawer(ren);	
+	ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
+	controller1.initialize(0);
+	//entManager->getCar(0)->initObservers();
 }
 	return 0;
 }
