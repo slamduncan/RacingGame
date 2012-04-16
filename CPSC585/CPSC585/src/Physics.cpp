@@ -295,13 +295,6 @@ void Physics::step(btScalar &timeStep)
 		SlowField* sf = entityManager->getSlowField(i);
 		btGhostObject* go = btGhostObject::upcast(sf->physicsObject);
 		btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
-		if(oa.size() == 0)
-		{
-			for(int j = 0; j < entityManager->numCars(); j++)
-			{
-				entityManager->getCar(j)->setBeingSlowed(false);
-			}
-		}
 		
 		for(int j=0; j< oa.size(); j++){
 			btCollisionObject * carMaybe = oa.at(j);
