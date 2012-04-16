@@ -1216,8 +1216,10 @@ m.loading(ren, "Cars");
 	int AIpowerUPDelayCounter = 0;
 	int counter = 1;
 	int instantFrameCount = 0;
+	int CarSpeed = 0;
 	stringstream instantFrameCountBuffer;
 	string instantFrameString = "";
+	string CarSpeedString = "";
 
 	int loops;
 	float interpolation;
@@ -1619,7 +1621,16 @@ m.loading(ren, "Cars");
 		}		
 		currentTime = SDL_GetTicks();
 
-		ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
+		//ren->outputText("FPS: " + instantFrameString, 0, 255, 0, 0, 680);
+
+		std::stringstream ssSpeed;
+		CarSpeed = (int)(EngineModifier * 750.0f);
+		ssSpeed << CarSpeed;
+		CarSpeedString = ssSpeed.str();
+		ren->changeFontSize(50);
+		ren->outputText(CarSpeedString, 0, 255, 0, 1020, 60);
+		ren->changeFontSize(20);
+		ren->outputText("km/h", 0, 255, 0, 1150, 60);
 
 		//for (int i = 0; i < entManager->getSpawnableList()->size(); i++)
 		//{
@@ -1699,7 +1710,7 @@ m.loading(ren, "Cars");
 		ssLapTime << LapMilliseconds;
 
 		//Display Position
-		ssLapTime << "\n Current Position: " << entManager->getCar(0)->currentPosition;
+		ssLapTime << "\nCurrent Position: " << entManager->getCar(0)->currentPosition << " / 6";
 
 		// Display the current lap time
 		ren->outputText("Current Lap: " + ssLapTime.str(), 255, 0, 0, 0, 660);

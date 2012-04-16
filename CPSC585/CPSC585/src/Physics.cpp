@@ -15,10 +15,12 @@ SoundPlayer CollisionPlayer;
 ALuint PowerupCollisionSource = 10;
 ALuint RocketCollisionSource = 11;
 ALuint MineCollisionSource = 12;
+ALuint CrashCollisionSource = 13;
 
 ALuint PowerupCollisionBuffer = 20;
 ALuint RocketCollisionBuffer = 21;
 ALuint MineCollisionBuffer = 22;
+ALuint CrashCollisionBuffer = 23;
 
 Physics* Physics::Inst(void){	
 	if(physInstance == 0){
@@ -106,6 +108,43 @@ void Physics::step(btScalar &timeStep)
 	dynamicsWorld->stepSimulation(timeStep, 10);//1/60.f,10);
 
 	updateCarSprings(timeStep);
+
+	int numManifolds = dynamicsWorld->getDispatcher()->getNumManifolds();
+	for (int i=0;i<numManifolds;i++)
+	{
+		btPersistentManifold* contactManifold =  dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+		btCollisionObject* obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
+		btCollisionObject* obB = static_cast<btCollisionObject*>(contactManifold->getBody1());
+
+		int NumOfCars = 0;
+		//bool HitWall = false;
+
+		Car* car = NULL;	
+
+		for( int j = 0; j < entityManager->numCars(); j++ )
+		{
+			if( entityManager->getCar(j)->getPhysicsObject() == obA )
+			{
+				NumOfCars++;
+				car = entityManager->getCar(j);
+			}
+			else if( entityManager->getCar(j)->getPhysicsObject() == obB )
+			{
+				NumOfCars++;
+				entityManager->getCar(j);
+			}
+			//else if( entityManager->getTrack()->physicsObject == obA || entityManager->getTrack()->physicsObject == obB )
+				//HitWall = true;
+		}
+
+		if( NumOfCars == 2 /*|| ( NumOfCars == 1 && HitWall == true )*/ )
+		{
+			float SourcePos[3] = {car->getPosition().x(), car->getPosition().y(), car->getPosition().z()};
+			float ListenerPosition[3] = {entityManager->getCar(0)->getPosition().x(), entityManager->getCar(0)->getPosition().y(), entityManager->getCar(0)->getPosition().z()};
+			CollisionPlayer.UpdateListenerPosition( ListenerPosition );
+			CollisionPlayer.LoadSoundFile("Documentation/Music/MCrash.wav", CrashCollisionBuffer, CrashCollisionSource, SourcePos);
+		}
+	}
 
 	for(int i = 0; i < entityManager->numCars(); i++)
 	{
