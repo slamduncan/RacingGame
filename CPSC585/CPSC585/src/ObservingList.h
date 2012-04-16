@@ -11,6 +11,7 @@ public:
 	void add(Observer* o);
 	int size();
 	void updateAll(Event *e);
+	void remove(Observer* o);
 
 	
 

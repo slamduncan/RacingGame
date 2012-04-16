@@ -39,7 +39,7 @@ void SoundPlayer::LoadBackgroundSoundFile(ALbyte* FileName)
 	}
 	else
 	{
-    	printf("init() - No errors yet.");
+    	//printf("init() - No errors yet.");
 	}
 
 	ALboolean b;
@@ -57,7 +57,7 @@ void SoundPlayer::LoadBackgroundSoundFile(ALbyte* FileName)
 	}
 	else
 	{
-    	printf("init - no errors after alGenSources\n");
+    	//printf("init - no errors after alGenSources\n");
 	}
 
 	alSourcef(BackGroundSource, AL_PITCH, 1.0f);
@@ -107,7 +107,7 @@ void SoundPlayer::LoadSoundFile(ALbyte* FileName, ALuint& Source, ALuint& buffer
 	}
 	else
 	{
-    	printf("init() - No errors yet.");
+    	//printf("init() - No errors yet.");
 	}
 
 	ALboolean b;
@@ -125,7 +125,7 @@ void SoundPlayer::LoadSoundFile(ALbyte* FileName, ALuint& Source, ALuint& buffer
 	}
 	else
 	{
-    	printf("init - no errors after alGenSources\n");
+    	//printf("init - no errors after alGenSources\n");
 	}
 
 	alSourcef(Source, AL_PITCH, 1.0f);

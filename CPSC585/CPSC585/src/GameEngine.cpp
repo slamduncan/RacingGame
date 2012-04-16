@@ -404,9 +404,9 @@ void readWaypoints(const char* fileName){
 		for (int i = 0; i < entManager->getCarList()->size(); i++)
 			entManager->getCar(i)->setNextWaypointIndex(0);
 		//Update the waypoint variables.
-		ReloadEvent* e = new ReloadEvent();
-		evSys->emitEvent(e);
-		delete e;
+		ReloadEvent e = ReloadEvent();
+		evSys->emitEvent(&e);
+		//delete e;
 	}
 	else
 		printf("Unable to open Waypoint File - Read\n");
@@ -958,13 +958,9 @@ int main(int argc, char** argv)
 /* Menu Code */
 	Menu m = Menu();	
 	srand( time(NULL) );
-
-	int a = rand() %21 + 1;
-	printf("Rand: %d\n",a);
+	
 	//loadPowerupLocation("model/poweruplocation.lwo");
 	int selection = m.run(ren);
-
-
 	if (selection == m.QUIT)
 	{
 		exit(0);
@@ -1679,10 +1675,18 @@ m.loading(ren, "Cars");
 	}
 	running = true;
 
-	delete ph;
+	/*delete ph;
+	ph = Physics::Inst();*/
+	evSys->clean(&ph->variableObserver);	
+	ph->clean();
 	ph = Physics::Inst();
+	// DEBUG DRAW SETUP
+	ph->setDebugDrawer(ren);
+	//ph->setDebugLevel(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);	// DRAW EVERYTHING
+	ph->setDebugLevel(btIDebugDraw::DBG_NoDebug);	// DRAW EVERYTHING
 	//delete entManager;
-	//entManager = EntityManager::getInstance();
+	entManager->clean();// = EntityManager::getInstance();
+	entManager = EntityManager::getInstance();	
 }
 	return 0;
 }

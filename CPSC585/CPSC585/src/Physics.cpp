@@ -62,6 +62,18 @@ Physics::~Physics(void)
     delete broadphase;
 }
 
+void Physics::clean()
+{
+	dynamicsWorld->getCollisionObjectArray().clear();
+	
+	delete dynamicsWorld;
+    delete solver;
+    delete dispatcher;
+    delete collisionConfiguration;
+    delete broadphase;	
+	physInstance = 0;
+}
+
 void Physics::step(btScalar &timeStep)
 {	
 	//printf("Velocity: %f\n",entityManager->getCar(0)->chassis->getLinearVelocity().length());

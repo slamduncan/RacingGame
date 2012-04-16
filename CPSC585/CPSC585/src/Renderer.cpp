@@ -460,14 +460,6 @@ void Renderer::depthMapPass()
 		clearGL();
 		setCamera(lights[i].getPosition(), em->getCar(0)->getPosition());
 
-		
-		if(fb.isValid())
-		{
-			printf("is valid\n");
-		}
-		
-		
-
 		glFrontFace(GL_CW);
 		glCullFace(GL_FRONT);
 		glEnable(GL_CULL_FACE);
