@@ -416,6 +416,7 @@ void Car::UsePowerUp( int index , bool offensive)
 					float SourcePos[3] = { getPosition().x(), getPosition().y(), getPosition().z() };
 					SoundEffectPlayer.UpdateListenerPosition( ListenerPosition );
 					SoundEffectPlayer.LoadSoundFile("Documentation/Music/MSpeed.wav", SpeedEffectSource, SpeedEffectBuffer, SourcePos);
+					alSourcef(SpeedEffectSource, AL_GAIN, 1.2f );
 					btVector3 forward = getTangent();
 					forward.setY(0);	// projects the tangent along the xz plane
 					chassis->applyCentralForce(-speedBoostModifier*forward);
@@ -427,6 +428,8 @@ void Car::UsePowerUp( int index , bool offensive)
 					float SourcePos[3] = { getPosition().x(), getPosition().y(), getPosition().z() };
 					SoundEffectPlayer.UpdateListenerPosition( ListenerPosition );
 					SoundEffectPlayer.LoadSoundFile("Documentation/Music/MSlow.wav", SlowEffectSource, SlowEffectBuffer, SourcePos);
+					alSourcef(SlowEffectSource, AL_GAIN, 2.0f );
+					alSourcef(SlowEffectSource, AL_PITCH, 1.5f );
 					ent->createSlowField(this);				
 				}
 				break;
@@ -439,6 +442,7 @@ void Car::UsePowerUp( int index , bool offensive)
 						float SourcePos[3] = { getPosition().x(), getPosition().y(), getPosition().z() };
 						SoundEffectPlayer.UpdateListenerPosition( ListenerPosition );
 						SoundEffectPlayer.LoadSoundFile("Documentation/Music/MRocketFired.wav", RocketEffectSource, RocketEffectBuffer, SourcePos);
+						alSourcef(RocketEffectSource, AL_GAIN, 2.0f );
 						btTransform rocketT= physicsObject->getWorldTransform();				
 						rocketT.setOrigin( rocketT.getOrigin() - getTangent()*8.0);
 						if (this->getNextWaypointIndex() < ent->numWaypoints() - 5)
@@ -452,6 +456,7 @@ void Car::UsePowerUp( int index , bool offensive)
 						float SourcePos[3] = { getPosition().x(), getPosition().y(), getPosition().z() };
 						SoundEffectPlayer.UpdateListenerPosition( ListenerPosition );
 						SoundEffectPlayer.LoadSoundFile("Documentation/Music/MShield.wav", ShieldEffectSource, ShieldEffectBuffer, SourcePos);
+						alSourcef(ShieldEffectSource, AL_GAIN, 2.0f );
 						ent->createShield(this);
 					}					
 					break;
@@ -464,6 +469,8 @@ void Car::UsePowerUp( int index , bool offensive)
 						float SourcePos[3] = { getPosition().x(), getPosition().y(), getPosition().z() };
 						SoundEffectPlayer.UpdateListenerPosition( ListenerPosition );
 						SoundEffectPlayer.LoadSoundFile("Documentation/Music/MNova2.wav", NovaEffectSource, NovaEffectBuffer, SourcePos);
+						alSourcef(NovaEffectSource, AL_GAIN, 2.0f );
+						alSourcef(NovaEffectSource, AL_PITCH, 1.5f );
 						btGhostObject * explosionShell;
 						explosionShell = new btGhostObject();
 						btCollisionShape* sphereShape;
