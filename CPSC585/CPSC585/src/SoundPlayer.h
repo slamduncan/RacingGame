@@ -11,7 +11,6 @@ class SoundPlayer
 {
 public:
 	SoundPlayer();
-	void LoadBackgroundSoundFile(ALbyte* FileName);
 	void LoadSoundFile(ALbyte* FileName, ALuint& Source, ALuint& buffer, float SourcePos[3], ALboolean Looping  = AL_FALSE);
 	void UpdateListenerPosition(float ListenerPosition[3]);
 
