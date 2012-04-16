@@ -28,6 +28,7 @@ public:
 		if (instance == 0){ instance = new EventSystemHandler();}
 		return instance;
 	}
+	void clean(Observer *o);
 	void emitEvent(Event *e);
 	void addObserver(Observer *o, EventTypes::EventType type);
 

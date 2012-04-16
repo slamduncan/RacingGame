@@ -62,6 +62,18 @@ Physics::~Physics(void)
     delete broadphase;
 }
 
+void Physics::clean()
+{
+	dynamicsWorld->getCollisionObjectArray().clear();
+	
+	delete dynamicsWorld;
+    delete solver;
+    delete dispatcher;
+    delete collisionConfiguration;
+    delete broadphase;	
+	physInstance = 0;
+}
+
 void Physics::step(btScalar &timeStep)
 {	
 	//printf("Velocity: %f\n",entityManager->getCar(0)->chassis->getLinearVelocity().length());
@@ -79,6 +91,16 @@ void Physics::step(btScalar &timeStep)
 
 	updateCarSprings(timeStep);
 
+	for(int i = 0; i < entityManager->numCars(); i++)
+	{
+		Car* car = entityManager->getCar(i);
+		entityManager->createEffect(500.f, car, NULL, SPEED);
+	}
+	for(int i = 0; i < entityManager->numSpawnable(); i++)
+	{
+		Rocket* rocket = (Rocket*)entityManager->getSpawnable(i);
+		entityManager->createEffect(500.f, rocket, NULL, SPEED);
+	}
 	
 	//Check Powerups for car collisions
 	for (int i=0; i< entityManager->getPowerUpList()->size(); i++){
@@ -120,8 +142,6 @@ void Physics::step(btScalar &timeStep)
 			}
 		}
 	}
-
-
 
 	for (int i = 0; i < entityManager->getSpawnableList()->size(); i++)
 	{

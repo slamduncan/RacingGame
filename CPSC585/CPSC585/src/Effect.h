@@ -14,12 +14,12 @@ class Effect : public Entity
 {
 private:
 	btTransform transform;
-	btScalar ttl;
 	Timer timer;
 	Entity* spawner;
 	int type;
 
 public:
+	btScalar ttl;
 	btScalar scale;
 
 	Effect();

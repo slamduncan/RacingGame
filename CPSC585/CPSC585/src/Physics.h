@@ -13,6 +13,7 @@ class Physics
 public:
 	~Physics(void);
 	static Physics* Inst();
+	void clean();
 
 	void step(btScalar &timeStep);
 	void setGravity(const btVector3 &gravity);
@@ -31,6 +32,8 @@ public:
 	void updateCarSprings(btScalar timeStep);
 	void addGhost(btGhostObject * ghost);
 	void removeGhost(btGhostObject * ghost);
+
+	MethodObserver<ReloadEvent, Physics> variableObserver;
 	
 protected:
 	Physics(void);	//constructor is protected as it's a singleton
@@ -45,8 +48,6 @@ private:
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* dynamicsWorld;
 	btScalar staticFrictionScalar, dynamicFrictionScalar;
-
-	MethodObserver<ReloadEvent, Physics> variableObserver;
 };
 
 void myTickCallback(btDynamicsWorld *world, btScalar timeStep) {

@@ -52,6 +52,7 @@ public:
 	clock_t beingHitUntil;
 
 	Car();
+	//~Car();
 	bool initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans);
 
 	Wheel newWheels[4];
