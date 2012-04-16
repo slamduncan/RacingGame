@@ -99,22 +99,6 @@ void Physics::step(btScalar &timeStep)
 			c->chassis->setAngularVelocity(newRot);
 			//printf("REDUCTO! \n");
 		}
-
-		////Checking if the car fell through the floor! :O
-		//btVector3 sum = btVector3(0,0,0);
-		//for(int j=0; j<4; j++){
-		//	sum += c->newWheels[j].hitNormal;
-		//}
-		//sum *= 0.25;
-
-		//btScalar dotprod = c->getNormal().dot(sum);
-		//dotprod *= 100000000;
-		//if(dotprod > 0.f)
-		//{
-		//	
-		//	btTransform trans = entityManager->getWaypoint(c->getNextWaypointIndex())->getTransform();
-		//	c->chassis->setWorldTransform(trans);
-		//}
 	}
 
 
@@ -295,6 +279,13 @@ void Physics::step(btScalar &timeStep)
 		SlowField* sf = entityManager->getSlowField(i);
 		btGhostObject* go = btGhostObject::upcast(sf->physicsObject);
 		btAlignedObjectArray<btCollisionObject*> oa = go->getOverlappingPairs();
+		//if(oa.size() == 0)
+		//{
+		//	for(int j = 0; j < entityManager->numCars(); j++)
+		//	{
+		//		entityManager->getCar(j)->setBeingSlowed(false);
+		//	}
+		//}
 		
 		for(int j=0; j< oa.size(); j++){
 			btCollisionObject * carMaybe = oa.at(j);
@@ -306,10 +297,10 @@ void Physics::step(btScalar &timeStep)
 				{
 					entityManager->getCar(index)->setBeingSlowed(true);
 				}
-				else
-				{
-					entityManager->getCar(index)->setBeingSlowed(false);
-				}
+				//else
+				//{
+				//	entityManager->getCar(index)->setBeingSlowed(false);
+				//}
 			}
 		}
 	}
