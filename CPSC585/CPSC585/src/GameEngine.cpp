@@ -779,6 +779,26 @@ void resetCars(){
 	}
 }
 
+void calcPositions(){
+	Car* player = entManager->getCar(0);
+	int lap = player->lapCount;
+	int waypt = player->getNextWaypointIndex();
+	int position = 1;
+
+	for(int i=1; i<entManager->getCarList()->size(); i++){
+		Car* c = entManager->getCar(i);
+		int clap = c->lapCount;
+		if(clap > lap){
+			position++;
+		}else if(c->getNextWaypointIndex() >= waypt && clap == lap){
+			position++;
+		}
+	}
+
+	player->currentPosition = position;
+}
+
+/*
 void calcPositions()
 {
 	int currentPosition = 6;
@@ -796,7 +816,7 @@ void calcPositions()
 		tempC->currentPosition = -1;
 	}
 
-	/* Find last car */
+	// Find last car 
 	for (int i = 0; i < entManager->numCars(); i++)
 	{
 		Car* tempC = entManager->getCar(i);
@@ -822,7 +842,7 @@ void calcPositions()
 	}
 	lastCar->currentPosition = currentPosition;
 	//currentPosition -= 1;
-	/* Find first car */
+	// Find first car
 	atWaypoint = 0;
 	myLapCount = 0;
 	distanceToWP = 1000.0f;
@@ -918,6 +938,7 @@ void calcPositions()
 	//	lastFoundCar = firstCar;
 	//}
 }
+*/
 
 // Engine Main
 int main(int argc, char** argv)
@@ -1679,8 +1700,18 @@ m.loading(ren, "Cars");
 	}
 	running = true;
 
-	//delete ph;
-	//ph = Physics::Inst();
+	//ph->getDiscreteDynamicsWorld()->getCollisionObjectArray().resize(0);
+	//for(int i=0; i<entManager->getCarList()->size(); i++){
+	//	Car* c = entManager->getCar(i);
+	//	delete c;
+	//}
+	//entManager->getCarList()->resize(0);
+	//entManager->getMineList()->resize(0);
+	//entManager->getPowerUpList()->resize(0);
+	//entManager->getSlowFieldList()->resize(0);
+	////entManager->getSpawnableList()->resize(0);
+	//entManager->getWaypointList()->resize(0);
+	
 	//delete entManager;
 	//entManager = EntityManager::getInstance();
 }

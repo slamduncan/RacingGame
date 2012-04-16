@@ -65,15 +65,35 @@ Physics::~Physics(void)
 void Physics::step(btScalar &timeStep)
 {	
 	//printf("Velocity: %f\n",entityManager->getCar(0)->chassis->getLinearVelocity().length());
-
 	for(int i=0; i< entityManager->getCarList()->size(); i++){
-		btVector3 rotation = entityManager->getCar(i)->chassis->getAngularVelocity();
-		if(rotation.length() > 5 && entityManager->getCar(i)->beingHitUntil < clock()){
+		Car* c = entityManager->getCar(i);
+
+		//Reducing rotational force to make game more stable
+		btVector3 rotation = c->chassis->getAngularVelocity();
+		if(rotation.length() > 5 && c->beingHitUntil < clock()){
 			btVector3 newRot = 0.01f*rotation;
-			entityManager->getCar(i)->chassis->setAngularVelocity(newRot);
+			c->chassis->setAngularVelocity(newRot);
 			//printf("REDUCTO! \n");
 		}
+
+		////Checking if the car fell through the floor! :O
+		//btVector3 sum = btVector3(0,0,0);
+		//for(int j=0; j<4; j++){
+		//	sum += c->newWheels[j].hitNormal;
+		//}
+		//sum *= 0.25;
+
+		//btScalar dotprod = c->getNormal().dot(sum);
+		//dotprod *= 100000000;
+		//if(dotprod > 0.f)
+		//{
+		//	
+		//	btTransform trans = entityManager->getWaypoint(c->getNextWaypointIndex())->getTransform();
+		//	c->chassis->setWorldTransform(trans);
+		//}
 	}
+
+
 
 	dynamicsWorld->stepSimulation(timeStep, 10);//1/60.f,10);
 
