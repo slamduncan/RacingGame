@@ -2,12 +2,16 @@
 
 Track::Track()
 {
+	indicator = NULL;
 	lowest = btScalar(0.f);
 }
 
 Track::~Track()
 {
-
+	if(indicator)
+	{
+		aiReleaseImport(indicator);
+	}
 }
 
 /*
@@ -17,6 +21,23 @@ Track::~Track()
 */
 bool Track::initPhysicsObject(btCollisionShape* cShape, btScalar &mass, btTransform &trans)
 {
+	
+	if (indicator == NULL)
+	{
+		indicator = aiImportFile("model/indicator.lwo", 
+			aiProcess_CalcTangentSpace       |
+			aiProcess_Triangulate            |
+			//aiProcess_JoinIdenticalVertices  |
+			aiProcess_GenSmoothNormals |
+			aiProcess_ImproveCacheLocality |
+			//aiProcess_GenUVCoords |
+			//aiProcess_TransformUVCoords |
+			aiProcess_OptimizeMeshes |
+			aiProcess_SortByPType |
+			aiProcess_FlipUVs
+			/*aiProcessPreset_TargetRealtime_Quality | aiProcess_FlipUVs*/ );
+	}
+	
 	//objShape = new btBvhTriangleMeshShape(bttm, true, true);
 	
 	// there is a collision shape

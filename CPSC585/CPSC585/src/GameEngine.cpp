@@ -1554,12 +1554,11 @@ m.loading(ren, "Cars");
 		ren->celPass();
 */
 
-		
 		ren->clearGL();		
 		ren->setCamera(camera1);
 		ren->drawAll();
+		ren->drawTrack();
 		
-
 //		ren->drawAll();
 		ren->glDisableLighting();
 		ph->debugDraw();

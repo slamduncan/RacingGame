@@ -931,7 +931,163 @@ void Renderer::drawPowerups()
 }
 void Renderer::drawTrack()
 {
+	glPushMatrix();
+	
+	btScalar* matrix = em->getTrack()->getGLMatrix();
 
+	glMultMatrixf(matrix);
+
+	for(int i = 0; i < (int)em->getTrack()->indicator->mNumMeshes; i++)
+	{
+		const aiMesh* mesh = em->getTrack()->indicator->mMeshes[i];
+
+		/*
+		if(mesh->mColors[0] != NULL) 
+		{
+			glEnable(GL_COLOR_MATERIAL);
+		} else 
+		{
+			glDisable(GL_COLOR_MATERIAL);
+		}
+		*/
+
+		if(em->getTrack()->indicator->HasMaterials())
+		{
+
+			//printf("i has found material\n");
+			const aiMaterial* mat = em->getTrack()->indicator->mMaterials[mesh->mMaterialIndex];
+			
+			float Kd[4];
+			float Ks[4];
+			float Ka[4];
+			float Kt[4];
+			aiColor4D diffuse;
+			aiColor4D spec;
+			aiColor4D ambient;
+			aiColor4D transparency;
+
+			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
+			{
+				Kd[0] = diffuse.r;
+				Kd[1] = diffuse.g;
+				Kd[2] = diffuse.b;
+				Kd[3] = diffuse.a;
+
+				//printf("KD (%f, %f, %f, %f)\n", Kd[0], Kd[1], Kd[2], Kd[3]);
+				/*
+				if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_TRANSPARENT, &transparency))
+				{
+					Kt[0] = transparency.r;
+					Kt[1] = transparency.g;
+					Kt[2] = transparency.b;
+					Kt[3] = transparency.a;
+					glMaterialfv(GL_FRONT, GL_TRANSP, Ka);
+				}
+				else
+				{
+					Kt[0] = 1.f;
+					Kt[0] = 1.f;
+					Kt[0] = 1.f;
+					Kt[0] = 1.f;
+				}
+				*/
+				//printf("%f, %f, %f, %f\n", Kd[0], Kd[1], Kd[2], Kd[3]);
+				
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Kd);
+				glColor4fv(Kd);
+			}
+			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_SPECULAR, &spec))
+			{
+				Ks[0] = spec.r;
+				Ks[1] = spec.g;
+				Ks[2] = spec.b;
+				Ks[3] = spec.a;
+				//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Ks);
+			}
+			if(AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_AMBIENT, &ambient))
+			{
+				Ka[0] = ambient.r;
+				Ka[1] = ambient.g;
+				Ka[2] = ambient.b;
+				Ka[3] = ambient.a;
+				//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ka);
+			}
+		}
+		
+	
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
+
+		if(mesh->HasTextureCoords(0))
+		{
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+
+		//aiVector3D
+
+		glVertexPointer(3, GL_FLOAT, sizeof(aiVector3D), mesh->mVertices);
+		glNormalPointer(GL_FLOAT, sizeof(aiVector3D), mesh->mNormals);
+		
+		if(mesh->HasTextureCoords(0))
+		{
+			glTexCoordPointer(2, GL_FLOAT, sizeof(aiVector3D), mesh->mTextureCoords[0]);
+		}
+
+		glDrawArrays(GL_TRIANGLES, 0, mesh->mNumVertices);
+		//glDrawElements(GL_TRIANGLE, mesh->mNumVertices, GL_FLOAT, indices);
+		//glDrawElements(GL_TRIANGLES, mesh->mNumVertices, GL_FLOAT, mesh->mVertices);
+
+		if(mesh->HasTextureCoords(0))
+		{
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+
+		glDisableClientState(GL_NORMAL_ARRAY);
+		glDisableClientState(GL_VERTEX_ARRAY);
+		//
+	
+		/*
+		for(int j = 0; j < (int)mesh->mNumFaces; j++)
+		{
+			const aiFace* face = &mesh->mFaces[j];	// get a face
+
+			GLenum face_mode;
+
+			switch(face->mNumIndices) 
+			{
+				case 1: face_mode = GL_POINTS; break;
+				case 2: face_mode = GL_LINES; break;
+				case 3: face_mode = GL_TRIANGLES; break;
+				default: face_mode = GL_POLYGON; break;
+			}
+
+			glBegin(face_mode);
+
+			for(unsigned int k = 0; k < face->mNumIndices; k++)
+			{
+				int index = face->mIndices[k];
+
+				if(mesh->HasTextureCoords(0))
+				{
+					glTexCoord2f(mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y);
+				}
+
+				// the model has normal
+				if(mesh->mNormals != NULL)
+				{
+					glNormal3fv(&mesh->mNormals[index].x);
+				}
+				glVertex3fv(&mesh->mVertices[index].x);
+			}
+
+			glEnd();
+		}
+		*/
+
+	}
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glPopMatrix();
 }
 void Renderer::drawRockets()
 {

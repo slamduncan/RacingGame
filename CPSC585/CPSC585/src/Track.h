@@ -8,6 +8,8 @@ public:
 	Track();
 	~Track();
 
+	const aiScene* indicator;
+
 	btScalar lowest;
 
 	//bool initRenderObject(char* filename);
