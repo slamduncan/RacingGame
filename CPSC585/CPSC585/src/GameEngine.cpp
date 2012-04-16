@@ -790,7 +790,7 @@ void resetCars(){
 
 double normalizeNWP(int nwp){
 	if(nwp >= 11 && nwp <= 25){
-		double a = (nwp - 11) * (20.0 / 15.0);
+		double a = (nwp - 11) * (20.0 / 14.0);
 		return 47 + a;
 	}
 
@@ -801,12 +801,12 @@ double normalizeNWP(int nwp){
 		
 
 	if(nwp >= 70 && nwp <= 89){
-		double a = (nwp - 70) * (20.0 / 20.0);
+		double a = (nwp - 70) * (20.0 / 19.0);
 		return 115 + a;
 	}
 
 	if(nwp >= 90 && nwp <= 114){
-		double a = (nwp - 90) * (20.0 / 25.0);
+		double a = (nwp - 90) * (20.0 / 24.0);
 		return 115 + a;
 	}
 
@@ -883,6 +883,7 @@ void calcPositions(){
 	int lap = player->lapCount;
 	double waypt = normalizeNWP(player->getNextWaypointIndex());
 	int position = 1;
+	//printf("Player: %d",waypt\n)
 
 	for(int i=1; i<entManager->getCarList()->size(); i++){
 		Car* c = entManager->getCar(i);
@@ -894,9 +895,10 @@ void calcPositions(){
 		if(clap > lap){
 			//printf("Their lap is bigger!\n");
 			position++;
-		}else if(c->getNextWaypointIndex() >= waypt && clap == lap){
+		}else if(nwp >= waypt && clap == lap){
 			//printf("Their wp is bigger!\n");
 			position++;
+			//printf("%d ",nwp);
 		}
 	}
 
