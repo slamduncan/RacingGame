@@ -126,6 +126,7 @@ void Physics::step(btScalar &timeStep)
 					float ListenerPosition[3] = {entityManager->getCar(0)->getPosition().x(), entityManager->getCar(0)->getPosition().y(), entityManager->getCar(0)->getPosition().z()};
 					CollisionPlayer.UpdateListenerPosition( ListenerPosition );
 					CollisionPlayer.LoadSoundFile("Documentation/Music/MPowerup.wav", PowerupCollisionBuffer, PowerupCollisionSource, SourcePos);
+					alSourcef(PowerupCollisionSource, AL_GAIN, 2.0f );
 					p->setCollected(true);
 					p->timeToRespawn = clock() + 3*CLOCKS_PER_SEC;
 
@@ -166,6 +167,7 @@ void Physics::step(btScalar &timeStep)
 						float ListenerPosition[3] = {entityManager->getCar(0)->getPosition().x(), entityManager->getCar(0)->getPosition().y(), entityManager->getCar(0)->getPosition().z()};
 						CollisionPlayer.UpdateListenerPosition( ListenerPosition );
 						CollisionPlayer.LoadSoundFile("Documentation/Music/MRocketCollision.wav", RocketCollisionBuffer, RocketCollisionSource, SourcePos);
+						alSourcef(RocketCollisionSource, AL_GAIN, 1.75f );
 						carTemp->chassis->applyTorque(r->getNormal()*500000.0);
 						carTemp->beingHitUntil = clock() + 2.0*CLOCKS_PER_SEC;
 					}
@@ -290,6 +292,7 @@ void Physics::step(btScalar &timeStep)
 				float ListenerPosition[3] = {entityManager->getCar(0)->getPosition().x(), entityManager->getCar(0)->getPosition().y(), entityManager->getCar(0)->getPosition().z()};
 				CollisionPlayer.UpdateListenerPosition( ListenerPosition );
 				CollisionPlayer.LoadSoundFile("Documentation/Music/MMine.wav", MineCollisionBuffer, MineCollisionSource, SourcePos);
+				alSourcef(MineCollisionSource, AL_GAIN, 2.0f );
 				entityManager->getCar(index)->chassis->applyCentralForce(btVector3(0,15000.0,0));
 
 				dynamicsWorld->removeCollisionObject(entityManager->getMine(i)->physicsObject);

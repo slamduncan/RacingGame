@@ -1100,8 +1100,8 @@ m.loading(ren, "Cars");
 	float ListenerPos[3] = { entManager->getCar(0)->getPosition().x(), entManager->getCar(0)->getPosition().y(), entManager->getCar(0)->getPosition().z() };
 	soundPlayer.LoadSoundFile("Documentation/Music/Engine.wav", EngineSource, EngineBuffer, ListenerPos, AL_TRUE);
 	soundPlayer.LoadSoundFile("Documentation/Music/InGameMusic.wav", BackgroundSource, BackgroundBuffer, ListenerPos, AL_TRUE);
-	alSourcef(BackgroundSource, AL_GAIN, 0.25f );
-	alSourcef(EngineSource, AL_GAIN, 0.5f );
+	alSourcef(BackgroundSource, AL_GAIN, 0.15f );
+	alSourcef(EngineSource, AL_GAIN, 0.4f );
 	//soundPlayer.LoadBackgroundSoundFile("Documentation/Music/InGameMusic.wav");
 
 	// game loop
@@ -1150,9 +1150,9 @@ m.loading(ren, "Cars");
 				EngineModifier *= -1;
 
 			// Change pitch of engine sound
-			alSourcef(EngineSource, AL_GAIN, 0.5f + (EngineModifier / 2.0) );
+			alSourcef(EngineSource, AL_GAIN, 0.4f + (EngineModifier / 2.0) );
 			alSourcef(EngineSource, AL_PITCH, 1.0f + EngineModifier );
-			alSourcef(BackgroundSource, AL_GAIN, 0.25f + (EngineModifier / 1.5) );
+			alSourcef(BackgroundSource, AL_GAIN, 0.15f + (EngineModifier / 1.75) );
 			
 			//// Physics
 			physicsCurrentTime = SDL_GetTicks();
