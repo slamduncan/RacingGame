@@ -28,7 +28,7 @@ void ObservingList::remove(Observer* o){
 	for (int i = 0; i < (int)list.size(); i++){
 		if (list[i] != o)
 		{
-			tempList.push_back(o);
+			tempList.push_back(list[i]);
 		}
 	}
 	list = tempList;
